@@ -15,8 +15,4 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Using Include="System.Text" />
-  </ItemGroup>
-
 </Project>

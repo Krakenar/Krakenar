@@ -1,7 +1,5 @@
 ﻿using Krakenar.Constants;
-using Krakenar.Core;
 using Krakenar.Extensions;
-using Krakenar.Infrastructure;
 using Microsoft.FeatureManagement;
 
 namespace Krakenar;
@@ -19,8 +17,6 @@ internal class Startup : StartupBase
     services.AddControllers();
     services.AddFeatureManagement();
 
-    services.AddKrakenarCore();
-    services.AddKrakenarInfrastructure();
     services.AddKrakenarSwagger();
   }
 

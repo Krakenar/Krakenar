@@ -1,6 +1,4 @@
-﻿using Krakenar.Core.Configurations.Commands;
-using Krakenar.Settings;
-using MediatR;
+﻿using Krakenar.Settings;
 
 namespace Krakenar;
 
@@ -19,11 +17,11 @@ internal class Program
     await startup.ConfigureAsync(application);
 
     DefaultSettings defaults = DefaultSettings.Initialize(configuration);
-    InitializeConfigurationCommand command = new(defaults.Locale, defaults.UniqueName, defaults.Password);
+    //InitializeConfigurationCommand command = new(defaults.Locale, defaults.UniqueName, defaults.Password);
 
     using IServiceScope scope = application.Services.CreateScope();
-    IMediator mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-    await mediator.Send(command);
+    //IMediator mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+    //await mediator.Send(command);
 
     application.Run();
   }
