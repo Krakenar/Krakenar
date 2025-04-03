@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Krakenar.Contracts\Krakenar.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Commands\" />
+  </ItemGroup>
+
 </Project>

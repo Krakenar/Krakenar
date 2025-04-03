@@ -1,6 +1,4 @@
-﻿using Krakenar.Core;
-
-namespace Krakenar.Settings;
+﻿namespace Krakenar.Settings;
 
 internal record DefaultSettings
 {
@@ -12,9 +10,9 @@ internal record DefaultSettings
   {
     DefaultSettings settings = configuration.GetSection("Default").Get<DefaultSettings>() ?? new();
 
-    settings.Locale = EnvironmentHelper.GetString("DEFAULT_LOCALE", settings.Locale);
-    settings.Locale = EnvironmentHelper.GetString("DEFAULT_USERNAME", settings.UniqueName);
-    settings.Locale = EnvironmentHelper.GetString("DEFAULT_PASSWORD", settings.Password);
+    //settings.Locale = EnvironmentHelper.GetString("DEFAULT_LOCALE", settings.Locale);
+    //settings.Locale = EnvironmentHelper.GetString("DEFAULT_USERNAME", settings.UniqueName);
+    //settings.Locale = EnvironmentHelper.GetString("DEFAULT_PASSWORD", settings.Password);
 
     return settings;
   }
