@@ -49,7 +49,7 @@ internal class InitializeConfigurationCommandHandler : IRequestHandler<Initializ
 
       UniqueName uniqueName = new(configuration.UniqueNameSettings, command.UniqueName);
       Password password = _passwordManager.ValidateAndHash(configuration.PasswordSettings, command.Password);
-      User user = new(uniqueName, password, actorId, userId) // TODO(fpion): password
+      User user = new(uniqueName, password, actorId, userId)
       {
         Locale = locale
       };
