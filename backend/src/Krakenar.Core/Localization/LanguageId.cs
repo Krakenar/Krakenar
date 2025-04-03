@@ -1,4 +1,5 @@
-﻿using Logitar.EventSourcing;
+﻿using Krakenar.Core.Realms;
+using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Localization;
 
@@ -7,16 +8,28 @@ public readonly struct LanguageId
   public StreamId StreamId { get; }
   public string Value => StreamId.Value;
 
-  public LanguageId(Guid id)
+  public RealmId? RealmId { get; }
+  public Guid EntityId { get; }
+
+  public LanguageId(RealmId? realmId, Guid entityId)
   {
-    StreamId = new StreamId(id);
+    // TODO(fpion): StreamId
+
+    RealmId = realmId;
+    EntityId = entityId;
   }
   public LanguageId(StreamId streamId)
   {
     StreamId = streamId;
+
+    // TODO(fpion): RealmId
+    // TODO(fpion): EntityId
+  }
+  public LanguageId(string value) : this(new StreamId(value))
+  {
   }
 
-  public static LanguageId NewId() => new(Guid.NewGuid());
+  public static LanguageId NewId(RealmId? realmId) => new(realmId, Guid.NewGuid());
 
   public static bool operator ==(LanguageId left, LanguageId right) => left.Equals(right);
   public static bool operator !=(LanguageId left, LanguageId right) => !left.Equals(right);

@@ -26,7 +26,7 @@ internal class SaveLanguageCommandHandler : IRequestHandler<SaveLanguageCommand>
       LanguageId? conflictId = await _languageQuerier.FindIdAsync(language.Locale, cancellationToken);
       if (conflictId.HasValue && !conflictId.Value.Equals(language.Id))
       {
-        throw new NotImplementedException(); // TODO(fpion): implement
+        throw new LocaleAlreadyUsedException(language, conflictId.Value);
       }
     }
 
