@@ -2,6 +2,7 @@
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Passwords;
+using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
 using Logitar.EventSourcing;
@@ -18,19 +19,22 @@ internal class InitializeConfigurationCommandHandler : IRequestHandler<Initializ
   private readonly IConfigurationRepository _configurationRepository;
   private readonly IMediator _mediator;
   private readonly IPasswordManager _passwordManager;
+  private readonly ISecretHelper _secretHelper;
 
   public InitializeConfigurationCommandHandler(
     ICacheService cacheService,
     IConfigurationQuerier configurationQuerier,
     IConfigurationRepository configurationRepository,
     IMediator mediator,
-    IPasswordManager passwordManager)
+    IPasswordManager passwordManager,
+    ISecretHelper secretHelper)
   {
     _cacheService = cacheService;
     _configurationQuerier = configurationQuerier;
     _configurationRepository = configurationRepository;
     _mediator = mediator;
     _passwordManager = passwordManager;
+    _secretHelper = secretHelper;
   }
 
   public async Task Handle(InitializeConfigurationCommand command, CancellationToken cancellationToken)
@@ -41,8 +45,8 @@ internal class InitializeConfigurationCommandHandler : IRequestHandler<Initializ
       UserId userId = UserId.NewId(realmId: null);
       ActorId actorId = new(userId.Value);
 
-      //Secret secret = _secretHelper.Generate();
-      configuration = Configuration.Initialize(actorId/*, secret*/);
+      Secret secret = _secretHelper.Generate();
+      configuration = Configuration.Initialize(secret, actorId);
 
       Locale locale = new(command.DefaultLocale);
       Language language = new(locale, isDefault: true, actorId);
