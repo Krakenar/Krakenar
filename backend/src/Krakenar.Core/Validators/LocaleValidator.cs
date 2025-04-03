@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
-using System.Globalization;
 
 namespace Krakenar.Core.Validators;
 

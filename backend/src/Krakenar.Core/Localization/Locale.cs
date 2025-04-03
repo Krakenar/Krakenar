@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using System.Globalization;
 
 namespace Krakenar.Core.Localization;
 
