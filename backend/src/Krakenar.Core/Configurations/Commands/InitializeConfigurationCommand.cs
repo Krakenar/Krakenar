@@ -1,6 +1,7 @@
 ﻿using Krakenar.Core.Caching;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
+using Krakenar.Core.Passwords;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
 using Logitar.EventSourcing;
@@ -16,17 +17,20 @@ internal class InitializeConfigurationCommandHandler : IRequestHandler<Initializ
   private readonly IConfigurationQuerier _configurationQuerier;
   private readonly IConfigurationRepository _configurationRepository;
   private readonly IMediator _mediator;
+  private readonly IPasswordManager _passwordManager;
 
   public InitializeConfigurationCommandHandler(
     ICacheService cacheService,
     IConfigurationQuerier configurationQuerier,
     IConfigurationRepository configurationRepository,
-    IMediator mediator)
+    IMediator mediator,
+    IPasswordManager passwordManager)
   {
     _cacheService = cacheService;
     _configurationQuerier = configurationQuerier;
     _configurationRepository = configurationRepository;
     _mediator = mediator;
+    _passwordManager = passwordManager;
   }
 
   public async Task Handle(InitializeConfigurationCommand command, CancellationToken cancellationToken)
@@ -44,7 +48,8 @@ internal class InitializeConfigurationCommandHandler : IRequestHandler<Initializ
       Language language = new(locale, isDefault: true, actorId);
 
       UniqueName uniqueName = new(configuration.UniqueNameSettings, command.UniqueName);
-      User user = new(uniqueName, password: null, actorId, userId) // TODO(fpion): password
+      Password password = _passwordManager.ValidateAndHash(configuration.PasswordSettings, command.Password);
+      User user = new(uniqueName, password, actorId, userId) // TODO(fpion): password
       {
         Locale = locale
       };
