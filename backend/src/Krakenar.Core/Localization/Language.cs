@@ -6,6 +6,8 @@ namespace Krakenar.Core.Localization;
 
 public class Language : AggregateRoot
 {
+  public const string EntityType = "Language";
+
   public new LanguageId Id => new(base.Id);
   public RealmId? RealmId => Id.RealmId;
   public Guid EntityId => Id.EntityId;

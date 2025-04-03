@@ -4,15 +4,12 @@ namespace Krakenar.Core.Realms;
 
 public readonly struct RealmId
 {
-  private const string EntityType = "Realm";
-  private const char Separator = ':';
-
   public StreamId StreamId { get; }
   public string Value => StreamId.Value;
 
   public RealmId(Guid id)
   {
-    StreamId = IdHelper.Construct(realmId: null, EntityType, id);
+    StreamId = IdHelper.Construct(realmId: null, Realm.EntityType, id);
   }
   public RealmId(StreamId streamId)
   {
@@ -27,7 +24,7 @@ public readonly struct RealmId
 
   public Guid ToGuid()
   {
-    Tuple<RealmId?, Guid> components = IdHelper.Deconstruct(StreamId, EntityType);
+    Tuple<RealmId?, Guid> components = IdHelper.Deconstruct(StreamId, Realm.EntityType);
     return components.Item2;
   }
 

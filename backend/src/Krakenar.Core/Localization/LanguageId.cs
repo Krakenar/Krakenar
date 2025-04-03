@@ -5,8 +5,6 @@ namespace Krakenar.Core.Localization;
 
 public readonly struct LanguageId
 {
-  private const string EntityType = "Language";
-
   public StreamId StreamId { get; }
   public string Value => StreamId.Value;
 
@@ -15,7 +13,7 @@ public readonly struct LanguageId
 
   public LanguageId(RealmId? realmId, Guid entityId)
   {
-    StreamId = IdHelper.Construct(realmId, EntityType, entityId);
+    StreamId = IdHelper.Construct(realmId, Language.EntityType, entityId);
 
     RealmId = realmId;
     EntityId = entityId;
@@ -24,7 +22,7 @@ public readonly struct LanguageId
   {
     StreamId = streamId;
 
-    Tuple<RealmId?, Guid> components = IdHelper.Deconstruct(streamId, EntityType);
+    Tuple<RealmId?, Guid> components = IdHelper.Deconstruct(streamId, Language.EntityType);
     RealmId = components.Item1;
     EntityId = components.Item2;
   }

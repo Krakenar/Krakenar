@@ -2,6 +2,7 @@
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Users;
+using Krakenar.Core.Users.Commands;
 using Logitar.EventSourcing;
 using MediatR;
 
@@ -42,11 +43,16 @@ internal class InitializeConfigurationCommandHandler : IRequestHandler<Initializ
       Locale locale = new(command.DefaultLocale);
       Language language = new(locale, isDefault: true, actorId);
 
-      // TODO(fpion): create admin user with password and locale
+      UniqueName uniqueName = new(configuration.UniqueNameSettings, command.UniqueName);
+      User user = new(uniqueName, password: null, actorId, userId) // TODO(fpion): password
+      {
+        Locale = locale
+      };
+      user.Update(actorId);
 
       await _configurationRepository.SaveAsync(configuration, cancellationToken); // NOTE(fpion): this should cache the configuration.
       await _mediator.Send(new SaveLanguageCommand(language), cancellationToken);
-      // TODO(fpion): save user
+      await _mediator.Send(new SaveUserCommand(user), cancellationToken);
     }
     else
     {

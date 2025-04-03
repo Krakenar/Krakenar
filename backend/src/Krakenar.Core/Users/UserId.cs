@@ -5,8 +5,6 @@ namespace Krakenar.Core.Users;
 
 public readonly struct UserId
 {
-  private const string EntityType = "User";
-
   public StreamId StreamId { get; }
   public string Value => StreamId.Value;
 
@@ -15,7 +13,7 @@ public readonly struct UserId
 
   public UserId(RealmId? realmId, Guid entityId)
   {
-    StreamId = IdHelper.Construct(realmId, EntityType, entityId);
+    StreamId = IdHelper.Construct(realmId, User.EntityType, entityId);
 
     RealmId = realmId;
     EntityId = entityId;
@@ -24,7 +22,7 @@ public readonly struct UserId
   {
     StreamId = streamId;
 
-    Tuple<RealmId?, Guid> components = IdHelper.Deconstruct(streamId, EntityType);
+    Tuple<RealmId?, Guid> components = IdHelper.Deconstruct(streamId, User.EntityType);
     RealmId = components.Item1;
     EntityId = components.Item2;
   }
