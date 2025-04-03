@@ -4,12 +4,15 @@ namespace Krakenar.Core.Realms;
 
 public readonly struct RealmId
 {
+  private const string EntityType = "Realm";
+  private const char Separator = ':';
+
   public StreamId StreamId { get; }
   public string Value => StreamId.Value;
 
   public RealmId(Guid id)
   {
-    StreamId = new StreamId(id); // TODO(fpion): AggregateType
+    StreamId = IdHelper.Construct(realmId: null, EntityType, id);
   }
   public RealmId(StreamId streamId)
   {
@@ -22,7 +25,11 @@ public readonly struct RealmId
 
   public static RealmId NewId() => new(Guid.NewGuid());
 
-  public Guid ToGuid() => StreamId.ToGuid();
+  public Guid ToGuid()
+  {
+    Tuple<RealmId?, Guid> components = IdHelper.Deconstruct(StreamId, EntityType);
+    return components.Item2;
+  }
 
   public static bool operator ==(RealmId left, RealmId right) => left.Equals(right);
   public static bool operator !=(RealmId left, RealmId right) => !left.Equals(right);
