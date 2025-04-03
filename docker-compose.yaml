@@ -1,1 +1,13 @@
 name: krakenar
+services:
+  krakenar:
+    build:
+      context: ./backend
+      dockerfile: /src/Krakenar/Dockerfile
+    image: krakenar
+    container_name: Krakenar
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_Environment: Development
+    ports:
+      - 8096:8080
