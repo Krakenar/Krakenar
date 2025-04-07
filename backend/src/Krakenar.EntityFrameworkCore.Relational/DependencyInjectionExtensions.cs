@@ -1,6 +1,7 @@
 ﻿using Krakenar.Core.Actors;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Realms;
+using Krakenar.Core.Roles;
 using Krakenar.EntityFrameworkCore.Relational.Actors;
 using Krakenar.EntityFrameworkCore.Relational.Queriers;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
-      .AddScoped<IRealmQuerier, RealmQuerier>();
+      .AddScoped<IRealmQuerier, RealmQuerier>()
+      .AddScoped<IRoleQuerier, RoleQuerier>();
   }
 }

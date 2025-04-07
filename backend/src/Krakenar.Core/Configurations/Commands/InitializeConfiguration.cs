@@ -1,4 +1,5 @@
-﻿using Krakenar.Core.Caching;
+﻿using FluentValidation;
+using Krakenar.Core.Caching;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Tokens;
@@ -9,6 +10,9 @@ namespace Krakenar.Core.Configurations.Commands;
 
 public record InitializeConfiguration(string DefaultLocale, string UniqueName, string Password) : ICommand;
 
+/// <exception cref="LocaleAlreadyUsedException"></exception>
+/// <exception cref="UniqueNameAlreadyUsedException"></exception>
+/// <exception cref="ValidationException"></exception>
 public class InitializeConfigurationHandler : ICommandHandler<InitializeConfiguration>
 {
   protected virtual ICacheService CacheService { get; }
