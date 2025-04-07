@@ -10,7 +10,7 @@ public class ConfigurationIdTests
   [InlineData("ConfigurationId")]
   public void Given_StreamId_When_ctor_Then_CorrectIdConstructed(string? idValue)
   {
-    StreamId streamId = idValue == null ? StreamId.NewId() : new StreamId(idValue);
+    StreamId streamId = idValue is null ? StreamId.NewId() : new StreamId(idValue);
     ConfigurationId id = new(streamId);
     Assert.Equal(streamId, id.StreamId);
   }

@@ -11,7 +11,7 @@ public class LanguageIdTests
   [InlineData("RealmId")]
   public void Given_StreamId_When_ctor_Then_CorrectIdConstructed(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(realmIdValue);
+    RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
     StreamId streamId = IdHelper.Construct("Language", entityId, realmId);
 
@@ -26,7 +26,7 @@ public class LanguageIdTests
   [InlineData("RealmId")]
   public void Given_RealmAndEntityId_When_ctor_Then_CorrectIdConstructed(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(realmIdValue);
+    RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
 
     LanguageId id = new(entityId, realmId);
@@ -82,7 +82,7 @@ public class LanguageIdTests
   [InlineData("RealmId")]
   public void Given_RealmId_When_NewId_Then_NewRandomIdGenerated(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(realmIdValue);
+    RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
 
     LanguageId id = LanguageId.NewId(realmId);
 
@@ -95,7 +95,7 @@ public class LanguageIdTests
   [InlineData("RealmId")]
   public void Given_Id_When_GetHashCode_Then_CorrectHashCodeReturned(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(realmIdValue);
+    RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
 
     LanguageId id = new(entityId, realmId);
@@ -124,7 +124,7 @@ public class LanguageIdTests
   [InlineData("RealmId")]
   public void Given_Id_When_ToString_Then_CorrectStringReturned(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(realmIdValue);
+    RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
 
     LanguageId id = new(entityId, realmId);

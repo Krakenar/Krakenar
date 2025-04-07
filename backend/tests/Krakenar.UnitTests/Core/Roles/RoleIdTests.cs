@@ -1,10 +1,10 @@
 ﻿using Krakenar.Core.Realms;
 using Logitar.EventSourcing;
 
-namespace Krakenar.Core.Users;
+namespace Krakenar.Core.Roles;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class UserIdTests
+public class RoleIdTests
 {
   [Theory(DisplayName = "ctor: it should construct the correct ID from a stream ID.")]
   [InlineData(null)]
@@ -13,9 +13,9 @@ public class UserIdTests
   {
     RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
-    StreamId streamId = IdHelper.Construct("User", entityId, realmId);
+    StreamId streamId = IdHelper.Construct("Role", entityId, realmId);
 
-    UserId id = new(streamId);
+    RoleId id = new(streamId);
 
     Assert.Equal(realmId, id.RealmId);
     Assert.Equal(entityId, id.EntityId);
@@ -29,7 +29,7 @@ public class UserIdTests
     RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
 
-    UserId id = new(entityId, realmId);
+    RoleId id = new(entityId, realmId);
 
     Assert.Equal(realmId, id.RealmId);
     Assert.Equal(entityId, id.EntityId);
@@ -38,8 +38,8 @@ public class UserIdTests
   [Fact(DisplayName = "Equals: it should return false when the IDs are different.")]
   public void Given_DifferentIds_When_Equals_Then_FalseReturned()
   {
-    UserId id1 = new(Guid.NewGuid(), RealmId.NewId());
-    UserId id2 = new(id1.EntityId);
+    RoleId id1 = new(Guid.NewGuid(), RealmId.NewId());
+    RoleId id2 = new(id1.EntityId);
     Assert.False(id1.Equals(id2));
   }
 
@@ -48,15 +48,15 @@ public class UserIdTests
   [InlineData(123)]
   public void Given_DifferentTypes_When_Equals_Then_FalseReturned(object? value)
   {
-    UserId id = UserId.NewId(realmId: null);
+    RoleId id = RoleId.NewId(realmId: null);
     Assert.False(id.Equals(value));
   }
 
   [Fact(DisplayName = "Equals: it should return true when the IDs are the same.")]
   public void Given_SameIds_When_Equals_Then_TrueReturned()
   {
-    UserId id1 = new(Guid.NewGuid(), RealmId.NewId());
-    UserId id2 = new(id1.StreamId);
+    RoleId id1 = new(Guid.NewGuid(), RealmId.NewId());
+    RoleId id2 = new(id1.StreamId);
     Assert.True(id1.Equals(id1));
     Assert.True(id1.Equals(id2));
   }
@@ -64,16 +64,16 @@ public class UserIdTests
   [Fact(DisplayName = "EqualOperator: it should return false when the IDs are different.")]
   public void Given_DifferentIds_When_EqualOperator_Then_FalseReturned()
   {
-    UserId id1 = new(Guid.NewGuid(), RealmId.NewId());
-    UserId id2 = new(id1.EntityId);
+    RoleId id1 = new(Guid.NewGuid(), RealmId.NewId());
+    RoleId id2 = new(id1.EntityId);
     Assert.False(id1 == id2);
   }
 
   [Fact(DisplayName = "EqualOperator: it should return true when the IDs are the same.")]
   public void Given_SameIds_When_EqualOperator_Then_TrueReturned()
   {
-    UserId id1 = new(Guid.NewGuid(), RealmId.NewId());
-    UserId id2 = new(id1.StreamId);
+    RoleId id1 = new(Guid.NewGuid(), RealmId.NewId());
+    RoleId id2 = new(id1.StreamId);
     Assert.True(id1 == id2);
   }
 
@@ -84,7 +84,7 @@ public class UserIdTests
   {
     RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
 
-    UserId id = UserId.NewId(realmId);
+    RoleId id = RoleId.NewId(realmId);
 
     Assert.Equal(realmId, id.RealmId);
     Assert.NotEqual(Guid.Empty, id.EntityId);
@@ -98,7 +98,7 @@ public class UserIdTests
     RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
 
-    UserId id = new(entityId, realmId);
+    RoleId id = new(entityId, realmId);
 
     Assert.Equal(id.Value.GetHashCode(), id.GetHashCode());
   }
@@ -106,16 +106,16 @@ public class UserIdTests
   [Fact(DisplayName = "NotEqualOperator: it should return false when the IDs are the same.")]
   public void Given_SameIds_When_NotEqualOperator_Then_TrueReturned()
   {
-    UserId id1 = new(Guid.NewGuid(), RealmId.NewId());
-    UserId id2 = new(id1.StreamId);
+    RoleId id1 = new(Guid.NewGuid(), RealmId.NewId());
+    RoleId id2 = new(id1.StreamId);
     Assert.False(id1 != id2);
   }
 
   [Fact(DisplayName = "NotEqualOperator: it should return true when the IDs are different.")]
   public void Given_DifferentIds_When_NotEqualOperator_Then_TrueReturned()
   {
-    UserId id1 = new(Guid.NewGuid(), RealmId.NewId());
-    UserId id2 = new(id1.EntityId);
+    RoleId id1 = new(Guid.NewGuid(), RealmId.NewId());
+    RoleId id2 = new(id1.EntityId);
     Assert.True(id1 != id2);
   }
 
@@ -127,7 +127,7 @@ public class UserIdTests
     RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
 
-    UserId id = new(entityId, realmId);
+    RoleId id = new(entityId, realmId);
 
     Assert.Equal(id.Value, id.ToString());
   }
