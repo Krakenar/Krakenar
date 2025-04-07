@@ -6,7 +6,7 @@ public record CachingSettings
 {
   public const string SectionKey = "Caching";
 
-  public TimeSpan ActorLifetime { get; set; }
+  public TimeSpan ActorLifetime { get; set; } = TimeSpan.FromMinutes(15);
 
   public static CachingSettings Initialize(IConfiguration configuration)
   {
