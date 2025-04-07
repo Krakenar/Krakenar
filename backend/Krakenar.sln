@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.Tests", "tests\Kra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.UnitTests", "tests\Krakenar.UnitTests\Krakenar.UnitTests.csproj", "{B799E60E-E4DB-4EA5-877A-809330324893}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.Web", "src\Krakenar.Web\Krakenar.Web.csproj", "{ECBA846E-34D5-4DFF-A0E4-7C5C6E25B57F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{B799E60E-E4DB-4EA5-877A-809330324893}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B799E60E-E4DB-4EA5-877A-809330324893}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B799E60E-E4DB-4EA5-877A-809330324893}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECBA846E-34D5-4DFF-A0E4-7C5C6E25B57F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECBA846E-34D5-4DFF-A0E4-7C5C6E25B57F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECBA846E-34D5-4DFF-A0E4-7C5C6E25B57F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECBA846E-34D5-4DFF-A0E4-7C5C6E25B57F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

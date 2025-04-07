@@ -15,12 +15,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.3" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.Relational" Version="7.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Krakenar.Core\Krakenar.Core.csproj" />
+    <ProjectReference Include="..\Krakenar.Infrastructure\Krakenar.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Reflection" />
   </ItemGroup>
 
 </Project>
