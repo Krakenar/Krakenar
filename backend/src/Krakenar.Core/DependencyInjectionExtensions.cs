@@ -1,9 +1,11 @@
 ﻿using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
+using Krakenar.Core.Configurations.Queries;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Users;
 using Logitar.EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
+using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 
 namespace Krakenar.Core;
 
@@ -34,7 +36,8 @@ public static class DependencyInjectionExtensions
 
   public static IServiceCollection AddKrakenarQueries(this IServiceCollection services)
   {
-    return services;
+    return services
+      .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>();
   }
 
   public static IServiceCollection AddKrakenarRepositories(this IServiceCollection services)
