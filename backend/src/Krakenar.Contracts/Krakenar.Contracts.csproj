@@ -15,4 +15,13 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="9.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.Text" />
+    <Using Include="System.Text.Json.Serialization" />
+  </ItemGroup>
+
 </Project>
