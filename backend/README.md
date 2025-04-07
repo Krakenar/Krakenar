@@ -4,10 +4,6 @@ Krakenar is a tool suite aiming at handling non-business software requirements, 
 
 ## Environment Variables
 
-All following environment variables are optional.
+All the following environment variables are optional.
 
-| Key                | Type   | Description                                         |
-| ------------------ | ------ | --------------------------------------------------- |
-| `DEFAULT_LOCALE`   | String | The ISO 639-1 Alpha-2 code of the default language. |
-| `DEFAULT_USERNAME` | String | The username of the default admin user.             |
-| `DEFAULT_PASSWORD` | String | The password of the default admin user.             |
+- `CACHING_ACTOR_LIFETIME`: the lifetime of cached actors. A string representing a [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-9.0), ex.: `3.00:00:00` (3 days) or `00:15:00` (15 minutes).
