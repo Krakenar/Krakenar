@@ -26,7 +26,8 @@ public static class DependencyInjectionExtensions
       .AddKrakenarCoreServices()
       .AddKrakenarQueries()
       .AddKrakenarRepositories()
-      .AddLogitarEventSourcing();
+      .AddLogitarEventSourcing()
+      .AddSingleton<IAddressHelper, AddressHelper>();
   }
 
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)

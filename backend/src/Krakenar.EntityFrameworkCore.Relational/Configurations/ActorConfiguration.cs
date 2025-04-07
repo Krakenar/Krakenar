@@ -17,7 +17,7 @@ public class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
     builder.HasKey(x => x.ActorId);
 
     builder.HasIndex(x => x.Key).IsUnique();
-    builder.HasIndex(x => new { x.Type, x.Id }).IsUnique();
+    builder.HasIndex(x => new { x.Type, x.Id }).IsUnique(); // TODO(fpion): won't work accross realms!
     builder.HasIndex(x => x.IsDeleted);
     builder.HasIndex(x => x.DisplayName);
     builder.HasIndex(x => x.EmailAddress);
