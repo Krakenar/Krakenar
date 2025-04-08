@@ -11,6 +11,7 @@ public class UserServiceTests
   private readonly Faker _faker = new();
   private readonly UniqueNameSettings _uniqueNameSettings = new();
 
+  private readonly Mock<IApplicationContext> _applicationContext = new();
   private readonly Mock<IUserQuerier> _userQuerier = new();
   private readonly Mock<IUserRepository> _userRepository = new();
 
@@ -18,7 +19,7 @@ public class UserServiceTests
 
   public UserServiceTests()
   {
-    _service = new(_userQuerier.Object, _userRepository.Object);
+    _service = new(_applicationContext.Object, _userQuerier.Object, _userRepository.Object);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the user when the unique name has not changed.")]

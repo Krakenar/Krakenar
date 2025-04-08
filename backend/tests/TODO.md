@@ -3,3 +3,4 @@
 - CreateOrReplaceRealm
 - CreateOrReplaceRole
 - RefreshTokenTests
+- UserService

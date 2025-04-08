@@ -39,4 +39,7 @@ public class HttpApplicationContext : IApplicationContext
   public RealmId? RealmId => Realm is null ? null : new RealmId(Realm.Id);
 
   public IUniqueNameSettings UniqueNameSettings => Realm?.UniqueNameSettings ?? Configuration.UniqueNameSettings;
+  public IPasswordSettings PasswordSettings => Realm?.PasswordSettings ?? Configuration.PasswordSettings;
+  public bool RequireUniqueEmail => Realm?.RequireUniqueEmail ?? false;
+  public bool RequireConfirmedAccount => Realm?.RequireConfirmedAccount ?? false;
 }

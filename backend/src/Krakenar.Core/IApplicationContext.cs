@@ -12,4 +12,7 @@ public interface IApplicationContext
   RealmId? RealmId { get; }
 
   IUniqueNameSettings UniqueNameSettings { get; }
+  IPasswordSettings PasswordSettings { get; }
+  bool RequireUniqueEmail { get; }
+  bool RequireConfirmedAccount { get; }
 }
