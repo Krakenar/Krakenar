@@ -9,6 +9,8 @@ using Krakenar.Core.Realms.Queries;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Commands;
 using Krakenar.Core.Roles.Queries;
+using Krakenar.Core.Sessions;
+using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
 using Krakenar.Core.Users;
 using Logitar.EventSourcing;
@@ -39,7 +41,8 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>, CreateOrReplaceRealmHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
-      .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>();
+      .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
+      .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>();
   }
 
   public static IServiceCollection AddKrakenarCoreServices(this IServiceCollection services)
@@ -68,6 +71,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ILanguageRepository, LanguageRepository>()
       .AddTransient<IRealmRepository, RealmRepository>()
       .AddTransient<IRoleRepository, RoleRepository>()
+      .AddTransient<ISessionRepository, SessionRepository>()
       .AddTransient<IUserRepository, UserRepository>();
   }
 }

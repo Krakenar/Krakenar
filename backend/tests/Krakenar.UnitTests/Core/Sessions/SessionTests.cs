@@ -53,7 +53,7 @@ public class SessionTests
     Assert.Equal(actorId, session.CreatedBy);
     Assert.Equal(actorId, session.UpdatedBy);
 
-    Assert.Equal(realmId, session.RealmId);
+    Assert.Equal(realmId ?? _user.RealmId, session.RealmId);
     if (sessionId.HasValue)
     {
       Assert.Equal(sessionId, session.Id);

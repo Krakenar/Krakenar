@@ -2,3 +2,4 @@
 
 - CreateOrReplaceRealm
 - CreateOrReplaceRole
+- RefreshTokenTests
