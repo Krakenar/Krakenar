@@ -3,7 +3,6 @@ using Krakenar.Core;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Events;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
-using System.Text.Json;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 

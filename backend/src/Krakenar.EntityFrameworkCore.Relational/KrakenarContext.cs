@@ -10,6 +10,7 @@ public class KrakenarContext : DbContext // TODO(fpion): dependency injection
   }
 
   public virtual DbSet<Actor> Actors => Set<Actor>();
+  public virtual DbSet<Configuration> Configuration => Set<Configuration>();
   public virtual DbSet<Realm> Realms => Set<Realm>();
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,4 +1,6 @@
-﻿namespace Krakenar.Core;
+﻿using Logitar.EventSourcing;
+
+namespace Krakenar.Core;
 
 public interface ICommand;
 public interface ICommand<TResult>;
@@ -10,6 +12,11 @@ public interface ICommandHandler<TCommand> where TCommand : ICommand
 public interface ICommandHandler<TCommand, TResult> where TCommand : ICommand<TResult>
 {
   Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
+}
+
+public interface IEventHandler<TEvent> where TEvent : IEvent
+{
+  Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
 }
 
 public interface IQuery<TResult>;

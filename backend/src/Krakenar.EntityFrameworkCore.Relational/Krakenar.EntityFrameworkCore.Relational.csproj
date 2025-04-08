@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Using Include="System.Reflection" />
+    <Using Include="System.Text.Json" />
   </ItemGroup>
 
 </Project>
