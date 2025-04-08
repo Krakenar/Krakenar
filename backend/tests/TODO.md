@@ -2,5 +2,6 @@
 
 - CreateOrReplaceRealm
 - CreateOrReplaceRole
-- RefreshTokenTests
+- ReadUser
+- RefreshToken
 - UserService

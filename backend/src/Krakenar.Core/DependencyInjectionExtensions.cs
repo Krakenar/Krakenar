@@ -13,6 +13,7 @@ using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
 using Krakenar.Core.Users;
+using Krakenar.Core.Users.Queries;
 using Logitar.EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
@@ -20,6 +21,7 @@ using LanguageDto = Krakenar.Contracts.Localization.Language;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 using RoleDto = Krakenar.Contracts.Roles.Role;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
+using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core;
 
@@ -61,7 +63,8 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadLanguage, LanguageDto?>, ReadLanguageHandler>()
       .AddTransient<IQueryHandler<ReadRealm, RealmDto?>, ReadRealmHandler>()
       .AddTransient<IQueryHandler<ReadRole, RoleDto?>, ReadRoleHandler>()
-      .AddTransient<IQueryHandler<ReadSession, SessionDto?>, ReadSessionHandler>();
+      .AddTransient<IQueryHandler<ReadSession, SessionDto?>, ReadSessionHandler>()
+      .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>();
   }
 
   public static IServiceCollection AddKrakenarRepositories(this IServiceCollection services)
