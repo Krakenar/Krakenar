@@ -44,7 +44,8 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>, CreateOrReplaceRealmHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
       .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
-      .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>();
+      .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
+      .AddTransient<ICommandHandler<SignOutSession, SessionDto?>, SignOutSessionHandler>();
   }
 
   public static IServiceCollection AddKrakenarCoreServices(this IServiceCollection services)

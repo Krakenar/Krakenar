@@ -14,13 +14,16 @@ public class SessionController : ControllerBase
 {
   private readonly IQueryHandler<ReadSession, Session?> _readSession;
   private readonly ICommandHandler<SignInSession, Session> _signInSession;
+  private readonly ICommandHandler<SignOutSession, Session?> _signOutSession;
 
   public SessionController(
     IQueryHandler<ReadSession, Session?> readSession,
-    ICommandHandler<SignInSession, Session> signInSession)
+    ICommandHandler<SignInSession, Session> signInSession,
+    ICommandHandler<SignOutSession, Session?> signOutSession)
   {
     _readSession = readSession;
     _signInSession = signInSession;
+    _signOutSession = signOutSession;
   }
 
   [HttpGet("{id}")]
@@ -37,5 +40,13 @@ public class SessionController : ControllerBase
     SignInSession command = new(payload);
     Session session = await _signInSession.HandleAsync(command, cancellationToken);
     return Ok(session);
+  }
+
+  [HttpPatch("{id}/sign/out")]
+  public async Task<ActionResult<Session>> SignOutAsync(Guid id, CancellationToken cancellationToken)
+  {
+    SignOutSession command = new(id);
+    Session? session = await _signOutSession.HandleAsync(command, cancellationToken);
+    return session is null ? NotFound() : Ok(session);
   }
 }
