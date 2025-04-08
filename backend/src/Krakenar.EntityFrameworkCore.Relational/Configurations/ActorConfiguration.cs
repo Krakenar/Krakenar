@@ -17,7 +17,7 @@ public class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
     builder.HasKey(x => x.ActorId);
 
     builder.HasIndex(x => x.Key).IsUnique();
-    builder.HasIndex(x => new { x.Type, x.Id }).IsUnique(); // TODO(fpion): won't work accross realms!
+    builder.HasIndex(x => new { x.RealmId, x.Type, x.Id }).IsUnique();
     builder.HasIndex(x => x.IsDeleted);
     builder.HasIndex(x => x.DisplayName);
     builder.HasIndex(x => x.EmailAddress);
@@ -27,5 +27,9 @@ public class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayName.MaximumLength);
     builder.Property(x => x.EmailAddress).HasMaxLength(Email.MaximumLength);
     builder.Property(x => x.PictureUrl).HasMaxLength(Url.MaximumLength);
+
+    builder.HasOne(x => x.Realm).WithMany(x => x.Actors)
+      .HasPrincipalKey(x => x.RealmId).HasForeignKey(x => x.RealmId)
+      .OnDelete(DeleteBehavior.Restrict);
   }
 }

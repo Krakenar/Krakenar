@@ -631,7 +631,7 @@ public class UserTests
     Assert.Contains(_user.Changes, change => change is UserPhoneChanged changed && changed.Phone is null && changed.ActorId == actorId);
   }
 
-  [Fact(DisplayName = "SetUniqueName: it should handle the updated correctly.")]
+  [Fact(DisplayName = "SetUniqueName: it should handle the updates correctly.")]
   public void Given_UniqueNameUpdates_When_setSetUniqueName_Then_UpdatesHandledCorrectly()
   {
     UniqueName uniqueName = new(new UniqueNameSettings(), "member");

@@ -254,7 +254,7 @@ public class User : AggregateRoot
 
     // TODO(fpion): RequireConfirmedAccount
 
-    actorId ??= new(Id.Value); // TODO(fpion): won't work when user in realm!
+    actorId ??= new(Id.Value);
     Raise(new UserAuthenticated(), actorId.Value);
   }
   protected virtual void Handle(UserAuthenticated @event)
@@ -279,7 +279,7 @@ public class User : AggregateRoot
 
     // TODO(fpion): RequireConfirmedAccount
 
-    actorId ??= new(Id.Value); // TODO(fpion): won't work when user in realm!
+    actorId ??= new(Id.Value);
     Raise(new UserPasswordChanged(newPassword), actorId.Value);
   }
   protected virtual void Handle(UserPasswordChanged @event)
@@ -382,7 +382,7 @@ public class User : AggregateRoot
 
     // TODO(fpion): RequireConfirmedAccount
 
-    actorId ??= new(Id.Value); // TODO(fpion): won't work when user in realm!
+    actorId ??= new(Id.Value);
     Raise(new UserPasswordReset(password), actorId.Value);
   }
   protected virtual void Handle(UserPasswordReset @event)
@@ -500,7 +500,7 @@ public class User : AggregateRoot
 
     // TODO(fpion): RequireConfirmedAccount
 
-    actorId ??= new(Id.Value); // TODO(fpion): won't work when user in realm!
+    actorId ??= new(Id.Value);
     SessionId id = sessionId.HasValue ? new SessionId(sessionId.Value, RealmId) : SessionId.NewId(RealmId);
     Session session = new(this, secret, actorId, id);
     Raise(new UserSignedIn(session.CreatedOn), actorId.Value);

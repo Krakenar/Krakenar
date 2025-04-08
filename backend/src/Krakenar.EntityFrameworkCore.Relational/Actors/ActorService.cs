@@ -29,7 +29,7 @@ public class ActorService : IActorService
       Actor? actor = CacheService.GetActor(id);
       if (actor is null)
       {
-        missingKeys.Add(id.ToString());
+        missingKeys.Add(id.Value);
       }
       else
       {
