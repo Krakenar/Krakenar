@@ -5,7 +5,7 @@ namespace Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 
 public static class Configuration
 {
-  public static readonly TableId Table = new(Schemas.Identity, nameof(KrakenarContext.Configuration), alias: null);
+  public static readonly TableId Table = new(Schemas.Krakenar, nameof(KrakenarContext.Configuration), alias: null);
 
   public static readonly ColumnId ConfigurationId = new(nameof(ConfigurationEntity.ConfigurationId), Table);
   public static readonly ColumnId CreatedBy = new(nameof(ConfigurationEntity.CreatedBy), Table);

@@ -7,7 +7,7 @@ namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 
 public class RealmEvents : IEventHandler<RealmCreated>, IEventHandler<RealmDeleted>, IEventHandler<RealmUniqueSlugChanged>, IEventHandler<RealmUpdated>
 {
-  protected KrakenarContext Context { get; }
+  protected virtual KrakenarContext Context { get; }
 
   public RealmEvents(KrakenarContext context)
   {

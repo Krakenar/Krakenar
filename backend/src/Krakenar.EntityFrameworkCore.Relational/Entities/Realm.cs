@@ -37,6 +37,7 @@ public class Realm : Aggregate
   public string? CustomAttributes { get; private set; }
 
   public List<Actor> Actors { get; private set; } = [];
+  public List<Role> Roles { get; private set; } = [];
 
   public Realm(RealmCreated @event) : base(@event)
   {

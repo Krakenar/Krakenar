@@ -3,6 +3,7 @@ using Krakenar.Contracts.Actors;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Logging;
 using Krakenar.Contracts.Realms;
+using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Settings;
 using Logitar;
 using Logitar.EventSourcing;
@@ -10,6 +11,7 @@ using ActorEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Actor;
 using AggregateEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Aggregate;
 using ConfigurationAggregate = Krakenar.Core.Configurations.Configuration;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
+using RoleEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Role;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
@@ -58,6 +60,7 @@ public class Mapper
   {
     Realm destination = new()
     {
+      Id = source.Id,
       UniqueSlug = source.UniqueSlug,
       DisplayName = source.DisplayName,
       Description = source.Description,
@@ -83,6 +86,36 @@ public class Mapper
     source.PasswordsRequireDigit,
     source.PasswordHashingStrategy);
   protected virtual UniqueNameSettings ToUniqueNameSettings(RealmEntity source) => new(source.AllowedUniqueNameCharacters);
+
+  public virtual Role ToRole(RoleEntity source)
+  {
+    Realm? realm = null;
+    if (source.RealmId.HasValue)
+    {
+      if (source.Realm is null)
+      {
+        throw new ArgumentException($"The {nameof(source.Realm)} is required.", nameof(source));
+      }
+      realm = ToRealm(source.Realm);
+    }
+    return ToRole(source, realm);
+  }
+  public virtual Role ToRole(RoleEntity source, Realm? realm)
+  {
+    Role destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description
+    };
+    destination.CustomAttributes.AddRange(source.GetCustomAttributes().Select(customAttribute => new CustomAttribute(customAttribute)));
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
 
   protected virtual void MapAggregate(AggregateRoot source, Aggregate destination)
   {
