@@ -82,6 +82,60 @@ public class SessionTests
     Assert.Empty(_session.Changes);
   }
 
+  [Theory(DisplayName = "Renew: it should renew the session.")]
+  [InlineData(null)]
+  [InlineData("98c285de-d07b-4cf9-84e4-8375d9964b78")]
+  public void Given_CorrectSecret_When_Renew_Then_Renewed(string? actorIdValue)
+  {
+    ActorId? actorId = actorIdValue is null ? null : new(Guid.Parse(actorIdValue));
+
+    string oldSecretValue = Guid.NewGuid().ToString();
+    Base64Password oldSecret = new(oldSecretValue);
+    Session session = new(_user, oldSecret);
+
+    Base64Password newSecret = new(Guid.NewGuid().ToString());
+    session.Renew(oldSecretValue, newSecret, actorId);
+
+    Assert.True(session.IsPersistent);
+    Assert.Contains(session.Changes, change => change is SessionRenewed renewed
+      && renewed.Secret.Equals(newSecret)
+      && renewed.ActorId == (actorId ?? new ActorId(_user.Id.Value)));
+  }
+
+  [Fact(DisplayName = "Renew: it should throw IncorrectSessionSecretException when the secret is not correct.")]
+  public void Given_IncorrectSecret_When_Renew_Then_IncorrectSessionSecretException()
+  {
+    Base64Password oldSecret = new(Guid.NewGuid().ToString());
+    Session session = new(_user, oldSecret);
+
+    string newSecretValue = Guid.NewGuid().ToString();
+    Base64Password newSecret = new(newSecretValue);
+    var exception = Assert.Throws<IncorrectSessionSecretException>(() => session.Renew(newSecretValue, newSecret));
+    Assert.Equal(session.RealmId?.ToGuid(), exception.RealmId);
+    Assert.Equal(session.EntityId, exception.SessionId);
+    Assert.Equal(newSecretValue, exception.AttemptedSecret);
+  }
+
+  [Fact(DisplayName = "Renew: it should throw SessionIsNotActiveException when the session is not active.")]
+  public void Given_Inactive_When_Renew_Then_SessionIsNotActiveException()
+  {
+    _session.SignOut();
+
+    Base64Password secret = new(Guid.NewGuid().ToString());
+    var exception = Assert.Throws<SessionIsNotActiveException>(() => _session.Renew("secret", secret));
+    Assert.Equal(_session.RealmId?.ToGuid(), exception.RealmId);
+    Assert.Equal(_session.EntityId, exception.SessionId);
+  }
+
+  [Fact(DisplayName = "Renew: it should throw SessionIsNotPersistentException when the session is not persistent.")]
+  public void Given_Ephemereal_When_Renew_Then_SessionIsNotPersistentException()
+  {
+    Base64Password secret = new(Guid.NewGuid().ToString());
+    var exception = Assert.Throws<SessionIsNotPersistentException>(() => _session.Renew("secret", secret));
+    Assert.Equal(_session.RealmId?.ToGuid(), exception.RealmId);
+    Assert.Equal(_session.EntityId, exception.SessionId);
+  }
+
   [Theory(DisplayName = "SetCustomAttribute: it should remove the custom attribute when the value is null, empty or white-space.")]
   [InlineData(null)]
   [InlineData("")]

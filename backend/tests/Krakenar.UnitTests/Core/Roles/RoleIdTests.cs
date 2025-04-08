@@ -21,6 +21,21 @@ public class RoleIdTests
     Assert.Equal(entityId, id.EntityId);
   }
 
+  [Theory(DisplayName = "ctor: it should construct the correct ID from a string.")]
+  [InlineData(null)]
+  [InlineData("RealmId")]
+  public void Given_String_When_ctor_Then_CorrectIdConstructed(string? realmIdValue)
+  {
+    RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
+    Guid entityId = Guid.NewGuid();
+    string value = IdHelper.Construct("Role", entityId, realmId).Value;
+
+    RoleId id = new(value);
+
+    Assert.Equal(realmId, id.RealmId);
+    Assert.Equal(entityId, id.EntityId);
+  }
+
   [Theory(DisplayName = "ctor: it should construct the correct ID from a realm ID and an entity ID.")]
   [InlineData(null)]
   [InlineData("RealmId")]
