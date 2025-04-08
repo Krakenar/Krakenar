@@ -45,7 +45,7 @@ public class InitializeConfigurationHandlerTests
     InitializeConfiguration command = new("en", "admin", "P@s$W0rD");
     await _handler.HandleAsync(command, _cancellationToken);
 
-    _cacheService.VerifySet(x => x.Configuration = dto, Times.Once());
+    _cacheService.VerifySet(x => x.Configuration = dto, Times.Once);
   }
 
   [Fact(DisplayName = "It should initialize a new configuration.")]
@@ -67,18 +67,18 @@ public class InitializeConfigurationHandlerTests
         && c.UniqueNameSettings.Equals(new UniqueNameSettings())
         && c.PasswordSettings.Equals(new PasswordSettings())
         && c.LoggingSettings.Equals(new LoggingSettings())),
-      _cancellationToken), Times.Once());
+      _cancellationToken), Times.Once);
 
     _languageService.Verify(x => x.SaveAsync(
       It.Is<Language>(l => l.CreatedBy.HasValue && l.UpdatedBy.HasValue && l.CreatedBy.Equals(l.UpdatedBy)
         && !l.RealmId.HasValue && !l.EntityId.Equals(Guid.Empty)
         && l.IsDefault && l.Locale.Code == command.DefaultLocale),
-      _cancellationToken), Times.Once());
+      _cancellationToken), Times.Once);
 
     _userService.Verify(x => x.SaveAsync(
       It.Is<User>(u => u.CreatedBy.HasValue && u.UpdatedBy.HasValue && u.CreatedBy.Equals(u.UpdatedBy) && u.CreatedBy.Value.Value.Equals(u.Id.Value)
         && !u.RealmId.HasValue && !u.EntityId.Equals(Guid.Empty)
         && u.UniqueName.Value.Equals(command.UniqueName) && u.HasPassword),
-      _cancellationToken), Times.Once());
+      _cancellationToken), Times.Once);
   }
 }

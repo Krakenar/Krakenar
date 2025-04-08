@@ -1,10 +1,16 @@
-﻿using Krakenar.Core.Realms;
+﻿using Krakenar.Core;
+using Krakenar.Core.Realms;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Queriers;
 
 public class RealmQuerier : IRealmQuerier // TODO(fpion): implement
 {
+  public Task<RealmId?> FindIdAsync(Slug uniqueSlug, CancellationToken cancellationToken)
+  {
+    throw new NotImplementedException();
+  }
+
   public Task<RealmDto> ReadAsync(Realm realm, CancellationToken cancellationToken)
   {
     throw new NotImplementedException();
