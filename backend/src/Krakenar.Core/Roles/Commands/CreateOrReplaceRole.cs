@@ -77,7 +77,7 @@ public class CreateOrReplaceRoleHandler : ICommandHandler<CreateOrReplaceRole, C
       role.Description = description;
     }
 
-    // TODO(fpion): CustomAttributes
+    role.SetCustomAttributes(payload.CustomAttributes, reference);
 
     role.Update(actorId);
     await RoleService.SaveAsync(role, cancellationToken);

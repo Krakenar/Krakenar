@@ -5,7 +5,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Realms;
 
-public class Realm : AggregateRoot
+public class Realm : AggregateRoot, ICustomizable
 {
   private RealmUpdated _updated = new();
   private bool HasUpdates => _updated.DisplayName is not null || _updated.Description is not null

@@ -6,7 +6,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Sessions;
 
-public class Session : AggregateRoot
+public class Session : AggregateRoot, ICustomizable
 {
   private SessionUpdated _updated = new();
   private bool HasUpdates => _updated.CustomAttributes.Count > 0;

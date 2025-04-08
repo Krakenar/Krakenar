@@ -47,7 +47,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     }
 
     Slug uniqueSlug = new(payload.UniqueSlug);
-    Secret secret = null!; // TODO(fpion): implement
+    Secret secret = null!; // TODO(fpion): Secret
     ActorId? actorId = ApplicationContext.ActorId;
 
     bool created = false;
@@ -110,7 +110,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
       reference.RequireConfirmedAccount = payload.RequireConfirmedAccount;
     }
 
-    // TODO(fpion): CustomAttributes
+    realm.SetCustomAttributes(payload.CustomAttributes, reference);
 
     realm.Update(actorId);
     await RealmService.SaveAsync(realm, cancellationToken);

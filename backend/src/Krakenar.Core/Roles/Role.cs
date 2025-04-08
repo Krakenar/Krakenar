@@ -4,7 +4,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Roles;
 
-public class Role : AggregateRoot
+public class Role : AggregateRoot, ICustomizable
 {
   private RoleUpdated _updated = new();
   private bool HasUpdates => _updated.DisplayName is not null || _updated.Description is not null || _updated.CustomAttributes.Count > 0;

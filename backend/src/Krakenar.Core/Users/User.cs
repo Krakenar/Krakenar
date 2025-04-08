@@ -10,7 +10,7 @@ using TimeZone = Krakenar.Core.Localization.TimeZone;
 
 namespace Krakenar.Core.Users;
 
-public class User : AggregateRoot
+public class User : AggregateRoot, ICustomizable
 {
   private UserUpdated _updated = new();
   private bool HasUpdates => _updated.FirstName is not null || _updated.MiddleName is not null || _updated.LastName is not null || _updated.FullName is not null || _updated.Nickname is not null
