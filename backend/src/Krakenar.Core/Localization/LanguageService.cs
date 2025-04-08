@@ -20,7 +20,7 @@ public class LanguageService : ILanguageService
 
   public virtual async Task SaveAsync(Language language, CancellationToken cancellationToken)
   {
-    bool hasLocaleChanged = language.Changes.Any(change => change is LanguageCreated);
+    bool hasLocaleChanged = language.Changes.Any(change => change is LanguageCreated || change is LanguageLocaleChanged);
     if (hasLocaleChanged)
     {
       LanguageId? conflictId = await LanguageQuerier.FindIdAsync(language.Locale, cancellationToken);

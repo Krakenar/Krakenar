@@ -15,12 +15,12 @@ public class ConfigurationQuerier : IConfigurationQuerier
     ActorService = actorService;
   }
 
-  public Task<ConfigurationDto> ReadAsync(CancellationToken cancellationToken)
+  public virtual Task<ConfigurationDto> ReadAsync(CancellationToken cancellationToken)
   {
     throw new NotImplementedException(); // TODO(fpion): implement
   }
 
-  public async Task<ConfigurationDto> ReadAsync(Configuration configuration, CancellationToken cancellationToken)
+  public virtual async Task<ConfigurationDto> ReadAsync(Configuration configuration, CancellationToken cancellationToken)
   {
     HashSet<ActorId> actorIds = new(capacity: 2);
     if (configuration.CreatedBy.HasValue)

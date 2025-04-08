@@ -2,7 +2,6 @@
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Users.Validators;
 using Logitar;
-using System.Text;
 
 namespace Krakenar.Core.Users;
 
@@ -55,11 +54,11 @@ public record Address : Contact, IAddress
       }
     }
     formatted.Append(Locality);
-    if (Region != null)
+    if (Region is not null)
     {
       formatted.Append(' ').Append(Region);
     }
-    if (PostalCode != null)
+    if (PostalCode is not null)
     {
       formatted.Append(' ').Append(PostalCode);
     }

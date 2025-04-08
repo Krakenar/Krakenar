@@ -22,7 +22,7 @@ public class AddressHelper : IAddressHelper
 
   public AddressHelper(IEnumerable<KeyValuePair<string, CountrySettings>>? countries = null)
   {
-    if (countries != null)
+    if (countries is not null)
     {
       foreach (KeyValuePair<string, CountrySettings> country in countries)
       {

@@ -69,5 +69,5 @@ public class SlugTests
   //  Assert.Equal(2, exception.Errors.Count());
   //  Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Value");
   //  Assert.Contains(exception.Errors, e => e.ErrorCode == "SlugValidator" && e.PropertyName == "Value");
-  //} // TODO(fpion): DisplayName
+  //} // TODO(fpion): TryCreate
 }

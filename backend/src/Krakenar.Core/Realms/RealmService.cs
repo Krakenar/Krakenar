@@ -18,7 +18,7 @@ public class RealmService : IRealmService
     RealmRepository = realmRepository;
   }
 
-  public async Task SaveAsync(Realm realm, CancellationToken cancellationToken)
+  public virtual async Task SaveAsync(Realm realm, CancellationToken cancellationToken)
   {
     bool hasUniqueSlugChanged = realm.Changes.Any(change => change is RealmCreated || change is RealmUniqueSlugChanged);
     if (hasUniqueSlugChanged)

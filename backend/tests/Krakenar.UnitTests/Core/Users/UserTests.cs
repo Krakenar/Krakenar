@@ -7,7 +7,6 @@ using Krakenar.Core.Sessions;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Users.Events;
 using Logitar.EventSourcing;
-using System.Reflection;
 using TimeZone = Krakenar.Core.Localization.TimeZone;
 
 namespace Krakenar.Core.Users;
@@ -132,7 +131,7 @@ public class UserTests
   [InlineData("SYSTEM")]
   public void Given_CorrectPassword_When_ChangePassword_Then_PasswordChanged(string? actorIdValue)
   {
-    ActorId? actorId = actorIdValue == null ? null : new ActorId(actorIdValue);
+    ActorId? actorId = actorIdValue is null ? null : new ActorId(actorIdValue);
 
     string passwordString = _faker.Internet.Password();
     Base64Password password = new(passwordString);
@@ -184,7 +183,7 @@ public class UserTests
   [InlineData("SYSTEM", false)]
   public void Given_Parameters_When_ctor_Then_CorrectUserConstructed(string? actorIdValue, bool generateId)
   {
-    ActorId? actorId = actorIdValue == null ? null : new(actorIdValue);
+    ActorId? actorId = actorIdValue is null ? null : new(actorIdValue);
     UserId? id = generateId ? UserId.NewId(realmId: null) : null;
 
     Base64Password password = new("Test123!");
@@ -430,7 +429,7 @@ public class UserTests
     _user.RemoveCustomAttribute(key);
     _user.Update();
     Assert.False(_user.CustomAttributes.ContainsKey(key));
-    Assert.Contains(_user.Changes, change => change is UserUpdated updated && updated.CustomAttributes[key] == null);
+    Assert.Contains(_user.Changes, change => change is UserUpdated updated && updated.CustomAttributes[key] is null);
 
     _user.ClearChanges();
     _user.RemoveCustomAttribute(key);
@@ -520,7 +519,7 @@ public class UserTests
     ActorId actorId = ActorId.NewId();
     _user.SetAddress(address, actorId);
     Assert.Same(_user.Address, address);
-    Assert.Contains(_user.Changes, change => change is UserAddressChanged changed && changed.Address != null && changed.Address.Equals(address) && changed.ActorId == actorId);
+    Assert.Contains(_user.Changes, change => change is UserAddressChanged changed && changed.Address is not null && changed.Address.Equals(address) && changed.ActorId == actorId);
 
     _user.ClearChanges();
     _user.SetAddress(address);
@@ -529,7 +528,7 @@ public class UserTests
 
     _user.SetAddress(address: null, actorId);
     Assert.Null(_user.Address);
-    Assert.Contains(_user.Changes, change => change is UserAddressChanged changed && changed.Address == null && changed.ActorId == actorId);
+    Assert.Contains(_user.Changes, change => change is UserAddressChanged changed && changed.Address is null && changed.ActorId == actorId);
   }
 
   [Theory(DisplayName = "SetCustomAttribute: it should remove the custom attribute when the value is null, empty or white-space.")]
@@ -545,7 +544,7 @@ public class UserTests
     _user.SetCustomAttribute(key, value!);
     _user.Update();
     Assert.False(_user.CustomAttributes.ContainsKey(key));
-    Assert.Contains(_user.Changes, change => change is UserUpdated updated && updated.CustomAttributes[key] == null);
+    Assert.Contains(_user.Changes, change => change is UserUpdated updated && updated.CustomAttributes[key] is null);
   }
 
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute.")]
@@ -590,7 +589,7 @@ public class UserTests
     ActorId actorId = ActorId.NewId();
     _user.SetEmail(email, actorId);
     Assert.Same(_user.Email, email);
-    Assert.Contains(_user.Changes, change => change is UserEmailChanged changed && changed.Email != null && changed.Email.Equals(email) && changed.ActorId == actorId);
+    Assert.Contains(_user.Changes, change => change is UserEmailChanged changed && changed.Email is not null && changed.Email.Equals(email) && changed.ActorId == actorId);
 
     _user.ClearChanges();
     _user.SetEmail(email);
@@ -599,7 +598,7 @@ public class UserTests
 
     _user.SetEmail(email: null, actorId);
     Assert.Null(_user.Email);
-    Assert.Contains(_user.Changes, change => change is UserEmailChanged changed && changed.Email == null && changed.ActorId == actorId);
+    Assert.Contains(_user.Changes, change => change is UserEmailChanged changed && changed.Email is null && changed.ActorId == actorId);
   }
 
   [Fact(DisplayName = "SetPassword: it should update the user password.")]
@@ -620,7 +619,7 @@ public class UserTests
     ActorId actorId = ActorId.NewId();
     _user.SetPhone(phone, actorId);
     Assert.Same(_user.Phone, phone);
-    Assert.Contains(_user.Changes, change => change is UserPhoneChanged changed && changed.Phone != null && changed.Phone.Equals(phone) && changed.ActorId == actorId);
+    Assert.Contains(_user.Changes, change => change is UserPhoneChanged changed && changed.Phone is not null && changed.Phone.Equals(phone) && changed.ActorId == actorId);
 
     _user.ClearChanges();
     _user.SetPhone(phone);
@@ -629,7 +628,7 @@ public class UserTests
 
     _user.SetPhone(phone: null, actorId);
     Assert.Null(_user.Phone);
-    Assert.Contains(_user.Changes, change => change is UserPhoneChanged changed && changed.Phone == null && changed.ActorId == actorId);
+    Assert.Contains(_user.Changes, change => change is UserPhoneChanged changed && changed.Phone is null && changed.ActorId == actorId);
   }
 
   [Fact(DisplayName = "SetUniqueName: it should handle the updated correctly.")]
@@ -650,7 +649,7 @@ public class UserTests
   [InlineData("SYSTEM", true)]
   public void Given_CorrectPassword_When_SignIn_Then_SignedIn(string? actorIdValue, bool isPersistent)
   {
-    ActorId? actorId = actorIdValue == null ? null : new ActorId(actorIdValue);
+    ActorId? actorId = actorIdValue is null ? null : new ActorId(actorIdValue);
     RealmId realmId = RealmId.NewId();
 
     User user = new(_user.UniqueName, userId: UserId.NewId(realmId));
@@ -679,7 +678,7 @@ public class UserTests
     Assert.Equal(actorId ?? new(user.Id.Value), session.UpdatedBy);
     Assert.Equal(DateTime.Now, session.CreatedOn, TimeSpan.FromSeconds(1));
     Assert.Equal(user.Id, session.UserId);
-    Assert.Equal(secret != null, session.IsPersistent);
+    Assert.Equal(secret is not null, session.IsPersistent);
     Assert.True(session.IsActive);
   }
 
@@ -740,7 +739,7 @@ public class UserTests
   [InlineData("SYSTEM")]
   public void Given_Updates_When_Update_Then_UserUpdated(string? actorIdValue)
   {
-    ActorId? actorId = actorIdValue == null ? null : new(actorIdValue);
+    ActorId? actorId = actorIdValue is null ? null : new(actorIdValue);
 
     _user.ClearChanges();
     _user.Update();

@@ -7,9 +7,9 @@ public class PhoneValidator : AbstractValidator<IPhone>
 {
   public PhoneValidator()
   {
-    When(x => x.CountryCode != null, () => RuleFor(x => x.CountryCode).NotEmpty().Length(Phone.CountryCodeMaximumLength));
+    When(x => x.CountryCode is not null, () => RuleFor(x => x.CountryCode).NotEmpty().Length(Phone.CountryCodeMaximumLength));
     RuleFor(x => x.Number).NotEmpty().MaximumLength(Phone.NumberMaximumLength);
-    When(x => x.Extension != null, () => RuleFor(x => x.Extension).NotEmpty().MaximumLength(Phone.ExtensionMaximumLength));
+    When(x => x.Extension is not null, () => RuleFor(x => x.Extension).NotEmpty().MaximumLength(Phone.ExtensionMaximumLength));
 
     RuleFor(x => x).Must(phone => phone.IsValid())
       .WithErrorCode("PhoneValidator")

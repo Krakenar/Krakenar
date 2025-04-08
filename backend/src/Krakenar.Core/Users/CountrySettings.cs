@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Krakenar.Core.Users;
+﻿namespace Krakenar.Core.Users;
 
 public record CountrySettings
 {

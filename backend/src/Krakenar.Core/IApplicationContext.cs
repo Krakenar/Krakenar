@@ -5,7 +5,7 @@ using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.Core;
 
-public interface IApplicationContext // TODO(fpion): implement
+public interface IApplicationContext
 {
   ActorId? ActorId { get; }
   RealmDto? Realm { get; }

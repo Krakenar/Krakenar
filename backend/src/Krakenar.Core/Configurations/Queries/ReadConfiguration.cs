@@ -13,7 +13,7 @@ public class ReadConfigurationHandler : IQueryHandler<ReadConfiguration, Configu
     ConfigurationQuerier = configurationQuerier;
   }
 
-  public async Task<ConfigurationDto> HandleAsync(ReadConfiguration _, CancellationToken cancellationToken)
+  public virtual async Task<ConfigurationDto> HandleAsync(ReadConfiguration _, CancellationToken cancellationToken)
   {
     return await ConfigurationQuerier.ReadAsync(cancellationToken);
   }
