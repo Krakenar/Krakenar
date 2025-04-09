@@ -58,7 +58,7 @@ public sealed class User : Aggregate, ISegregatedEntity
   public string? EmailAddress { get; private set; }
   public string? EmailAddressNormalized
   {
-    get => EmailAddress == null ? null : Helper.Normalize(EmailAddress);
+    get => EmailAddress is null ? null : Helper.Normalize(EmailAddress);
     private set { }
   }
   public string? EmailVerifiedBy { get; private set; }
@@ -112,7 +112,7 @@ public sealed class User : Aggregate, ISegregatedEntity
 
   public User(Realm? realm, UserCreated @event) : base(@event)
   {
-    if (realm != null)
+    if (realm is not null)
     {
       Realm = realm;
       RealmId = realm.RealmId;
@@ -123,7 +123,7 @@ public sealed class User : Aggregate, ISegregatedEntity
 
     UniqueName = @event.UniqueName.Value;
 
-    if (@event.Password != null)
+    if (@event.Password is not null)
     {
       SetPassword(@event.Password, @event);
     }
@@ -144,25 +144,25 @@ public sealed class User : Aggregate, ISegregatedEntity
       actorIds.AddRange(Realm.GetActorIds());
     }
 
-    if (PasswordChangedBy != null)
+    if (PasswordChangedBy is not null)
     {
       actorIds.Add(new ActorId(PasswordChangedBy));
     }
 
-    if (DisabledBy != null)
+    if (DisabledBy is not null)
     {
       actorIds.Add(new ActorId(DisabledBy));
     }
 
-    if (AddressVerifiedBy != null)
+    if (AddressVerifiedBy is not null)
     {
       actorIds.Add(new ActorId(AddressVerifiedBy));
     }
-    if (EmailVerifiedBy != null)
+    if (EmailVerifiedBy is not null)
     {
       actorIds.Add(new ActorId(EmailVerifiedBy));
     }
-    if (PhoneVerifiedBy != null)
+    if (PhoneVerifiedBy is not null)
     {
       actorIds.Add(new ActorId(PhoneVerifiedBy));
     }
@@ -221,7 +221,7 @@ public sealed class User : Aggregate, ISegregatedEntity
     Update(@event);
 
     UserIdentifier? identifier = Identifiers.SingleOrDefault(x => x.Key == @event.Key.Value);
-    if (identifier != null)
+    if (identifier is not null)
     {
       Identifiers.Remove(identifier);
     }
@@ -232,7 +232,7 @@ public sealed class User : Aggregate, ISegregatedEntity
     Update(@event);
 
     Role? role = Roles.SingleOrDefault(x => x.StreamId == @event.RoleId.StreamId.Value);
-    if (role != null)
+    if (role is not null)
     {
       Roles.Remove(role);
     }
@@ -266,7 +266,7 @@ public sealed class User : Aggregate, ISegregatedEntity
     Update(@event);
 
     UserIdentifier? identifier = Identifiers.SingleOrDefault(x => x.Key == @event.Key.Value);
-    if (identifier == null)
+    if (identifier is null)
     {
       identifier = new(this, @event);
       Identifiers.Add(identifier);
@@ -356,53 +356,53 @@ public sealed class User : Aggregate, ISegregatedEntity
   {
     base.Update(@event);
 
-    if (@event.FirstName != null)
+    if (@event.FirstName is not null)
     {
       FirstName = @event.FirstName.Value?.Value;
     }
-    if (@event.MiddleName != null)
+    if (@event.MiddleName is not null)
     {
       MiddleName = @event.MiddleName.Value?.Value;
     }
-    if (@event.LastName != null)
+    if (@event.LastName is not null)
     {
       LastName = @event.LastName.Value?.Value;
     }
-    if (@event.FullName != null)
+    if (@event.FullName is not null)
     {
       FullName = @event.FullName.Value;
     }
-    if (@event.Nickname != null)
+    if (@event.Nickname is not null)
     {
       Nickname = @event.Nickname.Value?.Value;
     }
 
-    if (@event.Birthdate != null)
+    if (@event.Birthdate is not null)
     {
       Birthdate = @event.Birthdate.Value?.AsUniversalTime();
     }
-    if (@event.Gender != null)
+    if (@event.Gender is not null)
     {
       Gender = @event.Gender.Value?.Value;
     }
-    if (@event.Locale != null)
+    if (@event.Locale is not null)
     {
       Locale = @event.Locale.Value?.Code;
     }
-    if (@event.TimeZone != null)
+    if (@event.TimeZone is not null)
     {
       TimeZone = @event.TimeZone.Value?.Id;
     }
 
-    if (@event.Picture != null)
+    if (@event.Picture is not null)
     {
       Picture = @event.Picture.Value?.Value;
     }
-    if (@event.Profile != null)
+    if (@event.Profile is not null)
     {
       Profile = @event.Profile.Value?.Value;
     }
-    if (@event.Website != null)
+    if (@event.Website is not null)
     {
       Website = @event.Website.Value?.Value;
     }
@@ -410,7 +410,7 @@ public sealed class User : Aggregate, ISegregatedEntity
     Dictionary<string, string> customAttributes = GetCustomAttributes();
     foreach (KeyValuePair<Core.Identifier, string?> customAttribute in @event.CustomAttributes)
     {
-      if (customAttribute.Value == null)
+      if (customAttribute.Value is null)
       {
         customAttributes.Remove(customAttribute.Key.Value);
       }
@@ -424,7 +424,7 @@ public sealed class User : Aggregate, ISegregatedEntity
 
   public Dictionary<string, string> GetCustomAttributes()
   {
-    return (CustomAttributes == null ? null : JsonSerializer.Deserialize<Dictionary<string, string>>(CustomAttributes)) ?? [];
+    return (CustomAttributes is null ? null : JsonSerializer.Deserialize<Dictionary<string, string>>(CustomAttributes)) ?? [];
   }
   private void SetCustomAttributes(Dictionary<string, string> customAttributes)
   {

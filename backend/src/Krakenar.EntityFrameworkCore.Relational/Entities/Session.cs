@@ -21,7 +21,7 @@ public sealed class Session : Aggregate, ISegregatedEntity
   public string? SecretHash { get; private set; }
   public bool IsPersistent
   {
-    get => SecretHash != null;
+    get => SecretHash is not null;
     private set { }
   }
 
@@ -59,12 +59,12 @@ public sealed class Session : Aggregate, ISegregatedEntity
     List<ActorId> actorIds = [];
     actorIds.AddRange(base.GetActorIds());
 
-    if (SignedOutBy != null)
+    if (SignedOutBy is not null)
     {
       actorIds.Add(new ActorId(SignedOutBy));
     }
 
-    if (!skipUser && User != null)
+    if (!skipUser && User is not null)
     {
       actorIds.AddRange(User.GetActorIds(skipRoles: false, skipSessions: true));
     }
@@ -94,7 +94,7 @@ public sealed class Session : Aggregate, ISegregatedEntity
     Dictionary<string, string> customAttributes = GetCustomAttributes();
     foreach (KeyValuePair<Core.Identifier, string?> customAttribute in @event.CustomAttributes)
     {
-      if (customAttribute.Value == null)
+      if (customAttribute.Value is null)
       {
         customAttributes.Remove(customAttribute.Key.Value);
       }
@@ -108,7 +108,7 @@ public sealed class Session : Aggregate, ISegregatedEntity
 
   public Dictionary<string, string> GetCustomAttributes()
   {
-    return (CustomAttributes == null ? null : JsonSerializer.Deserialize<Dictionary<string, string>>(CustomAttributes)) ?? [];
+    return (CustomAttributes is null ? null : JsonSerializer.Deserialize<Dictionary<string, string>>(CustomAttributes)) ?? [];
   }
   private void SetCustomAttributes(Dictionary<string, string> customAttributes)
   {
