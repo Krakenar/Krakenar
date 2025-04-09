@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Actors;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Logging;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
@@ -10,6 +11,7 @@ using Logitar.EventSourcing;
 using ActorEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Actor;
 using AggregateEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Aggregate;
 using ConfigurationAggregate = Krakenar.Core.Configurations.Configuration;
+using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 using RoleEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Role;
 
@@ -49,6 +51,34 @@ public class Mapper
       UniqueNameSettings = new UniqueNameSettings(source.UniqueNameSettings),
       PasswordSettings = new PasswordSettings(source.PasswordSettings),
       LoggingSettings = new LoggingSettings(source.LoggingSettings)
+    };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public virtual Language ToLanguage(LanguageEntity source)
+  {
+    Realm? realm = null;
+    if (source.RealmId.HasValue)
+    {
+      if (source.Realm is null)
+      {
+        throw new ArgumentException($"The {nameof(source.Realm)} is required.", nameof(source));
+      }
+      realm = ToRealm(source.Realm);
+    }
+    return ToLanguage(source, realm);
+  }
+  public virtual Language ToLanguage(LanguageEntity source, Realm? realm)
+  {
+    Language destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      IsDefault = source.IsDefault,
+      Locale = new Locale(source.Code)
     };
 
     MapAggregate(source, destination);

@@ -28,6 +28,9 @@ public readonly struct LanguageId
     EntityId = values.Item1;
     RealmId = values.Item2;
   }
+  public LanguageId(string value) : this(new StreamId(value))
+  {
+  }
 
   public static bool operator ==(LanguageId left, LanguageId right) => left.Equals(right);
   public static bool operator !=(LanguageId left, LanguageId right) => !left.Equals(right);

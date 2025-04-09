@@ -10,3 +10,4 @@ All the following environment variables are optional.
 - `DEFAULT_LOCALE`: the default locale code of the system. A string representing a [CultureInfo](https://learn.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=net-9.0), ex.: `en` (English) or `fr-CA` (Canadian French).
 - `DEFAULT_PASSWORD`: the default password of the admin user, ex.: `P@s$W0rD`.
 - `DEFAULT_USERNAME`: the default username of the admin user, ex.: `admin`.
+- `SQLCONNSTR_Krakenar`: the Microsoft SQL Server connection stirng.
