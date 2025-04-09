@@ -14,13 +14,16 @@ public class RealmController : ControllerBase
 {
   private readonly ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> _createOrReplaceRealm;
   private readonly IQueryHandler<ReadRealm, Realm?> _readRealm;
+  private readonly ICommandHandler<UpdateRealm, Realm?> _updateRealm;
 
   public RealmController(
     ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> createOrReplaceRealm,
-    IQueryHandler<ReadRealm, Realm?> readRealm)
+    IQueryHandler<ReadRealm, Realm?> readRealm,
+    ICommandHandler<UpdateRealm, Realm?> updateRealm)
   {
     _createOrReplaceRealm = createOrReplaceRealm;
     _readRealm = readRealm;
+    _updateRealm = updateRealm;
   }
 
   [HttpPost]
@@ -53,6 +56,14 @@ public class RealmController : ControllerBase
     CreateOrReplaceRealm command = new(id, payload, version);
     CreateOrReplaceRealmResult result = await _createOrReplaceRealm.HandleAsync(command, cancellationToken);
     return ToActionResult(result);
+  }
+
+  [HttpPatch("{id}")]
+  public async Task<ActionResult<Realm>> UpdateAsync(Guid id, [FromBody] UpdateRealmPayload payload, CancellationToken cancellationToken)
+  {
+    UpdateRealm command = new(id, payload);
+    Realm? realm = await _updateRealm.HandleAsync(command, cancellationToken);
+    return realm is null ? NotFound() : Ok(realm);
   }
 
   private ActionResult<Realm> ToActionResult(CreateOrReplaceRealmResult result)
