@@ -17,7 +17,7 @@ public class RoleConfiguration : AggregateConfiguration<Role>, IEntityTypeConfig
     builder.HasIndex(x => new { x.RealmId, x.Id }).IsUnique();
     builder.HasIndex(x => x.RealmUid);
     builder.HasIndex(x => x.UniqueName);
-    builder.HasIndex(x => new { x.RealmId, x.UniqueName }).IsUnique();
+    builder.HasIndex(x => new { x.RealmId, x.UniqueNameNormalized }).IsUnique();
     builder.HasIndex(x => x.DisplayName);
 
     builder.Property(x => x.UniqueName).HasMaxLength(Slug.MaximumLength);
