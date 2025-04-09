@@ -14,13 +14,16 @@ public class RoleController : ControllerBase
 {
   private readonly ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> _createOrReplaceRole;
   private readonly IQueryHandler<ReadRole, Role?> _readRole;
+  private readonly ICommandHandler<UpdateRole, Role?> _updateRole;
 
   public RoleController(
     ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> createOrReplaceRole,
-    IQueryHandler<ReadRole, Role?> readRole)
+    IQueryHandler<ReadRole, Role?> readRole,
+    ICommandHandler<UpdateRole, Role?> updateRole)
   {
     _createOrReplaceRole = createOrReplaceRole;
     _readRole = readRole;
+    _updateRole = updateRole;
   }
 
   [HttpPost]
@@ -53,6 +56,14 @@ public class RoleController : ControllerBase
     CreateOrReplaceRole command = new(id, payload, version);
     CreateOrReplaceRoleResult result = await _createOrReplaceRole.HandleAsync(command, cancellationToken);
     return ToActionResult(result);
+  }
+
+  [HttpPatch("{id}")]
+  public async Task<ActionResult<Role>> UpdateAsync(Guid id, [FromBody] UpdateRolePayload payload, CancellationToken cancellationToken)
+  {
+    UpdateRole command = new(id, payload);
+    Role? role = await _updateRole.HandleAsync(command, cancellationToken);
+    return role is null ? NotFound() : Ok(role);
   }
 
   private ActionResult<Role> ToActionResult(CreateOrReplaceRoleResult result)

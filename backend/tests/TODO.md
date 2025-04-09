@@ -1,6 +1,5 @@
 # TODO
 
-- CreateOrReplaceRealm
 - CreateOrReplaceRole
 - ReadUser
 - RefreshToken
