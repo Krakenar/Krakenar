@@ -6,7 +6,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class Role : Aggregate, ISegregatedEntity
+public sealed class Role : Aggregate, ISegregatedEntity
 {
   public int RoleId { get; private set; }
 

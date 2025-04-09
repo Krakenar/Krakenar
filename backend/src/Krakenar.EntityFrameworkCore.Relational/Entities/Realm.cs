@@ -5,7 +5,7 @@ using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class Realm : Aggregate
+public sealed class Realm : Aggregate
 {
   public int RealmId { get; private set; }
   public Guid Id { get; private set; }
@@ -130,6 +130,14 @@ public class Realm : Aggregate
     CustomAttributes = customAttributes.Count < 1 ? null : JsonSerializer.Serialize(customAttributes);
   }
 
+  public PasswordSettings GetPasswordSettings() => new(
+    RequiredPasswordLength,
+    RequiredPasswordUniqueChars,
+    PasswordsRequireNonAlphanumeric,
+    PasswordsRequireLowercase,
+    PasswordsRequireUppercase,
+    PasswordsRequireDigit,
+    PasswordHashingStrategy);
   private void SetPasswordSettings(IPasswordSettings passwordSettings)
   {
     RequiredPasswordLength = passwordSettings.RequiredLength;
@@ -140,6 +148,8 @@ public class Realm : Aggregate
     PasswordsRequireDigit = passwordSettings.RequireDigit;
     PasswordHashingStrategy = passwordSettings.HashingStrategy;
   }
+
+  public UniqueNameSettings GetUniqueNameSettings() => new(AllowedUniqueNameCharacters);
   private void SetUniqueNameSettings(IUniqueNameSettings uniqueNameSettings)
   {
     AllowedUniqueNameCharacters = uniqueNameSettings.AllowedCharacters;

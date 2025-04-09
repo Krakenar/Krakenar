@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
-public class RoleConfiguration : AggregateConfiguration<Role>, IEntityTypeConfiguration<Role>
+public sealed class RoleConfiguration : AggregateConfiguration<Role>, IEntityTypeConfiguration<Role>
 {
   public override void Configure(EntityTypeBuilder<Role> builder)
   {

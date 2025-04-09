@@ -6,7 +6,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class Language : Aggregate, ISegregatedEntity
+public sealed class Language : Aggregate, ISegregatedEntity
 {
   public int LanguageId { get; private set; }
 

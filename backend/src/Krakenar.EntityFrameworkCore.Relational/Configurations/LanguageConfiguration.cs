@@ -6,7 +6,7 @@ using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language
 
 namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
-public class LanguageConfiguration : AggregateConfiguration<LanguageEntity>, IEntityTypeConfiguration<LanguageEntity>
+public sealed class LanguageConfiguration : AggregateConfiguration<LanguageEntity>, IEntityTypeConfiguration<LanguageEntity>
 {
   public override void Configure(EntityTypeBuilder<LanguageEntity> builder)
   {

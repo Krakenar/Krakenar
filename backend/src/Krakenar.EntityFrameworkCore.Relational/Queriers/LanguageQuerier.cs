@@ -59,7 +59,7 @@ public class LanguageQuerier : ILanguageQuerier
       .Include(x => x.Realm)
       .SingleOrDefaultAsync(x => x.StreamId == id.Value, cancellationToken);
 
-    return language is null ? null : await MapAsync(language, cancellationToken);
+    return language is null ? null : await MapAsync(language, cancellationToken); // TODO(fpion): will not work if entity is different realm than application context!
   }
   public virtual async Task<LanguageDto?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
@@ -103,6 +103,6 @@ public class LanguageQuerier : ILanguageQuerier
     Mapper mapper = new(actors);
 
     RealmDto? realm = ApplicationContext.Realm;
-    return languages.Select(language => language.Realm is null ? mapper.ToLanguage(language, realm) : mapper.ToLanguage(language)).ToList().AsReadOnly();
+    return languages.Select(language => mapper.ToLanguage(language, realm)).ToList().AsReadOnly();
   }
 }

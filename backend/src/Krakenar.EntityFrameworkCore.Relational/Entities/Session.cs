@@ -5,7 +5,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class Session : Aggregate, ISegregatedEntity
+public sealed class Session : Aggregate, ISegregatedEntity
 {
   public int SessionId { get; private set; }
 

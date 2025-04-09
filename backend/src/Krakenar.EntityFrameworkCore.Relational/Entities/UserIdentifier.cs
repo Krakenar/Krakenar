@@ -2,7 +2,7 @@
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class UserIdentifier : Identifier
+public sealed class UserIdentifier : Identifier
 {
   public int UserIdentifierId { get; private set; }
 

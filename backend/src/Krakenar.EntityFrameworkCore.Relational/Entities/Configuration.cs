@@ -3,7 +3,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class Configuration
+public sealed class Configuration
 {
   public int ConfigurationId { get; private set; }
 

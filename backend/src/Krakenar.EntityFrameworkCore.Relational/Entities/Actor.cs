@@ -2,7 +2,7 @@
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class Actor
+public sealed class Actor
 {
   public int ActorId { get; private set; }
   public string Key { get; private set; } = string.Empty;
