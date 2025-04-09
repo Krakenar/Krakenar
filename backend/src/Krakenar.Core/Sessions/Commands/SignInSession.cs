@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Krakenar.Contracts;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Realms;
@@ -69,7 +70,11 @@ public class SignInSessionHandler : ICommandHandler<SignInSession, SessionDto>
     }
 
     session = user.SignIn(payload.Password, secret, actorId, payload.Id);
-    session.SetCustomAttributes(payload.CustomAttributes);
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Identifier key = new(customAttribute.Key);
+      session.SetCustomAttribute(key, customAttribute.Value);
+    }
     session.Update(actorId);
 
     await UserService.SaveAsync(user, cancellationToken);

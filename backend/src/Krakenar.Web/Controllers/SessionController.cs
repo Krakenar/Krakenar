@@ -13,15 +13,18 @@ namespace Krakenar.Web.Controllers;
 public class SessionController : ControllerBase
 {
   private readonly IQueryHandler<ReadSession, Session?> _readSession;
+  private readonly ICommandHandler<RenewSession, Session> _renewSession;
   private readonly ICommandHandler<SignInSession, Session> _signInSession;
   private readonly ICommandHandler<SignOutSession, Session?> _signOutSession;
 
   public SessionController(
     IQueryHandler<ReadSession, Session?> readSession,
+    ICommandHandler<RenewSession, Session> renewSession,
     ICommandHandler<SignInSession, Session> signInSession,
     ICommandHandler<SignOutSession, Session?> signOutSession)
   {
     _readSession = readSession;
+    _renewSession = renewSession;
     _signInSession = signInSession;
     _signOutSession = signOutSession;
   }
@@ -34,12 +37,21 @@ public class SessionController : ControllerBase
     return session is null ? NotFound() : Ok(session);
   }
 
+  [HttpPut("renew")]
+  public async Task<ActionResult<Session>> RenewAsync([FromBody] RenewSessionPayload payload, CancellationToken cancellationToken)
+  {
+    RenewSession command = new(payload);
+    Session session = await _renewSession.HandleAsync(command, cancellationToken);
+    return Ok(session);
+  }
+
   [HttpPost("sign/in")]
   public async Task<ActionResult<Session>> SignInAsync([FromBody] SignInSessionPayload payload, CancellationToken cancellationToken)
   {
     SignInSession command = new(payload);
     Session session = await _signInSession.HandleAsync(command, cancellationToken);
-    return Ok(session);
+    Uri location = new($"{Request.Scheme}://{Request.Host}/api/sessions/{session.Id}", UriKind.Absolute);
+    return Created(location, session);
   }
 
   [HttpPatch("{id}/sign/out")]
