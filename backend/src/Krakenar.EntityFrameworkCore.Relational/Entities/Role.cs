@@ -1,5 +1,4 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Roles;
+﻿using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar;
@@ -27,6 +26,8 @@ public class Role : Aggregate, ISegregatedEntity
   public string? Description { get; private set; }
 
   public string? CustomAttributes { get; private set; }
+
+  public List<User> Users { get; private set; } = [];
 
   public Role(Realm? realm, RoleCreated @event) : base(@event)
   {
@@ -74,7 +75,7 @@ public class Role : Aggregate, ISegregatedEntity
     }
 
     Dictionary<string, string> customAttributes = GetCustomAttributes();
-    foreach (KeyValuePair<Identifier, string?> customAttribute in @event.CustomAttributes)
+    foreach (KeyValuePair<Core.Identifier, string?> customAttribute in @event.CustomAttributes)
     {
       if (customAttribute.Value is null)
       {

@@ -1,5 +1,4 @@
 ﻿using Krakenar.Contracts.Settings;
-using Krakenar.Core;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Events;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
@@ -39,6 +38,9 @@ public class Realm : Aggregate
   public List<Actor> Actors { get; private set; } = [];
   public List<Language> Languages { get; private set; } = [];
   public List<Role> Roles { get; private set; } = [];
+  public List<Session> Sessions { get; private set; } = [];
+  public List<User> Users { get; private set; } = [];
+  public List<UserIdentifier> UserIdentifiers { get; private set; } = [];
 
   public Realm(RealmCreated @event) : base(@event)
   {
@@ -105,7 +107,7 @@ public class Realm : Aggregate
     }
 
     Dictionary<string, string> customAttributes = GetCustomAttributes();
-    foreach (KeyValuePair<Identifier, string?> customAttribute in @event.CustomAttributes)
+    foreach (KeyValuePair<Core.Identifier, string?> customAttribute in @event.CustomAttributes)
     {
       if (customAttribute.Value is null)
       {

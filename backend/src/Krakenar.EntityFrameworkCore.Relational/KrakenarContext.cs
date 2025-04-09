@@ -14,6 +14,9 @@ public class KrakenarContext : DbContext
   public virtual DbSet<Language> Languages => Set<Language>();
   public virtual DbSet<Realm> Realms => Set<Realm>();
   public virtual DbSet<Role> Roles => Set<Role>();
+  public virtual DbSet<Session> Sessions => Set<Session>();
+  public virtual DbSet<User> Users => Set<User>();
+  public virtual DbSet<UserIdentifier> UserIdentifiers => Set<UserIdentifier>();
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
