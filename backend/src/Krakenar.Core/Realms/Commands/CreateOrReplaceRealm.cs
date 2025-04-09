@@ -20,17 +20,20 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
   protected virtual IRealmQuerier RealmQuerier { get; }
   protected virtual IRealmRepository RealmRepository { get; }
   protected virtual IRealmService RealmService { get; }
+  protected virtual ISecretService SecretService { get; }
 
   public CreateOrReplaceRealmHandler(
     IApplicationContext applicationContext,
     IRealmQuerier realmQuerier,
     IRealmRepository realmRepository,
-    IRealmService realmService)
+    IRealmService realmService,
+    ISecretService secretService)
   {
     ApplicationContext = applicationContext;
     RealmQuerier = realmQuerier;
     RealmRepository = realmRepository;
     RealmService = realmService;
+    SecretService = secretService;
   }
 
   public virtual async Task<CreateOrReplaceRealmResult> HandleAsync(CreateOrReplaceRealm command, CancellationToken cancellationToken)
@@ -47,7 +50,6 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     }
 
     Slug uniqueSlug = new(payload.UniqueSlug);
-    Secret secret = null!; // TODO(fpion): Secret
     ActorId? actorId = ApplicationContext.ActorId;
 
     bool created = false;
@@ -58,6 +60,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
         return new CreateOrReplaceRealmResult();
       }
 
+      Secret secret = SecretService.Generate(realmId);
       realm = new(uniqueSlug, secret, actorId, realmId);
       created = true;
     }
@@ -81,10 +84,6 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
       realm.Description = description;
     }
 
-    if (reference.Secret != secret)
-    {
-      realm.Secret = secret;
-    }
     Url? url = Url.TryCreate(payload.Url);
     if (reference.Url != url)
     {
