@@ -4,7 +4,7 @@ namespace Krakenar.Core.Localization;
 
 public interface ILanguageQuerier
 {
-  Task<Locale> FindDefaultPlatformLocaleAsync(CancellationToken cancellationToken = default);
+  Task<Locale> FindPlatformDefaultLocaleAsync(CancellationToken cancellationToken = default);
   Task<LanguageId?> FindIdAsync(Locale locale, CancellationToken cancellationToken = default);
 
   Task<LanguageDto> ReadAsync(Language language, CancellationToken cancellationToken = default);

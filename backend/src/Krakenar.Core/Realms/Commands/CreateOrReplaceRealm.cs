@@ -72,7 +72,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
       realm = new(uniqueSlug, secret, actorId, realmId);
       created = true;
 
-      Locale locale = await LanguageQuerier.FindDefaultPlatformLocaleAsync(cancellationToken);
+      Locale locale = await LanguageQuerier.FindPlatformDefaultLocaleAsync(cancellationToken);
       language = new Language(locale, isDefault: true, actorId, LanguageId.NewId(realm.Id));
     }
 
