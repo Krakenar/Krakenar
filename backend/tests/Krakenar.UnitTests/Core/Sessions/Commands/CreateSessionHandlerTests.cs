@@ -14,10 +14,8 @@ using SessionDto = Krakenar.Contracts.Sessions.Session;
 namespace Krakenar.Core.Sessions.Commands;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class SignInSessionHandlerTests
+public class CreateSessionHandlerTests
 {
-  private const string Password = "P@s$W0rD";
-
   private readonly CancellationToken _cancellationToken = default;
   private readonly Faker _faker = new();
 
@@ -27,16 +25,16 @@ public class SignInSessionHandlerTests
   private readonly Mock<ISessionRepository> _sessionRepository = new();
   private readonly Mock<IUserService> _userService = new();
 
-  private readonly SignInSessionHandler _handler;
+  private readonly CreateSessionHandler _handler;
 
   private readonly User _user;
 
-  public SignInSessionHandlerTests()
+  public CreateSessionHandlerTests()
   {
     _handler = new(_applicationContext.Object, _passwordService.Object, _sessionQuerier.Object, _sessionRepository.Object, _userService.Object);
 
     UniqueName uniqueName = new(new UniqueNameSettings(), _faker.Person.UserName);
-    _user = new User(uniqueName, new Base64Password(Password));
+    _user = new User(uniqueName);
     _userService.Setup(x => x.FindAsync(_user.UniqueName.Value, _cancellationToken)).ReturnsAsync(new FoundUsers(null, _user, null, null));
   }
 
@@ -46,8 +44,8 @@ public class SignInSessionHandlerTests
     SessionDto session = new();
     _sessionQuerier.Setup(x => x.ReadAsync(It.IsAny<Session>(), _cancellationToken)).ReturnsAsync(session);
 
-    SignInSessionPayload payload = new(_user.UniqueName.Value, Password);
-    SignInSession command = new(payload);
+    CreateSessionPayload payload = new(_user.UniqueName.Value);
+    CreateSession command = new(payload);
     SessionDto result = await _handler.HandleAsync(command, _cancellationToken);
     Assert.Same(session, result);
     Assert.Null(result.RefreshToken);
@@ -74,7 +72,7 @@ public class SignInSessionHandlerTests
     SessionDto session = new();
     _sessionQuerier.Setup(x => x.ReadAsync(It.IsAny<Session>(), _cancellationToken)).ReturnsAsync(session);
 
-    User user = new(_user.UniqueName, new Base64Password(Password), actorId, UserId.NewId(realmId));
+    User user = new(_user.UniqueName, password: null, actorId, UserId.NewId(realmId));
 
     Email email = new(_faker.Person.Email, isVerified: true);
     user.SetEmail(email);
@@ -85,13 +83,13 @@ public class SignInSessionHandlerTests
     Base64Password secret = new(secretString);
     _passwordService.Setup(x => x.GenerateBase64(RefreshToken.SecretLength, out secretString)).Returns(secret);
 
-    SignInSessionPayload payload = new(user.Email.Address, Password, isPersistent: true)
+    CreateSessionPayload payload = new(user.Email.Address, isPersistent: true)
     {
       Id = Guid.NewGuid()
     };
     payload.CustomAttributes.Add(new CustomAttribute("IpAddress", _faker.Internet.Ip()));
     payload.CustomAttributes.Add(new CustomAttribute("AdditionalInformation", $@"{{""User-Agent"":""{_faker.Internet.UserAgent()}""}}"));
-    SignInSession command = new(payload);
+    CreateSession command = new(payload);
     SessionDto result = await _handler.HandleAsync(command, _cancellationToken);
     Assert.Same(session, result);
 
@@ -120,11 +118,11 @@ public class SignInSessionHandlerTests
     Session session = new(_user, secret: null, actorId: null, SessionId.NewId(realmId));
     _sessionRepository.Setup(x => x.LoadAsync(session.Id, _cancellationToken)).ReturnsAsync(session);
 
-    SignInSessionPayload payload = new(_user.UniqueName.Value, Password)
+    CreateSessionPayload payload = new(_user.UniqueName.Value)
     {
       Id = session.EntityId
     };
-    SignInSession command = new(payload);
+    CreateSession command = new(payload);
     var exception = await Assert.ThrowsAsync<IdAlreadyUsedException<Session>>(async () => await _handler.HandleAsync(command, _cancellationToken));
 
     Assert.Equal(realmId.ToGuid(), exception.RealmId);
@@ -136,31 +134,30 @@ public class SignInSessionHandlerTests
   [Fact(DisplayName = "It should throw UserNotFoundException when the user was not found.")]
   public async Task Given_UserNotFound_When_HandleAsync_Then_UserNotFoundException()
   {
-    SignInSessionPayload payload = new(_faker.Internet.UserName(), Password);
+    CreateSessionPayload payload = new(_faker.Internet.UserName());
 
     FoundUsers foundUsers = new(null, null, null, null);
-    _userService.Setup(x => x.FindAsync(payload.UniqueName, _cancellationToken)).ReturnsAsync(foundUsers);
+    _userService.Setup(x => x.FindAsync(payload.User, _cancellationToken)).ReturnsAsync(foundUsers);
 
-    SignInSession command = new(payload);
+    CreateSession command = new(payload);
     var exception = await Assert.ThrowsAsync<UserNotFoundException>(async () => await _handler.HandleAsync(command, _cancellationToken));
 
     Assert.Null(exception.RealmId);
-    Assert.Equal(payload.UniqueName, exception.User);
-    Assert.Equal("UniqueName", exception.PropertyName);
+    Assert.Equal(payload.User, exception.User);
+    Assert.Equal("User", exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the payload is not valid.")]
   public async Task Given_InvalidPayload_When_HandleAsync_Then_ValidationException()
   {
-    SignInSessionPayload payload = new();
+    CreateSessionPayload payload = new();
     payload.CustomAttributes.Add(new CustomAttribute("123_invalid", _faker.Internet.Ip()));
 
-    SignInSession command = new(payload);
+    CreateSession command = new(payload);
     var exception = await Assert.ThrowsAsync<FluentValidation.ValidationException>(async () => await _handler.HandleAsync(command, _cancellationToken));
 
-    Assert.Equal(3, exception.Errors.Count());
-    Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "UniqueName");
-    Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "Password");
+    Assert.Equal(2, exception.Errors.Count());
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "User");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "IdentifierValidator" && e.PropertyName == "CustomAttributes[0].Key");
   }
 }

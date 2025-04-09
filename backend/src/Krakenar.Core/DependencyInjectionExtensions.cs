@@ -43,6 +43,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>, CreateOrReplaceRealmHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
+      .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
       .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
       .AddTransient<ICommandHandler<RenewSession, SessionDto>, RenewSessionHandler>()
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()

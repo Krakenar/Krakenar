@@ -12,21 +12,32 @@ namespace Krakenar.Web.Controllers;
 [Route("api/sessions")]
 public class SessionController : ControllerBase
 {
+  private readonly ICommandHandler<CreateSession, Session> _createSession;
   private readonly IQueryHandler<ReadSession, Session?> _readSession;
   private readonly ICommandHandler<RenewSession, Session> _renewSession;
   private readonly ICommandHandler<SignInSession, Session> _signInSession;
   private readonly ICommandHandler<SignOutSession, Session?> _signOutSession;
 
   public SessionController(
+    ICommandHandler<CreateSession, Session> createSession,
     IQueryHandler<ReadSession, Session?> readSession,
     ICommandHandler<RenewSession, Session> renewSession,
     ICommandHandler<SignInSession, Session> signInSession,
     ICommandHandler<SignOutSession, Session?> signOutSession)
   {
+    _createSession = createSession;
     _readSession = readSession;
     _renewSession = renewSession;
     _signInSession = signInSession;
     _signOutSession = signOutSession;
+  }
+
+  [HttpPost]
+  public async Task<ActionResult<Session>> CreateAsync([FromBody] CreateSessionPayload payload, CancellationToken cancellationToken)
+  {
+    CreateSession command = new(payload);
+    Session session = await _createSession.HandleAsync(command, cancellationToken);
+    return Created(session);
   }
 
   [HttpGet("{id}")]
@@ -50,8 +61,7 @@ public class SessionController : ControllerBase
   {
     SignInSession command = new(payload);
     Session session = await _signInSession.HandleAsync(command, cancellationToken);
-    Uri location = new($"{Request.Scheme}://{Request.Host}/api/sessions/{session.Id}", UriKind.Absolute);
-    return Created(location, session);
+    return Created(session);
   }
 
   [HttpPatch("{id}/sign/out")]
@@ -60,5 +70,11 @@ public class SessionController : ControllerBase
     SignOutSession command = new(id);
     Session? session = await _signOutSession.HandleAsync(command, cancellationToken);
     return session is null ? NotFound() : Ok(session);
+  }
+
+  private ActionResult<Session> Created(Session session)
+  {
+    Uri location = new($"{Request.Scheme}://{Request.Host}/api/sessions/{session.Id}", UriKind.Absolute);
+    return Created(location, session);
   }
 }
