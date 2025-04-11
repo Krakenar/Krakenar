@@ -49,7 +49,25 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<RoleDeleted>, RoleEvents>()
       .AddScoped<IEventHandler<RoleUniqueNameChanged>, RoleEvents>()
       .AddScoped<IEventHandler<RoleUpdated>, RoleEvents>()
-      .AddScoped<IEventHandler<UserCreated>, UserEvents>();
+      .AddScoped<IEventHandler<UserAddressChanged>, UserEvents>()
+      .AddScoped<IEventHandler<UserAuthenticated>, UserEvents>()
+      .AddScoped<IEventHandler<UserCreated>, UserEvents>()
+      .AddScoped<IEventHandler<UserDeleted>, UserEvents>()
+      .AddScoped<IEventHandler<UserDisabled>, UserEvents>()
+      .AddScoped<IEventHandler<UserEmailChanged>, UserEvents>()
+      .AddScoped<IEventHandler<UserEnabled>, UserEvents>()
+      .AddScoped<IEventHandler<UserIdentifierChanged>, UserEvents>()
+      .AddScoped<IEventHandler<UserIdentifierRemoved>, UserEvents>()
+      .AddScoped<IEventHandler<UserPasswordChanged>, UserEvents>()
+      .AddScoped<IEventHandler<UserPasswordRemoved>, UserEvents>()
+      .AddScoped<IEventHandler<UserPasswordReset>, UserEvents>()
+      .AddScoped<IEventHandler<UserPasswordUpdated>, UserEvents>()
+      .AddScoped<IEventHandler<UserPhoneChanged>, UserEvents>()
+      .AddScoped<IEventHandler<UserRoleAdded>, UserEvents>()
+      .AddScoped<IEventHandler<UserRoleRemoved>, UserEvents>()
+      .AddScoped<IEventHandler<UserSignedIn>, UserEvents>()
+      .AddScoped<IEventHandler<UserUniqueNameChanged>, UserEvents>()
+      .AddScoped<IEventHandler<UserUpdated>, UserEvents>();
   }
 
   public static IServiceCollection AddKrakenarQueriers(this IServiceCollection services)

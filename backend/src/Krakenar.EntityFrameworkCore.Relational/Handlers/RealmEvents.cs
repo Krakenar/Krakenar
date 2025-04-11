@@ -1,6 +1,7 @@
 ﻿using Krakenar.Core;
 using Krakenar.Core.Realms.Events;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
@@ -8,10 +9,12 @@ namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 public class RealmEvents : IEventHandler<RealmCreated>, IEventHandler<RealmDeleted>, IEventHandler<RealmUniqueSlugChanged>, IEventHandler<RealmUpdated>
 {
   protected virtual KrakenarContext Context { get; }
+  protected virtual ILogger<RealmEvents> Logger { get; }
 
-  public RealmEvents(KrakenarContext context)
+  public RealmEvents(KrakenarContext context, ILogger<RealmEvents> logger)
   {
     Context = context;
+    Logger = logger;
   }
 
   public virtual async Task HandleAsync(RealmCreated @event, CancellationToken cancellationToken)
@@ -24,11 +27,12 @@ public class RealmEvents : IEventHandler<RealmCreated>, IEventHandler<RealmDelet
       Context.Realms.Add(realm);
 
       await Context.SaveChangesAsync(cancellationToken);
-      // TODO(fpion): report
+
+      Logger.LogSuccess(@event);
     }
     else
     {
-      // TODO(fpion): report
+      Logger.LogUnexpectedVersion(@event, realm);
     }
   }
 
@@ -37,62 +41,47 @@ public class RealmEvents : IEventHandler<RealmCreated>, IEventHandler<RealmDelet
     RealmEntity? realm = await Context.Realms.SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
     if (realm is null)
     {
-      // TODO(fpion): report
+      Logger.LogUnexpectedVersion(@event);
     }
     else
     {
       Context.Realms.Remove(realm);
 
       await Context.SaveChangesAsync(cancellationToken);
-      // TODO(fpion): report
+
+      Logger.LogSuccess(@event);
     }
   }
 
   public virtual async Task HandleAsync(RealmUniqueSlugChanged @event, CancellationToken cancellationToken)
   {
     RealmEntity? realm = await Context.Realms.SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
-    if (realm is null)
+    if (realm is null || realm.Version != (@event.Version - 1))
     {
-      return; // TODO(fpion): report
-    }
-
-    long expectedVersion = @event.Version - 1;
-    if (realm.Version < expectedVersion)
-    {
-      return; // TODO(fpion): report
-    }
-    else if (realm.Version > expectedVersion)
-    {
-      return; // TODO(fpion): report
+      Logger.LogUnexpectedVersion(@event, realm);
+      return;
     }
 
     realm.SetUniqueSlug(@event);
 
     await Context.SaveChangesAsync(cancellationToken);
-    // TODO(fpion): report
+
+    Logger.LogSuccess(@event);
   }
 
   public virtual async Task HandleAsync(RealmUpdated @event, CancellationToken cancellationToken)
   {
     RealmEntity? realm = await Context.Realms.SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
-    if (realm is null)
+    if (realm is null || realm.Version != (@event.Version - 1))
     {
-      return; // TODO(fpion): report
-    }
-
-    long expectedVersion = @event.Version - 1;
-    if (realm.Version < expectedVersion)
-    {
-      return; // TODO(fpion): report
-    }
-    else if (realm.Version > expectedVersion)
-    {
-      return; // TODO(fpion): report
+      Logger.LogUnexpectedVersion(@event, realm);
+      return;
     }
 
     realm.Update(@event);
 
     await Context.SaveChangesAsync(cancellationToken);
-    // TODO(fpion): report
+
+    Logger.LogSuccess(@event);
   }
 }
