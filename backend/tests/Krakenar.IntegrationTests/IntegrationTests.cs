@@ -30,6 +30,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     _databaseProvider = configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
 
     ServiceCollection services = new();
+    services.AddLogging();
     services.AddSingleton(configuration);
 
     services.AddKrakenarCore();

@@ -12,7 +12,7 @@ public sealed class Actor
 
   public ActorType Type { get; private set; }
   public Guid Id { get; private set; }
-  public bool IsDeleted { get; private set; }
+  public bool IsDeleted { get; set; }
 
   public string DisplayName { get; private set; } = string.Empty;
   public string? EmailAddress { get; private set; }

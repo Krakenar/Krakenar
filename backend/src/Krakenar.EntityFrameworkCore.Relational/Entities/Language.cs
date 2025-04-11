@@ -58,14 +58,14 @@ public sealed class Language : Aggregate, ISegregatedEntity
 
   public void SetDefault(LanguageSetDefault @event)
   {
-    base.Update(@event);
+    Update(@event);
 
     IsDefault = @event.IsDefault;
   }
 
   public void SetLocale(LanguageLocaleChanged @event)
   {
-    base.Update(@event);
+    Update(@event);
 
     SetLocale(@event.Locale);
   }
