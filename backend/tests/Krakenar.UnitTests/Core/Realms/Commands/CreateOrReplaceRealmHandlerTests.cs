@@ -182,11 +182,17 @@ public class CreateOrReplaceRealmHandlerTests
     Realm realm = new(new Slug("old-realm"), secret, actorId);
     _realmRepository.Setup(x => x.LoadAsync(realm.Id, _cancellationToken)).ReturnsAsync(realm);
 
+    Realm reference = new(realm.UniqueSlug, realm.Secret, actorId, realm.Id);
+    _realmRepository.Setup(x => x.LoadAsync(reference.Id, reference.Version, _cancellationToken)).ReturnsAsync(reference);
+
+    Description description = new("  This is my new realm!  ");
+    realm.Description = description;
+    realm.Update(actorId);
+
     CreateOrReplaceRealmPayload payload = new()
     {
       UniqueSlug = "new-realm",
       DisplayName = " New Realm ",
-      Description = "  This is my new realm!  ",
       Url = $"https://www.{_faker.Internet.DomainName()}",
       RequireUniqueEmail = true,
       RequireConfirmedAccount = true
@@ -196,17 +202,17 @@ public class CreateOrReplaceRealmHandlerTests
     RealmDto dto = new();
     _realmQuerier.Setup(x => x.ReadAsync(realm, _cancellationToken)).ReturnsAsync(dto);
 
-    CreateOrReplaceRealm command = new(realm.Id.ToGuid(), payload, Version: null); // TODO(fpion): implement
+    CreateOrReplaceRealm command = new(realm.Id.ToGuid(), payload, reference.Version);
     CreateOrReplaceRealmResult result = await _handler.HandleAsync(command, _cancellationToken);
     Assert.False(result.Created);
     Assert.NotNull(result.Realm);
     Assert.Same(dto, result.Realm);
 
-    _realmRepository.Verify(x => x.LoadAsync(It.IsAny<RealmId>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), Times.Never);
+    _realmRepository.Verify(x => x.LoadAsync(reference.Id, reference.Version, _cancellationToken), Times.Once);
 
     _realmService.Verify(x => x.SaveAsync(
       It.Is<Realm>(r => r.Equals(realm) && r.CreatedBy == actorId && r.UpdatedBy == actorId && r.UniqueSlug.Value == payload.UniqueSlug
-        && r.DisplayName != null && r.DisplayName.Value == payload.DisplayName.Trim() && r.Description != null && r.Description.Value == payload.Description.Trim()
+        && r.DisplayName != null && r.DisplayName.Value == payload.DisplayName.Trim() && r.Description != null && r.Description == description
         && r.Url != null && r.Url.Value == payload.Url
         && r.UniqueNameSettings.Equals(new Settings.UniqueNameSettings(payload.UniqueNameSettings)) && r.PasswordSettings.Equals(new Settings.PasswordSettings(payload.PasswordSettings))
         && r.RequireUniqueEmail == payload.RequireUniqueEmail && r.RequireConfirmedAccount == payload.RequireConfirmedAccount
