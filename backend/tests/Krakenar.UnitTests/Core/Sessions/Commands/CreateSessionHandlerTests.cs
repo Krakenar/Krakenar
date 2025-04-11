@@ -115,7 +115,8 @@ public class CreateSessionHandlerTests
     RealmId realmId = RealmId.NewId();
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
-    Session session = new(_user, secret: null, actorId: null, SessionId.NewId(realmId));
+    User user = new(_user.UniqueName, password: null, actorId: null, UserId.NewId(realmId));
+    Session session = new(user, secret: null, actorId: null, SessionId.NewId(realmId));
     _sessionRepository.Setup(x => x.LoadAsync(session.Id, _cancellationToken)).ReturnsAsync(session);
 
     CreateSessionPayload payload = new(_user.UniqueName.Value)

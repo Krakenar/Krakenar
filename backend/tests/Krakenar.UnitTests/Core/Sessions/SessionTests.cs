@@ -44,10 +44,11 @@ public class SessionTests
     RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
     SessionId? sessionId = sessionIdValue is null ? null : new(Guid.Parse(sessionIdValue), realmId);
 
+    User user = new(_user.UniqueName, password: null, actorId, UserId.NewId(realmId));
     Base64Password? secret = isPersistent ? new(Guid.NewGuid().ToString()) : null;
-    Session session = new(_user, secret, actorId, sessionId);
+    Session session = new(user, secret, actorId, sessionId);
 
-    Assert.Equal(_user.Id, session.UserId);
+    Assert.Equal(user.Id, session.UserId);
     Assert.Equal(isPersistent, session.IsPersistent);
     Assert.True(session.IsActive);
     Assert.Equal(actorId, session.CreatedBy);
@@ -62,6 +63,18 @@ public class SessionTests
     {
       Assert.NotEqual(Guid.Empty, session.EntityId);
     }
+  }
+
+  [Fact(DisplayName = "It should throw RealmMismatchException when the user is in a different realm.")]
+  public void Given_RealmMismatch_When_ctor_Then_RealmMismatchException()
+  {
+    RealmId realmId = RealmId.NewId();
+    SessionId sessionId = SessionId.NewId(realmId);
+
+    var exception = Assert.Throws<RealmMismatchException>(() => new Session(_user, secret: null, actorId: null, sessionId));
+    Assert.Equal(realmId.ToGuid(), exception.ExpectedRealmId);
+    Assert.Equal(_user.RealmId?.ToGuid(), exception.ActualRealmId);
+    Assert.Equal("user", exception.ParamName);
   }
 
   [Fact(DisplayName = "RemoveCustomAttribute: it should remove the custom attribute.")]

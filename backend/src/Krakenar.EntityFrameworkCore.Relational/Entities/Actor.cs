@@ -39,7 +39,7 @@ public sealed class Actor
   {
     if (Type != ActorType.User)
     {
-      throw new NotImplementedException(); // TODO(fpion): implement
+      throw new ArgumentException($"The actor ({this}) has the type '{Type}'. It cannot be updated from the user '{user}'.", nameof(user));
     }
 
     DisplayName = user.FullName ?? user.UniqueName;

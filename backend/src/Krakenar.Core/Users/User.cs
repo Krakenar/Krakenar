@@ -224,7 +224,7 @@ public class User : AggregateRoot, ICustomizable
   {
     if (RealmId != role.RealmId)
     {
-      //throw new RealmMismatchException(RealmId, role.RealmId, nameof(role)); // TODO(fpion): implement
+      throw new RealmMismatchException(RealmId, role.RealmId, nameof(role));
     }
 
     if (!HasRole(role))
