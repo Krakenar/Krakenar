@@ -42,33 +42,4 @@ public class SecretTests
     Secret secret = new("sGFbu9kMr7LwEz3jAYBt6CUHKcQpyd5T");
     Assert.Equal(secret.Value, secret.ToString());
   }
-
-  //[Fact(DisplayName = "TryCreate: it should return a new instance given a valid value.")]
-  //public void Given_ValidValue_When_TryCreate_Then_InstanceReturned()
-  //{
-  //  string value = $"  {RandomStringGenerator.GetString()}  ";
-  //  Secret? secret = Secret.TryCreate(value);
-  //  Assert.NotNull(secret);
-  //  Assert.Equal(value.Trim(), secret.Value);
-  //}
-
-  //[Theory(DisplayName = "TryCreate: it should return null given a null, empty, or white-space value.")]
-  //[InlineData(null)]
-  //[InlineData("")]
-  //[InlineData("  ")]
-  //public void Given_NullEmptyOrWhiteSpace_When_TryCreate_Then_NullReturned(string? value)
-  //{
-  //  Assert.Null(Secret.TryCreate(value));
-  //}
-
-  //[Fact(DisplayName = "TryCreate: it should throw ValidationException given an invalid value.")]
-  //public void Given_InvalidValue_When_TryCreate_Then_ValidationException()
-  //{
-  //  string value = RandomStringGenerator.GetString(999);
-  //  var exception = Assert.Throws<ValidationException>(() => Secret.TryCreate(value));
-
-  //  ValidationFailure failure = Assert.Single(exception.Errors);
-  //  Assert.Equal("MaximumLengthValidator", failure.ErrorCode);
-  //  Assert.Equal("Value", failure.PropertyName);
-  //} // TODO(fpion): TryCreate
 }

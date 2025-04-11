@@ -18,8 +18,33 @@ public sealed class Actor
   public string? EmailAddress { get; private set; }
   public string? PictureUrl { get; private set; }
 
+  public Actor(User user)
+  {
+    Key = user.StreamId;
+
+    RealmId = user.RealmId;
+    Realm = user.Realm;
+
+    Type = ActorType.User;
+    Id = user.Id;
+
+    Update(user);
+  }
+
   private Actor()
   {
+  }
+
+  public void Update(User user)
+  {
+    if (Type != ActorType.User)
+    {
+      throw new NotImplementedException(); // TODO(fpion): implement
+    }
+
+    DisplayName = user.FullName ?? user.UniqueName;
+    EmailAddress = user.EmailAddress;
+    PictureUrl = user.Picture;
   }
 
   public override bool Equals(object? obj) => obj is Actor actor && actor.Key == Key;

@@ -10,6 +10,7 @@ using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Users;
+using Krakenar.Core.Users.Events;
 using Krakenar.EntityFrameworkCore.Relational.Actors;
 using Krakenar.EntityFrameworkCore.Relational.Handlers;
 using Krakenar.EntityFrameworkCore.Relational.Queriers;
@@ -24,6 +25,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarEntityFrameworkCoreRelational(this IServiceCollection services)
   {
     return services
+      .AddKrakenarEventHandlers()
       .AddKrakenarQueriers()
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
       .AddScoped<IActorService, ActorService>()
@@ -46,7 +48,8 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<RoleCreated>, RoleEvents>()
       .AddScoped<IEventHandler<RoleDeleted>, RoleEvents>()
       .AddScoped<IEventHandler<RoleUniqueNameChanged>, RoleEvents>()
-      .AddScoped<IEventHandler<RoleUpdated>, RoleEvents>();
+      .AddScoped<IEventHandler<RoleUpdated>, RoleEvents>()
+      .AddScoped<IEventHandler<UserCreated>, UserEvents>();
   }
 
   public static IServiceCollection AddKrakenarQueriers(this IServiceCollection services)

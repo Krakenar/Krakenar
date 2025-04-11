@@ -24,6 +24,8 @@ public record Locale
     Culture = culture;
   }
 
+  public static Locale? TryCreate(string? value) => string.IsNullOrWhiteSpace(value) ? null : new(value);
+
   public override string ToString() => $"{Culture.DisplayName} ({Code})";
 
   private class Validator : AbstractValidator<Locale>
