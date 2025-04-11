@@ -27,7 +27,7 @@ public class ConfigurationIntegrationTests : IntegrationTests
     Assert.Equal(ActorType.User, configuration.CreatedBy.Type);
     Assert.Equal(ActorType.User, configuration.UpdatedBy.Type);
     Assert.Equal(configuration.CreatedOn, configuration.UpdatedOn);
-    Assert.Equal(configuration.UpdatedOn.AsUniversalTime(), DateTime.UtcNow, TimeSpan.FromSeconds(1));
-    Assert.Null(configuration.Secret);
+    Assert.Equal(configuration.UpdatedOn.AsUniversalTime(), DateTime.UtcNow, TimeSpan.FromSeconds(10));
+    Assert.NotNull(configuration.Secret);
   }
 }

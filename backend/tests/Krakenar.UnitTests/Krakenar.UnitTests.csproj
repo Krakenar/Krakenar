@@ -30,13 +30,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Krakenar.Core\Krakenar.Core.csproj" />
+    <ProjectReference Include="..\..\src\Krakenar.Infrastructure\Krakenar.Infrastructure.csproj" />
     <ProjectReference Include="..\Krakenar.Tests\Krakenar.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="System.Globalization" />
     <Using Include="System.Reflection" />
+    <Using Include="System.Security.Cryptography" />
+    <Using Include="System.Text.Encodings.Web" />
+    <Using Include="System.Text.Json" />
     <Using Include="Xunit" />
   </ItemGroup>
 

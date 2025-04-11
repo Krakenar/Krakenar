@@ -48,6 +48,8 @@ public abstract class IntegrationTests : IAsyncLifetime
         throw new DatabaseProviderNotSupportedException(_databaseProvider);
     }
 
+    services.AddSingleton<IApplicationContext>(new TestApplicationContext());
+
     ServiceProvider = services.BuildServiceProvider();
 
     KrakenarContext = ServiceProvider.GetRequiredService<KrakenarContext>();
@@ -62,6 +64,8 @@ public abstract class IntegrationTests : IAsyncLifetime
     StringBuilder sql = new();
     TableId[] tables =
     [
+      KrakenarDb.Languages.Table,
+      KrakenarDb.Users.Table,
       KrakenarDb.Configuration.Table,
       KrakenarDb.Actors.Table,
       EventDb.Streams.Table
