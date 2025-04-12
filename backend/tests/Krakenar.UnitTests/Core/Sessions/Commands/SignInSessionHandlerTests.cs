@@ -43,23 +43,30 @@ public class SignInSessionHandlerTests
   [Fact(DisplayName = "It should create a new ephemereal session.")]
   public async Task Given_Ephemereal_When_HandleAsync_Then_SessionCreated()
   {
-    SessionDto session = new();
-    _sessionQuerier.Setup(x => x.ReadAsync(It.IsAny<Session>(), _cancellationToken)).ReturnsAsync(session);
+    SessionDto dto = new();
+    _sessionQuerier.Setup(x => x.ReadAsync(It.IsAny<Session>(), _cancellationToken)).ReturnsAsync(dto);
+
+    Session? session = null;
+    _sessionRepository.Setup(x => x.SaveAsync(It.IsAny<Session>(), _cancellationToken)).Callback<Session, CancellationToken>((s, _) => session = s);
 
     SignInSessionPayload payload = new(_user.UniqueName.Value, Password);
     SignInSession command = new(payload);
     SessionDto result = await _handler.HandleAsync(command, _cancellationToken);
-    Assert.Same(session, result);
+    Assert.Same(dto, result);
     Assert.Null(result.RefreshToken);
 
     Assert.Contains(_user.Changes, change => change is UserSignedIn signedIn && signedIn.ActorId?.Value == _user.Id.Value);
-
     _userService.Verify(x => x.SaveAsync(_user, _cancellationToken), Times.Once);
-    _sessionRepository.Verify(x => x.SaveAsync(
-      It.Is<Session>(s => s.CreatedBy.HasValue && s.UpdatedBy.HasValue && s.CreatedBy == s.UpdatedBy && s.CreatedBy.Value.Value == s.UserId.Value
-        && !s.RealmId.HasValue && s.EntityId != Guid.Empty
-        && s.UserId == _user.Id && !s.IsPersistent && s.IsActive && s.CustomAttributes.Count == 0),
-      _cancellationToken), Times.Once);
+
+    Assert.NotNull(session);
+    Assert.Equal(_user.Id.Value, session.CreatedBy?.Value);
+    Assert.Equal(_user.Id.Value, session.UpdatedBy?.Value);
+    Assert.Equal(_user.RealmId, session.RealmId);
+    Assert.NotEqual(Guid.Empty, session.EntityId);
+    Assert.Equal(_user.Id, session.UserId);
+    Assert.False(session.IsPersistent);
+    Assert.True(session.IsActive);
+    Assert.Empty(session.CustomAttributes);
   }
 
   [Fact(DisplayName = "It should create a new persistent session.")]
@@ -71,8 +78,8 @@ public class SignInSessionHandlerTests
     RealmId realmId = RealmId.NewId();
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
-    SessionDto session = new();
-    _sessionQuerier.Setup(x => x.ReadAsync(It.IsAny<Session>(), _cancellationToken)).ReturnsAsync(session);
+    SessionDto dto = new();
+    _sessionQuerier.Setup(x => x.ReadAsync(It.IsAny<Session>(), _cancellationToken)).ReturnsAsync(dto);
 
     User user = new(_user.UniqueName, new Base64Password(Password), actorId, UserId.NewId(realmId));
 
@@ -85,6 +92,9 @@ public class SignInSessionHandlerTests
     Base64Password secret = new(secretString);
     _passwordService.Setup(x => x.GenerateBase64(RefreshToken.SecretLength, out secretString)).Returns(secret);
 
+    Session? session = null;
+    _sessionRepository.Setup(x => x.SaveAsync(It.IsAny<Session>(), _cancellationToken)).Callback<Session, CancellationToken>((s, _) => session = s);
+
     SignInSessionPayload payload = new(user.Email.Address, Password, isPersistent: true)
     {
       Id = Guid.NewGuid()
@@ -93,7 +103,7 @@ public class SignInSessionHandlerTests
     payload.CustomAttributes.Add(new CustomAttribute("AdditionalInformation", $@"{{""User-Agent"":""{_faker.Internet.UserAgent()}""}}"));
     SignInSession command = new(payload);
     SessionDto result = await _handler.HandleAsync(command, _cancellationToken);
-    Assert.Same(session, result);
+    Assert.Same(dto, result);
 
     Assert.NotNull(result.RefreshToken);
     RefreshToken refreshToken = RefreshToken.Decode(result.RefreshToken, realmId);
@@ -102,13 +112,22 @@ public class SignInSessionHandlerTests
     Assert.Equal(secretString, refreshToken.Secret);
 
     Assert.Contains(user.Changes, change => change is UserSignedIn signedIn && signedIn.ActorId == actorId);
-
     _userService.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
-    _sessionRepository.Verify(x => x.SaveAsync(
-      It.Is<Session>(s => s.CreatedBy.HasValue && s.UpdatedBy.HasValue && s.CreatedBy == s.UpdatedBy && s.CreatedBy == actorId
-        && s.RealmId == realmId && s.EntityId == payload.Id.Value
-        && s.UserId == user.Id && s.IsPersistent && s.IsActive && s.CustomAttributes.Count == 2),
-      _cancellationToken), Times.Once);
+
+    Assert.NotNull(session);
+    Assert.Equal(actorId, session.CreatedBy);
+    Assert.Equal(actorId, session.UpdatedBy);
+    Assert.Equal(realmId, session.RealmId);
+    Assert.Equal(payload.Id.Value, session.EntityId);
+    Assert.Equal(user.Id, session.UserId);
+    Assert.True(session.IsPersistent);
+    Assert.True(session.IsActive);
+
+    Assert.Equal(payload.CustomAttributes.Count, session.CustomAttributes.Count);
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Equal(customAttribute.Value, session.CustomAttributes[new Identifier(customAttribute.Key)]);
+    }
   }
 
   [Fact(DisplayName = "It should throw IdAlreadyUsedException when the ID is already used.")]

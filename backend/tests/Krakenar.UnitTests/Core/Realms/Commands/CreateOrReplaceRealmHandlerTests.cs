@@ -65,27 +65,55 @@ public class CreateOrReplaceRealmHandlerTests
     RealmDto dto = new();
     _realmQuerier.Setup(x => x.ReadAsync(It.IsAny<Realm>(), _cancellationToken)).ReturnsAsync(dto);
 
+    Realm? realm = null;
+    _realmService.Setup(x => x.SaveAsync(It.IsAny<Realm>(), _cancellationToken)).Callback<Realm, CancellationToken>((r, _) => realm = r);
+
+    Language? language = null;
+    _languageService.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((l, _) => language = l);
+
     CreateOrReplaceRealm command = new(id, payload, Version: null);
     CreateOrReplaceRealmResult result = await _handler.HandleAsync(command, _cancellationToken);
     Assert.True(result.Created);
     Assert.NotNull(result.Realm);
     Assert.Same(dto, result.Realm);
 
-    if (id.HasValue)
+    Assert.NotNull(realm);
+    Assert.Equal(actorId, realm.CreatedBy);
+    Assert.Equal(actorId, realm.UpdatedBy);
+    Assert.Equal(payload.UniqueSlug, realm.UniqueSlug.Value);
+    Assert.Equal(payload.DisplayName.Trim(), realm.DisplayName?.Value);
+    Assert.Equal(payload.Description.Trim(), realm.Description?.Value);
+    Assert.Equal(secret, realm.Secret);
+    Assert.Equal(payload.Url.Trim(), realm.Url?.Value);
+    Assert.Equal(new Settings.UniqueNameSettings(payload.UniqueNameSettings), realm.UniqueNameSettings);
+    Assert.Equal(new Settings.PasswordSettings(payload.PasswordSettings), realm.PasswordSettings);
+    Assert.Equal(payload.RequireUniqueEmail, realm.RequireUniqueEmail);
+    Assert.Equal(payload.RequireConfirmedAccount, realm.RequireConfirmedAccount);
+
+    Assert.NotNull(language);
+    Assert.Equal(actorId, language.CreatedBy);
+    Assert.Equal(actorId, language.UpdatedBy);
+    Assert.Equal(realm.Id, language.RealmId);
+    Assert.NotEqual(Guid.Empty, language.EntityId);
+    Assert.True(language.IsDefault);
+    Assert.Equal(locale, language.Locale);
+
+    Assert.Equal(payload.CustomAttributes.Count, realm.CustomAttributes.Count);
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
     {
-      _realmRepository.Verify(x => x.LoadAsync(It.Is<RealmId>(i => i.ToGuid() == id.Value), _cancellationToken), Times.Once);
+      Assert.Equal(customAttribute.Value, realm.CustomAttributes[new Identifier(customAttribute.Key)]);
     }
 
-    _realmService.Verify(x => x.SaveAsync(
-      It.Is<Realm>(r => (!id.HasValue || id.Value == r.Id.ToGuid()) && r.CreatedBy == actorId && r.UpdatedBy == actorId && r.UniqueSlug.Value == payload.UniqueSlug
-        && r.DisplayName != null && r.DisplayName.Value == payload.DisplayName.Trim() && r.Description != null && r.Description.Value == payload.Description.Trim()
-        && r.Secret.Equals(secret) && r.Url != null && r.Url.Value == payload.Url
-        && r.UniqueNameSettings.Equals(new Settings.UniqueNameSettings(payload.UniqueNameSettings)) && r.PasswordSettings.Equals(new Settings.PasswordSettings(payload.PasswordSettings))
-        && r.RequireUniqueEmail == payload.RequireUniqueEmail && r.RequireConfirmedAccount == payload.RequireConfirmedAccount
-        && r.CustomAttributes.Count == 1 && r.CustomAttributes[new Identifier("Key")] == "Value"),
-      _cancellationToken), Times.Once);
+    if (id.HasValue)
+    {
+      Assert.Equal(id.Value, realm.Id.ToGuid());
 
-    _languageService.Verify(x => x.SaveAsync(It.Is<Language>(l => l.Locale.Equals(locale) && l.IsDefault), _cancellationToken), Times.Once);
+      _realmRepository.Verify(x => x.LoadAsync(It.Is<RealmId>(i => i.ToGuid() == id.Value), _cancellationToken), Times.Once);
+    }
+    else
+    {
+      Assert.NotEqual(Guid.Empty, realm.Id.ToGuid());
+    }
   }
 
   [Fact(DisplayName = "It should replace an existing realm.")]
@@ -118,17 +146,19 @@ public class CreateOrReplaceRealmHandlerTests
     Assert.NotNull(result.Realm);
     Assert.Same(dto, result.Realm);
 
+    Assert.Equal(actorId, realm.UpdatedBy);
+    Assert.Equal(payload.UniqueSlug, realm.UniqueSlug.Value);
+    Assert.Equal(payload.DisplayName.Trim(), realm.DisplayName?.Value);
+    Assert.Equal(payload.Description.Trim(), realm.Description?.Value);
+    Assert.Equal(secret, realm.Secret);
+    Assert.Equal(payload.Url.Trim(), realm.Url?.Value);
+    Assert.Equal(new Settings.UniqueNameSettings(payload.UniqueNameSettings), realm.UniqueNameSettings);
+    Assert.Equal(new Settings.PasswordSettings(payload.PasswordSettings), realm.PasswordSettings);
+    Assert.Equal(payload.RequireUniqueEmail, realm.RequireUniqueEmail);
+    Assert.Equal(payload.RequireConfirmedAccount, realm.RequireConfirmedAccount);
+
     _realmRepository.Verify(x => x.LoadAsync(It.IsAny<RealmId>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), Times.Never);
-
-    _realmService.Verify(x => x.SaveAsync(
-      It.Is<Realm>(r => r.Equals(realm) && r.CreatedBy == actorId && r.UpdatedBy == actorId && r.UniqueSlug.Value == payload.UniqueSlug
-        && r.DisplayName != null && r.DisplayName.Value == payload.DisplayName.Trim() && r.Description != null && r.Description.Value == payload.Description.Trim()
-        && r.Url != null && r.Url.Value == payload.Url
-        && r.UniqueNameSettings.Equals(new Settings.UniqueNameSettings(payload.UniqueNameSettings)) && r.PasswordSettings.Equals(new Settings.PasswordSettings(payload.PasswordSettings))
-        && r.RequireUniqueEmail == payload.RequireUniqueEmail && r.RequireConfirmedAccount == payload.RequireConfirmedAccount
-        && r.CustomAttributes.Count == 1 && r.CustomAttributes[new Identifier("Key")] == "Value"),
-      _cancellationToken), Times.Once);
-
+    _realmService.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
     _languageService.Verify(x => x.SaveAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
@@ -208,17 +238,19 @@ public class CreateOrReplaceRealmHandlerTests
     Assert.NotNull(result.Realm);
     Assert.Same(dto, result.Realm);
 
+    Assert.Equal(actorId, realm.UpdatedBy);
+    Assert.Equal(payload.UniqueSlug, realm.UniqueSlug.Value);
+    Assert.Equal(payload.DisplayName.Trim(), realm.DisplayName?.Value);
+    Assert.Equal(description, realm.Description);
+    Assert.Equal(secret, realm.Secret);
+    Assert.Equal(payload.Url.Trim(), realm.Url?.Value);
+    Assert.Equal(new Settings.UniqueNameSettings(payload.UniqueNameSettings), realm.UniqueNameSettings);
+    Assert.Equal(new Settings.PasswordSettings(payload.PasswordSettings), realm.PasswordSettings);
+    Assert.Equal(payload.RequireUniqueEmail, realm.RequireUniqueEmail);
+    Assert.Equal(payload.RequireConfirmedAccount, realm.RequireConfirmedAccount);
+
     _realmRepository.Verify(x => x.LoadAsync(reference.Id, reference.Version, _cancellationToken), Times.Once);
-
-    _realmService.Verify(x => x.SaveAsync(
-      It.Is<Realm>(r => r.Equals(realm) && r.CreatedBy == actorId && r.UpdatedBy == actorId && r.UniqueSlug.Value == payload.UniqueSlug
-        && r.DisplayName != null && r.DisplayName.Value == payload.DisplayName.Trim() && r.Description != null && r.Description == description
-        && r.Url != null && r.Url.Value == payload.Url
-        && r.UniqueNameSettings.Equals(new Settings.UniqueNameSettings(payload.UniqueNameSettings)) && r.PasswordSettings.Equals(new Settings.PasswordSettings(payload.PasswordSettings))
-        && r.RequireUniqueEmail == payload.RequireUniqueEmail && r.RequireConfirmedAccount == payload.RequireConfirmedAccount
-        && r.CustomAttributes.Count == 1 && r.CustomAttributes[new Identifier("Key")] == "Value"),
-      _cancellationToken), Times.Once);
-
+    _realmService.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
     _languageService.Verify(x => x.SaveAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 }

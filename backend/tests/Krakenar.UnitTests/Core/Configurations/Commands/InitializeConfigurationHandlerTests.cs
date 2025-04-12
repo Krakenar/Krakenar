@@ -59,26 +59,39 @@ public class InitializeConfigurationHandlerTests
     Base64Password password = new(command.Password);
     _passwordService.Setup(x => x.ValidateAndHash(command.Password, It.Is<PasswordSettings>(s => s.Equals(new PasswordSettings())))).Returns(password);
 
+    Configuration? configuration = null;
+    _configurationRepository.Setup(x => x.SaveAsync(It.IsAny<Configuration>(), _cancellationToken)).Callback<Configuration, CancellationToken>((c, _) => configuration = c);
+
+    Language? language = null;
+    _languageService.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((l, _) => language = l);
+
+    User? user = null;
+    _userService.Setup(x => x.SaveAsync(It.IsAny<User>(), _cancellationToken)).Callback<User, CancellationToken>((u, _) => user = u);
+
     await _handler.HandleAsync(command, _cancellationToken);
 
-    _configurationRepository.Verify(x => x.SaveAsync(
-      It.Is<Configuration>(c => c.CreatedBy.HasValue && c.UpdatedBy.HasValue && c.CreatedBy.Equals(c.UpdatedBy)
-        && c.Secret.Equals(secret)
-        && c.UniqueNameSettings.Equals(new UniqueNameSettings())
-        && c.PasswordSettings.Equals(new PasswordSettings())
-        && c.LoggingSettings.Equals(new LoggingSettings())),
-      _cancellationToken), Times.Once);
+    Assert.NotNull(user);
+    Assert.Equal(user.Id.Value, user.CreatedBy?.Value);
+    Assert.Equal(user.Id.Value, user.UpdatedBy?.Value);
+    Assert.Null(user.RealmId);
+    Assert.NotEqual(Guid.Empty, user.EntityId);
+    Assert.Equal(command.UniqueName, user.UniqueName.Value);
+    Assert.True(user.HasPassword);
 
-    _languageService.Verify(x => x.SaveAsync(
-      It.Is<Language>(l => l.CreatedBy.HasValue && l.UpdatedBy.HasValue && l.CreatedBy.Equals(l.UpdatedBy)
-        && !l.RealmId.HasValue && !l.EntityId.Equals(Guid.Empty)
-        && l.IsDefault && l.Locale.Code == command.DefaultLocale),
-      _cancellationToken), Times.Once);
+    Assert.NotNull(language);
+    Assert.Equal(user.Id.Value, language.CreatedBy?.Value);
+    Assert.Equal(user.Id.Value, language.UpdatedBy?.Value);
+    Assert.Null(language.RealmId);
+    Assert.NotEqual(Guid.Empty, language.EntityId);
+    Assert.True(language.IsDefault);
+    Assert.Equal(command.DefaultLocale, language.Locale.Code);
 
-    _userService.Verify(x => x.SaveAsync(
-      It.Is<User>(u => u.CreatedBy.HasValue && u.UpdatedBy.HasValue && u.CreatedBy.Equals(u.UpdatedBy) && u.CreatedBy.Value.Value.Equals(u.Id.Value)
-        && !u.RealmId.HasValue && !u.EntityId.Equals(Guid.Empty)
-        && u.UniqueName.Value.Equals(command.UniqueName) && u.HasPassword),
-      _cancellationToken), Times.Once);
+    Assert.NotNull(configuration);
+    Assert.Equal(user.Id.Value, configuration.CreatedBy?.Value);
+    Assert.Equal(user.Id.Value, configuration.UpdatedBy?.Value);
+    Assert.Equal(secret, configuration.Secret);
+    Assert.Equal(new UniqueNameSettings(), configuration.UniqueNameSettings);
+    Assert.Equal(new PasswordSettings(), configuration.PasswordSettings);
+    Assert.Equal(new LoggingSettings(), configuration.LoggingSettings);
   }
 }
