@@ -9,6 +9,7 @@ using Krakenar.Core.Realms.Events;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
 using Krakenar.Core.Sessions;
+using Krakenar.Core.Sessions.Events;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Events;
 using Krakenar.EntityFrameworkCore.Relational.Actors;
@@ -49,6 +50,11 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<RoleDeleted>, RoleEvents>()
       .AddScoped<IEventHandler<RoleUniqueNameChanged>, RoleEvents>()
       .AddScoped<IEventHandler<RoleUpdated>, RoleEvents>()
+      .AddScoped<IEventHandler<SessionCreated>, SessionEvents>()
+      .AddScoped<IEventHandler<SessionDeleted>, SessionEvents>()
+      .AddScoped<IEventHandler<SessionRenewed>, SessionEvents>()
+      .AddScoped<IEventHandler<SessionSignedOut>, SessionEvents>()
+      .AddScoped<IEventHandler<SessionUpdated>, SessionEvents>()
       .AddScoped<IEventHandler<UserAddressChanged>, UserEvents>()
       .AddScoped<IEventHandler<UserAuthenticated>, UserEvents>()
       .AddScoped<IEventHandler<UserCreated>, UserEvents>()
