@@ -2,7 +2,8 @@
 
 namespace Krakenar.Core.Tokens;
 
-public interface ISecretService // TODO(fpion): implement
+public interface ISecretService
 {
+  Secret Encrypt(string secret, RealmId? realmId = null);
   Secret Generate(RealmId? realmId = null);
 }

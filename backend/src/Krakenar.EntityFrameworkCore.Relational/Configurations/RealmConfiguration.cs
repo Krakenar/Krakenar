@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
-public class RealmConfiguration : AggregateConfiguration<Realm>, IEntityTypeConfiguration<Realm>
+public sealed class RealmConfiguration : AggregateConfiguration<Realm>, IEntityTypeConfiguration<Realm>
 {
   public override void Configure(EntityTypeBuilder<Realm> builder)
   {

@@ -6,8 +6,11 @@ public static class DependencyInjectionExtensions
 {
   public static IServiceCollection AddKrakenarWeb(this IServiceCollection services)
   {
-    services.AddControllers();
+    services.AddControllersWithViews()
+      .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-    return services.AddSingleton<IApplicationContext, HttpApplicationContext>();
+    return services
+      .AddHttpContextAccessor()
+      .AddSingleton<IApplicationContext, HttpApplicationContext>();
   }
 }

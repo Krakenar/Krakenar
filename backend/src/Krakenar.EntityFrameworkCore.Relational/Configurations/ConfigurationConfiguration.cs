@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
-public class ConfigurationConfiguration : IEntityTypeConfiguration<Configuration>
+public sealed class ConfigurationConfiguration : IEntityTypeConfiguration<Configuration>
 {
   public void Configure(EntityTypeBuilder<Configuration> builder)
   {

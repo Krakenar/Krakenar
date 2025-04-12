@@ -1,12 +1,11 @@
 ﻿using Krakenar.Contracts.Settings;
-using Krakenar.Core;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Events;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public class Realm : Aggregate
+public sealed class Realm : Aggregate
 {
   public int RealmId { get; private set; }
   public Guid Id { get; private set; }
@@ -37,7 +36,11 @@ public class Realm : Aggregate
   public string? CustomAttributes { get; private set; }
 
   public List<Actor> Actors { get; private set; } = [];
+  public List<Language> Languages { get; private set; } = [];
   public List<Role> Roles { get; private set; } = [];
+  public List<Session> Sessions { get; private set; } = [];
+  public List<User> Users { get; private set; } = [];
+  public List<UserIdentifier> UserIdentifiers { get; private set; } = [];
 
   public Realm(RealmCreated @event) : base(@event)
   {
@@ -104,7 +107,7 @@ public class Realm : Aggregate
     }
 
     Dictionary<string, string> customAttributes = GetCustomAttributes();
-    foreach (KeyValuePair<Identifier, string?> customAttribute in @event.CustomAttributes)
+    foreach (KeyValuePair<Core.Identifier, string?> customAttribute in @event.CustomAttributes)
     {
       if (customAttribute.Value is null)
       {
@@ -127,6 +130,14 @@ public class Realm : Aggregate
     CustomAttributes = customAttributes.Count < 1 ? null : JsonSerializer.Serialize(customAttributes);
   }
 
+  public PasswordSettings GetPasswordSettings() => new(
+    RequiredPasswordLength,
+    RequiredPasswordUniqueChars,
+    PasswordsRequireNonAlphanumeric,
+    PasswordsRequireLowercase,
+    PasswordsRequireUppercase,
+    PasswordsRequireDigit,
+    PasswordHashingStrategy);
   private void SetPasswordSettings(IPasswordSettings passwordSettings)
   {
     RequiredPasswordLength = passwordSettings.RequiredLength;
@@ -137,6 +148,8 @@ public class Realm : Aggregate
     PasswordsRequireDigit = passwordSettings.RequireDigit;
     PasswordHashingStrategy = passwordSettings.HashingStrategy;
   }
+
+  public UniqueNameSettings GetUniqueNameSettings() => new(AllowedUniqueNameCharacters);
   private void SetUniqueNameSettings(IUniqueNameSettings uniqueNameSettings)
   {
     AllowedUniqueNameCharacters = uniqueNameSettings.AllowedCharacters;

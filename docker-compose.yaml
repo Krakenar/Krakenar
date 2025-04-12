@@ -1,13 +1,45 @@
 name: krakenar
 services:
-  krakenar:
-    build:
-      context: ./backend
-      dockerfile: /src/Krakenar/Dockerfile
-    image: krakenar
-    container_name: Krakenar
+  krakenar_mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: Krakenar_mssql
+    restart: unless-stopped
+    user: root
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: H8A9VsMra2vqmpGE
+    ports:
+      - 1446:1433
+    volumes:
+      - mssql_backup:/var/opt/mssql/backup
+      - mssql_data:/var/opt/mssql/data
+      - mssql_log:/var/opt/mssql/log
+
+  krakenar_postgres:
+    image: postgres
+    container_name: Krakenar_postgres
     restart: unless-stopped
     environment:
-      ASPNETCORE_Environment: Development
+      POSTGRES_PASSWORD: w7eZ5fSW6KQpdBX2
     ports:
-      - 8096:8080
+      - 5446:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # krakenar:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: /src/Krakenar/Dockerfile
+  #   image: krakenar
+  #   container_name: Krakenar
+  #   restart: unless-stopped
+  #   environment:
+  #     ASPNETCORE_Environment: Development
+  #   ports:
+  #     - 8096:8080
+
+volumes:
+  mssql_backup:
+  mssql_data:
+  mssql_log:
+  postgres_data:

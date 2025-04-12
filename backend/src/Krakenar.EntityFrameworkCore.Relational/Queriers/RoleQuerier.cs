@@ -47,7 +47,7 @@ public class RoleQuerier : IRoleQuerier
       .Include(x => x.Realm)
       .SingleOrDefaultAsync(x => x.StreamId == id.Value, cancellationToken);
 
-    return role is null ? null : await MapAsync(role, cancellationToken);
+    return role is null ? null : await MapAsync(role, cancellationToken); // TODO(fpion): will not work if entity is different realm than application context!
   }
   public virtual async Task<RoleDto?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
@@ -81,6 +81,6 @@ public class RoleQuerier : IRoleQuerier
     Mapper mapper = new(actors);
 
     Realm? realm = ApplicationContext.Realm;
-    return roles.Select(role => role.Realm is null ? mapper.ToRole(role, realm) : mapper.ToRole(role)).ToList().AsReadOnly();
+    return roles.Select(role => mapper.ToRole(role, realm)).ToList().AsReadOnly();
   }
 }

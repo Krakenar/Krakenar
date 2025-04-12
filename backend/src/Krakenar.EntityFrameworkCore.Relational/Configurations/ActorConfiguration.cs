@@ -9,7 +9,7 @@ using ActorEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Actor;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
-public class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
+public sealed class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
 {
   public void Configure(EntityTypeBuilder<ActorEntity> builder)
   {

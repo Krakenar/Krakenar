@@ -74,7 +74,7 @@ public class RenewSessionHandlerTests
     }
 
     Assert.Contains(session.Changes, change => change is SessionRenewed renewed
-      && renewed.Secret.Equals(newSecret)
+      && renewed.Secret == newSecret
       && renewed.ActorId == (actorId ?? new ActorId(user.Id.Value)));
     Assert.Contains(session.Changes, change => change is SessionUpdated updated
       && updated.CustomAttributes.Count == 1

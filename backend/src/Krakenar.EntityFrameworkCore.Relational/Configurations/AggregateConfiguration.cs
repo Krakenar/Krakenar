@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
-public class AggregateConfiguration<T> where T : Aggregate
+public abstract class AggregateConfiguration<T> where T : Aggregate
 {
   public virtual void Configure(EntityTypeBuilder<T> builder)
   {

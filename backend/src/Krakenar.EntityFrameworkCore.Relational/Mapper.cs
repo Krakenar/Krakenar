@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Actors;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Logging;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
@@ -10,15 +11,16 @@ using Logitar.EventSourcing;
 using ActorEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Actor;
 using AggregateEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Aggregate;
 using ConfigurationAggregate = Krakenar.Core.Configurations.Configuration;
+using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 using RoleEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Role;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
-public class Mapper
+public sealed class Mapper
 {
-  protected virtual Dictionary<ActorId, Actor> Actors { get; } = [];
-  protected virtual Actor System { get; } = new();
+  private readonly Dictionary<ActorId, Actor> _actors = [];
+  private readonly Actor _system = new();
 
   public Mapper()
   {
@@ -28,11 +30,11 @@ public class Mapper
   {
     foreach (KeyValuePair<ActorId, Actor> actor in actors)
     {
-      Actors[actor.Key] = actor.Value;
+      _actors[actor.Key] = actor.Value;
     }
   }
 
-  public virtual Actor ToActor(ActorEntity source) => new(source.DisplayName)
+  public static Actor ToActor(ActorEntity source) => new(source.DisplayName)
   {
     Type = source.Type,
     Id = source.Id,
@@ -41,7 +43,7 @@ public class Mapper
     PictureUrl = source.PictureUrl
   };
 
-  public virtual Configuration ToConfiguration(ConfigurationAggregate source)
+  public Configuration ToConfiguration(ConfigurationAggregate source)
   {
     Configuration destination = new()
     {
@@ -56,7 +58,27 @@ public class Mapper
     return destination;
   }
 
-  public virtual Realm ToRealm(RealmEntity source)
+  public Language ToLanguage(LanguageEntity source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    Language destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      IsDefault = source.IsDefault,
+      Locale = new Locale(source.Code)
+    };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Realm ToRealm(RealmEntity source)
   {
     Realm destination = new()
     {
@@ -66,8 +88,8 @@ public class Mapper
       Description = source.Description,
       Secret = source.Secret,
       Url = source.Url,
-      UniqueNameSettings = ToUniqueNameSettings(source),
-      PasswordSettings = ToPasswordSettings(source),
+      UniqueNameSettings = source.GetUniqueNameSettings(),
+      PasswordSettings = source.GetPasswordSettings(),
       RequireUniqueEmail = source.RequireUniqueEmail,
       RequireConfirmedAccount = source.RequireConfirmedAccount
     };
@@ -77,31 +99,14 @@ public class Mapper
 
     return destination;
   }
-  protected virtual PasswordSettings ToPasswordSettings(RealmEntity source) => new(
-    source.RequiredPasswordLength,
-    source.RequiredPasswordUniqueChars,
-    source.PasswordsRequireNonAlphanumeric,
-    source.PasswordsRequireLowercase,
-    source.PasswordsRequireUppercase,
-    source.PasswordsRequireDigit,
-    source.PasswordHashingStrategy);
-  protected virtual UniqueNameSettings ToUniqueNameSettings(RealmEntity source) => new(source.AllowedUniqueNameCharacters);
 
-  public virtual Role ToRole(RoleEntity source)
+  public Role ToRole(RoleEntity source, Realm? realm)
   {
-    Realm? realm = null;
-    if (source.RealmId.HasValue)
+    if (source.RealmId is not null && realm is null)
     {
-      if (source.Realm is null)
-      {
-        throw new ArgumentException($"The {nameof(source.Realm)} is required.", nameof(source));
-      }
-      realm = ToRealm(source.Realm);
+      throw new ArgumentNullException(nameof(realm));
     }
-    return ToRole(source, realm);
-  }
-  public virtual Role ToRole(RoleEntity source, Realm? realm)
-  {
+
     Role destination = new()
     {
       Id = source.Id,
@@ -117,27 +122,27 @@ public class Mapper
     return destination;
   }
 
-  protected virtual void MapAggregate(AggregateRoot source, Aggregate destination)
+  private void MapAggregate(AggregateRoot source, Aggregate destination)
   {
     destination.Version = source.Version;
 
-    destination.CreatedBy = TryFindActor(source.CreatedBy) ?? System;
+    destination.CreatedBy = TryFindActor(source.CreatedBy) ?? _system;
     destination.CreatedOn = source.CreatedOn.AsUniversalTime();
 
-    destination.UpdatedBy = TryFindActor(source.UpdatedBy) ?? System;
+    destination.UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system;
     destination.UpdatedOn = source.UpdatedOn.AsUniversalTime();
   }
-  protected virtual void MapAggregate(AggregateEntity source, Aggregate destination)
+  private void MapAggregate(AggregateEntity source, Aggregate destination)
   {
     destination.Version = source.Version;
 
-    destination.CreatedBy = TryFindActor(source.CreatedBy) ?? System;
+    destination.CreatedBy = TryFindActor(source.CreatedBy) ?? _system;
     destination.CreatedOn = source.CreatedOn.AsUniversalTime();
 
-    destination.UpdatedBy = TryFindActor(source.UpdatedBy) ?? System;
+    destination.UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system;
     destination.UpdatedOn = source.UpdatedOn.AsUniversalTime();
   }
 
-  protected virtual Actor? TryFindActor(string? id) => id is null ? null : TryFindActor(new ActorId(id));
-  protected virtual Actor? TryFindActor(ActorId? id) => id.HasValue && Actors.TryGetValue(id.Value, out Actor? actor) ? actor : null;
+  private Actor? TryFindActor(string? id) => id is null ? null : TryFindActor(new ActorId(id));
+  private Actor? TryFindActor(ActorId? id) => id.HasValue && _actors.TryGetValue(id.Value, out Actor? actor) ? actor : null;
 }

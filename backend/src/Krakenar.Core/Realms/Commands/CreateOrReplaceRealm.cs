@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Realms;
+using Krakenar.Core.Localization;
 using Krakenar.Core.Realms.Validators;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
@@ -17,20 +18,29 @@ public record CreateOrReplaceRealm(Guid? Id, CreateOrReplaceRealmPayload Payload
 public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual ILanguageQuerier LanguageQuerier { get; }
+  protected virtual ILanguageService LanguageService { get; }
   protected virtual IRealmQuerier RealmQuerier { get; }
   protected virtual IRealmRepository RealmRepository { get; }
   protected virtual IRealmService RealmService { get; }
+  protected virtual ISecretService SecretService { get; }
 
   public CreateOrReplaceRealmHandler(
     IApplicationContext applicationContext,
+    ILanguageQuerier languageQuerier,
+    ILanguageService languageService,
     IRealmQuerier realmQuerier,
     IRealmRepository realmRepository,
-    IRealmService realmService)
+    IRealmService realmService,
+    ISecretService secretService)
   {
     ApplicationContext = applicationContext;
+    LanguageQuerier = languageQuerier;
+    LanguageService = languageService;
     RealmQuerier = realmQuerier;
     RealmRepository = realmRepository;
     RealmService = realmService;
+    SecretService = secretService;
   }
 
   public virtual async Task<CreateOrReplaceRealmResult> HandleAsync(CreateOrReplaceRealm command, CancellationToken cancellationToken)
@@ -47,10 +57,10 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     }
 
     Slug uniqueSlug = new(payload.UniqueSlug);
-    Secret secret = null!; // TODO(fpion): Secret
     ActorId? actorId = ApplicationContext.ActorId;
 
     bool created = false;
+    Language? language = null;
     if (realm is null)
     {
       if (command.Version.HasValue)
@@ -58,8 +68,12 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
         return new CreateOrReplaceRealmResult();
       }
 
+      Secret secret = SecretService.Generate(realmId);
       realm = new(uniqueSlug, secret, actorId, realmId);
       created = true;
+
+      Locale locale = await LanguageQuerier.FindPlatformDefaultLocaleAsync(cancellationToken);
+      language = new Language(locale, isDefault: true, actorId, LanguageId.NewId(realm.Id));
     }
 
     Realm reference = (command.Version.HasValue
@@ -81,10 +95,6 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
       realm.Description = description;
     }
 
-    if (reference.Secret != secret)
-    {
-      realm.Secret = secret;
-    }
     Url? url = Url.TryCreate(payload.Url);
     if (reference.Url != url)
     {
@@ -115,7 +125,10 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     realm.Update(actorId);
     await RealmService.SaveAsync(realm, cancellationToken);
 
-    // TODO(fpion): Default Language
+    if (language is not null)
+    {
+      await LanguageService.SaveAsync(language, cancellationToken);
+    }
 
     RealmDto dto = await RealmQuerier.ReadAsync(realm, cancellationToken);
     return new CreateOrReplaceRealmResult(dto, created);

@@ -31,6 +31,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.Web", "src\Krakena
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar", "src\Krakenar\Krakenar.csproj", "{61D0969E-2CE8-477D-B3E1-9580146BABA2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.IntegrationTests", "tests\Krakenar.IntegrationTests\Krakenar.IntegrationTests.csproj", "{10F6D0D5-1607-484B-B656-BAD527491325}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.EntityFrameworkCore.SqlServer", "src\Krakenar.EntityFrameworkCore.SqlServer\Krakenar.EntityFrameworkCore.SqlServer.csproj", "{2A6D5283-A8BA-4E83-B17A-BD59AD6F4692}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +77,14 @@ Global
 		{61D0969E-2CE8-477D-B3E1-9580146BABA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61D0969E-2CE8-477D-B3E1-9580146BABA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61D0969E-2CE8-477D-B3E1-9580146BABA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10F6D0D5-1607-484B-B656-BAD527491325}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10F6D0D5-1607-484B-B656-BAD527491325}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10F6D0D5-1607-484B-B656-BAD527491325}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10F6D0D5-1607-484B-B656-BAD527491325}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A6D5283-A8BA-4E83-B17A-BD59AD6F4692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A6D5283-A8BA-4E83-B17A-BD59AD6F4692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A6D5283-A8BA-4E83-B17A-BD59AD6F4692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A6D5283-A8BA-4E83-B17A-BD59AD6F4692}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -80,5 +92,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{90ACFE09-4406-4B21-A1EC-02DA42F7BFDE} = {6EDD1CE3-C046-4FEE-BDCE-5B3CFB9968CE}
 		{B799E60E-E4DB-4EA5-877A-809330324893} = {6EDD1CE3-C046-4FEE-BDCE-5B3CFB9968CE}
+		{10F6D0D5-1607-484B-B656-BAD527491325} = {6EDD1CE3-C046-4FEE-BDCE-5B3CFB9968CE}
 	EndGlobalSection
 EndGlobal

@@ -5,6 +5,7 @@ using Krakenar.Core.Configurations.Events;
 using Krakenar.Core.Tokens;
 using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ConfigurationEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Configuration;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
@@ -12,10 +13,12 @@ namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 public class ConfigurationEvents : IEventHandler<ConfigurationInitialized>, IEventHandler<ConfigurationUpdated>
 {
   protected virtual KrakenarContext Context { get; }
+  protected virtual ILogger<ConfigurationEvents> Logger { get; }
 
-  public ConfigurationEvents(KrakenarContext context)
+  public ConfigurationEvents(KrakenarContext context, ILogger<ConfigurationEvents> logger)
   {
     Context = context;
+    Logger = logger;
   }
 
   public virtual async Task HandleAsync(ConfigurationInitialized @event, CancellationToken cancellationToken)
@@ -28,7 +31,8 @@ public class ConfigurationEvents : IEventHandler<ConfigurationInitialized>, IEve
     SetLoggingSettings(configurations, @event.LoggingSettings, @event);
 
     await Context.SaveChangesAsync(cancellationToken);
-    // TODO(fpion): report
+
+    Logger.LogSuccess(@event);
   }
 
   public virtual async Task HandleAsync(ConfigurationUpdated @event, CancellationToken cancellationToken)
@@ -53,7 +57,8 @@ public class ConfigurationEvents : IEventHandler<ConfigurationInitialized>, IEve
     }
 
     await Context.SaveChangesAsync(cancellationToken);
-    // TODO(fpion): report
+
+    Logger.LogSuccess(@event);
   }
 
   private void SetSecret(IDictionary<string, ConfigurationEntity> configurations, Secret secret, DomainEvent @event)

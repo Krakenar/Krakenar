@@ -38,16 +38,16 @@ public class UserTests
     Assert.Empty(_user.Changes);
   }
 
-  //[Fact(DisplayName = "AddRole: it should throw RealmMismatchException when the role is in another realm.")]
-  //public void Given_DifferentRealms_When_AddRole_Then_RealmMismatchException()
-  //{
-  //  Role role = new(new UniqueName(new UniqueNameSettings(), "guest"), actorId: null, new RoleId(Guid.NewGuid(), RealmId.NewId()));
+  [Fact(DisplayName = "AddRole: it should throw RealmMismatchException when the role is in another realm.")]
+  public void Given_DifferentRealms_When_AddRole_Then_RealmMismatchException()
+  {
+    Role role = new(new UniqueName(new UniqueNameSettings(), "guest"), actorId: null, new RoleId(Guid.NewGuid(), RealmId.NewId()));
 
-  //  var exception = Assert.Throws<RealmMismatchException>(() => _user.AddRole(role));
-  //  Assert.Equal(_user.RealmId?.ToGuid(), exception.ExpectedRealmId);
-  //  Assert.Equal(role.RealmId?.ToGuid(), exception.ActualRealmId);
-  //  Assert.Equal("role", exception.PropertyName);
-  //} // TODO(fpion): RealmMismatchException
+    var exception = Assert.Throws<RealmMismatchException>(() => _user.AddRole(role));
+    Assert.Equal(_user.RealmId?.ToGuid(), exception.ExpectedRealmId);
+    Assert.Equal(role.RealmId?.ToGuid(), exception.ActualRealmId);
+    Assert.Equal("role", exception.ParamName);
+  }
 
   [Fact(DisplayName = "Authenticate: it should authenticate the user.")]
   public void Given_CorrectPassword_When_Authenticate_Then_Authenticated()

@@ -46,32 +46,32 @@ public class LocaleTests
     Assert.Equal(string.Format("{0} ({1})", culture.DisplayName, culture.Name), locale.ToString());
   }
 
-  //[Fact(DisplayName = "TryCreate: it should return a new instance given a valid value.")]
-  //public void Given_ValidValue_When_TryCreate_Then_InstanceReturned()
-  //{
-  //  string value = "  fr-CA  ";
-  //  Locale? locale = Locale.TryCreate(value);
-  //  Assert.NotNull(locale);
-  //  Assert.Equal(value.Trim(), locale.Culture.Name);
-  //}
+  [Fact(DisplayName = "TryCreate: it should return a new instance given a valid value.")]
+  public void Given_ValidValue_When_TryCreate_Then_InstanceReturned()
+  {
+    string value = "  fr-CA  ";
+    Locale? locale = Locale.TryCreate(value);
+    Assert.NotNull(locale);
+    Assert.Equal(value.Trim(), locale.Culture.Name);
+  }
 
-  //[Theory(DisplayName = "TryCreate: it should return null given a null, empty, or white-space value.")]
-  //[InlineData(null)]
-  //[InlineData("")]
-  //[InlineData("  ")]
-  //public void Given_NullEmptyOrWhiteSpace_When_TryCreate_Then_NullReturned(string? value)
-  //{
-  //  Assert.Null(Locale.TryCreate(value));
-  //}
+  [Theory(DisplayName = "TryCreate: it should return null given a null, empty, or white-space value.")]
+  [InlineData(null)]
+  [InlineData("")]
+  [InlineData("  ")]
+  public void Given_NullEmptyOrWhiteSpace_When_TryCreate_Then_NullReturned(string? value)
+  {
+    Assert.Null(Locale.TryCreate(value));
+  }
 
-  //[Fact(DisplayName = "TryCreate: it should throw ValidationException given an invalid value.")]
-  //public void Given_InvalidValue_When_TryCreate_Then_ValidationException()
-  //{
-  //  string value = RandomStringGenerator.GetString(999);
-  //  var exception = Assert.Throws<ValidationException>(() => Locale.TryCreate(value));
+  [Fact(DisplayName = "TryCreate: it should throw ValidationException given an invalid value.")]
+  public void Given_InvalidValue_When_TryCreate_Then_ValidationException()
+  {
+    string value = RandomStringGenerator.GetString(999);
+    var exception = Assert.Throws<ValidationException>(() => Locale.TryCreate(value));
 
-  //  Assert.Equal(2, exception.Errors.Count());
-  //  Assert.Contains(exception.Errors, e => e.ErrorCode == "LocaleValidator" && e.PropertyName == "Code");
-  //  Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Code");
-  //} // TODO(fpion): TryCreate
+    Assert.Equal(2, exception.Errors.Count());
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "LocaleValidator" && e.PropertyName == "Code");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Code");
+  }
 }

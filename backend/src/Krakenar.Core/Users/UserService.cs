@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Users.Events;
+using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Users;
 
@@ -95,7 +96,28 @@ public class UserService : IUserService
 
   public virtual async Task SaveAsync(User user, CancellationToken cancellationToken)
   {
-    bool hasUniqueNameChanged = user.Changes.Any(change => change is UserCreated || change is UserUniqueNameChanged);
+    bool hasUniqueNameChanged = false;
+    bool hasEmailAddressChanged = false;
+    foreach (IEvent change in user.Changes)
+    {
+      if (change is UserCreated || change is UserUniqueNameChanged)
+      {
+        hasUniqueNameChanged = true;
+      }
+      else if (change is UserEmailChanged emailChanged)
+      {
+        hasEmailAddressChanged = true;
+      }
+      else if (change is UserIdentifierChanged identifierChanged)
+      {
+        UserId? conflictId = await UserQuerier.FindIdAsync(identifierChanged.Key, identifierChanged.Value, cancellationToken);
+        if (conflictId.HasValue && !conflictId.Value.Equals(user.Id))
+        {
+          throw new CustomIdentifierAlreadyUsedException(user, identifierChanged.Key, identifierChanged.Value, conflictId.Value);
+        }
+      }
+    }
+
     if (hasUniqueNameChanged)
     {
       UserId? conflictId = await UserQuerier.FindIdAsync(user.UniqueName, cancellationToken);
@@ -105,8 +127,14 @@ public class UserService : IUserService
       }
     }
 
-    // TODO(fpion): email address unicity
-    // TODO(fpion): custom identifier unicity
+    if (hasEmailAddressChanged && user.Email is not null && ApplicationContext.RequireUniqueEmail)
+    {
+      IEnumerable<UserId> conflictIds = (await UserQuerier.FindIdsAsync(user.Email, cancellationToken)).Except([user.Id]);
+      if (conflictIds.Any())
+      {
+        throw new EmailAddressAlreadyUsedException(user, conflictIds);
+      }
+    }
 
     await UserRepository.SaveAsync(user, cancellationToken);
   }

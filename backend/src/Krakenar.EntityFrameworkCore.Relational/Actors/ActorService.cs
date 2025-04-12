@@ -43,11 +43,10 @@ public class ActorService : IActorService
         .Where(x => missingKeys.Contains(x.Key))
         .ToArrayAsync(cancellationToken);
 
-      Mapper mapper = new();
       foreach (ActorEntity entity in entities)
       {
         ActorId id = new(entity.Key);
-        Actor actor = mapper.ToActor(entity);
+        Actor actor = Mapper.ToActor(entity);
         actors[id] = actor;
       }
     }
