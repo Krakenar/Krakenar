@@ -58,7 +58,6 @@ public class RoleQuerier : IRoleQuerier
   public virtual async Task<RoleDto?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
     Entities.Role? role = await Roles.AsNoTracking()
-      .Include(x => x.Realm)
       .WhereRealm(ApplicationContext.RealmId)
       .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
@@ -69,7 +68,6 @@ public class RoleQuerier : IRoleQuerier
     string uniqueNameNormalized = Helper.Normalize(uniqueName);
 
     Entities.Role? role = await Roles.AsNoTracking()
-      .Include(x => x.Realm)
       .WhereRealm(ApplicationContext.RealmId)
       .SingleOrDefaultAsync(x => x.UniqueNameNormalized == uniqueNameNormalized, cancellationToken);
 

@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Users;
+﻿using Krakenar.Contracts.Search;
+using Krakenar.Contracts.Users;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
 using UserDto = Krakenar.Contracts.Users.User;
 
@@ -16,4 +17,6 @@ public interface IUserQuerier
   Task<UserDto?> ReadAsync(string uniqueName, CancellationToken cancellationToken = default);
   Task<UserDto?> ReadAsync(CustomIdentifierDto identifier, CancellationToken cancellationToken = default);
   Task<IReadOnlyCollection<UserDto>> ReadAsync(IEmail email, CancellationToken cancellationToken = default);
+
+  Task<SearchResults<UserDto>> SearchAsync(SearchUsersPayload payload, CancellationToken cancellationToken = default);
 }

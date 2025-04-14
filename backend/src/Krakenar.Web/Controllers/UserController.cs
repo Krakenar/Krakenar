@@ -1,6 +1,8 @@
-﻿using Krakenar.Contracts.Users;
+﻿using Krakenar.Contracts.Search;
+using Krakenar.Contracts.Users;
 using Krakenar.Core;
 using Krakenar.Core.Users.Queries;
+using Krakenar.Web.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
@@ -13,11 +15,14 @@ namespace Krakenar.Web.Controllers;
 public class UserController : ControllerBase
 {
   private readonly IQueryHandler<ReadUser, User?> _readUser;
+  private readonly IQueryHandler<SearchUsers, SearchResults<User>> _searchUsers;
 
   public UserController(
-    IQueryHandler<ReadUser, User?> readUser)
+    IQueryHandler<ReadUser, User?> readUser,
+    IQueryHandler<SearchUsers, SearchResults<User>> searchUsers)
   {
     _readUser = readUser;
+    _searchUsers = searchUsers;
   }
 
   // TODO(fpion): authenticate
@@ -50,7 +55,14 @@ public class UserController : ControllerBase
     return user is null ? NotFound() : Ok(user);
   }
 
-  // TODO(fpion): search
+  [HttpGet]
+  public async Task<ActionResult<SearchResults<User>>> SearchAsync([FromQuery] SearchUsersParameters parameters, CancellationToken cancellationToken)
+  {
+    SearchUsersPayload payload = parameters.ToPayload();
+    SearchUsers query = new(payload);
+    SearchResults<User> users = await _searchUsers.HandleAsync(query, cancellationToken);
+    return Ok(users);
+  }
 
   // TODO(fpion): replace
 
