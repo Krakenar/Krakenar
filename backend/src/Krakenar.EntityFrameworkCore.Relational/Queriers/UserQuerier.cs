@@ -4,6 +4,7 @@ using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
+using Krakenar.Core.Roles;
 using Krakenar.Core.Users;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar.Data;
@@ -60,6 +61,17 @@ public class UserQuerier : IUserQuerier
     string[] streamIds = await Users.AsNoTracking()
       .WhereRealm(ApplicationContext.RealmId)
       .Where(x => x.EmailAddressNormalized == emailAddressNormalized)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new UserId(streamId)).ToList().AsReadOnly();
+  }
+  public async Task<IReadOnlyCollection<UserId>> FindIdsAsync(RoleId roleId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await Users.AsNoTracking()
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.Roles)
+      .Where(x => x.Roles.Any(r => r.StreamId == roleId.Value))
       .Select(x => x.StreamId)
       .ToArrayAsync(cancellationToken);
 

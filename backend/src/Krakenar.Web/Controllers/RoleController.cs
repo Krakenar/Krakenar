@@ -15,17 +15,20 @@ namespace Krakenar.Web.Controllers;
 public class RoleController : ControllerBase
 {
   private readonly ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> _createOrReplaceRole;
+  private readonly ICommandHandler<DeleteRole, Role?> _deleteRole;
   private readonly IQueryHandler<ReadRole, Role?> _readRole;
   private readonly IQueryHandler<SearchRoles, SearchResults<Role>> _searchRoles;
   private readonly ICommandHandler<UpdateRole, Role?> _updateRole;
 
   public RoleController(
     ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> createOrReplaceRole,
+    ICommandHandler<DeleteRole, Role?> deleteRole,
     IQueryHandler<ReadRole, Role?> readRole,
     IQueryHandler<SearchRoles, SearchResults<Role>> searchRoles,
     ICommandHandler<UpdateRole, Role?> updateRole)
   {
     _createOrReplaceRole = createOrReplaceRole;
+    _deleteRole = deleteRole;
     _readRole = readRole;
     _searchRoles = searchRoles;
     _updateRole = updateRole;
@@ -39,7 +42,13 @@ public class RoleController : ControllerBase
     return ToActionResult(result);
   }
 
-  // TODO(fpion): delete
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<Role>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    DeleteRole command = new(id);
+    Role? role = await _deleteRole.HandleAsync(command, cancellationToken);
+    return role is null ? NotFound() : Ok(role);
+  }
 
   [HttpGet("{id}")]
   public async Task<ActionResult<Role>> ReadAsync(Guid id, CancellationToken cancellationToken)

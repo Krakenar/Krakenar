@@ -19,7 +19,7 @@ public class RoleQuerier : IRoleQuerier
   protected virtual IActorService ActorService { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual DbSet<Entities.Role> Roles { get; }
-  protected ISqlHelper SqlHelper { get; }
+  protected virtual ISqlHelper SqlHelper { get; }
 
   public RoleQuerier(IActorService actorService, IApplicationContext applicationContext, KrakenarContext context, ISqlHelper sqlHelper)
   {

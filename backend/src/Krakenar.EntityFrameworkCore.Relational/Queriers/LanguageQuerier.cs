@@ -42,6 +42,20 @@ public class LanguageQuerier : ILanguageQuerier
     return new Locale(code);
   }
 
+  public virtual async Task<LanguageId> FindDefaultIdAsync(CancellationToken cancellationToken)
+  {
+    RealmId? realmId = ApplicationContext.RealmId;
+
+    string streamId = await Languages.AsNoTracking()
+      .WhereRealm(realmId)
+      .Where(x => x.IsDefault)
+      .Select(x => x.StreamId)
+      .SingleOrDefaultAsync(cancellationToken)
+      ?? throw new InvalidOperationException($"The default language for realm 'Id={realmId?.Value ?? "<null>"}' could not be found.");
+
+    return new LanguageId(streamId);
+  }
+
   public virtual async Task<LanguageId?> FindIdAsync(Locale locale, CancellationToken cancellationToken)
   {
     string codeNormalized = Helper.Normalize(locale);
