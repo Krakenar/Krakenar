@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Sessions;
+using Krakenar.Web.Models.Search;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Krakenar.Web.Models.Session;

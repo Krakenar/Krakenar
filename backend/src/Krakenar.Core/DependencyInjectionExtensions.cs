@@ -1,4 +1,5 @@
-﻿using Krakenar.Core.Configurations;
+﻿using Krakenar.Contracts.Search;
+using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
 using Krakenar.Core.Localization;
@@ -69,7 +70,9 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadRealm, RealmDto?>, ReadRealmHandler>()
       .AddTransient<IQueryHandler<ReadRole, RoleDto?>, ReadRoleHandler>()
       .AddTransient<IQueryHandler<ReadSession, SessionDto?>, ReadSessionHandler>()
-      .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>();
+      .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
+      .AddTransient<IQueryHandler<SearchRoles, SearchResults<RoleDto>>, SearchRolesHandler>()
+      .AddTransient<IQueryHandler<SearchSessions, SearchResults<SessionDto>>, SearchSessionsHandler>();
   }
 
   public static IServiceCollection AddKrakenarRepositories(this IServiceCollection services)

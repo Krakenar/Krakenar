@@ -1,7 +1,7 @@
 ﻿using Krakenar.Contracts.Search;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Krakenar.Web.Models.Session;
+namespace Krakenar.Web.Models.Search;
 
 public record SearchParameters
 {
@@ -30,23 +30,23 @@ public record SearchParameters
   {
     payload.Ids = Ids;
 
-    foreach (string term in SearchTerms)
+    foreach (var term in SearchTerms)
     {
       payload.Search.Terms.Add(new SearchTerm(term));
     }
     payload.Search.Operator = SearchOperator;
 
-    foreach (string sort in Sort)
+    foreach (var sort in Sort)
     {
-      int index = sort.IndexOf(SortSeparator);
+      var index = sort.IndexOf(SortSeparator);
       if (index < 0)
       {
         payload.Sort.Add(new SortOption(sort));
       }
       else
       {
-        string field = sort[(index + 1)..];
-        bool isDescending = sort[..index].Equals(IsDescending, StringComparison.InvariantCultureIgnoreCase);
+        var field = sort[(index + 1)..];
+        var isDescending = sort[..index].Equals(IsDescending, StringComparison.InvariantCultureIgnoreCase);
         payload.Sort.Add(new SortOption(field, isDescending));
       }
     }

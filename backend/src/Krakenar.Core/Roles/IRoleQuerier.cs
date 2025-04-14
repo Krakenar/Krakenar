@@ -1,4 +1,6 @@
-﻿using RoleDto = Krakenar.Contracts.Roles.Role;
+﻿using Krakenar.Contracts.Roles;
+using Krakenar.Contracts.Search;
+using RoleDto = Krakenar.Contracts.Roles.Role;
 
 namespace Krakenar.Core.Roles;
 
@@ -10,4 +12,6 @@ public interface IRoleQuerier
   Task<RoleDto?> ReadAsync(RoleId id, CancellationToken cancellationToken = default);
   Task<RoleDto?> ReadAsync(Guid id, CancellationToken cancellationToken = default);
   Task<RoleDto?> ReadAsync(string uniqueName, CancellationToken cancellationToken = default);
+
+  Task<SearchResults<RoleDto>> SearchAsync(SearchRolesPayload payload, CancellationToken cancellationToken = default);
 }

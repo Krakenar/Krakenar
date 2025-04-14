@@ -1,7 +1,9 @@
 ﻿using Krakenar.Contracts.Roles;
+using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Roles.Commands;
 using Krakenar.Core.Roles.Queries;
+using Krakenar.Web.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,15 +16,18 @@ public class RoleController : ControllerBase
 {
   private readonly ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> _createOrReplaceRole;
   private readonly IQueryHandler<ReadRole, Role?> _readRole;
+  private readonly IQueryHandler<SearchRoles, SearchResults<Role>> _searchRoles;
   private readonly ICommandHandler<UpdateRole, Role?> _updateRole;
 
   public RoleController(
     ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> createOrReplaceRole,
     IQueryHandler<ReadRole, Role?> readRole,
+    IQueryHandler<SearchRoles, SearchResults<Role>> searchRoles,
     ICommandHandler<UpdateRole, Role?> updateRole)
   {
     _createOrReplaceRole = createOrReplaceRole;
     _readRole = readRole;
+    _searchRoles = searchRoles;
     _updateRole = updateRole;
   }
 
@@ -60,7 +65,14 @@ public class RoleController : ControllerBase
     return ToActionResult(result);
   }
 
-  // TODO(fpion): search
+  [HttpGet]
+  public async Task<ActionResult<SearchResults<Role>>> SearchAsync([FromQuery] SearchRolesParameters parameters, CancellationToken cancellationToken)
+  {
+    SearchRolesPayload payload = parameters.ToPayload();
+    SearchRoles query = new(payload);
+    SearchResults<Role> roles = await _searchRoles.HandleAsync(query, cancellationToken);
+    return Ok(roles);
+  }
 
   [HttpPatch("{id}")]
   public async Task<ActionResult<Role>> UpdateAsync(Guid id, [FromBody] UpdateRolePayload payload, CancellationToken cancellationToken)
