@@ -63,9 +63,6 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
       await LanguageService.SaveAsync(language, cancellationToken);
       await UserService.SaveAsync(user, cancellationToken);
     }
-    else
-    {
-      CacheService.Configuration = await ConfigurationQuerier.ReadAsync(configuration, cancellationToken);
-    }
+    CacheService.Configuration = await ConfigurationQuerier.ReadAsync(configuration, cancellationToken);
   }
 }

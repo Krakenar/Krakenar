@@ -23,6 +23,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddDbContext<KrakenarContext>(options => options.UseSqlServer(connectionString, options => options.MigrationsAssembly("Krakenar.EntityFrameworkCore.SqlServer")))
-      .AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString);
+      .AddLogitarEventSourcingWithEntityFrameworkCoreSqlServer(connectionString)
+      .AddSingleton<ISqlHelper, SqlServerHelper>();
   }
 }

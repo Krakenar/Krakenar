@@ -1,7 +1,9 @@
-﻿using Krakenar.Contracts.Sessions;
+﻿using Krakenar.Contracts.Search;
+using Krakenar.Contracts.Sessions;
 using Krakenar.Core;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
+using Krakenar.Web.Models.Session;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +17,7 @@ public class SessionController : ControllerBase
   private readonly ICommandHandler<CreateSession, Session> _createSession;
   private readonly IQueryHandler<ReadSession, Session?> _readSession;
   private readonly ICommandHandler<RenewSession, Session> _renewSession;
+  private readonly IQueryHandler<SearchSessions, SearchResults<Session>> _searchSessions;
   private readonly ICommandHandler<SignInSession, Session> _signInSession;
   private readonly ICommandHandler<SignOutSession, Session?> _signOutSession;
 
@@ -22,12 +25,14 @@ public class SessionController : ControllerBase
     ICommandHandler<CreateSession, Session> createSession,
     IQueryHandler<ReadSession, Session?> readSession,
     ICommandHandler<RenewSession, Session> renewSession,
+    IQueryHandler<SearchSessions, SearchResults<Session>> searchSessions,
     ICommandHandler<SignInSession, Session> signInSession,
     ICommandHandler<SignOutSession, Session?> signOutSession)
   {
     _createSession = createSession;
     _readSession = readSession;
     _renewSession = renewSession;
+    _searchSessions = searchSessions;
     _signInSession = signInSession;
     _signOutSession = signOutSession;
   }
@@ -54,6 +59,15 @@ public class SessionController : ControllerBase
     RenewSession command = new(payload);
     Session session = await _renewSession.HandleAsync(command, cancellationToken);
     return Ok(session);
+  }
+
+  [HttpGet]
+  public async Task<ActionResult<SearchResults<Session>>> SearchAsync([FromQuery] SearchSessionsParameters parameters, CancellationToken cancellationToken)
+  {
+    SearchSessionsPayload payload = parameters.ToPayload();
+    SearchSessions query = new(payload);
+    SearchResults<Session> sessions = await _searchSessions.HandleAsync(query, cancellationToken);
+    return Ok(sessions);
   }
 
   [HttpPost("sign/in")]

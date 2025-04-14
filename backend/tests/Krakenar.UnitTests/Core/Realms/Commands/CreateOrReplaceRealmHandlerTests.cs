@@ -89,6 +89,11 @@ public class CreateOrReplaceRealmHandlerTests
     Assert.Equal(new Settings.PasswordSettings(payload.PasswordSettings), realm.PasswordSettings);
     Assert.Equal(payload.RequireUniqueEmail, realm.RequireUniqueEmail);
     Assert.Equal(payload.RequireConfirmedAccount, realm.RequireConfirmedAccount);
+    Assert.Equal(payload.CustomAttributes.Count, realm.CustomAttributes.Count);
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Equal(customAttribute.Value, realm.CustomAttributes[new Identifier(customAttribute.Key)]);
+    }
 
     Assert.NotNull(language);
     Assert.Equal(actorId, language.CreatedBy);
@@ -97,12 +102,6 @@ public class CreateOrReplaceRealmHandlerTests
     Assert.NotEqual(Guid.Empty, language.EntityId);
     Assert.True(language.IsDefault);
     Assert.Equal(locale, language.Locale);
-
-    Assert.Equal(payload.CustomAttributes.Count, realm.CustomAttributes.Count);
-    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
-    {
-      Assert.Equal(customAttribute.Value, realm.CustomAttributes[new Identifier(customAttribute.Key)]);
-    }
 
     if (id.HasValue)
     {
@@ -117,7 +116,7 @@ public class CreateOrReplaceRealmHandlerTests
   }
 
   [Fact(DisplayName = "It should replace an existing realm.")]
-  public async Task Given_Found_When_HandleAsync_Then_Replaced()
+  public async Task Given_NoVersion_When_HandleAsync_Then_Replaced()
   {
     ActorId actorId = ActorId.NewId();
     _applicationContext.SetupGet(x => x.ActorId).Returns(actorId);
@@ -156,6 +155,11 @@ public class CreateOrReplaceRealmHandlerTests
     Assert.Equal(new Settings.PasswordSettings(payload.PasswordSettings), realm.PasswordSettings);
     Assert.Equal(payload.RequireUniqueEmail, realm.RequireUniqueEmail);
     Assert.Equal(payload.RequireConfirmedAccount, realm.RequireConfirmedAccount);
+    Assert.Equal(payload.CustomAttributes.Count, realm.CustomAttributes.Count);
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Equal(customAttribute.Value, realm.CustomAttributes[new Identifier(customAttribute.Key)]);
+    }
 
     _realmRepository.Verify(x => x.LoadAsync(It.IsAny<RealmId>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), Times.Never);
     _realmService.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
@@ -203,7 +207,7 @@ public class CreateOrReplaceRealmHandlerTests
   }
 
   [Fact(DisplayName = "It should update an existing realm.")]
-  public async Task Given_Found_When_HandleAsync_Then_Updated()
+  public async Task Given_Version_When_HandleAsync_Then_Updated()
   {
     ActorId actorId = ActorId.NewId();
     _applicationContext.SetupGet(x => x.ActorId).Returns(actorId);
@@ -248,6 +252,11 @@ public class CreateOrReplaceRealmHandlerTests
     Assert.Equal(new Settings.PasswordSettings(payload.PasswordSettings), realm.PasswordSettings);
     Assert.Equal(payload.RequireUniqueEmail, realm.RequireUniqueEmail);
     Assert.Equal(payload.RequireConfirmedAccount, realm.RequireConfirmedAccount);
+    Assert.Equal(payload.CustomAttributes.Count, realm.CustomAttributes.Count);
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Assert.Equal(customAttribute.Value, realm.CustomAttributes[new Identifier(customAttribute.Key)]);
+    }
 
     _realmRepository.Verify(x => x.LoadAsync(reference.Id, reference.Version, _cancellationToken), Times.Once);
     _realmService.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);

@@ -66,7 +66,7 @@ public class UpdateRoleHandlerTests
     RealmId realmId = RealmId.NewId();
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
-    Role role = new(new UniqueName(_uniqueNameSettings, "adminn"), actorId, RoleId.NewId(realmId));
+    Role role = new(new UniqueName(_uniqueNameSettings, "admin"), actorId, RoleId.NewId(realmId));
     role.SetCustomAttribute(new Identifier("manage_users"), bool.FalseString);
     role.SetCustomAttribute(new Identifier("all_permissions"), bool.TrueString);
     role.Update(actorId);

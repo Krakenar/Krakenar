@@ -1,4 +1,5 @@
-﻿using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
+﻿using Krakenar.Core.Caching;
+using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 
 namespace Krakenar.Core.Configurations.Queries;
 
@@ -6,15 +7,16 @@ public record ReadConfiguration : IQuery<ConfigurationDto>;
 
 public class ReadConfigurationHandler : IQueryHandler<ReadConfiguration, ConfigurationDto>
 {
-  protected virtual IConfigurationQuerier ConfigurationQuerier { get; }
+  protected virtual ICacheService CacheService { get; }
 
-  public ReadConfigurationHandler(IConfigurationQuerier configurationQuerier)
+  public ReadConfigurationHandler(ICacheService cacheService)
   {
-    ConfigurationQuerier = configurationQuerier;
+    CacheService = cacheService;
   }
 
-  public virtual async Task<ConfigurationDto> HandleAsync(ReadConfiguration _, CancellationToken cancellationToken)
+  public virtual Task<ConfigurationDto> HandleAsync(ReadConfiguration _, CancellationToken cancellationToken)
   {
-    return await ConfigurationQuerier.ReadAsync(cancellationToken);
+    ConfigurationDto configuration = CacheService.Configuration ?? throw new InvalidOperationException("The configuration was not found in the cache.");
+    return Task.FromResult(configuration);
   }
 }

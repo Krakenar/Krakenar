@@ -70,6 +70,8 @@ public class InitializeConfigurationHandlerTests
 
     await _handler.HandleAsync(command, _cancellationToken);
 
+    _cacheService.VerifySet(x => x.Configuration = It.IsAny<ConfigurationDto>(), Times.Once);
+
     Assert.NotNull(user);
     Assert.Equal(user.Id.Value, user.CreatedBy?.Value);
     Assert.Equal(user.Id.Value, user.UpdatedBy?.Value);

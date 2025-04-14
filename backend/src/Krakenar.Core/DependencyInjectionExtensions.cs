@@ -1,7 +1,9 @@
-﻿using Krakenar.Core.Configurations;
+﻿using Krakenar.Contracts.Search;
+using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
 using Krakenar.Core.Localization;
+using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Commands;
@@ -41,13 +43,20 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)
   {
     return services
+      .AddTransient<ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>, CreateOrReplaceLanguageHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>, CreateOrReplaceRealmHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
       .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
+      .AddTransient<ICommandHandler<DeleteLanguage, LanguageDto?>, DeleteLanguageHandler>()
+      .AddTransient<ICommandHandler<DeleteRole, RoleDto?>, DeleteRoleHandler>()
       .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
       .AddTransient<ICommandHandler<RenewSession, SessionDto>, RenewSessionHandler>()
+      .AddTransient<ICommandHandler<ReplaceConfiguration, ConfigurationDto>, ReplaceConfigurationHandler>()
+      .AddTransient<ICommandHandler<SetDefaultLanguage, LanguageDto?>, SetDefaultLanguageHandler>()
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
       .AddTransient<ICommandHandler<SignOutSession, SessionDto?>, SignOutSessionHandler>()
+      .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
+      .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
       .AddTransient<ICommandHandler<UpdateRealm, RealmDto?>, UpdateRealmHandler>()
       .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>();
   }
@@ -69,7 +78,12 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadRealm, RealmDto?>, ReadRealmHandler>()
       .AddTransient<IQueryHandler<ReadRole, RoleDto?>, ReadRoleHandler>()
       .AddTransient<IQueryHandler<ReadSession, SessionDto?>, ReadSessionHandler>()
-      .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>();
+      .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
+      .AddTransient<IQueryHandler<SearchLanguages, SearchResults<LanguageDto>>, SearchLanguagesHandler>()
+      .AddTransient<IQueryHandler<SearchRealms, SearchResults<RealmDto>>, SearchRealmsHandler>()
+      .AddTransient<IQueryHandler<SearchRoles, SearchResults<RoleDto>>, SearchRolesHandler>()
+      .AddTransient<IQueryHandler<SearchSessions, SearchResults<SessionDto>>, SearchSessionsHandler>()
+      .AddTransient<IQueryHandler<SearchUsers, SearchResults<UserDto>>, SearchUsersHandler>();
   }
 
   public static IServiceCollection AddKrakenarRepositories(this IServiceCollection services)

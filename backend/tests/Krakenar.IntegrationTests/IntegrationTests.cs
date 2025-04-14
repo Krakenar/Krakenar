@@ -1,4 +1,6 @@
-﻿using Krakenar.Core;
+﻿using Krakenar.Contracts.Actors;
+using Krakenar.Core;
+using Krakenar.Core.Actors;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
@@ -6,11 +8,13 @@ using Krakenar.Infrastructure;
 using Krakenar.Infrastructure.Commands;
 using Logitar.Data;
 using Logitar.Data.SqlServer;
+using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using KrakenarDb = Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
+using UserEntity = Krakenar.EntityFrameworkCore.Relational.Entities.User;
 
 namespace Krakenar;
 
@@ -18,6 +22,9 @@ public abstract class IntegrationTests : IAsyncLifetime
 {
   private readonly DatabaseProvider _databaseProvider;
 
+  private readonly TestApplicationContext _applicationContext = new();
+  protected Actor Actor { get; private set; } = new();
+  protected ActorId ActorId { get; private set; }
   protected IServiceProvider ServiceProvider { get; }
   protected KrakenarContext KrakenarContext { get; }
 
@@ -49,7 +56,7 @@ public abstract class IntegrationTests : IAsyncLifetime
         throw new DatabaseProviderNotSupportedException(_databaseProvider);
     }
 
-    services.AddSingleton<IApplicationContext>(new TestApplicationContext());
+    services.AddSingleton<IApplicationContext>(_applicationContext);
 
     ServiceProvider = services.BuildServiceProvider();
 
@@ -81,6 +88,18 @@ public abstract class IntegrationTests : IAsyncLifetime
     InitializeConfiguration initializeConfiguration = new("en", "admin", "P@s$W0rD");
     ICommandHandler<InitializeConfiguration> configurationHandler = ServiceProvider.GetRequiredService<ICommandHandler<InitializeConfiguration>>();
     await configurationHandler.HandleAsync(initializeConfiguration);
+
+    UserEntity? user = await KrakenarContext.Users.AsNoTracking().SingleOrDefaultAsync();
+    Assert.NotNull(user);
+    Actor = new Actor(user.FullName ?? user.UniqueName)
+    {
+      Type = ActorType.User,
+      Id = user.Id,
+      EmailAddress = user.EmailAddress,
+      PictureUrl = user.Picture
+    };
+    ActorId = Actor.GetActorId();
+    _applicationContext.ActorId = ActorId;
   }
   private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
   {

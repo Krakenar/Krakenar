@@ -28,7 +28,6 @@ public class SessionEvents : IEventHandler<SessionCreated>,
     if (session is null)
     {
       UserEntity user = await Context.Users
-        .Include(x => x.Realm)
         .SingleOrDefaultAsync(x => x.StreamId == @event.UserId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The user entity 'StreamId={@event.UserId}' could not be found.");
 
