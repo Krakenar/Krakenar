@@ -1,7 +1,9 @@
 ﻿using Krakenar.Contracts.Realms;
+using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Realms.Commands;
 using Krakenar.Core.Realms.Queries;
+using Krakenar.Web.Models.Realm;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,15 +16,18 @@ public class RealmController : ControllerBase
 {
   private readonly ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> _createOrReplaceRealm;
   private readonly IQueryHandler<ReadRealm, Realm?> _readRealm;
+  private readonly IQueryHandler<SearchRealms, SearchResults<Realm>> _searchRealms;
   private readonly ICommandHandler<UpdateRealm, Realm?> _updateRealm;
 
   public RealmController(
     ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> createOrReplaceRealm,
     IQueryHandler<ReadRealm, Realm?> readRealm,
+    IQueryHandler<SearchRealms, SearchResults<Realm>> searchRealms,
     ICommandHandler<UpdateRealm, Realm?> updateRealm)
   {
     _createOrReplaceRealm = createOrReplaceRealm;
     _readRealm = readRealm;
+    _searchRealms = searchRealms;
     _updateRealm = updateRealm;
   }
 
@@ -60,7 +65,14 @@ public class RealmController : ControllerBase
     return ToActionResult(result);
   }
 
-  // TODO(fpion): search
+  [HttpGet]
+  public async Task<ActionResult<SearchResults<Realm>>> SearchAsync([FromQuery] SearchRealmsParameters parameters, CancellationToken cancellationToken)
+  {
+    SearchRealmsPayload payload = parameters.ToPayload();
+    SearchRealms query = new(payload);
+    SearchResults<Realm> realms = await _searchRealms.HandleAsync(query, cancellationToken);
+    return Ok(realms);
+  }
 
   [HttpPatch("{id}")]
   public async Task<ActionResult<Realm>> UpdateAsync(Guid id, [FromBody] UpdateRealmPayload payload, CancellationToken cancellationToken)

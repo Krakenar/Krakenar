@@ -71,6 +71,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadRole, RoleDto?>, ReadRoleHandler>()
       .AddTransient<IQueryHandler<ReadSession, SessionDto?>, ReadSessionHandler>()
       .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
+      .AddTransient<IQueryHandler<SearchRealms, SearchResults<RealmDto>>, SearchRealmsHandler>()
       .AddTransient<IQueryHandler<SearchRoles, SearchResults<RoleDto>>, SearchRolesHandler>()
       .AddTransient<IQueryHandler<SearchSessions, SearchResults<SessionDto>>, SearchSessionsHandler>();
   }
