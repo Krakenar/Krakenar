@@ -6,14 +6,13 @@ using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using ActorDto = Krakenar.Contracts.Actors.Actor;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
-using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Queriers;
 
 public class RealmQuerier : IRealmQuerier
 {
   protected virtual IActorService ActorService { get; }
-  protected virtual DbSet<RealmEntity> Realms { get; }
+  protected virtual DbSet<Entities.Realm> Realms { get; }
 
   public RealmQuerier(IActorService actorService, KrakenarContext context)
   {
@@ -39,14 +38,14 @@ public class RealmQuerier : IRealmQuerier
   }
   public virtual async Task<RealmDto?> ReadAsync(RealmId id, CancellationToken cancellationToken)
   {
-    RealmEntity? realm = await Realms.AsNoTracking()
+    Entities.Realm? realm = await Realms.AsNoTracking()
       .SingleOrDefaultAsync(x => x.StreamId == id.Value, cancellationToken);
 
     return realm is null ? null : await MapAsync(realm, cancellationToken);
   }
   public virtual async Task<RealmDto?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
-    RealmEntity? realm = await Realms.AsNoTracking()
+    Entities.Realm? realm = await Realms.AsNoTracking()
       .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
     return realm is null ? null : await MapAsync(realm, cancellationToken);
@@ -55,17 +54,17 @@ public class RealmQuerier : IRealmQuerier
   {
     string uniqueSlugNormalized = Helper.Normalize(uniqueSlug);
 
-    RealmEntity? realm = await Realms.AsNoTracking()
+    Entities.Realm? realm = await Realms.AsNoTracking()
       .SingleOrDefaultAsync(x => x.UniqueSlugNormalized == uniqueSlugNormalized, cancellationToken);
 
     return realm is null ? null : await MapAsync(realm, cancellationToken);
   }
 
-  protected virtual async Task<RealmDto> MapAsync(RealmEntity realm, CancellationToken cancellationToken)
+  protected virtual async Task<RealmDto> MapAsync(Entities.Realm realm, CancellationToken cancellationToken)
   {
     return (await MapAsync([realm], cancellationToken)).Single();
   }
-  protected virtual async Task<IReadOnlyCollection<RealmDto>> MapAsync(IEnumerable<RealmEntity> realms, CancellationToken cancellationToken)
+  protected virtual async Task<IReadOnlyCollection<RealmDto>> MapAsync(IEnumerable<Entities.Realm> realms, CancellationToken cancellationToken)
   {
     IEnumerable<ActorId> actorIds = realms.SelectMany(realm => realm.GetActorIds());
     IReadOnlyDictionary<ActorId, ActorDto> actors = await ActorService.FindAsync(actorIds, cancellationToken);

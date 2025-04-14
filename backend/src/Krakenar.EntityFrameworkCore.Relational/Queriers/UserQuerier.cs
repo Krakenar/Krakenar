@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
 using User = Krakenar.Core.Users.User;
 using UserDto = Krakenar.Contracts.Users.User;
-using UserEntity = Krakenar.EntityFrameworkCore.Relational.Entities.User;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Queriers;
 
@@ -15,7 +14,7 @@ public class UserQuerier : IUserQuerier // TODO(fpion): implement
 {
   protected IActorService ActorService { get; }
   protected IApplicationContext ApplicationContext { get; }
-  protected virtual DbSet<UserEntity> Users { get; }
+  protected virtual DbSet<Entities.User> Users { get; }
 
   public UserQuerier(IActorService actorService, IApplicationContext applicationContext, KrakenarContext context)
   {

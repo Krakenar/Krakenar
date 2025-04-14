@@ -34,6 +34,8 @@ public class RoleController : ControllerBase
     return ToActionResult(result);
   }
 
+  // TODO(fpion): delete
+
   [HttpGet("{id}")]
   public async Task<ActionResult<Role>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
@@ -57,6 +59,8 @@ public class RoleController : ControllerBase
     CreateOrReplaceRoleResult result = await _createOrReplaceRole.HandleAsync(command, cancellationToken);
     return ToActionResult(result);
   }
+
+  // TODO(fpion): search
 
   [HttpPatch("{id}")]
   public async Task<ActionResult<Role>> UpdateAsync(Guid id, [FromBody] UpdateRolePayload payload, CancellationToken cancellationToken)

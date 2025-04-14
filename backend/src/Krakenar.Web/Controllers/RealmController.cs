@@ -34,6 +34,8 @@ public class RealmController : ControllerBase
     return ToActionResult(result);
   }
 
+  // TODO(fpion): delete
+
   [HttpGet("{id}")]
   public async Task<ActionResult<Realm>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
@@ -57,6 +59,8 @@ public class RealmController : ControllerBase
     CreateOrReplaceRealmResult result = await _createOrReplaceRealm.HandleAsync(command, cancellationToken);
     return ToActionResult(result);
   }
+
+  // TODO(fpion): search
 
   [HttpPatch("{id}")]
   public async Task<ActionResult<Realm>> UpdateAsync(Guid id, [FromBody] UpdateRealmPayload payload, CancellationToken cancellationToken)

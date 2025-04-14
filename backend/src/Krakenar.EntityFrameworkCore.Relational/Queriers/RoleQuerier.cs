@@ -7,7 +7,6 @@ using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using RoleDto = Krakenar.Contracts.Roles.Role;
-using RoleEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Role;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Queriers;
 
@@ -15,7 +14,7 @@ public class RoleQuerier : IRoleQuerier
 {
   protected virtual IActorService ActorService { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual DbSet<RoleEntity> Roles { get; }
+  protected virtual DbSet<Entities.Role> Roles { get; }
 
   public RoleQuerier(IActorService actorService, IApplicationContext applicationContext, KrakenarContext context)
   {
@@ -43,15 +42,16 @@ public class RoleQuerier : IRoleQuerier
   }
   public virtual async Task<RoleDto?> ReadAsync(RoleId id, CancellationToken cancellationToken)
   {
-    RoleEntity? role = await Roles.AsNoTracking()
-      .Include(x => x.Realm)
-      .SingleOrDefaultAsync(x => x.StreamId == id.Value, cancellationToken);
+    if (id.RealmId != ApplicationContext.RealmId)
+    {
+      throw new NotSupportedException();
+    }
 
-    return role is null ? null : await MapAsync(role, cancellationToken); // TODO(fpion): will not work if entity is different realm than application context!
+    return await ReadAsync(id.EntityId, cancellationToken);
   }
   public virtual async Task<RoleDto?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
-    RoleEntity? role = await Roles.AsNoTracking()
+    Entities.Role? role = await Roles.AsNoTracking()
       .Include(x => x.Realm)
       .WhereRealm(ApplicationContext.RealmId)
       .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
@@ -62,7 +62,7 @@ public class RoleQuerier : IRoleQuerier
   {
     string uniqueNameNormalized = Helper.Normalize(uniqueName);
 
-    RoleEntity? role = await Roles.AsNoTracking()
+    Entities.Role? role = await Roles.AsNoTracking()
       .Include(x => x.Realm)
       .WhereRealm(ApplicationContext.RealmId)
       .SingleOrDefaultAsync(x => x.UniqueNameNormalized == uniqueNameNormalized, cancellationToken);
@@ -70,11 +70,11 @@ public class RoleQuerier : IRoleQuerier
     return role is null ? null : await MapAsync(role, cancellationToken);
   }
 
-  protected virtual async Task<RoleDto> MapAsync(RoleEntity role, CancellationToken cancellationToken)
+  protected virtual async Task<RoleDto> MapAsync(Entities.Role role, CancellationToken cancellationToken)
   {
     return (await MapAsync([role], cancellationToken)).Single();
   }
-  protected virtual async Task<IReadOnlyCollection<RoleDto>> MapAsync(IEnumerable<RoleEntity> roles, CancellationToken cancellationToken)
+  protected virtual async Task<IReadOnlyCollection<RoleDto>> MapAsync(IEnumerable<Entities.Role> roles, CancellationToken cancellationToken)
   {
     IEnumerable<ActorId> actorIds = roles.SelectMany(role => role.GetActorIds());
     IReadOnlyDictionary<ActorId, Actor> actors = await ActorService.FindAsync(actorIds, cancellationToken);

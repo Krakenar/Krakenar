@@ -25,4 +25,8 @@ public class ConfigurationController : ControllerBase
     Configuration configuration = await _readConfiguration.HandleAsync(query, cancellationToken);
     return Ok(configuration);
   }
+
+  // TODO(fpion): replace
+
+  // TODO(fpion): update
 }

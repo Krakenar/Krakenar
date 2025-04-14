@@ -18,6 +18,10 @@ public class LanguageController : ControllerBase
     _readLanguage = readLanguage;
   }
 
+  // TODO(fpion): create
+
+  // TODO(fpion): delete
+
   [HttpGet("{id}")]
   public async Task<ActionResult<Language>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
@@ -41,4 +45,12 @@ public class LanguageController : ControllerBase
     Language? language = await _readLanguage.HandleAsync(query, cancellationToken);
     return language is null ? NotFound() : Ok(language);
   }
+
+  // TODO(fpion): replace
+
+  // TODO(fpion): search
+
+  // TODO(fpion): set default
+
+  // TODO(fpion): update
 }

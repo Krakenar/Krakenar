@@ -6,14 +6,13 @@ using Logitar;
 using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
-using ConfigurationEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Configuration;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Queriers;
 
 public class ConfigurationQuerier : IConfigurationQuerier
 {
   protected virtual IActorService ActorService { get; }
-  protected virtual DbSet<ConfigurationEntity> Configuration { get; }
+  protected virtual DbSet<Entities.Configuration> Configuration { get; }
 
   public ConfigurationQuerier(IActorService actorService, KrakenarContext context)
   {
@@ -23,14 +22,14 @@ public class ConfigurationQuerier : IConfigurationQuerier
 
   public virtual async Task<ConfigurationDto> ReadAsync(CancellationToken cancellationToken)
   {
-    ConfigurationEntity[] configurations = await Configuration.AsNoTracking()
+    Entities.Configuration[] configurations = await Configuration.AsNoTracking()
       .OrderBy(x => x.Version)
       .ToArrayAsync(cancellationToken);
 
     ConfigurationDto dto = new();
     if (configurations.Length > 0)
     {
-      foreach (ConfigurationEntity configuration in configurations)
+      foreach (Entities.Configuration configuration in configurations)
       {
         switch (configuration.Key)
         {
@@ -72,14 +71,14 @@ public class ConfigurationQuerier : IConfigurationQuerier
 
       HashSet<ActorId> actorIds = new(capacity: 2);
 
-      ConfigurationEntity first = configurations.First();
+      Entities.Configuration first = configurations.First();
       if (first.CreatedBy is not null)
       {
         actorIds.Add(new ActorId(first.CreatedBy));
       }
       dto.CreatedOn = first.CreatedOn.AsUniversalTime();
 
-      ConfigurationEntity last = configurations.Last();
+      Entities.Configuration last = configurations.Last();
       dto.Version = last.Version;
       if (last.UpdatedBy is not null)
       {

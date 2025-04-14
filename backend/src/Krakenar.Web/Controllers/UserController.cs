@@ -20,6 +20,12 @@ public class UserController : ControllerBase
     _readUser = readUser;
   }
 
+  // TODO(fpion): authenticate
+
+  // TODO(fpion): create
+
+  // TODO(fpion): delete
+
   [HttpGet("{id}")]
   public async Task<ActionResult<User>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
@@ -43,4 +49,18 @@ public class UserController : ControllerBase
     User? user = await _readUser.HandleAsync(query, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
+
+  // TODO(fpion): search
+
+  // TODO(fpion): replace
+
+  // TODO(fpion): remove custom identifier
+
+  // TODO(fpion): reset password
+
+  // TODO(fpion): set custom identifier
+
+  // TODO(fpion): sign-out
+
+  // TODO(fpion): update
 }
