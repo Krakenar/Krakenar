@@ -23,7 +23,7 @@ public class DeleteLanguageHandlerTests
   }
 
   [Fact(DisplayName = "It should delete the language.")]
-  public async Task Givne_NotDefault_When_HandleAsync_Then_Deleted()
+  public async Task Given_NotDefault_When_HandleAsync_Then_Deleted()
   {
     ActorId actorId = ActorId.NewId();
     _applicationContext.SetupGet(x => x.ActorId).Returns(actorId);

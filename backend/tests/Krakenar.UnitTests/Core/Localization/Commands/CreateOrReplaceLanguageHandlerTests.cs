@@ -1,6 +1,5 @@
 ﻿using Krakenar.Contracts.Localization;
 using Krakenar.Core.Realms;
-using Krakenar.Core.Settings;
 using Logitar.EventSourcing;
 using Moq;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
@@ -11,7 +10,6 @@ namespace Krakenar.Core.Localization.Commands;
 public class CreateOrReplaceLanguageHandlerTests
 {
   private readonly CancellationToken _cancellationToken = default;
-  private readonly UniqueNameSettings _uniqueNameSettings = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
   private readonly Mock<ILanguageQuerier> _languageQuerier = new();
@@ -23,8 +21,6 @@ public class CreateOrReplaceLanguageHandlerTests
   public CreateOrReplaceLanguageHandlerTests()
   {
     _handler = new(_applicationContext.Object, _languageQuerier.Object, _languageRepository.Object, _languageService.Object);
-
-    _applicationContext.SetupGet(x => x.UniqueNameSettings).Returns(_uniqueNameSettings);
   }
 
   [Theory(DisplayName = "It should create a new language.")]
