@@ -6,10 +6,12 @@ using Krakenar.Core.Sessions;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
+using Krakenar.Core.Users.Queries;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
+using Email = Krakenar.Core.Users.Email;
 using SessionEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Session;
 using User = Krakenar.Core.Users.User;
 using UserDto = Krakenar.Contracts.Users.User;
@@ -27,6 +29,7 @@ public class UserIntegrationTests : IntegrationTests
 
   private readonly ICommandHandler<AuthenticateUser, UserDto> _authenticateUser;
   private readonly ICommandHandler<DeleteUser, UserDto?> _deleteUser;
+  private readonly IQueryHandler<ReadUser, UserDto?> _readUser;
   private readonly ICommandHandler<RemoveUserIdentifier, UserDto?> _removeUserIdentifier;
   private readonly ICommandHandler<ResetUserPassword, UserDto?> _resetUserPassword;
   private readonly ICommandHandler<SaveUserIdentifier, UserDto?> _saveUserIdentifier;
@@ -42,6 +45,7 @@ public class UserIntegrationTests : IntegrationTests
 
     _authenticateUser = ServiceProvider.GetRequiredService<ICommandHandler<AuthenticateUser, UserDto>>();
     _deleteUser = ServiceProvider.GetRequiredService<ICommandHandler<DeleteUser, UserDto?>>();
+    _readUser = ServiceProvider.GetRequiredService<IQueryHandler<ReadUser, UserDto?>>();
     _removeUserIdentifier = ServiceProvider.GetRequiredService<ICommandHandler<RemoveUserIdentifier, UserDto?>>();
     _resetUserPassword = ServiceProvider.GetRequiredService<ICommandHandler<ResetUserPassword, UserDto?>>();
     _saveUserIdentifier = ServiceProvider.GetRequiredService<ICommandHandler<SaveUserIdentifier, UserDto?>>();
@@ -88,6 +92,51 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Null(await KrakenarContext.Sessions.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == session.Id.Value));
   }
 
+  [Fact(DisplayName = "It should read the user by custom identifier.")]
+  public async Task Given_CustomIdentifier_When_Read_Then_Found()
+  {
+    Identifier key = new("Google");
+    CustomIdentifier value = new("1234567890");
+    _user.SetCustomIdentifier(key, value, ActorId);
+    await _userRepository.SaveAsync(_user);
+
+    ReadUser query = new(Id: null, UniqueName: null, new CustomIdentifierDto(key.Value, value.Value));
+    UserDto? user = await _readUser.HandleAsync(query);
+    Assert.NotNull(user);
+    Assert.Equal(_user.EntityId, user.Id);
+  }
+
+  [Fact(DisplayName = "It should read the user by ID.")]
+  public async Task Given_Id_When_Read_Then_Found()
+  {
+    ReadUser query = new(_user.EntityId, UniqueName: null, CustomIdentifier: null);
+    UserDto? user = await _readUser.HandleAsync(query);
+    Assert.NotNull(user);
+    Assert.Equal(query.Id, user.Id);
+  }
+
+  [Fact(DisplayName = "It should read the user by email address.")]
+  public async Task Given_EmailAddress_When_Read_Then_Found()
+  {
+    Email email = new(Faker.Person.Email);
+    _user.SetEmail(email, ActorId);
+    await _userRepository.SaveAsync(_user);
+
+    ReadUser query = new(Id: null, email.Address, CustomIdentifier: null);
+    UserDto? user = await _readUser.HandleAsync(query);
+    Assert.NotNull(user);
+    Assert.Equal(_user.EntityId, user.Id);
+  }
+
+  [Fact(DisplayName = "It should read the user by unique name.")]
+  public async Task Given_UniqueName_When_Read_Then_Found()
+  {
+    ReadUser query = new(Id: null, _user.UniqueName.Value, CustomIdentifier: null);
+    UserDto? user = await _readUser.HandleAsync(query);
+    Assert.NotNull(user);
+    Assert.Equal(_user.EntityId, user.Id);
+  }
+
   [Fact(DisplayName = "It should remove a user identifier.")]
   public async Task Given_UserFound_When_RemoveIdentifier_Then_IdentifierRemoved()
   {
@@ -105,6 +154,13 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(Actor, dto.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, dto.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(1));
     Assert.Empty(dto.CustomIdentifiers);
+  }
+
+  [Fact(DisplayName = "It should return null when the user cannot be found.")]
+  public async Task Given_NotFound_When_Read_Then_NullReturned()
+  {
+    ReadUser query = new(Guid.Empty, "not-found", new CustomIdentifierDto("Google", "1234567890"));
+    Assert.Null(await _readUser.HandleAsync(query));
   }
 
   [Fact(DisplayName = "It should reset the user password.")]
@@ -187,6 +243,24 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(_user.EntityId, exception.ConflictId);
     Assert.Equal(key.Value, exception.Key);
     Assert.Equal(value.Value, exception.Value);
+  }
+
+  [Fact(DisplayName = "It should throw TooManyResultsException when multiple users were read.")]
+  public async Task Given_MultipleResults_When_Read_Then_TooManyResultsException()
+  {
+    User user1 = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+
+    User user2 = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+    Identifier key = new("Google");
+    CustomIdentifier value = new("1234567890");
+    user2.SetCustomIdentifier(key, value, ActorId);
+
+    await _userRepository.SaveAsync([user1, user2]);
+
+    ReadUser query = new(_user.EntityId, user1.UniqueName.Value, new CustomIdentifierDto(key.Value, value.Value));
+    var exception = await Assert.ThrowsAsync<TooManyResultsException<UserDto>>(async () => await _readUser.HandleAsync(query));
+    Assert.Equal(1, exception.ExpectedCount);
+    Assert.Equal(3, exception.ActualCount);
   }
 
   [Fact(DisplayName = "It should throw UserNotFoundException when authenticating a user not found.")]
