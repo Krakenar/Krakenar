@@ -1,6 +1,8 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Users;
+using Krakenar.Web.Constants;
+using Krakenar.Web.Settings;
 using Microsoft.Extensions.Primitives;
 
 namespace Krakenar.Web;
@@ -19,7 +21,7 @@ public static class HttpContextExtensions
     };
 
     string? ipAddress = context.GetClientIpAddress();
-    if (ipAddress != null)
+    if (ipAddress is not null)
     {
       customAttributes.Add(new("IpAddress", ipAddress));
     }
@@ -65,25 +67,25 @@ public static class HttpContextExtensions
   {
     byte[]? bytes = context.Session.Get(SessionIdKey);
 
-    return bytes == null ? null : new Guid(bytes);
+    return bytes is null ? null : new Guid(bytes);
   }
   public static bool IsSignedIn(this HttpContext context) => context.GetSessionId().HasValue;
   public static void SignIn(this HttpContext context, Session session)
   {
     context.Session.Set(SessionIdKey, session.Id.ToByteArray());
 
-    //if (session.RefreshToken != null)
-    //{
-    //  CookiesSettings cookiesSettings = context.RequestServices.GetRequiredService<CookiesSettings>();
-    //  CookieOptions options = new()
-    //  {
-    //    HttpOnly = cookiesSettings.RefreshToken.HttpOnly,
-    //    MaxAge = cookiesSettings.RefreshToken.MaxAge,
-    //    SameSite = cookiesSettings.RefreshToken.SameSite,
-    //    Secure = cookiesSettings.RefreshToken.Secure
-    //  };
-    //  context.Response.Cookies.Append(Cookies.RefreshToken, session.RefreshToken, options);
-    //} // TODO(fpion): Cookies
+    if (session.RefreshToken is not null)
+    {
+      CookiesSettings cookiesSettings = context.RequestServices.GetRequiredService<CookiesSettings>();
+      CookieOptions options = new()
+      {
+        HttpOnly = cookiesSettings.RefreshToken.HttpOnly,
+        MaxAge = cookiesSettings.RefreshToken.MaxAge,
+        SameSite = cookiesSettings.RefreshToken.SameSite,
+        Secure = cookiesSettings.RefreshToken.Secure
+      };
+      context.Response.Cookies.Append(Cookies.RefreshToken, session.RefreshToken, options);
+    }
 
     context.SetSession(session);
     context.SetUser(session.User);
@@ -92,6 +94,6 @@ public static class HttpContextExtensions
   {
     context.Session.Clear();
 
-    //context.Response.Cookies.Delete(Cookies.RefreshToken); // TODO(fpion): Cookies
+    context.Response.Cookies.Delete(Cookies.RefreshToken);
   }
 }

@@ -3,6 +3,7 @@ using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Roles.Commands;
 using Krakenar.Core.Roles.Queries;
+using Krakenar.Web.Constants;
 using Krakenar.Web.Models.Role;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Krakenar.Web.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = Policies.KrakenarAdmin)]
 [Route("api/roles")]
 public class RoleController : ControllerBase
 {

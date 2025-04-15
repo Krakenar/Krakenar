@@ -2,13 +2,14 @@
 using Krakenar.Core;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
+using Krakenar.Web.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Krakenar.Web.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = Policies.KrakenarAdmin)]
 [Route("api/configuration")]
 public class ConfigurationController : ControllerBase
 {

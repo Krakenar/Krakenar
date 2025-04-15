@@ -91,22 +91,22 @@ public class RoleQuerier : IRoleQuerier
       switch (sort.Field)
       {
         case RoleSort.CreatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.CreatedOn) : query.OrderBy(x => x.CreatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.CreatedOn) : ordered.ThenBy(x => x.CreatedOn));
           break;
         case RoleSort.DisplayName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.DisplayName) : ordered.ThenBy(x => x.DisplayName));
           break;
         case RoleSort.UniqueName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UniqueName) : query.OrderBy(x => x.UniqueName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UniqueName) : ordered.ThenBy(x => x.UniqueName));
           break;
         case RoleSort.UpdatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UpdatedOn) : query.OrderBy(x => x.UpdatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UpdatedOn) : ordered.ThenBy(x => x.UpdatedOn));
           break;

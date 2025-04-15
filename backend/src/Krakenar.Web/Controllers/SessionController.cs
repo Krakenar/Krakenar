@@ -3,6 +3,7 @@ using Krakenar.Contracts.Sessions;
 using Krakenar.Core;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
+using Krakenar.Web.Constants;
 using Krakenar.Web.Models.Session;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Krakenar.Web.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = Policies.KrakenarAdmin)]
 [Route("api/sessions")]
 public class SessionController : ControllerBase
 {
