@@ -6,8 +6,6 @@ using LanguageDto = Krakenar.Contracts.Localization.Language;
 
 namespace Krakenar.Core.Localization.Commands;
 
-public record CreateOrReplaceLanguageResult(LanguageDto? Language = null, bool Created = false);
-
 public record CreateOrReplaceLanguage(Guid? Id, CreateOrReplaceLanguagePayload Payload, long? Version) : ICommand<CreateOrReplaceLanguageResult>;
 
 /// <exception cref="LocaleAlreadyUsedException"></exception>
@@ -15,20 +13,20 @@ public record CreateOrReplaceLanguage(Guid? Id, CreateOrReplaceLanguagePayload P
 public class CreateOrReplaceLanguageHandler : ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual ILanguageManager LanguageManager { get; }
   protected virtual ILanguageQuerier LanguageQuerier { get; }
   protected virtual ILanguageRepository LanguageRepository { get; }
-  protected virtual ILanguageService LanguageService { get; }
 
   public CreateOrReplaceLanguageHandler(
     IApplicationContext applicationContext,
+    ILanguageManager languageManager,
     ILanguageQuerier languageQuerier,
-    ILanguageRepository languageRepository,
-    ILanguageService languageService)
+    ILanguageRepository languageRepository)
   {
     ApplicationContext = applicationContext;
+    LanguageManager = languageManager;
     LanguageQuerier = languageQuerier;
     LanguageRepository = languageRepository;
-    LanguageService = languageService;
   }
 
   public virtual async Task<CreateOrReplaceLanguageResult> HandleAsync(CreateOrReplaceLanguage command, CancellationToken cancellationToken)
@@ -68,7 +66,7 @@ public class CreateOrReplaceLanguageHandler : ICommandHandler<CreateOrReplaceLan
       language.SetLocale(locale, actorId);
     }
 
-    await LanguageService.SaveAsync(language, cancellationToken);
+    await LanguageManager.SaveAsync(language, cancellationToken);
 
     LanguageDto dto = await LanguageQuerier.ReadAsync(language, cancellationToken);
     return new CreateOrReplaceLanguageResult(dto, created);

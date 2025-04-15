@@ -12,15 +12,15 @@ public class UpdateLanguageHandlerTests
   private readonly CancellationToken _cancellationToken = default;
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<ILanguageManager> _languageManager = new();
   private readonly Mock<ILanguageQuerier> _languageQuerier = new();
   private readonly Mock<ILanguageRepository> _languageRepository = new();
-  private readonly Mock<ILanguageService> _languageService = new();
 
   private readonly UpdateLanguageHandler _handler;
 
   public UpdateLanguageHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _languageQuerier.Object, _languageRepository.Object, _languageService.Object);
+    _handler = new(_applicationContext.Object, _languageManager.Object, _languageQuerier.Object, _languageRepository.Object);
   }
 
   [Fact(DisplayName = "It should return null when the language was not found.")]
@@ -71,7 +71,7 @@ public class UpdateLanguageHandlerTests
     Assert.NotNull(result);
     Assert.Same(dto, result);
 
-    _languageService.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
+    _languageManager.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
 
     Assert.True(language.IsDefault);
     Assert.Equal(payload.Locale, language.Locale.Code);

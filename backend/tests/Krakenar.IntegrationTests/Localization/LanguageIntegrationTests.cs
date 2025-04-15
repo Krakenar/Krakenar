@@ -2,8 +2,6 @@
 using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Localization;
-using Krakenar.Core.Localization.Commands;
-using Krakenar.Core.Localization.Queries;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,26 +15,14 @@ namespace Krakenar.Localization;
 public class LanguageIntegrationTests : IntegrationTests
 {
   private readonly ILanguageRepository _languageRepository;
-
-  private readonly ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult> _createOrReplaceLanguage;
-  private readonly ICommandHandler<DeleteLanguage, LanguageDto?> _deleteLanguage;
-  private readonly IQueryHandler<ReadLanguage, LanguageDto?> _readLanguage;
-  private readonly IQueryHandler<SearchLanguages, SearchResults<LanguageDto>> _searchLanguages;
-  private readonly ICommandHandler<SetDefaultLanguage, LanguageDto?> _setDefaultLanguage;
-  private readonly ICommandHandler<UpdateLanguage, LanguageDto?> _updateLanguage;
+  private readonly ILanguageService _languageService;
 
   private readonly Language _language;
 
   public LanguageIntegrationTests() : base()
   {
     _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
-
-    _createOrReplaceLanguage = ServiceProvider.GetRequiredService<ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>>();
-    _deleteLanguage = ServiceProvider.GetRequiredService<ICommandHandler<DeleteLanguage, LanguageDto?>>();
-    _readLanguage = ServiceProvider.GetRequiredService<IQueryHandler<ReadLanguage, LanguageDto?>>();
-    _searchLanguages = ServiceProvider.GetRequiredService<IQueryHandler<SearchLanguages, SearchResults<LanguageDto>>>();
-    _setDefaultLanguage = ServiceProvider.GetRequiredService<ICommandHandler<SetDefaultLanguage, LanguageDto?>>();
-    _updateLanguage = ServiceProvider.GetRequiredService<ICommandHandler<UpdateLanguage, LanguageDto?>>();
+    _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
 
     _language = new Language(new Locale("fr"), isDefault: false, actorId: null, LanguageId.NewId(Realm.Id));
   }
@@ -55,13 +41,13 @@ public class LanguageIntegrationTests : IntegrationTests
     {
       Locale = "fr-CA"
     };
-    CreateOrReplaceLanguage command = new(Guid.NewGuid(), payload, Version: null);
-    CreateOrReplaceLanguageResult result = await _createOrReplaceLanguage.HandleAsync(command);
+    Guid id = Guid.NewGuid();
+    CreateOrReplaceLanguageResult result = await _languageService.CreateOrReplaceAsync(payload, id);
     Assert.True(result.Created);
 
     LanguageDto? language = result.Language;
     Assert.NotNull(language);
-    Assert.Equal(command.Id, language.Id);
+    Assert.Equal(id, language.Id);
     Assert.Equal(1, language.Version);
     Assert.Equal(Actor, language.CreatedBy);
     Assert.Equal(DateTime.UtcNow, language.CreatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
@@ -76,10 +62,9 @@ public class LanguageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should delete the language.")]
   public async Task Given_Language_When_Delete_Then_Deleted()
   {
-    DeleteLanguage command = new(_language.EntityId);
-    LanguageDto? language = await _deleteLanguage.HandleAsync(command);
+    LanguageDto? language = await _languageService.DeleteAsync(_language.EntityId);
     Assert.NotNull(language);
-    Assert.Equal(command.Id, language.Id);
+    Assert.Equal(_language.EntityId, language.Id);
 
     Assert.Empty(await KrakenarContext.Languages.AsNoTracking().Where(x => x.StreamId == _language.Id.Value).ToArrayAsync());
   }
@@ -87,17 +72,15 @@ public class LanguageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should read the language by ID.")]
   public async Task Given_Id_When_Read_Then_Found()
   {
-    ReadLanguage query = new(_language.EntityId, Locale: null, IsDefault: false);
-    LanguageDto? language = await _readLanguage.HandleAsync(query);
+    LanguageDto? language = await _languageService.ReadAsync(_language.EntityId);
     Assert.NotNull(language);
-    Assert.Equal(query.Id, language.Id);
+    Assert.Equal(_language.EntityId, language.Id);
   }
 
   [Fact(DisplayName = "It should read the language by locale.")]
   public async Task Given_Locale_When_Read_Then_Found()
   {
-    ReadLanguage query = new(Id: null, _language.Locale.Code, IsDefault: false);
-    LanguageDto? language = await _readLanguage.HandleAsync(query);
+    LanguageDto? language = await _languageService.ReadAsync(id: null, _language.Locale.Code);
     Assert.NotNull(language);
     Assert.Equal(_language.EntityId, language.Id);
   }
@@ -109,13 +92,12 @@ public class LanguageIntegrationTests : IntegrationTests
     {
       Locale = "fr-CA"
     };
-    CreateOrReplaceLanguage command = new(_language.EntityId, payload, Version: null);
-    CreateOrReplaceLanguageResult result = await _createOrReplaceLanguage.HandleAsync(command);
+    CreateOrReplaceLanguageResult result = await _languageService.CreateOrReplaceAsync(payload, _language.EntityId);
     Assert.False(result.Created);
 
     LanguageDto? language = result.Language;
     Assert.NotNull(language);
-    Assert.Equal(command.Id, language.Id);
+    Assert.Equal(_language.EntityId, language.Id);
     Assert.Equal(2, language.Version);
     Assert.Equal(Actor, language.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, language.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
@@ -137,13 +119,12 @@ public class LanguageIntegrationTests : IntegrationTests
     {
       Locale = "fr-CA"
     };
-    CreateOrReplaceLanguage command = new(_language.EntityId, payload, version);
-    CreateOrReplaceLanguageResult result = await _createOrReplaceLanguage.HandleAsync(command);
+    CreateOrReplaceLanguageResult result = await _languageService.CreateOrReplaceAsync(payload, _language.EntityId, version);
     Assert.False(result.Created);
 
     LanguageDto? language = result.Language;
     Assert.NotNull(language);
-    Assert.Equal(command.Id, language.Id);
+    Assert.Equal(_language.EntityId, language.Id);
     Assert.Equal(2, language.Version);
     Assert.Equal(Actor, language.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, language.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
@@ -156,8 +137,7 @@ public class LanguageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should return null when the language cannot be found.")]
   public async Task Given_NotFound_When_Read_Then_NullReturned()
   {
-    ReadLanguage query = new(Guid.Empty, "fr-CA", IsDefault: false);
-    Assert.Null(await _readLanguage.HandleAsync(query));
+    Assert.Null(await _languageService.ReadAsync(Guid.Empty, "fr-CA"));
   }
 
   [Fact(DisplayName = "It should return the correct search results.")]
@@ -175,8 +155,7 @@ public class LanguageIntegrationTests : IntegrationTests
       Skip = 1,
       Limit = 1
     };
-    SearchLanguages command = new(payload);
-    SearchResults<LanguageDto> results = await _searchLanguages.HandleAsync(command);
+    SearchResults<LanguageDto> results = await _languageService.SearchAsync(payload);
     Assert.Equal(2, results.Total);
 
     LanguageDto language = Assert.Single(results.Items);
@@ -186,11 +165,10 @@ public class LanguageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should set the default language.")]
   public async Task Given_NotDefault_When_SetDefault_Then_SetDefault()
   {
-    SetDefaultLanguage command = new(_language.EntityId);
-    LanguageDto? language = await _setDefaultLanguage.HandleAsync(command);
+    LanguageDto? language = await _languageService.SetDefaultAsync(_language.EntityId);
 
     Assert.NotNull(language);
-    Assert.Equal(command.Id, language.Id);
+    Assert.Equal(_language.EntityId, language.Id);
     Assert.Equal(_language.Version + 1, language.Version);
     Assert.Equal(Actor, language.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, language.UpdatedOn, TimeSpan.FromSeconds(10));
@@ -204,11 +182,11 @@ public class LanguageIntegrationTests : IntegrationTests
     {
       Locale = _language.Locale.Code
     };
-    CreateOrReplaceLanguage command = new(Guid.NewGuid(), payload, Version: null);
-    var exception = await Assert.ThrowsAsync<LocaleAlreadyUsedException>(async () => await _createOrReplaceLanguage.HandleAsync(command));
+    Guid id = Guid.NewGuid();
+    var exception = await Assert.ThrowsAsync<LocaleAlreadyUsedException>(async () => await _languageService.CreateOrReplaceAsync(payload, id));
 
     Assert.Equal(Realm.Id.ToGuid(), exception.RealmId);
-    Assert.Equal(command.Id, exception.LanguageId);
+    Assert.Equal(id, exception.LanguageId);
     Assert.Equal(_language.EntityId, exception.ConflictId);
     Assert.Equal(_language.Locale.ToString(), exception.Locale);
     Assert.Equal("Locale", exception.PropertyName);
@@ -220,8 +198,7 @@ public class LanguageIntegrationTests : IntegrationTests
     Language language = new(new Locale("es"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
     await _languageRepository.SaveAsync(language);
 
-    ReadLanguage query = new(_language.EntityId, language.Locale.Code, IsDefault: true);
-    var exception = await Assert.ThrowsAsync<TooManyResultsException<LanguageDto>>(async () => await _readLanguage.HandleAsync(query));
+    var exception = await Assert.ThrowsAsync<TooManyResultsException<LanguageDto>>(async () => await _languageService.ReadAsync(_language.EntityId, language.Locale.Code, isDefault: true));
     Assert.Equal(1, exception.ExpectedCount);
     Assert.Equal(3, exception.ActualCount);
   }
@@ -233,11 +210,10 @@ public class LanguageIntegrationTests : IntegrationTests
     {
       Locale = "fr-CA"
     };
-    UpdateLanguage command = new(_language.EntityId, payload);
-    LanguageDto? language = await _updateLanguage.HandleAsync(command);
+    LanguageDto? language = await _languageService.UpdateAsync(_language.EntityId, payload);
 
     Assert.NotNull(language);
-    Assert.Equal(command.Id, language.Id);
+    Assert.Equal(_language.EntityId, language.Id);
     Assert.Equal(2, language.Version);
     Assert.Equal(Actor, language.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, language.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));

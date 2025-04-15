@@ -19,7 +19,7 @@ public class InitializeConfigurationHandlerTests
   private readonly Mock<ICacheService> _cacheService = new();
   private readonly Mock<IConfigurationQuerier> _configurationQuerier = new();
   private readonly Mock<IConfigurationRepository> _configurationRepository = new();
-  private readonly Mock<ILanguageService> _languageService = new();
+  private readonly Mock<ILanguageManager> _languageManager = new();
   private readonly Mock<IPasswordService> _passwordService = new();
   private readonly Mock<ISecretService> _secretService = new();
   private readonly Mock<IUserService> _userService = new();
@@ -28,7 +28,7 @@ public class InitializeConfigurationHandlerTests
 
   public InitializeConfigurationHandlerTests()
   {
-    _handler = new(_cacheService.Object, _configurationQuerier.Object, _configurationRepository.Object, _languageService.Object, _passwordService.Object, _secretService.Object, _userService.Object);
+    _handler = new(_cacheService.Object, _configurationQuerier.Object, _configurationRepository.Object, _languageManager.Object, _passwordService.Object, _secretService.Object, _userService.Object);
   }
 
   [Fact(DisplayName = "It should cache an initialized configuration.")]
@@ -63,7 +63,7 @@ public class InitializeConfigurationHandlerTests
     _configurationRepository.Setup(x => x.SaveAsync(It.IsAny<Configuration>(), _cancellationToken)).Callback<Configuration, CancellationToken>((c, _) => configuration = c);
 
     Language? language = null;
-    _languageService.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((l, _) => language = l);
+    _languageManager.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((l, _) => language = l);
 
     User? user = null;
     _userService.Setup(x => x.SaveAsync(It.IsAny<User>(), _cancellationToken)).Callback<User, CancellationToken>((u, _) => user = u);

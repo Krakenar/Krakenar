@@ -2,17 +2,17 @@
 
 namespace Krakenar.Core.Localization;
 
-public interface ILanguageService
+public interface ILanguageManager
 {
   Task SaveAsync(Language language, CancellationToken cancellationToken = default);
 }
 
-public class LanguageService : ILanguageService
+public class LanguageManager : ILanguageManager
 {
   protected virtual ILanguageQuerier LanguageQuerier { get; }
   protected virtual ILanguageRepository LanguageRepository { get; }
 
-  public LanguageService(ILanguageQuerier languageQuerier, ILanguageRepository languageRepository)
+  public LanguageManager(ILanguageQuerier languageQuerier, ILanguageRepository languageRepository)
   {
     LanguageQuerier = languageQuerier;
     LanguageRepository = languageRepository;

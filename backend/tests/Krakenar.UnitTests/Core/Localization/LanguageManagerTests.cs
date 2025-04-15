@@ -3,16 +3,16 @@
 namespace Krakenar.Core.Localization;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class LanguageServiceTests
+public class LanguageManagerTests
 {
   private readonly CancellationToken _cancellationToken = default;
 
   private readonly Mock<ILanguageQuerier> _languageQuerier = new();
   private readonly Mock<ILanguageRepository> _languageRepository = new();
 
-  private readonly LanguageService _service;
+  private readonly LanguageManager _service;
 
-  public LanguageServiceTests()
+  public LanguageManagerTests()
   {
     _service = new(_languageQuerier.Object, _languageRepository.Object);
   }

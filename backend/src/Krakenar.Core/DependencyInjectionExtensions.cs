@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Search;
 using Krakenar.Core.Configurations;
@@ -86,6 +87,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarManagers(this IServiceCollection services)
   {
     return services
+      .AddTransient<ILanguageManager, LanguageManager>()
       .AddTransient<IRealmManager, RealmManager>();
   }
 

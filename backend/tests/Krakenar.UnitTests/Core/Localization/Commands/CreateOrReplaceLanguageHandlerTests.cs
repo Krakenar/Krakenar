@@ -12,15 +12,15 @@ public class CreateOrReplaceLanguageHandlerTests
   private readonly CancellationToken _cancellationToken = default;
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<ILanguageManager> _languageManager = new();
   private readonly Mock<ILanguageQuerier> _languageQuerier = new();
   private readonly Mock<ILanguageRepository> _languageRepository = new();
-  private readonly Mock<ILanguageService> _languageService = new();
 
   private readonly CreateOrReplaceLanguageHandler _handler;
 
   public CreateOrReplaceLanguageHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _languageQuerier.Object, _languageRepository.Object, _languageService.Object);
+    _handler = new(_applicationContext.Object, _languageManager.Object, _languageQuerier.Object, _languageRepository.Object);
   }
 
   [Theory(DisplayName = "It should create a new language.")]
@@ -45,7 +45,7 @@ public class CreateOrReplaceLanguageHandlerTests
     _languageQuerier.Setup(x => x.ReadAsync(It.IsAny<Language>(), _cancellationToken)).ReturnsAsync(dto);
 
     Language? language = null;
-    _languageService.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((r, _) => language = r);
+    _languageManager.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((r, _) => language = r);
 
     CreateOrReplaceLanguage command = new(id, payload, Version: null);
     CreateOrReplaceLanguageResult result = await _handler.HandleAsync(command, _cancellationToken);
@@ -99,7 +99,7 @@ public class CreateOrReplaceLanguageHandlerTests
     Assert.Equal(payload.Locale, language.Locale.Code);
 
     _languageRepository.Verify(x => x.LoadAsync(It.IsAny<LanguageId>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), Times.Never);
-    _languageService.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
+    _languageManager.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
   }
 
   [Fact(DisplayName = "It should return null when the language does not exist.")]
@@ -163,6 +163,6 @@ public class CreateOrReplaceLanguageHandlerTests
     Assert.Equal(locale, language.Locale);
 
     _languageRepository.Verify(x => x.LoadAsync(reference.Id, reference.Version, _cancellationToken), Times.Once);
-    _languageService.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
+    _languageManager.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
   }
 }
