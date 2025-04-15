@@ -82,22 +82,22 @@ public class RealmQuerier : IRealmQuerier
       switch (sort.Field)
       {
         case RealmSort.CreatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.CreatedOn) : query.OrderBy(x => x.CreatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.CreatedOn) : ordered.ThenBy(x => x.CreatedOn));
           break;
         case RealmSort.DisplayName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.DisplayName) : ordered.ThenBy(x => x.DisplayName));
           break;
         case RealmSort.UniqueSlug:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UniqueSlug) : query.OrderBy(x => x.UniqueSlug))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UniqueSlug) : ordered.ThenBy(x => x.UniqueSlug));
           break;
         case RealmSort.UpdatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UpdatedOn) : query.OrderBy(x => x.UpdatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UpdatedOn) : ordered.ThenBy(x => x.UpdatedOn));
           break;

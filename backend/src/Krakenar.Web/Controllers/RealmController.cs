@@ -3,6 +3,7 @@ using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Realms.Commands;
 using Krakenar.Core.Realms.Queries;
+using Krakenar.Web.Constants;
 using Krakenar.Web.Models.Realm;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Krakenar.Web.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = Policies.KrakenarAdmin)]
 [Route("api/realms")]
 public class RealmController : ControllerBase
 {

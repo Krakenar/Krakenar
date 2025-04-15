@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
 using Krakenar.Core.Users.Queries;
+using Krakenar.Web.Constants;
 using Krakenar.Web.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
 namespace Krakenar.Web.Controllers;
 
 [ApiController]
-[Authorize]
+[Authorize(Policy = Policies.KrakenarAdmin)]
 [Route("api/users")]
 public class UserController : ControllerBase
 {

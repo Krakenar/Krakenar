@@ -185,72 +185,72 @@ public class UserQuerier : IUserQuerier
       switch (sort.Field)
       {
         case UserSort.AuthenticatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.AuthenticatedOn) : query.OrderBy(x => x.AuthenticatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.AuthenticatedOn) : ordered.ThenBy(x => x.AuthenticatedOn));
           break;
         case UserSort.Birthdate:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.Birthdate) : query.OrderBy(x => x.Birthdate))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.Birthdate) : ordered.ThenBy(x => x.Birthdate));
           break;
         case UserSort.CreatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.CreatedOn) : query.OrderBy(x => x.CreatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.CreatedOn) : ordered.ThenBy(x => x.CreatedOn));
           break;
         case UserSort.DisabledOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.DisabledOn) : query.OrderBy(x => x.DisabledOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.DisabledOn) : ordered.ThenBy(x => x.DisabledOn));
           break;
         case UserSort.EmailAddress:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.EmailAddress) : query.OrderBy(x => x.EmailAddress))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.EmailAddress) : ordered.ThenBy(x => x.EmailAddress));
           break;
         case UserSort.FirstName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.FirstName) : query.OrderBy(x => x.FirstName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.FirstName) : ordered.ThenBy(x => x.FirstName));
           break;
         case UserSort.FullName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.FullName) : query.OrderBy(x => x.FullName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.FullName) : ordered.ThenBy(x => x.FullName));
           break;
         case UserSort.LastName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.LastName) : query.OrderBy(x => x.LastName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.LastName) : ordered.ThenBy(x => x.LastName));
           break;
         case UserSort.MiddleName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.MiddleName) : query.OrderBy(x => x.MiddleName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.MiddleName) : ordered.ThenBy(x => x.MiddleName));
           break;
         case UserSort.Nickname:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.Nickname) : query.OrderBy(x => x.Nickname))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.Nickname) : ordered.ThenBy(x => x.Nickname));
           break;
         case UserSort.PasswordChangedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.PasswordChangedOn) : query.OrderBy(x => x.PasswordChangedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.PasswordChangedOn) : ordered.ThenBy(x => x.PasswordChangedOn));
           break;
         case UserSort.PhoneNumber:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.PhoneNumber) : query.OrderBy(x => x.PhoneNumber))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.PhoneNumber) : ordered.ThenBy(x => x.PhoneNumber));
           break;
         case UserSort.UniqueName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UniqueName) : query.OrderBy(x => x.UniqueName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UniqueName) : ordered.ThenBy(x => x.UniqueName));
           break;
         case UserSort.UpdatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UpdatedOn) : query.OrderBy(x => x.UpdatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UpdatedOn) : ordered.ThenBy(x => x.UpdatedOn));
           break;

@@ -85,17 +85,17 @@ public class SessionQuerier : ISessionQuerier
       switch (sort.Field)
       {
         case SessionSort.CreatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.CreatedOn) : query.OrderBy(x => x.CreatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.CreatedOn) : ordered.ThenBy(x => x.CreatedOn));
           break;
         case SessionSort.SignedOutOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.SignedOutOn) : query.OrderBy(x => x.SignedOutOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.SignedOutOn) : ordered.ThenBy(x => x.SignedOutOn));
           break;
         case SessionSort.UpdatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UpdatedOn) : query.OrderBy(x => x.UpdatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UpdatedOn) : ordered.ThenBy(x => x.UpdatedOn));
           break;

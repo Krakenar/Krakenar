@@ -5,6 +5,7 @@ using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Extensions;
 using Krakenar.Infrastructure;
 using Krakenar.Web;
+using Krakenar.Web.Middlewares;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.FeatureManagement;
 
@@ -29,7 +30,7 @@ internal class Startup : StartupBase
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational();
-    services.AddKrakenarWeb();
+    services.AddKrakenarWeb(_configuration);
     services.AddKrakenarSwagger();
 
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
@@ -72,6 +73,15 @@ internal class Startup : StartupBase
     }
 
     application.UseHttpsRedirection();
+    // TODO(fpion): CORS
+    // TODO(fpion): StaticFiles
+    // TODO(fpion): ExceptionHandler
+    application.UseSession();
+    // TODO(fpion): Logging
+    application.UseMiddleware<RenewSessionMiddleware>();
+    // TODO(fpion): RedirectNotFound
+    application.UseAuthentication();
+    application.UseAuthorization();
 
     application.MapControllers();
     application.MapHealthChecks("/health");

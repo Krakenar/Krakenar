@@ -130,32 +130,32 @@ public class LanguageQuerier : ILanguageQuerier
       switch (sort.Field)
       {
         case LanguageSort.Code:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.Code) : query.OrderBy(x => x.Code))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.Code) : ordered.ThenBy(x => x.Code));
           break;
         case LanguageSort.CreatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.CreatedOn) : query.OrderBy(x => x.CreatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.CreatedOn) : ordered.ThenBy(x => x.CreatedOn));
           break;
         case LanguageSort.DisplayName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.DisplayName) : ordered.ThenBy(x => x.DisplayName));
           break;
         case LanguageSort.EnglishName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.EnglishName) : query.OrderBy(x => x.EnglishName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.EnglishName) : ordered.ThenBy(x => x.EnglishName));
           break;
         case LanguageSort.NativeName:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.NativeName) : query.OrderBy(x => x.NativeName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.NativeName) : ordered.ThenBy(x => x.NativeName));
           break;
         case LanguageSort.UpdatedOn:
-          ordered = (ordered == null)
+          ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UpdatedOn) : query.OrderBy(x => x.UpdatedOn))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.UpdatedOn) : ordered.ThenBy(x => x.UpdatedOn));
           break;
