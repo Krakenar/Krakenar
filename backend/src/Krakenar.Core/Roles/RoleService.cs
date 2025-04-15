@@ -1,94 +1,60 @@
-﻿using Krakenar.Core.Realms;
-using Krakenar.Core.Roles.Events;
+﻿using Krakenar.Contracts.Roles;
+using Krakenar.Contracts.Search;
+using Krakenar.Core.Roles.Commands;
+using Krakenar.Core.Roles.Queries;
+using RoleDto = Krakenar.Contracts.Roles.Role;
 
 namespace Krakenar.Core.Roles;
 
-public interface IRoleService
-{
-  Task<IReadOnlyDictionary<string, Role>> FindAsync(IEnumerable<string> roles, string propertyName, CancellationToken cancellationToken = default);
-
-  Task SaveAsync(Role role, CancellationToken cancellationToken = default);
-}
-
 public class RoleService : IRoleService
 {
-  protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual IRoleQuerier RoleQuerier { get; }
-  protected virtual IRoleRepository RoleRepository { get; }
+  protected virtual ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> CreateOrReplaceRole { get; }
+  protected virtual ICommandHandler<DeleteRole, RoleDto?> DeleteRole { get; }
+  protected virtual IQueryHandler<ReadRole, RoleDto?> ReadRole { get; }
+  protected virtual IQueryHandler<SearchRoles, SearchResults<RoleDto>> SearchRoles { get; }
+  protected virtual ICommandHandler<UpdateRole, RoleDto?> UpdateRole { get; }
 
-  public RoleService(IApplicationContext applicationContext, IRoleQuerier roleQuerier, IRoleRepository roleRepository)
+  public RoleService(
+    ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> createOrReplaceRole,
+    ICommandHandler<DeleteRole, RoleDto?> deleteRole,
+    IQueryHandler<ReadRole, RoleDto?> readRole,
+    IQueryHandler<SearchRoles, SearchResults<RoleDto>> searchRoles,
+    ICommandHandler<UpdateRole, RoleDto?> updateRole)
   {
-    ApplicationContext = applicationContext;
-    RoleQuerier = roleQuerier;
-    RoleRepository = roleRepository;
+    CreateOrReplaceRole = createOrReplaceRole;
+    DeleteRole = deleteRole;
+    ReadRole = readRole;
+    SearchRoles = searchRoles;
+    UpdateRole = updateRole;
   }
 
-  public virtual async Task<IReadOnlyDictionary<string, Role>> FindAsync(IEnumerable<string> idOrUniqueNames, string propertyName, CancellationToken cancellationToken)
+  public virtual async Task<CreateOrReplaceRoleResult> CreateOrReplaceAsync(CreateOrReplaceRolePayload payload, Guid? id, long? version, CancellationToken cancellationToken)
   {
-    idOrUniqueNames = idOrUniqueNames.Distinct();
-    int count = idOrUniqueNames.Count();
-    if (count < 1)
-    {
-      return new Dictionary<string, Role>().AsReadOnly();
-    }
-
-    IReadOnlyDictionary<Guid, string> uniqueNameByIds = await RoleQuerier.ListUniqueNameByIdsAsync(cancellationToken);
-    Dictionary<string, Guid> idByUniqueNames = uniqueNameByIds.ToDictionary(x => Normalize(x.Value), x => x.Key);
-    HashSet<RoleId> roleIds = new(capacity: count);
-    HashSet<string> missingIds = new(capacity: count);
-    RealmId? realmId = ApplicationContext.RealmId;
-    foreach (string idOrUniqueName in idOrUniqueNames)
-    {
-      string normalized = Normalize(idOrUniqueName);
-      if ((Guid.TryParse(idOrUniqueName, out Guid id) || idByUniqueNames.TryGetValue(normalized, out id)) && uniqueNameByIds.ContainsKey(id))
-      {
-        roleIds.Add(new RoleId(id, realmId));
-      }
-      else
-      {
-        missingIds.Add(idOrUniqueName);
-      }
-    }
-
-    if (missingIds.Count > 0)
-    {
-      throw new RolesNotFoundException(realmId, missingIds, propertyName);
-    }
-
-    IReadOnlyCollection<Role> roles = await RoleRepository.LoadAsync(roleIds, cancellationToken);
-    Dictionary<Guid, Role> rolesById = new(capacity: roles.Count);
-    Dictionary<string, Role> rolesByUniqueName = new(capacity: roles.Count);
-    foreach (Role role in roles)
-    {
-      rolesById[role.EntityId] = role;
-      rolesByUniqueName[Normalize(role.UniqueName.Value)] = role;
-    }
-
-    Dictionary<string, Role> foundRoles = new(capacity: roles.Count);
-    foreach (string idOrUniqueName in idOrUniqueNames)
-    {
-      if (!Guid.TryParse(idOrUniqueName, out Guid id) || !rolesById.TryGetValue(id, out Role? role))
-      {
-        role = rolesByUniqueName[Normalize(idOrUniqueName)];
-      }
-      foundRoles[idOrUniqueName] = role;
-    }
-    return foundRoles.AsReadOnly();
+    CreateOrReplaceRole command = new(id, payload, version);
+    return await CreateOrReplaceRole.HandleAsync(command, cancellationToken);
   }
-  protected virtual string Normalize(string value) => value.Trim().ToUpperInvariant();
 
-  public virtual async Task SaveAsync(Role role, CancellationToken cancellationToken)
+  public virtual async Task<RoleDto?> DeleteAsync(Guid id, CancellationToken cancellationToken)
   {
-    bool hasUniqueNameChanged = role.Changes.Any(change => change is RoleCreated || change is RoleUniqueNameChanged);
-    if (hasUniqueNameChanged)
-    {
-      RoleId? conflictId = await RoleQuerier.FindIdAsync(role.UniqueName, cancellationToken);
-      if (conflictId.HasValue && !conflictId.Value.Equals(role.Id))
-      {
-        throw new UniqueNameAlreadyUsedException(role, conflictId.Value);
-      }
-    }
+    DeleteRole command = new(id);
+    return await DeleteRole.HandleAsync(command, cancellationToken);
+  }
 
-    await RoleRepository.SaveAsync(role, cancellationToken);
+  public virtual async Task<RoleDto?> ReadAsync(Guid? id, string? uniqueName, CancellationToken cancellationToken)
+  {
+    ReadRole query = new(id, uniqueName);
+    return await ReadRole.HandleAsync(query, cancellationToken);
+  }
+
+  public virtual async Task<SearchResults<RoleDto>> SearchAsync(SearchRolesPayload payload, CancellationToken cancellationToken)
+  {
+    SearchRoles query = new(payload);
+    return await SearchRoles.HandleAsync(query, cancellationToken);
+  }
+
+  public virtual async Task<RoleDto?> UpdateAsync(Guid id, UpdateRolePayload payload, CancellationToken cancellationToken)
+  {
+    UpdateRole command = new(id, payload);
+    return await UpdateRole.HandleAsync(command, cancellationToken);
   }
 }

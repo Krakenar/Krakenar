@@ -3,8 +3,6 @@ using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Roles;
-using Krakenar.Core.Roles.Commands;
-using Krakenar.Core.Roles.Queries;
 using Krakenar.Core.Users;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
@@ -18,26 +16,16 @@ namespace Krakenar.Roles;
 public class RoleIntegrationTests : IntegrationTests
 {
   private readonly IRoleRepository _roleRepository;
+  private readonly IRoleService _roleService;
   private readonly IUserRepository _userRepository;
-
-  private readonly ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> _createOrReplaceRole;
-  private readonly ICommandHandler<DeleteRole, RoleDto?> _deleteRole;
-  private readonly IQueryHandler<ReadRole, RoleDto?> _readRole;
-  private readonly IQueryHandler<SearchRoles, SearchResults<RoleDto>> _searchRoles;
-  private readonly ICommandHandler<UpdateRole, RoleDto?> _updateRole;
 
   private readonly Role _role;
 
   public RoleIntegrationTests() : base()
   {
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
+    _roleService = ServiceProvider.GetRequiredService<IRoleService>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
-
-    _createOrReplaceRole = ServiceProvider.GetRequiredService<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>>();
-    _deleteRole = ServiceProvider.GetRequiredService<ICommandHandler<DeleteRole, RoleDto?>>();
-    _readRole = ServiceProvider.GetRequiredService<IQueryHandler<ReadRole, RoleDto?>>();
-    _searchRoles = ServiceProvider.GetRequiredService<IQueryHandler<SearchRoles, SearchResults<RoleDto>>>();
-    _updateRole = ServiceProvider.GetRequiredService<ICommandHandler<UpdateRole, RoleDto?>>();
 
     _role = new(new UniqueName(Realm.UniqueNameSettings, "admin"), ActorId, RoleId.NewId(Realm.Id));
   }
@@ -61,13 +49,13 @@ public class RoleIntegrationTests : IntegrationTests
     payload.CustomAttributes.Add(new CustomAttribute("edit_documents", bool.TrueString));
     payload.CustomAttributes.Add(new CustomAttribute("publish_documents", bool.FalseString));
 
-    CreateOrReplaceRole command = new(Guid.NewGuid(), payload, Version: null);
-    CreateOrReplaceRoleResult result = await _createOrReplaceRole.HandleAsync(command);
+    Guid id = Guid.NewGuid();
+    CreateOrReplaceRoleResult result = await _roleService.CreateOrReplaceAsync(payload, id);
     Assert.True(result.Created);
 
     RoleDto? role = result.Role;
     Assert.NotNull(role);
-    Assert.Equal(command.Id, role.Id);
+    Assert.Equal(id, role.Id);
     Assert.Equal(2, role.Version);
     Assert.Equal(Actor, role.CreatedBy);
     Assert.Equal(DateTime.UtcNow, role.CreatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
@@ -88,10 +76,9 @@ public class RoleIntegrationTests : IntegrationTests
     user.AddRole(_role, ActorId);
     await _userRepository.SaveAsync(user);
 
-    DeleteRole command = new(_role.EntityId);
-    RoleDto? role = await _deleteRole.HandleAsync(command);
+    RoleDto? role = await _roleService.DeleteAsync(_role.EntityId);
     Assert.NotNull(role);
-    Assert.Equal(command.Id, role.Id);
+    Assert.Equal(_role.EntityId, role.Id);
 
     Assert.Empty(await KrakenarContext.Roles.AsNoTracking().Where(x => x.StreamId == _role.Id.Value).ToArrayAsync());
 
@@ -103,17 +90,15 @@ public class RoleIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should read the role by ID.")]
   public async Task Given_Id_When_Read_Then_Found()
   {
-    ReadRole query = new(_role.EntityId, UniqueName: null);
-    RoleDto? role = await _readRole.HandleAsync(query);
+    RoleDto? role = await _roleService.ReadAsync(_role.EntityId);
     Assert.NotNull(role);
-    Assert.Equal(query.Id, role.Id);
+    Assert.Equal(_role.EntityId, role.Id);
   }
 
   [Fact(DisplayName = "It should read the role by unique name.")]
   public async Task Given_UniqueName_When_Read_Then_Found()
   {
-    ReadRole query = new(Id: null, _role.UniqueName.Value);
-    RoleDto? role = await _readRole.HandleAsync(query);
+    RoleDto? role = await _roleService.ReadAsync(id: null, _role.UniqueName.Value);
     Assert.NotNull(role);
     Assert.Equal(_role.EntityId, role.Id);
   }
@@ -129,8 +114,7 @@ public class RoleIntegrationTests : IntegrationTests
     };
     payload.CustomAttributes.Add(new CustomAttribute("manage_api", bool.TrueString));
 
-    CreateOrReplaceRole command = new(_role.EntityId, payload, Version: null);
-    CreateOrReplaceRoleResult result = await _createOrReplaceRole.HandleAsync(command);
+    CreateOrReplaceRoleResult result = await _roleService.CreateOrReplaceAsync(payload, _role.EntityId);
     Assert.False(result.Created);
 
     RoleDto? role = result.Role;
@@ -163,8 +147,7 @@ public class RoleIntegrationTests : IntegrationTests
     };
     payload.CustomAttributes.Add(new CustomAttribute("Key", "Value"));
 
-    CreateOrReplaceRole command = new(_role.EntityId, payload, version);
-    CreateOrReplaceRoleResult result = await _createOrReplaceRole.HandleAsync(command);
+    CreateOrReplaceRoleResult result = await _roleService.CreateOrReplaceAsync(payload, _role.EntityId, version);
     Assert.False(result.Created);
 
     RoleDto? role = result.Role;
@@ -183,8 +166,7 @@ public class RoleIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should return null when the role cannot be found.")]
   public async Task Given_NotFound_When_Read_Then_NullReturned()
   {
-    ReadRole query = new(Guid.Empty, "not-found");
-    Assert.Null(await _readRole.HandleAsync(query));
+    Assert.Null(await _roleService.ReadAsync(Guid.Empty, "not-found"));
   }
 
   [Fact(DisplayName = "It should return the correct search results.")]
@@ -203,8 +185,7 @@ public class RoleIntegrationTests : IntegrationTests
       Skip = 1,
       Limit = 1
     };
-    SearchRoles command = new(payload);
-    SearchResults<RoleDto> results = await _searchRoles.HandleAsync(command);
+    SearchResults<RoleDto> results = await _roleService.SearchAsync(payload);
     Assert.Equal(2, results.Total);
 
     RoleDto role = Assert.Single(results.Items);
@@ -217,8 +198,7 @@ public class RoleIntegrationTests : IntegrationTests
     Role role = new(new UniqueName(Realm.UniqueNameSettings, "editor"), ActorId, RoleId.NewId(Realm.Id));
     await _roleRepository.SaveAsync(role);
 
-    ReadRole query = new(_role.EntityId, role.UniqueName.Value);
-    var exception = await Assert.ThrowsAsync<TooManyResultsException<RoleDto>>(async () => await _readRole.HandleAsync(query));
+    var exception = await Assert.ThrowsAsync<TooManyResultsException<RoleDto>>(async () => await _roleService.ReadAsync(_role.EntityId, role.UniqueName.Value));
     Assert.Equal(1, exception.ExpectedCount);
     Assert.Equal(2, exception.ActualCount);
   }
@@ -230,12 +210,12 @@ public class RoleIntegrationTests : IntegrationTests
     {
       UniqueName = _role.UniqueName.Value
     };
-    CreateOrReplaceRole command = new(Guid.NewGuid(), payload, Version: null);
-    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(async () => await _createOrReplaceRole.HandleAsync(command));
+    Guid id = Guid.NewGuid();
+    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(async () => await _roleService.CreateOrReplaceAsync(payload, id));
 
     Assert.Equal(_role.RealmId?.ToGuid(), exception.RealmId);
     Assert.Equal("Role", exception.EntityType);
-    Assert.Equal(command.Id, exception.EntityId);
+    Assert.Equal(id, exception.EntityId);
     Assert.Equal(_role.EntityId, exception.ConflictId);
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
@@ -250,11 +230,10 @@ public class RoleIntegrationTests : IntegrationTests
     };
     payload.CustomAttributes.Add(new CustomAttribute("manage_api", $"  {bool.TrueString}  "));
     payload.CustomAttributes.Add(new CustomAttribute("removed", string.Empty));
-    UpdateRole command = new(_role.EntityId, payload);
-    RoleDto? role = await _updateRole.HandleAsync(command);
+    RoleDto? role = await _roleService.UpdateAsync(_role.EntityId, payload);
     Assert.NotNull(role);
 
-    Assert.Equal(command.Id, role.Id);
+    Assert.Equal(_role.EntityId, role.Id);
     Assert.Equal(_role.Version + 1, role.Version);
     Assert.Equal(Actor, role.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, role.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));

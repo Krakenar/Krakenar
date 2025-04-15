@@ -4,7 +4,7 @@ using Moq;
 namespace Krakenar.Core.Roles;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class RoleServiceTests
+public class RoleManagerTests
 {
   private readonly CancellationToken _cancellationToken = default;
   private readonly UniqueNameSettings _uniqueNameSettings = new();
@@ -13,11 +13,11 @@ public class RoleServiceTests
   private readonly Mock<IRoleQuerier> _roleQuerier = new();
   private readonly Mock<IRoleRepository> _roleRepository = new();
 
-  private readonly RoleService _service;
+  private readonly RoleManager _manager;
 
-  public RoleServiceTests()
+  public RoleManagerTests()
   {
-    _service = new(_applicationContext.Object, _roleQuerier.Object, _roleRepository.Object);
+    _manager = new(_applicationContext.Object, _roleQuerier.Object, _roleRepository.Object);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the role when the unique name has not changed.")]
@@ -27,7 +27,7 @@ public class RoleServiceTests
     role.ClearChanges();
 
     role.Delete();
-    await _service.SaveAsync(role, _cancellationToken);
+    await _manager.SaveAsync(role, _cancellationToken);
 
     _roleQuerier.Verify(x => x.FindIdAsync(It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
     _roleRepository.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
@@ -39,7 +39,7 @@ public class RoleServiceTests
     Role role = new(new UniqueName(_uniqueNameSettings, "guest"));
     _roleQuerier.Setup(x => x.FindIdAsync(role.UniqueName, _cancellationToken)).ReturnsAsync(role.Id);
 
-    await _service.SaveAsync(role, _cancellationToken);
+    await _manager.SaveAsync(role, _cancellationToken);
 
     _roleQuerier.Verify(x => x.FindIdAsync(role.UniqueName, _cancellationToken), Times.Once);
     _roleRepository.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
@@ -55,7 +55,7 @@ public class RoleServiceTests
     role.ClearChanges();
     role.SetUniqueName(conflict.UniqueName);
 
-    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(async () => await _service.SaveAsync(role, _cancellationToken));
+    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(async () => await _manager.SaveAsync(role, _cancellationToken));
     Assert.Equal(role.RealmId?.ToGuid(), exception.RealmId);
     Assert.Equal("Role", exception.EntityType);
     Assert.Equal(role.EntityId, exception.EntityId);

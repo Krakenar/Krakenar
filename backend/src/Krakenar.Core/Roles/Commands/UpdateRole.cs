@@ -15,20 +15,20 @@ public record UpdateRole(Guid Id, UpdateRolePayload Payload) : ICommand<RoleDto?
 public class UpdateRoleHandler : ICommandHandler<UpdateRole, RoleDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IRoleManager RoleManager { get; }
   protected virtual IRoleQuerier RoleQuerier { get; }
   protected virtual IRoleRepository RoleRepository { get; }
-  protected virtual IRoleService RoleService { get; }
 
   public UpdateRoleHandler(
     IApplicationContext applicationContext,
+    IRoleManager roleManager,
     IRoleQuerier roleQuerier,
-    IRoleRepository roleRepository,
-    IRoleService roleService)
+    IRoleRepository roleRepository)
   {
     ApplicationContext = applicationContext;
+    RoleManager = roleManager;
     RoleQuerier = roleQuerier;
     RoleRepository = roleRepository;
-    RoleService = roleService;
   }
 
   public virtual async Task<RoleDto?> HandleAsync(UpdateRole command, CancellationToken cancellationToken)
@@ -68,7 +68,7 @@ public class UpdateRoleHandler : ICommandHandler<UpdateRole, RoleDto?>
     }
 
     role.Update(actorId);
-    await RoleService.SaveAsync(role, cancellationToken);
+    await RoleManager.SaveAsync(role, cancellationToken);
 
     return await RoleQuerier.ReadAsync(role, cancellationToken);
   }

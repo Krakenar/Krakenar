@@ -10,11 +10,11 @@ public class LanguageManagerTests
   private readonly Mock<ILanguageQuerier> _languageQuerier = new();
   private readonly Mock<ILanguageRepository> _languageRepository = new();
 
-  private readonly LanguageManager _service;
+  private readonly LanguageManager _manager;
 
   public LanguageManagerTests()
   {
-    _service = new(_languageQuerier.Object, _languageRepository.Object);
+    _manager = new(_languageQuerier.Object, _languageRepository.Object);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the language when the locale has not changed.")]
@@ -24,7 +24,7 @@ public class LanguageManagerTests
     language.ClearChanges();
 
     language.SetDefault();
-    await _service.SaveAsync(language, _cancellationToken);
+    await _manager.SaveAsync(language, _cancellationToken);
 
     _languageQuerier.Verify(x => x.FindIdAsync(It.IsAny<Locale>(), It.IsAny<CancellationToken>()), Times.Never);
     _languageRepository.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
@@ -36,7 +36,7 @@ public class LanguageManagerTests
     Language language = new(new Locale("en"));
     _languageQuerier.Setup(x => x.FindIdAsync(language.Locale, _cancellationToken)).ReturnsAsync(language.Id);
 
-    await _service.SaveAsync(language, _cancellationToken);
+    await _manager.SaveAsync(language, _cancellationToken);
 
     _languageQuerier.Verify(x => x.FindIdAsync(language.Locale, _cancellationToken), Times.Once);
     _languageRepository.Verify(x => x.SaveAsync(language, _cancellationToken), Times.Once);
@@ -52,7 +52,7 @@ public class LanguageManagerTests
     language.ClearChanges();
     language.SetLocale(conflict.Locale);
 
-    var exception = await Assert.ThrowsAsync<LocaleAlreadyUsedException>(async () => await _service.SaveAsync(language, _cancellationToken));
+    var exception = await Assert.ThrowsAsync<LocaleAlreadyUsedException>(async () => await _manager.SaveAsync(language, _cancellationToken));
     Assert.Equal(language.RealmId?.ToGuid(), exception.RealmId);
     Assert.Equal(language.EntityId, exception.LanguageId);
     Assert.Equal(conflict.EntityId, exception.ConflictId);

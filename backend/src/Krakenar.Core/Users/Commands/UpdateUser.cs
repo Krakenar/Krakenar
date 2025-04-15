@@ -28,7 +28,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
   protected virtual IAddressHelper AddressHelper { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IPasswordService PasswordService { get; }
-  protected virtual IRoleService RoleService { get; }
+  protected virtual IRoleManager RoleManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
   protected virtual IUserRepository UserRepository { get; }
   protected virtual IUserService UserService { get; }
@@ -37,7 +37,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
     IAddressHelper addressHelper,
     IApplicationContext applicationContext,
     IPasswordService passwordService,
-    IRoleService roleService,
+    IRoleManager roleManager,
     IUserQuerier userQuerier,
     IUserRepository userRepository,
     IUserService userService)
@@ -45,7 +45,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
     AddressHelper = addressHelper;
     ApplicationContext = applicationContext;
     PasswordService = passwordService;
-    RoleService = roleService;
+    RoleManager = roleManager;
     UserQuerier = userQuerier;
     UserRepository = userRepository;
     UserService = userService;
@@ -183,7 +183,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
   {
     if (payload.Roles.Count > 0)
     {
-      IReadOnlyDictionary<string, Role> roles = await RoleService.FindAsync(payload.Roles.Select(role => role.Role), nameof(payload.Roles), cancellationToken);
+      IReadOnlyDictionary<string, Role> roles = await RoleManager.FindAsync(payload.Roles.Select(role => role.Role), nameof(payload.Roles), cancellationToken);
       foreach (RoleChange change in payload.Roles)
       {
         Role role = roles[change.Role];

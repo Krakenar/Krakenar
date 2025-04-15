@@ -27,7 +27,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
   protected virtual IAddressHelper AddressHelper { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IPasswordService PasswordService { get; }
-  protected virtual IRoleService RoleService { get; }
+  protected virtual IRoleManager RoleManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
   protected virtual IUserRepository UserRepository { get; }
   protected virtual IUserService UserService { get; }
@@ -36,7 +36,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
     IAddressHelper addressHelper,
     IApplicationContext applicationContext,
     IPasswordService passwordService,
-    IRoleService roleService,
+    IRoleManager roleManager,
     IUserQuerier userQuerier,
     IUserRepository userRepository,
     IUserService userService)
@@ -44,7 +44,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
     AddressHelper = addressHelper;
     ApplicationContext = applicationContext;
     PasswordService = passwordService;
-    RoleService = roleService;
+    RoleManager = roleManager;
     UserQuerier = userQuerier;
     UserRepository = userRepository;
     UserService = userService;
@@ -210,7 +210,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
   {
     if (payload.Roles.Count > 0)
     {
-      IReadOnlyDictionary<string, Role> roles = await RoleService.FindAsync(payload.Roles, nameof(payload.Roles), cancellationToken);
+      IReadOnlyDictionary<string, Role> roles = await RoleManager.FindAsync(payload.Roles, nameof(payload.Roles), cancellationToken);
 
       HashSet<RoleId> roleIds = new(capacity: roles.Count);
       foreach (Role role in roles.Values)

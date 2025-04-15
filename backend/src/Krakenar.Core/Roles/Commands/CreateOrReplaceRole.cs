@@ -7,8 +7,6 @@ using RoleDto = Krakenar.Contracts.Roles.Role;
 
 namespace Krakenar.Core.Roles.Commands;
 
-public record CreateOrReplaceRoleResult(RoleDto? Role = null, bool Created = false);
-
 public record CreateOrReplaceRole(Guid? Id, CreateOrReplaceRolePayload Payload, long? Version) : ICommand<CreateOrReplaceRoleResult>;
 
 /// <exception cref="UniqueNameAlreadyUsedException"></exception>
@@ -16,16 +14,16 @@ public record CreateOrReplaceRole(Guid? Id, CreateOrReplaceRolePayload Payload, 
 public class CreateOrReplaceRoleHandler : ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IRoleManager RoleManager { get; }
   protected virtual IRoleQuerier RoleQuerier { get; }
   protected virtual IRoleRepository RoleRepository { get; }
-  protected virtual IRoleService RoleService { get; }
 
-  public CreateOrReplaceRoleHandler(IApplicationContext applicationContext, IRoleQuerier roleQuerier, IRoleRepository roleRepository, IRoleService roleService)
+  public CreateOrReplaceRoleHandler(IApplicationContext applicationContext, IRoleManager roleManager, IRoleQuerier roleQuerier, IRoleRepository roleRepository)
   {
     ApplicationContext = applicationContext;
+    RoleManager = roleManager;
     RoleQuerier = roleQuerier;
     RoleRepository = roleRepository;
-    RoleService = roleService;
   }
 
   public virtual async Task<CreateOrReplaceRoleResult> HandleAsync(CreateOrReplaceRole command, CancellationToken cancellationToken)
@@ -80,7 +78,7 @@ public class CreateOrReplaceRoleHandler : ICommandHandler<CreateOrReplaceRole, C
     role.SetCustomAttributes(payload.CustomAttributes, reference);
 
     role.Update(actorId);
-    await RoleService.SaveAsync(role, cancellationToken);
+    await RoleManager.SaveAsync(role, cancellationToken);
 
     RoleDto dto = await RoleQuerier.ReadAsync(role, cancellationToken);
     return new CreateOrReplaceRoleResult(dto, created);
