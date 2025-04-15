@@ -1,7 +1,4 @@
 ﻿using Krakenar.Contracts.Configurations;
-using Krakenar.Core;
-using Krakenar.Core.Configurations.Commands;
-using Krakenar.Core.Configurations.Queries;
 using Krakenar.Web.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,42 +10,32 @@ namespace Krakenar.Web.Controllers;
 [Route("api/configuration")]
 public class ConfigurationController : ControllerBase
 {
-  private readonly IQueryHandler<ReadConfiguration, Configuration> _readConfiguration;
-  private readonly ICommandHandler<ReplaceConfiguration, Configuration> _replaceConfiguration;
-  private readonly ICommandHandler<UpdateConfiguration, Configuration> _updateConfiguration;
+  protected virtual IConfigurationService ConfigurationService { get; }
 
-  public ConfigurationController(
-    IQueryHandler<ReadConfiguration, Configuration> readConfiguration,
-    ICommandHandler<ReplaceConfiguration, Configuration> replaceConfiguration,
-    ICommandHandler<UpdateConfiguration, Configuration> updateConfiguration)
+  public ConfigurationController(IConfigurationService configurationService)
   {
-    _readConfiguration = readConfiguration;
-    _replaceConfiguration = replaceConfiguration;
-    _updateConfiguration = updateConfiguration;
+    ConfigurationService = configurationService;
   }
 
   [HttpGet]
-  public async Task<ActionResult<Configuration>> ReadAsync(CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Configuration>> ReadAsync(CancellationToken cancellationToken)
   {
-    ReadConfiguration query = new();
-    Configuration configuration = await _readConfiguration.HandleAsync(query, cancellationToken);
+    Configuration configuration = await ConfigurationService.ReadAsync(cancellationToken);
     return Ok(configuration);
   }
 
   [HttpPut]
-  public async Task<ActionResult<Configuration>> ReplaceAsync([FromBody] ReplaceConfigurationPayload payload, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Configuration>> ReplaceAsync([FromBody] ReplaceConfigurationPayload payload, long? version, CancellationToken cancellationToken)
   {
-    ReplaceConfiguration command = new(payload, version);
-    Configuration configuration = await _replaceConfiguration.HandleAsync(command, cancellationToken);
+    Configuration configuration = await ConfigurationService.ReplaceAsync(payload, version, cancellationToken);
     return Ok(configuration);
 
   }
 
   [HttpPatch]
-  public async Task<ActionResult<Configuration>> UpdateAsync([FromBody] UpdateConfigurationPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Configuration>> UpdateAsync([FromBody] UpdateConfigurationPayload payload, CancellationToken cancellationToken)
   {
-    UpdateConfiguration command = new(payload);
-    Configuration configuration = await _updateConfiguration.HandleAsync(command, cancellationToken);
+    Configuration configuration = await ConfigurationService.UpdateAsync(payload, cancellationToken);
     return Ok(configuration);
   }
 }

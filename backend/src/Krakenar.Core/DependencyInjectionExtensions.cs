@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Realms;
+﻿using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Search;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
@@ -75,6 +76,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarCoreServices(this IServiceCollection services)
   {
     return services
+      .AddTransient<IConfigurationService, ConfigurationService>()
       .AddTransient<ILanguageService, LanguageService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()

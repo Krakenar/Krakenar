@@ -1,9 +1,6 @@
 ﻿using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Logging;
-using Krakenar.Core;
 using Krakenar.Core.Configurations;
-using Krakenar.Core.Configurations.Commands;
-using Krakenar.Core.Configurations.Queries;
 using Krakenar.Core.Settings;
 using Logitar;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,23 +16,18 @@ namespace Krakenar.Configurations;
 public class ConfigurationIntegrationTests : IntegrationTests
 {
   private readonly IConfigurationRepository _configurationRepository;
-  private readonly IQueryHandler<ReadConfiguration, ConfigurationDto> _readConfiguration;
-  private readonly ICommandHandler<ReplaceConfiguration, ConfigurationDto> _replaceConfiguration;
-  private readonly ICommandHandler<UpdateConfiguration, ConfigurationDto> _updateConfiguration;
+  private readonly IConfigurationService _configurationService;
 
   public ConfigurationIntegrationTests() : base()
   {
     _configurationRepository = ServiceProvider.GetRequiredService<IConfigurationRepository>();
-    _readConfiguration = ServiceProvider.GetRequiredService<IQueryHandler<ReadConfiguration, ConfigurationDto>>();
-    _replaceConfiguration = ServiceProvider.GetRequiredService<ICommandHandler<ReplaceConfiguration, ConfigurationDto>>();
-    _updateConfiguration = ServiceProvider.GetRequiredService<ICommandHandler<UpdateConfiguration, ConfigurationDto>>();
+    _configurationService = ServiceProvider.GetRequiredService<IConfigurationService>();
   }
 
   [Fact(DisplayName = "It should read the configuration.")]
   public async Task Given_Configuration_When_Read_Then_Configuration()
   {
-    ReadConfiguration query = new();
-    ConfigurationDto configuration = await _readConfiguration.HandleAsync(query);
+    ConfigurationDto configuration = await _configurationService.ReadAsync();
 
     Assert.Equal(1, configuration.Version);
     Assert.Equal(Actor, configuration.CreatedBy);
@@ -54,8 +46,7 @@ public class ConfigurationIntegrationTests : IntegrationTests
       PasswordSettings = new PasswordSettingsDto(6, 1, false, true, true, true, "PBKDF2"),
       LoggingSettings = new LoggingSettingsDto(LoggingExtent.Full, onlyErrors: true)
     };
-    ReplaceConfiguration command = new(payload, Version: null);
-    ConfigurationDto configuration = await _replaceConfiguration.HandleAsync(command);
+    ConfigurationDto configuration = await _configurationService.ReplaceAsync(payload);
 
     Assert.Equal(2, configuration.Version);
     Assert.Equal(Actor, configuration.UpdatedBy);
@@ -82,8 +73,7 @@ public class ConfigurationIntegrationTests : IntegrationTests
       PasswordSettings = new PasswordSettingsDto(6, 1, false, true, true, true, "PBKDF2"),
       LoggingSettings = new LoggingSettingsDto(LoggingExtent.Full, onlyErrors: true)
     };
-    ReplaceConfiguration command = new(payload, version);
-    ConfigurationDto configuration = await _replaceConfiguration.HandleAsync(command);
+    ConfigurationDto configuration = await _configurationService.ReplaceAsync(payload, version);
 
     Assert.Equal(aggregate.Version + 1, configuration.Version);
     Assert.Equal(Actor, configuration.UpdatedBy);
@@ -100,8 +90,7 @@ public class ConfigurationIntegrationTests : IntegrationTests
     {
       LoggingSettings = new LoggingSettingsDto(LoggingExtent.Full, onlyErrors: true)
     };
-    UpdateConfiguration command = new(payload);
-    ConfigurationDto configuration = await _updateConfiguration.HandleAsync(command);
+    ConfigurationDto configuration = await _configurationService.UpdateAsync(payload);
 
     Assert.Equal(2, configuration.Version);
     Assert.Equal(Actor, configuration.UpdatedBy);
