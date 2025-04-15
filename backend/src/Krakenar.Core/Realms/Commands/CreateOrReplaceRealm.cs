@@ -113,11 +113,11 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     }
     if (reference.RequireUniqueEmail != payload.RequireUniqueEmail)
     {
-      reference.RequireUniqueEmail = payload.RequireUniqueEmail;
+      realm.RequireUniqueEmail = payload.RequireUniqueEmail;
     }
     if (reference.RequireConfirmedAccount != payload.RequireConfirmedAccount)
     {
-      reference.RequireConfirmedAccount = payload.RequireConfirmedAccount;
+      realm.RequireConfirmedAccount = payload.RequireConfirmedAccount;
     }
 
     realm.SetCustomAttributes(payload.CustomAttributes, reference);
@@ -127,7 +127,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
 
     if (language is not null)
     {
-      await LanguageService.SaveAsync(language, cancellationToken);
+      await LanguageService.SaveAsync(language, cancellationToken); // TODO(fpion): this does not work since the RealmId is not passed into the ApplicationContext.
     }
 
     RealmDto dto = await RealmQuerier.ReadAsync(realm, cancellationToken);

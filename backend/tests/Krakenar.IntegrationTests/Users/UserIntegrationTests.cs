@@ -168,7 +168,7 @@ public class UserIntegrationTests : IntegrationTests
     SessionEntity? entity = await KrakenarContext.Sessions.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == session.Id.Value);
     Assert.NotNull(entity);
     Assert.False(entity.IsActive);
-    Assert.Equal(ActorId.Value, entity.SignedOutBy);
+    Assert.Equal(ActorId?.Value, entity.SignedOutBy);
     Assert.NotNull(entity.SignedOutOn);
     Assert.Equal(DateTime.UtcNow, entity.SignedOutOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
   }
