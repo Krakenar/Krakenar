@@ -3,6 +3,7 @@ using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.Caching;
 using Krakenar.Core.Configurations.Commands;
+using Krakenar.Core.Localization;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
@@ -128,6 +129,10 @@ public abstract class IntegrationTests : IAsyncLifetime
     IRealmQuerier realmQuerier = ServiceProvider.GetRequiredService<IRealmQuerier>();
     _applicationContext.Realm = await realmQuerier.ReadAsync(Realm);
     _applicationContext.RealmId = Realm.Id;
+
+    ILanguageRepository languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
+    Language language = new(new Locale(initializeConfiguration.DefaultLocale), isDefault: true, ActorId, LanguageId.NewId(Realm.Id));
+    await languageRepository.SaveAsync(language);
   }
   private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
   {

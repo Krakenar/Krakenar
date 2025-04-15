@@ -5,7 +5,9 @@ using Krakenar.Core;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Commands;
 using Krakenar.Core.Roles.Queries;
+using Krakenar.Core.Users;
 using Logitar;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Role = Krakenar.Core.Roles.Role;
 using RoleDto = Krakenar.Contracts.Roles.Role;
@@ -16,8 +18,10 @@ namespace Krakenar.Roles;
 public class RoleIntegrationTests : IntegrationTests
 {
   private readonly IRoleRepository _roleRepository;
+  private readonly IUserRepository _userRepository;
 
   private readonly ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> _createOrReplaceRole;
+  private readonly ICommandHandler<DeleteRole, RoleDto?> _deleteRole;
   private readonly IQueryHandler<ReadRole, RoleDto?> _readRole;
   private readonly IQueryHandler<SearchRoles, SearchResults<RoleDto>> _searchRoles;
   private readonly ICommandHandler<UpdateRole, RoleDto?> _updateRole;
@@ -27,8 +31,10 @@ public class RoleIntegrationTests : IntegrationTests
   public RoleIntegrationTests() : base()
   {
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
+    _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
 
     _createOrReplaceRole = ServiceProvider.GetRequiredService<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>>();
+    _deleteRole = ServiceProvider.GetRequiredService<ICommandHandler<DeleteRole, RoleDto?>>();
     _readRole = ServiceProvider.GetRequiredService<IQueryHandler<ReadRole, RoleDto?>>();
     _searchRoles = ServiceProvider.GetRequiredService<IQueryHandler<SearchRoles, SearchResults<RoleDto>>>();
     _updateRole = ServiceProvider.GetRequiredService<ICommandHandler<UpdateRole, RoleDto?>>();
@@ -75,7 +81,24 @@ public class RoleIntegrationTests : IntegrationTests
     Assert.Equal(payload.CustomAttributes, role.CustomAttributes);
   }
 
-  // TODO(fpion): delete
+  [Fact(DisplayName = "It should delete the role.")]
+  public async Task Given_Role_When_Delete_Then_Deleted()
+  {
+    User user = new(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password: null, ActorId, UserId.NewId(Realm.Id));
+    user.AddRole(_role, ActorId);
+    await _userRepository.SaveAsync(user);
+
+    DeleteRole command = new(_role.EntityId);
+    RoleDto? role = await _deleteRole.HandleAsync(command);
+    Assert.NotNull(role);
+    Assert.Equal(command.Id, role.Id);
+
+    Assert.Empty(await KrakenarContext.Roles.AsNoTracking().Where(x => x.StreamId == _role.Id.Value).ToArrayAsync());
+
+    user = (await _userRepository.LoadAsync(user.Id))!;
+    Assert.NotNull(user);
+    Assert.Empty(user.Roles);
+  }
 
   [Fact(DisplayName = "It should read the role by ID.")]
   public async Task Given_Id_When_Read_Then_Found()
@@ -200,8 +223,8 @@ public class RoleIntegrationTests : IntegrationTests
     Assert.Equal(2, exception.ActualCount);
   }
 
-  [Fact(DisplayName = "It should throw UniqueNameAlreadyUsedException when there is a unique name conflict.")]
-  public async Task Given_UniqueNameConflict_When_Read_Then_UniqueNameAlreadyUsedException()
+  [Fact(DisplayName = "It should throw UniqueNameAlreadyUsedException when a unique name conflict occurs.")]
+  public async Task Given_UniqueNameConflict_When_CreateOrReplace_Then_UniqueNameAlreadyUsedException()
   {
     CreateOrReplaceRolePayload payload = new()
     {

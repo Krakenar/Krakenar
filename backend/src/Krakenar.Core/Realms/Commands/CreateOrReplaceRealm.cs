@@ -19,7 +19,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
 {
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual ILanguageQuerier LanguageQuerier { get; }
-  protected virtual ILanguageService LanguageService { get; }
+  protected virtual ILanguageRepository LanguageRepository { get; }
   protected virtual IRealmQuerier RealmQuerier { get; }
   protected virtual IRealmRepository RealmRepository { get; }
   protected virtual IRealmService RealmService { get; }
@@ -28,7 +28,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
   public CreateOrReplaceRealmHandler(
     IApplicationContext applicationContext,
     ILanguageQuerier languageQuerier,
-    ILanguageService languageService,
+    ILanguageRepository languageRepository,
     IRealmQuerier realmQuerier,
     IRealmRepository realmRepository,
     IRealmService realmService,
@@ -36,7 +36,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
   {
     ApplicationContext = applicationContext;
     LanguageQuerier = languageQuerier;
-    LanguageService = languageService;
+    LanguageRepository = languageRepository;
     RealmQuerier = realmQuerier;
     RealmRepository = realmRepository;
     RealmService = realmService;
@@ -127,7 +127,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
 
     if (language is not null)
     {
-      await LanguageService.SaveAsync(language, cancellationToken); // TODO(fpion): this does not work since the RealmId is not passed into the ApplicationContext.
+      await LanguageRepository.SaveAsync(language, cancellationToken);
     }
 
     RealmDto dto = await RealmQuerier.ReadAsync(realm, cancellationToken);

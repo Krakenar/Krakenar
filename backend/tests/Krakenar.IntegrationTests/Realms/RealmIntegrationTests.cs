@@ -224,8 +224,8 @@ public class RealmIntegrationTests : IntegrationTests
     Assert.Equal(2, exception.ActualCount);
   }
 
-  [Fact(DisplayName = "It should throw UniqueSlugAlreadyUsedException when there is a unique slug conflict.")]
-  public async Task Given_SlugConflict_When_Read_Then_UniqueSlugAlreadyUsedException()
+  [Fact(DisplayName = "It should throw UniqueSlugAlreadyUsedException when a unique slug conflict occurs.")]
+  public async Task Given_SlugConflict_When_CreateOrReplace_Then_UniqueSlugAlreadyUsedException()
   {
     CreateOrReplaceRealmPayload payload = new()
     {

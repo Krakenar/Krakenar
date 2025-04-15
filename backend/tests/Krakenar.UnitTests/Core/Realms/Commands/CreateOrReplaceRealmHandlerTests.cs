@@ -20,7 +20,7 @@ public class CreateOrReplaceRealmHandlerTests
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
   private readonly Mock<ILanguageQuerier> _languageQuerier = new();
-  private readonly Mock<ILanguageService> _languageService = new();
+  private readonly Mock<ILanguageRepository> _languageRepository = new();
   private readonly Mock<IRealmQuerier> _realmQuerier = new();
   private readonly Mock<IRealmRepository> _realmRepository = new();
   private readonly Mock<IRealmService> _realmService = new();
@@ -30,7 +30,7 @@ public class CreateOrReplaceRealmHandlerTests
 
   public CreateOrReplaceRealmHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _languageQuerier.Object, _languageService.Object, _realmQuerier.Object, _realmRepository.Object, _realmService.Object, _secretService.Object);
+    _handler = new(_applicationContext.Object, _languageQuerier.Object, _languageRepository.Object, _realmQuerier.Object, _realmRepository.Object, _realmService.Object, _secretService.Object);
   }
 
   [Theory(DisplayName = "It should create a new realm.")]
@@ -69,7 +69,7 @@ public class CreateOrReplaceRealmHandlerTests
     _realmService.Setup(x => x.SaveAsync(It.IsAny<Realm>(), _cancellationToken)).Callback<Realm, CancellationToken>((r, _) => realm = r);
 
     Language? language = null;
-    _languageService.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((l, _) => language = l);
+    _languageRepository.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((l, _) => language = l);
 
     CreateOrReplaceRealm command = new(id, payload, Version: null);
     CreateOrReplaceRealmResult result = await _handler.HandleAsync(command, _cancellationToken);
@@ -163,7 +163,7 @@ public class CreateOrReplaceRealmHandlerTests
 
     _realmRepository.Verify(x => x.LoadAsync(It.IsAny<RealmId>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), Times.Never);
     _realmService.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
-    _languageService.Verify(x => x.SaveAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()), Times.Never);
+    _languageRepository.Verify(x => x.SaveAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
   [Fact(DisplayName = "It should return null when the realm does not exist.")]
@@ -260,6 +260,6 @@ public class CreateOrReplaceRealmHandlerTests
 
     _realmRepository.Verify(x => x.LoadAsync(reference.Id, reference.Version, _cancellationToken), Times.Once);
     _realmService.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
-    _languageService.Verify(x => x.SaveAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()), Times.Never);
+    _languageRepository.Verify(x => x.SaveAsync(It.IsAny<Language>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 }

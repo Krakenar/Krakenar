@@ -88,8 +88,8 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(_user.EntityId, dto.Id);
     Assert.Equal(_user.Version, dto.Version);
 
-    Assert.Null(await KrakenarContext.Users.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == _user.Id.Value));
-    Assert.Null(await KrakenarContext.Sessions.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == session.Id.Value));
+    Assert.Empty(await KrakenarContext.Users.AsNoTracking().Where(x => x.StreamId == _user.Id.Value).ToArrayAsync());
+    Assert.Empty(await KrakenarContext.Sessions.AsNoTracking().Where(x => x.StreamId == session.Id.Value).ToArrayAsync());
   }
 
   [Fact(DisplayName = "It should read the user by custom identifier.")]
