@@ -20,7 +20,9 @@ public class UserController : ControllerBase
   private readonly ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> _createOrReplaceUser;
   private readonly ICommandHandler<DeleteUser, User?> _deleteUser;
   private readonly IQueryHandler<ReadUser, User?> _readUser;
+  private readonly ICommandHandler<RemoveUserIdentifier, User?> _removeUserIdentifier;
   private readonly ICommandHandler<ResetUserPassword, User?> _resetUserPassword;
+  private readonly ICommandHandler<SaveUserIdentifier, User?> _saveUserIdentifier;
   private readonly IQueryHandler<SearchUsers, SearchResults<User>> _searchUsers;
   private readonly ICommandHandler<SignOutUser, User?> _signOutUser;
   private readonly ICommandHandler<UpdateUser, User?> _updateUser;
@@ -30,7 +32,9 @@ public class UserController : ControllerBase
     ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> createOrReplaceUser,
     ICommandHandler<DeleteUser, User?> deleteUser,
     IQueryHandler<ReadUser, User?> readUser,
+    ICommandHandler<RemoveUserIdentifier, User?> removeUserIdentifier,
     ICommandHandler<ResetUserPassword, User?> resetUserPassword,
+    ICommandHandler<SaveUserIdentifier, User?> saveUserIdentifier,
     IQueryHandler<SearchUsers, SearchResults<User>> searchUsers,
     ICommandHandler<SignOutUser, User?> signOutUser,
     ICommandHandler<UpdateUser, User?> updateUser)
@@ -39,7 +43,9 @@ public class UserController : ControllerBase
     _createOrReplaceUser = createOrReplaceUser;
     _deleteUser = deleteUser;
     _readUser = readUser;
+    _removeUserIdentifier = removeUserIdentifier;
     _resetUserPassword = resetUserPassword;
+    _saveUserIdentifier = saveUserIdentifier;
     _searchUsers = searchUsers;
     _signOutUser = signOutUser;
     _updateUser = updateUser;
@@ -110,7 +116,13 @@ public class UserController : ControllerBase
     return ToActionResult(result);
   }
 
-  // TODO(fpion): remove custom identifier
+  [HttpDelete("{id}/identifiers/key:{key}")]
+  public async Task<ActionResult<User>> RemoveIdentifierAsync(Guid id, string key, CancellationToken cancellationToken)
+  {
+    RemoveUserIdentifier command = new(id, key);
+    User? user = await _removeUserIdentifier.HandleAsync(command, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
   [HttpPatch("{id}/password/reset")]
   public async Task<ActionResult<User>> ResetPasswordAsync(Guid id, [FromBody] ResetUserPasswordPayload payload, CancellationToken cancellationToken)
@@ -120,7 +132,13 @@ public class UserController : ControllerBase
     return user is null ? NotFound() : Ok(user);
   }
 
-  // TODO(fpion): set custom identifier
+  [HttpPut("{id}/identifiers/key:{key}")]
+  public async Task<ActionResult<User>> SaveIdentifierAsync(Guid id, string key, [FromBody] SaveUserIdentifierPayload payload, CancellationToken cancellationToken)
+  {
+    SaveUserIdentifier command = new(id, key, payload);
+    User? user = await _saveUserIdentifier.HandleAsync(command, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
   [HttpPatch("{id}/sign/out")]
   public async Task<ActionResult<User>> SignOutAsync(Guid id, CancellationToken cancellationToken)

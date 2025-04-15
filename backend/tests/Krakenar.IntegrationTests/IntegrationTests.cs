@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Actors;
+﻿using Bogus;
+using Krakenar.Contracts.Actors;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.Configurations.Commands;
@@ -22,9 +23,12 @@ public abstract class IntegrationTests : IAsyncLifetime
 {
   private readonly DatabaseProvider _databaseProvider;
 
+  protected Faker Faker { get; } = new();
+
   private readonly TestApplicationContext _applicationContext = new();
   protected Actor Actor { get; private set; } = new();
   protected ActorId ActorId { get; private set; }
+
   protected IServiceProvider ServiceProvider { get; }
   protected KrakenarContext KrakenarContext { get; }
 
