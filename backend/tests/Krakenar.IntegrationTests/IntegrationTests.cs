@@ -77,6 +77,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     TableId[] tables =
     [
       KrakenarDb.Languages.Table,
+      KrakenarDb.Sessions.Table,
       KrakenarDb.Users.Table,
       KrakenarDb.Configuration.Table,
       KrakenarDb.Actors.Table,

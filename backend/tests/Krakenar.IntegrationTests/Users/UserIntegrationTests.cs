@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
+using Krakenar.Core.Sessions;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
@@ -8,6 +9,7 @@ using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
+using SessionEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Session;
 using User = Krakenar.Core.Users.User;
 using UserDto = Krakenar.Contracts.Users.User;
 
@@ -16,21 +18,27 @@ namespace Krakenar.Users;
 [Trait(Traits.Category, Categories.Integration)]
 public class UserIntegrationTests : IntegrationTests
 {
+  private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
 
   private readonly ICommandHandler<AuthenticateUser, UserDto> _authenticateUser;
+  private readonly ICommandHandler<DeleteUser, UserDto?> _deleteUser;
   private readonly ICommandHandler<RemoveUserIdentifier, UserDto?> _removeUserIdentifier;
   private readonly ICommandHandler<ResetUserPassword, UserDto?> _resetUserPassword;
   private readonly ICommandHandler<SaveUserIdentifier, UserDto?> _saveUserIdentifier;
+  private readonly ICommandHandler<SignOutUser, UserDto?> _signOutUser;
 
   public UserIntegrationTests() : base()
   {
+    _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
 
     _authenticateUser = ServiceProvider.GetRequiredService<ICommandHandler<AuthenticateUser, UserDto>>();
+    _deleteUser = ServiceProvider.GetRequiredService<ICommandHandler<DeleteUser, UserDto?>>();
     _removeUserIdentifier = ServiceProvider.GetRequiredService<ICommandHandler<RemoveUserIdentifier, UserDto?>>();
     _resetUserPassword = ServiceProvider.GetRequiredService<ICommandHandler<ResetUserPassword, UserDto?>>();
     _saveUserIdentifier = ServiceProvider.GetRequiredService<ICommandHandler<SaveUserIdentifier, UserDto?>>();
+    _signOutUser = ServiceProvider.GetRequiredService<ICommandHandler<SignOutUser, UserDto?>>();
   }
 
   [Fact(DisplayName = "It should authenticate the user.")]
@@ -45,6 +53,29 @@ public class UserIntegrationTests : IntegrationTests
     Assert.True(user.HasPassword);
     Assert.NotNull(user.AuthenticatedOn);
     Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
+  }
+
+  [Fact(DisplayName = "It should delete the user and its sessions.")]
+  public async Task Given_User_When_Delete_Then_DeletedWithSessions()
+  {
+    string? streamId = await KrakenarContext.Users.AsNoTracking().Select(x => x.StreamId).SingleOrDefaultAsync();
+    Assert.NotNull(streamId);
+
+    UserId userId = new(streamId);
+    User? user = await _userRepository.LoadAsync(userId);
+    Assert.NotNull(user);
+
+    Session session = new(user);
+    await _sessionRepository.SaveAsync(session);
+
+    DeleteUser command = new(user.EntityId);
+    UserDto? dto = await _deleteUser.HandleAsync(command);
+    Assert.NotNull(dto);
+    Assert.Equal(user.EntityId, dto.Id);
+    Assert.Equal(user.Version, dto.Version);
+
+    Assert.Null(await KrakenarContext.Users.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == user.Id.Value));
+    Assert.Null(await KrakenarContext.Sessions.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == session.Id.Value));
   }
 
   [Fact(DisplayName = "It should remove a user identifier.")]
@@ -73,6 +104,27 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Empty(dto.CustomIdentifiers);
   }
 
+  [Fact(DisplayName = "It should reset the user password.")]
+  public async Task Given_UserFound_When_ResetPassword_Then_PasswordReset()
+  {
+    Guid id = await KrakenarContext.Users.AsNoTracking().Select(x => x.Id).SingleAsync();
+    ResetUserPasswordPayload payload = new("N3wP@s$W0rD");
+    ResetUserPassword command = new(id, payload);
+
+    UserDto? user = await _resetUserPassword.HandleAsync(command);
+    Assert.NotNull(user);
+
+    Assert.Equal(id, user.Id);
+    Assert.Equal(2, user.Version);
+    Assert.Equal(Actor, user.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, user.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+    Assert.Null(user.Realm);
+    Assert.True(user.HasPassword);
+    Assert.Equal(Actor, user.PasswordChangedBy);
+    Assert.NotNull(user.PasswordChangedOn);
+    Assert.Equal(user.UpdatedOn.AsUniversalTime(), user.PasswordChangedOn.Value.AsUniversalTime());
+  }
+
   [Fact(DisplayName = "It should save a user identifier.")]
   public async Task Given_UserFound_When_SaveIdentifier_Then_IdentifierSaved()
   {
@@ -93,25 +145,32 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(payload.Value.Trim(), customIdentifier.Value);
   }
 
-  [Fact(DisplayName = "It should reset the user password.")]
-  public async Task Given_UserFound_When_ResetPassword_Then_PasswordReset()
+  [Fact(DisplayName = "It should sign-out active user sessions.")]
+  public async Task Given_Sessions_When_SignOut_Then_SignedOut()
   {
-    Guid id = await KrakenarContext.Users.AsNoTracking().Select(x => x.Id).SingleAsync();
-    ResetUserPasswordPayload payload = new("N3wP@s$W0rD");
-    ResetUserPassword command = new(id, payload);
+    string? streamId = await KrakenarContext.Users.AsNoTracking().Select(x => x.StreamId).SingleOrDefaultAsync();
+    Assert.NotNull(streamId);
 
-    UserDto? user = await _resetUserPassword.HandleAsync(command);
+    UserId userId = new(streamId);
+    User? user = await _userRepository.LoadAsync(userId);
     Assert.NotNull(user);
 
-    Assert.Equal(id, user.Id);
-    Assert.Equal(2, user.Version);
-    Assert.Equal(Actor, user.UpdatedBy);
-    Assert.Equal(DateTime.UtcNow, user.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
-    Assert.Null(user.Realm);
-    Assert.True(user.HasPassword);
-    Assert.Equal(Actor, user.PasswordChangedBy);
-    Assert.NotNull(user.PasswordChangedOn);
-    Assert.Equal(user.UpdatedOn.AsUniversalTime(), user.PasswordChangedOn.Value.AsUniversalTime());
+    Session session = new(user);
+    await _sessionRepository.SaveAsync(session);
+
+    SignOutUser command = new(user.EntityId);
+    UserDto? dto = await _signOutUser.HandleAsync(command);
+    Assert.NotNull(dto);
+    Assert.Equal(user.EntityId, dto.Id);
+    Assert.Equal(user.Version, dto.Version);
+    Assert.Equal(user.UpdatedOn.AsUniversalTime(), dto.UpdatedOn.AsUniversalTime());
+
+    SessionEntity? entity = await KrakenarContext.Sessions.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == session.Id.Value);
+    Assert.NotNull(entity);
+    Assert.False(entity.IsActive);
+    Assert.Equal(ActorId.Value, entity.SignedOutBy);
+    Assert.NotNull(entity.SignedOutOn);
+    Assert.Equal(DateTime.UtcNow, entity.SignedOutOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
   }
 
   [Fact(DisplayName = "It should throw CustomIdentifierAlreadyUsedException when there is a custom identifier conflict.")]

@@ -38,10 +38,11 @@ public class DeleteUserHandler : ICommandHandler<DeleteUser, UserDto?>
     }
     UserDto dto = await UserQuerier.ReadAsync(user, cancellationToken);
 
+    ActorId? actorId = ApplicationContext.ActorId;
+
     IReadOnlyCollection<SessionId> sessionIds = await SessionQuerier.FindIdsAsync(user.Id, cancellationToken);
     if (sessionIds.Count > 0)
     {
-      ActorId? actorId = ApplicationContext.ActorId;
       IReadOnlyCollection<Session> sessions = await SessionRepository.LoadAsync(sessionIds, cancellationToken);
       foreach (Session session in sessions)
       {
@@ -50,6 +51,7 @@ public class DeleteUserHandler : ICommandHandler<DeleteUser, UserDto?>
       await SessionRepository.SaveAsync(sessions, cancellationToken);
     }
 
+    user.Delete(actorId);
     await UserRepository.SaveAsync(user, cancellationToken);
 
     return dto;
