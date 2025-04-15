@@ -1,6 +1,8 @@
 ﻿using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Settings;
+using Krakenar.Contracts.Users;
 using Krakenar.Core;
+using Krakenar.Core.Actors;
 using Krakenar.Core.Caching;
 using Krakenar.Core.Realms;
 using Logitar.EventSourcing;
@@ -10,23 +12,29 @@ namespace Krakenar.Web;
 
 public class HttpApplicationContext : IApplicationContext
 {
-  private readonly ICacheService _cacheService;
-  private readonly IHttpContextAccessor _httpContextAccessor;
+  protected virtual ICacheService CacheService { get; }
+  protected virtual IHttpContextAccessor HttpContextAccessor { get; }
 
-  private Configuration Configuration => _cacheService.Configuration ?? throw new InvalidOperationException("The configuration was not found in the cache.");
-  private HttpContext Context => _httpContextAccessor.HttpContext ?? throw new InvalidOperationException($"The {nameof(_httpContextAccessor.HttpContext)} is required.");
+  protected virtual Configuration Configuration => CacheService.Configuration ?? throw new InvalidOperationException("The configuration was not found in the cache.");
+  protected virtual HttpContext Context => HttpContextAccessor.HttpContext ?? throw new InvalidOperationException($"The {nameof(HttpContextAccessor.HttpContext)} is required.");
 
   public HttpApplicationContext(ICacheService cacheService, IHttpContextAccessor httpContextAccessor)
   {
-    _cacheService = cacheService;
-    _httpContextAccessor = httpContextAccessor;
+    CacheService = cacheService;
+    HttpContextAccessor = httpContextAccessor;
   }
 
   public ActorId? ActorId
   {
     get
     {
-      return null; // TODO(fpion): read from HttpContext
+      User? user = Context.GetUser();
+      if (user is not null)
+      {
+        return user.GetActorId();
+      }
+
+      return null; // TODO(fpion): API key
     }
   }
   public RealmDto? Realm
