@@ -48,19 +48,23 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>, CreateOrReplaceLanguageHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>, CreateOrReplaceRealmHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
+      .AddTransient<ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult>, CreateOrReplaceUserHandler>()
       .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
       .AddTransient<ICommandHandler<DeleteLanguage, LanguageDto?>, DeleteLanguageHandler>()
       .AddTransient<ICommandHandler<DeleteRole, RoleDto?>, DeleteRoleHandler>()
+      .AddTransient<ICommandHandler<DeleteUser, UserDto?>, DeleteUserHandler>()
       .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
       .AddTransient<ICommandHandler<RenewSession, SessionDto>, RenewSessionHandler>()
       .AddTransient<ICommandHandler<ReplaceConfiguration, ConfigurationDto>, ReplaceConfigurationHandler>()
       .AddTransient<ICommandHandler<SetDefaultLanguage, LanguageDto?>, SetDefaultLanguageHandler>()
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
       .AddTransient<ICommandHandler<SignOutSession, SessionDto?>, SignOutSessionHandler>()
+      .AddTransient<ICommandHandler<SignOutUser, UserDto?>, SignOutUserHandler>()
       .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
       .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
       .AddTransient<ICommandHandler<UpdateRealm, RealmDto?>, UpdateRealmHandler>()
-      .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>();
+      .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>()
+      .AddTransient<ICommandHandler<UpdateUser, UserDto?>, UpdateUserHandler>();
   }
 
   public static IServiceCollection AddKrakenarCoreServices(this IServiceCollection services)

@@ -17,17 +17,29 @@ namespace Krakenar.Web.Controllers;
 public class UserController : ControllerBase
 {
   private readonly ICommandHandler<AuthenticateUser, User> _authenticateUser;
+  private readonly ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> _createOrReplaceUser;
+  private readonly ICommandHandler<DeleteUser, User?> _deleteUser;
   private readonly IQueryHandler<ReadUser, User?> _readUser;
   private readonly IQueryHandler<SearchUsers, SearchResults<User>> _searchUsers;
+  private readonly ICommandHandler<SignOutUser, User?> _signOutUser;
+  private readonly ICommandHandler<UpdateUser, User?> _updateUser;
 
   public UserController(
     ICommandHandler<AuthenticateUser, User> authenticateUser,
+    ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> createOrReplaceUser,
+    ICommandHandler<DeleteUser, User?> deleteUser,
     IQueryHandler<ReadUser, User?> readUser,
-    IQueryHandler<SearchUsers, SearchResults<User>> searchUsers)
+    IQueryHandler<SearchUsers, SearchResults<User>> searchUsers,
+    ICommandHandler<SignOutUser, User?> signOutUser,
+    ICommandHandler<UpdateUser, User?> updateUser)
   {
     _authenticateUser = authenticateUser;
+    _createOrReplaceUser = createOrReplaceUser;
+    _deleteUser = deleteUser;
     _readUser = readUser;
     _searchUsers = searchUsers;
+    _signOutUser = signOutUser;
+    _updateUser = updateUser;
   }
 
   [HttpPatch("authenticate")]
@@ -38,9 +50,21 @@ public class UserController : ControllerBase
     return Ok(user);
   }
 
-  // TODO(fpion): create
+  [HttpPost]
+  public async Task<ActionResult<User>> CreateAsync([FromBody] CreateOrReplaceUserPayload payload, CancellationToken cancellationToken)
+  {
+    CreateOrReplaceUser command = new(Id: null, payload, Version: null);
+    CreateOrReplaceUserResult result = await _createOrReplaceUser.HandleAsync(command, cancellationToken);
+    return ToActionResult(result);
+  }
 
-  // TODO(fpion): delete
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<User>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    DeleteUser command = new(id);
+    User? user = await _deleteUser.HandleAsync(command, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
   [HttpGet("{id}")]
   public async Task<ActionResult<User>> ReadAsync(Guid id, CancellationToken cancellationToken)
@@ -75,7 +99,13 @@ public class UserController : ControllerBase
     return Ok(users);
   }
 
-  // TODO(fpion): replace
+  [HttpPut("{id}")]
+  public async Task<ActionResult<User>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceUserPayload payload, long? version, CancellationToken cancellationToken)
+  {
+    CreateOrReplaceUser command = new(id, payload, version);
+    CreateOrReplaceUserResult result = await _createOrReplaceUser.HandleAsync(command, cancellationToken);
+    return ToActionResult(result);
+  }
 
   // TODO(fpion): remove custom identifier
 
@@ -83,7 +113,34 @@ public class UserController : ControllerBase
 
   // TODO(fpion): set custom identifier
 
-  // TODO(fpion): sign-out
+  [HttpPatch("{id}/sign/out")]
+  public async Task<ActionResult<User>> SignOutAsync(Guid id, CancellationToken cancellationToken)
+  {
+    SignOutUser command = new(id);
+    User? user = await _signOutUser.HandleAsync(command, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
-  // TODO(fpion): update
+  [HttpPatch("{id}")]
+  public async Task<ActionResult<User>> UpdateAsync(Guid id, [FromBody] UpdateUserPayload payload, CancellationToken cancellationToken)
+  {
+    UpdateUser command = new(id, payload);
+    User? user = await _updateUser.HandleAsync(command, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
+
+  private ActionResult<User> ToActionResult(CreateOrReplaceUserResult result)
+  {
+    if (result.User is null)
+    {
+      return NotFound();
+    }
+    else if (result.Created)
+    {
+      Uri location = new($"{Request.Scheme}://{Request.Host}/api/users/{result.User.Id}", UriKind.Absolute);
+      return Created(location, result.User);
+    }
+
+    return Ok(result.User);
+  }
 }

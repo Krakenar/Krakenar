@@ -46,40 +46,40 @@ public static class ValidationExtensions
     return ruleBuilder.NotEmpty().MaximumLength(Localization.Locale.MaximumLength).SetValidator(new LocaleValidator<T>());
   }
 
-  public static IRuleBuilderOptions<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, IPasswordSettings passwordSettings)
+  public static IRuleBuilderOptions<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, IPasswordSettings settings)
   {
     IRuleBuilderOptions<T, string> options = ruleBuilder.NotEmpty();
-    if (passwordSettings.RequiredLength > 0)
+    if (settings.RequiredLength > 0)
     {
-      options = options.MinimumLength(passwordSettings.RequiredLength)
+      options = options.MinimumLength(settings.RequiredLength)
         .WithErrorCode("PasswordTooShort")
-        .WithMessage($"Passwords must be at least {passwordSettings.RequiredLength} characters.");
+        .WithMessage($"Passwords must be at least {settings.RequiredLength} characters.");
     }
-    if (passwordSettings.RequiredUniqueChars > 0)
+    if (settings.RequiredUniqueChars > 0)
     {
-      options = options.Must(x => x.GroupBy(c => c).Count() >= passwordSettings.RequiredUniqueChars)
+      options = options.Must(x => x.GroupBy(c => c).Count() >= settings.RequiredUniqueChars)
         .WithErrorCode("PasswordRequiresUniqueChars")
-        .WithMessage($"Passwords must use at least {passwordSettings.RequiredUniqueChars} different characters.");
+        .WithMessage($"Passwords must use at least {settings.RequiredUniqueChars} different characters.");
     }
-    if (passwordSettings.RequireNonAlphanumeric)
+    if (settings.RequireNonAlphanumeric)
     {
       options = options.Must(x => x.Any(c => !char.IsLetterOrDigit(c)))
         .WithErrorCode("PasswordRequiresNonAlphanumeric")
         .WithMessage("Passwords must have at least one non alphanumeric character.");
     }
-    if (passwordSettings.RequireLowercase)
+    if (settings.RequireLowercase)
     {
       options = options.Must(x => x.Any(char.IsLower))
         .WithErrorCode("PasswordRequiresLower")
         .WithMessage("Passwords must have at least one lowercase ('a'-'z').");
     }
-    if (passwordSettings.RequireUppercase)
+    if (settings.RequireUppercase)
     {
       options = options.Must(x => x.Any(char.IsUpper))
         .WithErrorCode("PasswordRequiresUpper")
         .WithMessage("Passwords must have at least one uppercase ('A'-'Z').");
     }
-    if (passwordSettings.RequireDigit)
+    if (settings.RequireDigit)
     {
       options = options.Must(x => x.Any(char.IsDigit))
         .WithErrorCode("PasswordRequiresDigit")

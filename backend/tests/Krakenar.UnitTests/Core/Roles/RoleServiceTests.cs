@@ -9,6 +9,7 @@ public class RoleServiceTests
   private readonly CancellationToken _cancellationToken = default;
   private readonly UniqueNameSettings _uniqueNameSettings = new();
 
+  private readonly Mock<IApplicationContext> _applicationContext = new();
   private readonly Mock<IRoleQuerier> _roleQuerier = new();
   private readonly Mock<IRoleRepository> _roleRepository = new();
 
@@ -16,7 +17,7 @@ public class RoleServiceTests
 
   public RoleServiceTests()
   {
-    _service = new(_roleQuerier.Object, _roleRepository.Object);
+    _service = new(_applicationContext.Object, _roleQuerier.Object, _roleRepository.Object);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the role when the unique name has not changed.")]

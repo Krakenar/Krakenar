@@ -6,6 +6,7 @@ public interface ISessionRepository
 {
   Task<Session?> LoadAsync(SessionId id, CancellationToken cancellationToken = default);
   Task<Session?> LoadAsync(SessionId id, long? version, CancellationToken cancellationToken = default);
+  Task<IReadOnlyCollection<Session>> LoadAsync(IEnumerable<SessionId> ids, CancellationToken cancellationToken = default);
 
   Task SaveAsync(Session session, CancellationToken cancellationToken = default);
   Task SaveAsync(IEnumerable<Session> sessions, CancellationToken cancellationToken = default);
@@ -24,6 +25,10 @@ public class SessionRepository : Repository, ISessionRepository
   public virtual async Task<Session?> LoadAsync(SessionId id, long? version, CancellationToken cancellationToken)
   {
     return await LoadAsync<Session>(id.StreamId, version, cancellationToken);
+  }
+  public virtual async Task<IReadOnlyCollection<Session>> LoadAsync(IEnumerable<SessionId> ids, CancellationToken cancellationToken)
+  {
+    return await LoadAsync<Session>(ids.Select(id => id.StreamId), cancellationToken);
   }
 
   public virtual async Task SaveAsync(Session session, CancellationToken cancellationToken)
