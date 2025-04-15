@@ -20,6 +20,7 @@ public class UserController : ControllerBase
   private readonly ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> _createOrReplaceUser;
   private readonly ICommandHandler<DeleteUser, User?> _deleteUser;
   private readonly IQueryHandler<ReadUser, User?> _readUser;
+  private readonly ICommandHandler<ResetUserPassword, User?> _resetUserPassword;
   private readonly IQueryHandler<SearchUsers, SearchResults<User>> _searchUsers;
   private readonly ICommandHandler<SignOutUser, User?> _signOutUser;
   private readonly ICommandHandler<UpdateUser, User?> _updateUser;
@@ -29,6 +30,7 @@ public class UserController : ControllerBase
     ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> createOrReplaceUser,
     ICommandHandler<DeleteUser, User?> deleteUser,
     IQueryHandler<ReadUser, User?> readUser,
+    ICommandHandler<ResetUserPassword, User?> resetUserPassword,
     IQueryHandler<SearchUsers, SearchResults<User>> searchUsers,
     ICommandHandler<SignOutUser, User?> signOutUser,
     ICommandHandler<UpdateUser, User?> updateUser)
@@ -37,6 +39,7 @@ public class UserController : ControllerBase
     _createOrReplaceUser = createOrReplaceUser;
     _deleteUser = deleteUser;
     _readUser = readUser;
+    _resetUserPassword = resetUserPassword;
     _searchUsers = searchUsers;
     _signOutUser = signOutUser;
     _updateUser = updateUser;
@@ -109,7 +112,13 @@ public class UserController : ControllerBase
 
   // TODO(fpion): remove custom identifier
 
-  // TODO(fpion): reset password
+  [HttpPatch("{id}/password/reset")]
+  public async Task<ActionResult<User>> ResetPasswordAsync(Guid id, [FromBody] ResetUserPasswordPayload payload, CancellationToken cancellationToken)
+  {
+    ResetUserPassword command = new(id, payload);
+    User? user = await _resetUserPassword.HandleAsync(command, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
   // TODO(fpion): set custom identifier
 

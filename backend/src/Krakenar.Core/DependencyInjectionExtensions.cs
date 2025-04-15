@@ -56,6 +56,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
       .AddTransient<ICommandHandler<RenewSession, SessionDto>, RenewSessionHandler>()
       .AddTransient<ICommandHandler<ReplaceConfiguration, ConfigurationDto>, ReplaceConfigurationHandler>()
+      .AddTransient<ICommandHandler<ResetUserPassword, UserDto?>, ResetUserPasswordHandler>()
       .AddTransient<ICommandHandler<SetDefaultLanguage, LanguageDto?>, SetDefaultLanguageHandler>()
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
       .AddTransient<ICommandHandler<SignOutSession, SessionDto?>, SignOutSessionHandler>()
