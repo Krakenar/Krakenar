@@ -1,6 +1,4 @@
 ﻿using Krakenar.Contracts.Sessions;
-using Krakenar.Core;
-using Krakenar.Core.Sessions.Queries;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 
@@ -10,12 +8,12 @@ public class SessionAuthenticationOptions : AuthenticationSchemeOptions;
 
 public class SessionAuthenticationHandler : AuthenticationHandler<SessionAuthenticationOptions>
 {
-  private readonly IQueryHandler<ReadSession, Session?> _readSession;
+  private readonly ISessionService _sessionService;
 
-  public SessionAuthenticationHandler(IQueryHandler<ReadSession, Session?> readSession, IOptionsMonitor<SessionAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+  public SessionAuthenticationHandler(ISessionService sessionService, IOptionsMonitor<SessionAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
     : base(options, logger, encoder)
   {
-    _readSession = readSession;
+    _sessionService = sessionService;
   }
 
   protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -23,8 +21,7 @@ public class SessionAuthenticationHandler : AuthenticationHandler<SessionAuthent
     Guid? sessionId = Context.GetSessionId();
     if (sessionId.HasValue)
     {
-      ReadSession query = new(sessionId.Value);
-      Session? session = await _readSession.HandleAsync(query);
+      Session? session = await _sessionService.ReadAsync(sessionId.Value);
       if (session is null)
       {
         return Fail($"The session 'Id={sessionId}' could not be found.");

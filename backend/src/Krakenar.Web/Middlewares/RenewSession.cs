@@ -1,20 +1,18 @@
 ﻿using Krakenar.Contracts.Sessions;
-using Krakenar.Core;
-using Krakenar.Core.Sessions.Commands;
 using Krakenar.Web.Constants;
 
 namespace Krakenar.Web.Middlewares;
 
-public class RenewSessionMiddleware
+public class RenewSession
 {
   protected virtual RequestDelegate Next { get; }
 
-  public RenewSessionMiddleware(RequestDelegate next)
+  public RenewSession(RequestDelegate next)
   {
     Next = next;
   }
 
-  public virtual async Task InvokeAsync(HttpContext context, ICommandHandler<RenewSession, Session> renewSession)
+  public virtual async Task InvokeAsync(HttpContext context, ISessionService sessionService)
   {
     if (!context.IsSignedIn())
     {
@@ -23,8 +21,7 @@ public class RenewSessionMiddleware
         try
         {
           RenewSessionPayload payload = new(refreshToken, context.GetSessionCustomAttributes());
-          RenewSession command = new(payload);
-          Session session = await renewSession.HandleAsync(command);
+          Session session = await sessionService.RenewAsync(payload);
           context.SignIn(session);
         }
         catch (Exception)

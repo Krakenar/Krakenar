@@ -78,7 +78,7 @@ internal class Startup : StartupBase
     // TODO(fpion): ExceptionHandler
     application.UseSession();
     // TODO(fpion): Logging
-    application.UseMiddleware<RenewSessionMiddleware>();
+    application.UseMiddleware<RenewSession>();
     // TODO(fpion): RedirectNotFound
     application.UseAuthentication();
     application.UseAuthorization();
