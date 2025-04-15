@@ -1,8 +1,5 @@
 ﻿using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Search;
-using Krakenar.Core;
-using Krakenar.Core.Realms.Commands;
-using Krakenar.Core.Realms.Queries;
 using Krakenar.Web.Constants;
 using Krakenar.Web.Models.Realm;
 using Microsoft.AspNetCore.Authorization;
@@ -15,75 +12,59 @@ namespace Krakenar.Web.Controllers;
 [Route("api/realms")]
 public class RealmController : ControllerBase
 {
-  private readonly ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> _createOrReplaceRealm;
-  private readonly IQueryHandler<ReadRealm, Realm?> _readRealm;
-  private readonly IQueryHandler<SearchRealms, SearchResults<Realm>> _searchRealms;
-  private readonly ICommandHandler<UpdateRealm, Realm?> _updateRealm;
+  protected virtual IRealmService RealmService { get; }
 
-  public RealmController(
-    ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> createOrReplaceRealm,
-    IQueryHandler<ReadRealm, Realm?> readRealm,
-    IQueryHandler<SearchRealms, SearchResults<Realm>> searchRealms,
-    ICommandHandler<UpdateRealm, Realm?> updateRealm)
+  public RealmController(IRealmService realmService)
   {
-    _createOrReplaceRealm = createOrReplaceRealm;
-    _readRealm = readRealm;
-    _searchRealms = searchRealms;
-    _updateRealm = updateRealm;
+    RealmService = realmService;
   }
 
   [HttpPost]
-  public async Task<ActionResult<Realm>> CreateAsync([FromBody] CreateOrReplaceRealmPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Realm>> CreateAsync([FromBody] CreateOrReplaceRealmPayload payload, CancellationToken cancellationToken)
   {
-    CreateOrReplaceRealm command = new(Id: null, payload, Version: null);
-    CreateOrReplaceRealmResult result = await _createOrReplaceRealm.HandleAsync(command, cancellationToken);
+    CreateOrReplaceRealmResult result = await RealmService.CreateOrReplaceAsync(payload, id: null, version: null, cancellationToken);
     return ToActionResult(result);
   }
 
   // TODO(fpion): delete
 
   [HttpGet("{id}")]
-  public async Task<ActionResult<Realm>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Realm>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
-    ReadRealm query = new(id, UniqueSlug: null);
-    Realm? realm = await _readRealm.HandleAsync(query, cancellationToken);
+    Realm? realm = await RealmService.ReadAsync(id, uniqueSlug: null, cancellationToken);
     return realm is null ? NotFound() : Ok(realm);
   }
 
   [HttpGet("slug:{uniqueSlug}")]
-  public async Task<ActionResult<Realm>> ReadAsync(string uniqueSlug, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Realm>> ReadAsync(string uniqueSlug, CancellationToken cancellationToken)
   {
-    ReadRealm query = new(Id: null, uniqueSlug);
-    Realm? realm = await _readRealm.HandleAsync(query, cancellationToken);
+    Realm? realm = await RealmService.ReadAsync(id: null, uniqueSlug, cancellationToken);
     return realm is null ? NotFound() : Ok(realm);
   }
 
   [HttpPut("{id}")]
-  public async Task<ActionResult<Realm>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceRealmPayload payload, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Realm>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceRealmPayload payload, long? version, CancellationToken cancellationToken)
   {
-    CreateOrReplaceRealm command = new(id, payload, version);
-    CreateOrReplaceRealmResult result = await _createOrReplaceRealm.HandleAsync(command, cancellationToken);
+    CreateOrReplaceRealmResult result = await RealmService.CreateOrReplaceAsync(payload, id, version, cancellationToken);
     return ToActionResult(result);
   }
 
   [HttpGet]
-  public async Task<ActionResult<SearchResults<Realm>>> SearchAsync([FromQuery] SearchRealmsParameters parameters, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<SearchResults<Realm>>> SearchAsync([FromQuery] SearchRealmsParameters parameters, CancellationToken cancellationToken)
   {
     SearchRealmsPayload payload = parameters.ToPayload();
-    SearchRealms query = new(payload);
-    SearchResults<Realm> realms = await _searchRealms.HandleAsync(query, cancellationToken);
+    SearchResults<Realm> realms = await RealmService.SearchAsync(payload, cancellationToken);
     return Ok(realms);
   }
 
   [HttpPatch("{id}")]
-  public async Task<ActionResult<Realm>> UpdateAsync(Guid id, [FromBody] UpdateRealmPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Realm>> UpdateAsync(Guid id, [FromBody] UpdateRealmPayload payload, CancellationToken cancellationToken)
   {
-    UpdateRealm command = new(id, payload);
-    Realm? realm = await _updateRealm.HandleAsync(command, cancellationToken);
+    Realm? realm = await RealmService.UpdateAsync(id, payload, cancellationToken);
     return realm is null ? NotFound() : Ok(realm);
   }
 
-  private ActionResult<Realm> ToActionResult(CreateOrReplaceRealmResult result)
+  protected virtual ActionResult<Realm> ToActionResult(CreateOrReplaceRealmResult result)
   {
     if (result.Realm is null)
     {

@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Search;
+﻿using Krakenar.Contracts.Realms;
+using Krakenar.Contracts.Search;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
@@ -35,6 +36,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddKrakenarCommands()
       .AddKrakenarCoreServices()
+      .AddKrakenarManagers()
       .AddKrakenarQueries()
       .AddKrakenarRepositories()
       .AddLogitarEventSourcing()
@@ -77,6 +79,12 @@ public static class DependencyInjectionExtensions
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
       .AddTransient<IUserService, UserService>();
+  }
+
+  public static IServiceCollection AddKrakenarManagers(this IServiceCollection services)
+  {
+    return services
+      .AddTransient<IRealmManager, RealmManager>();
   }
 
   public static IServiceCollection AddKrakenarQueries(this IServiceCollection services)

@@ -19,15 +19,15 @@ public class UpdateRealmHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<IRealmManager> _realmManager = new();
   private readonly Mock<IRealmQuerier> _realmQuerier = new();
   private readonly Mock<IRealmRepository> _realmRepository = new();
-  private readonly Mock<IRealmService> _realmService = new();
 
   private readonly UpdateRealmHandler _handler;
 
   public UpdateRealmHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _realmQuerier.Object, _realmRepository.Object, _realmService.Object);
+    _handler = new(_applicationContext.Object, _realmManager.Object, _realmQuerier.Object, _realmRepository.Object);
   }
 
   [Fact(DisplayName = "It should return null when the realm was not found.")]
@@ -98,7 +98,7 @@ public class UpdateRealmHandlerTests
     Assert.NotNull(result);
     Assert.Same(dto, result);
 
-    _realmService.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
+    _realmManager.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
 
     Assert.Equal(payload.UniqueSlug, realm.UniqueSlug.Value);
     Assert.Equal(payload.DisplayName.Value?.Trim(), realm.DisplayName?.Value);

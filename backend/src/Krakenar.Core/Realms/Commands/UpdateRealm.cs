@@ -15,20 +15,20 @@ public record UpdateRealm(Guid Id, UpdateRealmPayload Payload) : ICommand<RealmD
 public class UpdateRealmHandler : ICommandHandler<UpdateRealm, RealmDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IRealmManager RealmManager { get; }
   protected virtual IRealmQuerier RealmQuerier { get; }
   protected virtual IRealmRepository RealmRepository { get; }
-  protected virtual IRealmService RealmService { get; }
 
   public UpdateRealmHandler(
     IApplicationContext applicationContext,
+    IRealmManager realmManager,
     IRealmQuerier realmQuerier,
-    IRealmRepository realmRepository,
-    IRealmService realmService)
+    IRealmRepository realmRepository)
   {
     ApplicationContext = applicationContext;
+    RealmManager = realmManager;
     RealmQuerier = realmQuerier;
     RealmRepository = realmRepository;
-    RealmService = realmService;
   }
 
   public virtual async Task<RealmDto?> HandleAsync(UpdateRealm command, CancellationToken cancellationToken)
@@ -88,7 +88,7 @@ public class UpdateRealmHandler : ICommandHandler<UpdateRealm, RealmDto?>
     }
 
     realm.Update(actorId);
-    await RealmService.SaveAsync(realm, cancellationToken);
+    await RealmManager.SaveAsync(realm, cancellationToken);
 
     return await RealmQuerier.ReadAsync(realm, cancellationToken);
   }

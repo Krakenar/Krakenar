@@ -3,8 +3,6 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Realms;
-using Krakenar.Core.Realms.Commands;
-using Krakenar.Core.Realms.Queries;
 using Krakenar.Core.Tokens;
 using Logitar;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,22 +17,14 @@ namespace Krakenar.Realms;
 public class RealmIntegrationTests : IntegrationTests
 {
   private readonly IRealmRepository _realmRepository;
+  private readonly IRealmService _realmService;
   private readonly ISecretService _secretService;
-
-  private readonly ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> _createOrReplaceRealm;
-  private readonly IQueryHandler<ReadRealm, RealmDto?> _readRealm;
-  private readonly IQueryHandler<SearchRealms, SearchResults<RealmDto>> _searchRealms;
-  private readonly ICommandHandler<UpdateRealm, RealmDto?> _updateRealm;
 
   public RealmIntegrationTests() : base()
   {
     _realmRepository = ServiceProvider.GetRequiredService<IRealmRepository>();
+    _realmService = ServiceProvider.GetRequiredService<IRealmService>();
     _secretService = ServiceProvider.GetRequiredService<ISecretService>();
-
-    _createOrReplaceRealm = ServiceProvider.GetRequiredService<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>>();
-    _readRealm = ServiceProvider.GetRequiredService<IQueryHandler<ReadRealm, RealmDto?>>();
-    _searchRealms = ServiceProvider.GetRequiredService<IQueryHandler<SearchRealms, SearchResults<RealmDto>>>();
-    _updateRealm = ServiceProvider.GetRequiredService<ICommandHandler<UpdateRealm, RealmDto?>>();
   }
 
   [Fact(DisplayName = "It should create a new realm.")]
@@ -51,13 +41,13 @@ public class RealmIntegrationTests : IntegrationTests
     };
     payload.CustomAttributes.Add(new CustomAttribute("Key", "Value"));
 
-    CreateOrReplaceRealm command = new(Guid.NewGuid(), payload, Version: null);
-    CreateOrReplaceRealmResult result = await _createOrReplaceRealm.HandleAsync(command);
+    Guid id = Guid.NewGuid();
+    CreateOrReplaceRealmResult result = await _realmService.CreateOrReplaceAsync(payload, id, version: null);
     Assert.True(result.Created);
 
     RealmDto? realm = result.Realm;
     Assert.NotNull(realm);
-    Assert.Equal(command.Id, realm.Id);
+    Assert.Equal(id, realm.Id);
     Assert.Equal(2, realm.Version);
     Assert.Equal(Actor, realm.CreatedBy);
     Assert.Equal(DateTime.UtcNow, realm.CreatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
@@ -79,17 +69,15 @@ public class RealmIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should read the realm by ID.")]
   public async Task Given_Id_When_Read_Then_Found()
   {
-    ReadRealm query = new(Realm.Id.ToGuid(), UniqueSlug: null);
-    RealmDto? realm = await _readRealm.HandleAsync(query);
+    RealmDto? realm = await _realmService.ReadAsync(Realm.Id.ToGuid());
     Assert.NotNull(realm);
-    Assert.Equal(query.Id, realm.Id);
+    Assert.Equal(Realm.Id.ToGuid(), realm.Id);
   }
 
   [Fact(DisplayName = "It should read the realm by unique slug.")]
   public async Task Given_UniqueSlug_When_Read_Then_Found()
   {
-    ReadRealm query = new(Id: null, Realm.UniqueSlug.Value);
-    RealmDto? realm = await _readRealm.HandleAsync(query);
+    RealmDto? realm = await _realmService.ReadAsync(id: null, Realm.UniqueSlug.Value);
     Assert.NotNull(realm);
     Assert.Equal(Realm.Id.ToGuid(), realm.Id);
   }
@@ -110,8 +98,7 @@ public class RealmIntegrationTests : IntegrationTests
     };
     payload.CustomAttributes.Add(new CustomAttribute("Key", "Value"));
 
-    CreateOrReplaceRealm command = new(Realm.Id.ToGuid(), payload, Version: null);
-    CreateOrReplaceRealmResult result = await _createOrReplaceRealm.HandleAsync(command);
+    CreateOrReplaceRealmResult result = await _realmService.CreateOrReplaceAsync(payload, Realm.Id.ToGuid());
     Assert.False(result.Created);
 
     RealmDto? realm = result.Realm;
@@ -156,8 +143,7 @@ public class RealmIntegrationTests : IntegrationTests
     };
     payload.CustomAttributes.Add(new CustomAttribute("Key", "Value"));
 
-    CreateOrReplaceRealm command = new(Realm.Id.ToGuid(), payload, version);
-    CreateOrReplaceRealmResult result = await _createOrReplaceRealm.HandleAsync(command);
+    CreateOrReplaceRealmResult result = await _realmService.CreateOrReplaceAsync(payload, Realm.Id.ToGuid(), version);
     Assert.False(result.Created);
 
     RealmDto? realm = result.Realm;
@@ -182,8 +168,7 @@ public class RealmIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should return null when the realm cannot be found.")]
   public async Task Given_NotFound_When_Read_Then_NullReturned()
   {
-    ReadRealm query = new(Guid.Empty, "not-found");
-    Assert.Null(await _readRealm.HandleAsync(query));
+    Assert.Null(await _realmService.ReadAsync(Guid.Empty, "not-found"));
   }
 
   [Fact(DisplayName = "It should return the correct search results.")]
@@ -202,8 +187,7 @@ public class RealmIntegrationTests : IntegrationTests
       Skip = 1,
       Limit = 1
     };
-    SearchRealms command = new(payload);
-    SearchResults<RealmDto> results = await _searchRealms.HandleAsync(command);
+    SearchResults<RealmDto> results = await _realmService.SearchAsync(payload);
     Assert.Equal(2, results.Total);
 
     RealmDto realm = Assert.Single(results.Items);
@@ -218,8 +202,7 @@ public class RealmIntegrationTests : IntegrationTests
     Realm realm = new(new Slug("old-world"), secret, ActorId, realmId);
     await _realmRepository.SaveAsync(realm);
 
-    ReadRealm query = new(Realm.Id.ToGuid(), realm.UniqueSlug.Value);
-    var exception = await Assert.ThrowsAsync<TooManyResultsException<RealmDto>>(async () => await _readRealm.HandleAsync(query));
+    var exception = await Assert.ThrowsAsync<TooManyResultsException<RealmDto>>(async () => await _realmService.ReadAsync(Realm.Id.ToGuid(), realm.UniqueSlug.Value));
     Assert.Equal(1, exception.ExpectedCount);
     Assert.Equal(2, exception.ActualCount);
   }
@@ -231,10 +214,10 @@ public class RealmIntegrationTests : IntegrationTests
     {
       UniqueSlug = Realm.UniqueSlug.Value
     };
-    CreateOrReplaceRealm command = new(Guid.NewGuid(), payload, Version: null);
-    var exception = await Assert.ThrowsAsync<UniqueSlugAlreadyUsedException>(async () => await _createOrReplaceRealm.HandleAsync(command));
+    Guid id = Guid.NewGuid();
+    var exception = await Assert.ThrowsAsync<UniqueSlugAlreadyUsedException>(async () => await _realmService.CreateOrReplaceAsync(payload, id));
 
-    Assert.Equal(command.Id, exception.RealmId);
+    Assert.Equal(id, exception.RealmId);
     Assert.Equal(Realm.Id.ToGuid(), exception.ConflictId);
     Assert.Equal(payload.UniqueSlug, exception.UniqueSlug);
     Assert.Equal("UniqueSlug", exception.PropertyName);
@@ -251,11 +234,10 @@ public class RealmIntegrationTests : IntegrationTests
     };
     payload.CustomAttributes.Add(new CustomAttribute("Key", "  Value  "));
     payload.CustomAttributes.Add(new CustomAttribute("Other", string.Empty));
-    UpdateRealm command = new(Realm.Id.ToGuid(), payload);
-    RealmDto? realm = await _updateRealm.HandleAsync(command);
+    RealmDto? realm = await _realmService.UpdateAsync(Realm.Id.ToGuid(), payload);
     Assert.NotNull(realm);
 
-    Assert.Equal(command.Id, realm.Id);
+    Assert.Equal(Realm.Id.ToGuid(), realm.Id);
     Assert.Equal(Realm.Version + 1, realm.Version);
     Assert.Equal(Actor, realm.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, realm.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
