@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Using Include="System.Security.Claims" />
+    <Using Include="System.Text" />
     <Using Include="System.Text.Encodings.Web" />
     <Using Include="System.Text.Json" />
     <Using Include="System.Text.Json.Serialization" />

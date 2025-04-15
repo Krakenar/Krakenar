@@ -23,7 +23,7 @@ public class ConfigurationIntegrationTests : IntegrationTests
   private readonly ICommandHandler<ReplaceConfiguration, ConfigurationDto> _replaceConfiguration;
   private readonly ICommandHandler<UpdateConfiguration, ConfigurationDto> _updateConfiguration;
 
-  public ConfigurationIntegrationTests()
+  public ConfigurationIntegrationTests() : base()
   {
     _configurationRepository = ServiceProvider.GetRequiredService<IConfigurationRepository>();
     _readConfiguration = ServiceProvider.GetRequiredService<IQueryHandler<ReadConfiguration, ConfigurationDto>>();
