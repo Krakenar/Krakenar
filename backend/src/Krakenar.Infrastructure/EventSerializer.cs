@@ -4,6 +4,11 @@ namespace Krakenar.Infrastructure;
 
 public class EventSerializer : Logitar.EventSourcing.Infrastructure.EventSerializer
 {
+  public EventSerializer(PasswordConverter passwordConverter)
+  {
+    SerializerOptions.Converters.Add(passwordConverter);
+  }
+
   protected override void RegisterConverters()
   {
     base.RegisterConverters();

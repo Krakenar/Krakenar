@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
+using Krakenar.Core.Users.Commands;
 using Krakenar.Core.Users.Queries;
 using Krakenar.Web.Constants;
 using Krakenar.Web.Models.User;
@@ -15,18 +16,27 @@ namespace Krakenar.Web.Controllers;
 [Route("api/users")]
 public class UserController : ControllerBase
 {
+  private readonly ICommandHandler<AuthenticateUser, User> _authenticateUser;
   private readonly IQueryHandler<ReadUser, User?> _readUser;
   private readonly IQueryHandler<SearchUsers, SearchResults<User>> _searchUsers;
 
   public UserController(
+    ICommandHandler<AuthenticateUser, User> authenticateUser,
     IQueryHandler<ReadUser, User?> readUser,
     IQueryHandler<SearchUsers, SearchResults<User>> searchUsers)
   {
+    _authenticateUser = authenticateUser;
     _readUser = readUser;
     _searchUsers = searchUsers;
   }
 
-  // TODO(fpion): authenticate
+  [HttpPatch("authenticate")]
+  public async Task<ActionResult<User>> AuthenticateAsync([FromBody] AuthenticateUserPayload payload, CancellationToken cancellationToken)
+  {
+    AuthenticateUser command = new(payload);
+    User user = await _authenticateUser.HandleAsync(command, cancellationToken);
+    return Ok(user);
+  }
 
   // TODO(fpion): create
 
