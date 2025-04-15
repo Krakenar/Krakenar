@@ -97,9 +97,9 @@ public abstract class IntegrationTests : IAsyncLifetime
       KrakenarDb.Sessions.Table,
       KrakenarDb.Users.Table,
       KrakenarDb.Roles.Table,
+      KrakenarDb.Actors.Table,
       KrakenarDb.Realms.Table,
       KrakenarDb.Configuration.Table,
-      KrakenarDb.Actors.Table,
       EventDb.Streams.Table
     ];
     foreach (TableId table in tables)

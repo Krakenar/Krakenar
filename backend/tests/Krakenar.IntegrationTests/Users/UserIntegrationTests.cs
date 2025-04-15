@@ -120,7 +120,7 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(2, user.Version);
     Assert.Equal(Actor, user.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, user.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
-    Assert.Null(user.Realm);
+    Assert.Equal(RealmDto, user.Realm);
     Assert.True(user.HasPassword);
     Assert.Equal(Actor, user.PasswordChangedBy);
     Assert.NotNull(user.PasswordChangedOn);
@@ -173,7 +173,7 @@ public class UserIntegrationTests : IntegrationTests
     CustomIdentifier value = new("1234567890");
     _user.SetCustomIdentifier(key, value, ActorId);
 
-    User other = new(new UniqueName(new UniqueNameSettings(), Faker.Internet.UserName()), password: null, ActorId);
+    User other = new(new UniqueName(new UniqueNameSettings(), Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
 
     await _userRepository.SaveAsync([_user, other]);
 
@@ -181,7 +181,7 @@ public class UserIntegrationTests : IntegrationTests
     SaveUserIdentifier command = new(other.EntityId, key.Value, payload);
     var exception = await Assert.ThrowsAsync<CustomIdentifierAlreadyUsedException>(async () => await _saveUserIdentifier.HandleAsync(command));
 
-    Assert.Null(exception.RealmId);
+    Assert.Equal(Realm.Id.ToGuid(), exception.RealmId);
     Assert.Equal("User", exception.EntityType);
     Assert.Equal(other.EntityId, exception.EntityId);
     Assert.Equal(_user.EntityId, exception.ConflictId);
