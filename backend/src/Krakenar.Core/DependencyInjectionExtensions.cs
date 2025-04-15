@@ -3,6 +3,7 @@ using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
+using Krakenar.Contracts.Sessions;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
@@ -82,6 +83,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ILanguageService, LanguageService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
+      .AddTransient<ISessionService, SessionService>()
       .AddTransient<IUserService, UserService>();
   }
 
