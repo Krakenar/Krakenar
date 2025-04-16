@@ -83,7 +83,7 @@ internal class Startup : StartupBase
     application.UseAuthentication();
     application.UseAuthorization();
     application.UseMiddleware<ResolveRealm>();
-    // TODO(fpion): ResolveUser
+    application.UseMiddleware<ResolveUser>();
 
     application.MapControllers();
     application.MapHealthChecks("/health");

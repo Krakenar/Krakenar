@@ -3,7 +3,6 @@ using Krakenar.Contracts;
 using Krakenar.Core;
 using Logitar;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
@@ -51,14 +50,7 @@ public class ExceptionHandler : IExceptionHandler
     }
 
     Error error = ToError(exception);
-    ProblemDetails problemDetails = ProblemDetailsFactory.CreateProblemDetails(
-      httpContext,
-      statusCode,
-      title: error.Code.FormatToTitle(),
-      type: null,
-      detail: error.Message,
-      instance: httpContext.Request.GetDisplayUrl());
-    problemDetails.Extensions["error"] = error;
+    ProblemDetails problemDetails = ProblemDetailsFactory.CreateProblemDetails(httpContext, statusCode.Value, error);
 
     httpContext.Response.StatusCode = statusCode.Value;
     ProblemDetailsContext context = new()
