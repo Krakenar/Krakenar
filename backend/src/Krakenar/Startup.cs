@@ -75,7 +75,7 @@ internal class Startup : StartupBase
     application.UseHttpsRedirection();
     // TODO(fpion): CORS
     // TODO(fpion): StaticFiles
-    // TODO(fpion): ExceptionHandler
+    application.UseExceptionHandler();
     application.UseSession();
     // TODO(fpion): Logging
     application.UseMiddleware<RenewSession>();

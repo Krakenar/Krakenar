@@ -35,4 +35,8 @@
     <ProjectReference Include="..\Krakenar.Web\Krakenar.Web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Using Include="System.Text.Json" />
+  </ItemGroup>
+
 </Project>

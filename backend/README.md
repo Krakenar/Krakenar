@@ -12,6 +12,7 @@ All the following environment variables are optional.
 - `DEFAULT_PASSWORD`: the default password of the admin user, ex.: `P@s$W0rD`.
 - `DEFAULT_USERNAME`: the default username of the admin user, ex.: `admin`.
 - `ENCRYPTION_KEY`: the encryption key used by the platform. It should be 32-characters long (256 bits), including lowercase and uppercase letters, digits and special characters as well.
+- `EXPOSE_ERROR_DETAIL`: a boolean value indicating whether or not to expose detail for `500 Internal Server Error`. Should not be enabled in Production environment for security purposes.
 - `PASSWORDS_PBKDF2_ALGORITHM`: the hashing algorithm for PBKDF2 passwords. Defaults to `HMACSHA256`.
 - `PASSWORDS_PBKDF2_HASH_LENGTH`: the hash length (in bytes) for PBKDF2. When not specified, will defaut to salt length.
 - `PASSWORDS_PBKDF2_ITERATIONS`: the hashing iterations for PBKDF2 passwords. Defaults to 600000.
