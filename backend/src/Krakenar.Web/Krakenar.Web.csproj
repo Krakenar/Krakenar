@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Collections" />
     <Using Include="System.Security.Claims" />
     <Using Include="System.Text" />
     <Using Include="System.Text.Encodings.Web" />

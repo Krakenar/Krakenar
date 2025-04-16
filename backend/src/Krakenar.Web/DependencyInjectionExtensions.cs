@@ -42,7 +42,9 @@ public static class DependencyInjectionExtensions
     services.AddDistributedMemoryCache();
 
     return services
+      .AddExceptionHandler<ExceptionHandler>()
       .AddHttpContextAccessor()
+      .AddProblemDetails()
       .AddSingleton<IApplicationContext, HttpApplicationContext>();
   }
 }
