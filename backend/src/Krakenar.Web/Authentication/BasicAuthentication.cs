@@ -10,21 +10,27 @@ public class BasicAuthenticationOptions : AuthenticationSchemeOptions;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
 {
-  private readonly IUserService _userService;
+  protected virtual IUserService UserService { get; }
 
   public BasicAuthenticationHandler(IUserService userService, IOptionsMonitor<BasicAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
     : base(options, logger, encoder)
   {
-    _userService = userService;
+    UserService = userService;
   }
 
   protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
   {
     if (Context.Request.Headers.TryGetValue(Headers.Authorization, out StringValues authorization))
     {
-      string? value = authorization.Single();
-      if (!string.IsNullOrWhiteSpace(value))
+      IReadOnlyCollection<string> sanitized = authorization.Sanitize();
+      if (sanitized.Count > 1)
       {
+        Logger.LogWarning("Multiple {Header} header values were received ({Sanitized} sanitized, {Total} total). Ignoring {Scheme} authentication.",
+          Headers.Authorization, sanitized.Count, authorization.Count, Scheme.Name);
+      }
+      else if (sanitized.Count == 1)
+      {
+        string value = sanitized.Single();
         string[] values = value.Split();
         if (values.Length != 2)
         {
@@ -43,7 +49,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticat
           try
           {
             AuthenticateUserPayload payload = new(user: credentials[..index], password: credentials[(index + 1)..]);
-            User user = await _userService.AuthenticateAsync(payload);
+            User user = await UserService.AuthenticateAsync(payload);
 
             Context.SetUser(user);
 
