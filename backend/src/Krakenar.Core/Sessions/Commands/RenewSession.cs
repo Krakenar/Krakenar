@@ -10,6 +10,9 @@ namespace Krakenar.Core.Sessions.Commands;
 
 public record RenewSession(RenewSessionPayload Payload) : ICommand<SessionDto>;
 
+/// <exception cref="InvalidRefreshTokenException"></exception>
+/// <exception cref="SessionNotFoundException"></exception>
+/// <exception cref="ValidationException"></exception>
 public class RenewSessionHandler : ICommandHandler<RenewSession, SessionDto>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
