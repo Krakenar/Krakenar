@@ -5,7 +5,6 @@ using Krakenar.Models.Account;
 using Krakenar.Web;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json; // TODO(fpion): refactor
 
 namespace Krakenar.Controllers;
 
