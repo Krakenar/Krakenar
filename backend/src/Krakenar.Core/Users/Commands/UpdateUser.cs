@@ -98,7 +98,12 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
 
     UpdateContactInformation(payload, user, actorId);
     UpdatePersonalInformation(payload, user);
-    user.SetCustomAttributes(payload.CustomAttributes);
+
+    foreach (CustomAttribute customAttribute in payload.CustomAttributes)
+    {
+      Identifier key = new(customAttribute.Key);
+      user.SetCustomAttribute(key, customAttribute.Value);
+    }
 
     await UpdateRolesAsync(payload, user, actorId, cancellationToken);
 
