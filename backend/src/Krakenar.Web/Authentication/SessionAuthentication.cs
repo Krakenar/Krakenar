@@ -8,12 +8,12 @@ public class SessionAuthenticationOptions : AuthenticationSchemeOptions;
 
 public class SessionAuthenticationHandler : AuthenticationHandler<SessionAuthenticationOptions>
 {
-  private readonly ISessionService _sessionService;
+  protected virtual ISessionService SessionService { get; }
 
   public SessionAuthenticationHandler(ISessionService sessionService, IOptionsMonitor<SessionAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
     : base(options, logger, encoder)
   {
-    _sessionService = sessionService;
+    SessionService = sessionService;
   }
 
   protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -21,7 +21,7 @@ public class SessionAuthenticationHandler : AuthenticationHandler<SessionAuthent
     Guid? sessionId = Context.GetSessionId();
     if (sessionId.HasValue)
     {
-      Session? session = await _sessionService.ReadAsync(sessionId.Value);
+      Session? session = await SessionService.ReadAsync(sessionId.Value);
       if (session is null)
       {
         return Fail($"The session 'Id={sessionId}' could not be found.");

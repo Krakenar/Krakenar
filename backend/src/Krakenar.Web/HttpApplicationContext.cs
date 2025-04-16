@@ -37,13 +37,7 @@ public class HttpApplicationContext : IApplicationContext
       return null; // TODO(fpion): API key
     }
   }
-  public RealmDto? Realm
-  {
-    get
-    {
-      return null; // TODO(fpion): read from HttpContext
-    }
-  }
+  public RealmDto? Realm => Context.GetRealm();
   public RealmId? RealmId => Realm is null ? null : new RealmId(Realm.Id);
 
   public IUniqueNameSettings UniqueNameSettings => Realm?.UniqueNameSettings ?? Configuration.UniqueNameSettings;

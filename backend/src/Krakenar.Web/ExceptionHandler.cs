@@ -54,7 +54,7 @@ public class ExceptionHandler : IExceptionHandler
     ProblemDetails problemDetails = ProblemDetailsFactory.CreateProblemDetails(
       httpContext,
       statusCode,
-      title: FormatToTitle(error.Code),
+      title: error.Code.FormatToTitle(),
       type: null,
       detail: error.Message,
       instance: httpContext.Request.GetDisplayUrl());
@@ -73,36 +73,6 @@ public class ExceptionHandler : IExceptionHandler
   private static bool IsBadRequest(Exception exception) => exception is BadRequestException
     || exception is InvalidCredentialsException
     || exception is ValidationException;
-
-  private static string FormatToTitle(string code)
-  {
-    List<string> words = new(capacity: code.Length);
-
-    StringBuilder word = new();
-    for (int i = 0; i < code.Length; i++)
-    {
-      char? previous = (i > 0) ? code[i - 1] : null;
-      char current = code[i];
-      char? next = (i < code.Length - 1) ? code[i + 1] : null;
-
-      if (char.IsUpper(current) && ((previous.HasValue && char.IsLower(previous.Value)) || (next.HasValue && char.IsLower(next.Value))))
-      {
-        if (word.Length > 0)
-        {
-          words.Add(word.ToString());
-          word.Clear();
-        }
-      }
-
-      word.Append(current);
-    }
-    if (word.Length > 0)
-    {
-      words.Add(word.ToString());
-    }
-
-    return string.Join(' ', words);
-  }
 
   private static Error ToError(Exception exception)
   {

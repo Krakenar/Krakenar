@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts;
+using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Users;
 using Krakenar.Web.Constants;
@@ -9,6 +10,7 @@ namespace Krakenar.Web;
 
 public static class HttpContextExtensions
 {
+  private const string RealmKey = "Realm";
   private const string SessionIdKey = "SessionId";
   private const string SessionKey = "Session";
   private const string UserKey = "User";
@@ -38,17 +40,23 @@ public static class HttpContextExtensions
 
     if (context.Request.Headers.TryGetValue("X-Forwarded-For", out StringValues xForwardedFor))
     {
-      ipAddress = xForwardedFor.Single()?.Split(':').First();
+      IReadOnlyCollection<string> sanitized = xForwardedFor.Sanitize();
+      if (sanitized.Count == 1)
+      {
+        ipAddress = sanitized.Single().Split(':').First();
+      }
     }
     ipAddress ??= context.Connection.RemoteIpAddress?.ToString();
 
     return ipAddress;
   }
 
+  public static Realm? GetRealm(this HttpContext context) => context.GetItem<Realm>(RealmKey);
   public static Session? GetSession(this HttpContext context) => context.GetItem<Session>(SessionKey);
   public static User? GetUser(this HttpContext context) => context.GetItem<User>(UserKey);
   public static T? GetItem<T>(this HttpContext context, object key) => context.Items.TryGetValue(key, out object? value) ? (T?)value : default;
 
+  public static void SetRealm(this HttpContext context, Realm? realm) => context.SetItem(RealmKey, realm);
   public static void SetSession(this HttpContext context, Session? session) => context.SetItem(SessionKey, session);
   public static void SetUser(this HttpContext context, User? user) => context.SetItem(UserKey, user);
   public static void SetItem<T>(this HttpContext context, object key, T? value)

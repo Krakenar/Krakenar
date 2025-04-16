@@ -82,6 +82,8 @@ internal class Startup : StartupBase
     // TODO(fpion): RedirectNotFound
     application.UseAuthentication();
     application.UseAuthorization();
+    application.UseMiddleware<ResolveRealm>();
+    // TODO(fpion): ResolveUser
 
     application.MapControllers();
     application.MapHealthChecks("/health");
