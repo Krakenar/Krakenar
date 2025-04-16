@@ -33,7 +33,6 @@ public class UserIntegrationTests : IntegrationTests
 {
   private const string PasswordString = "P@s$W0rD";
 
-  private readonly IPasswordService _passwordService;
   private readonly IRoleRepository _roleRepository;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
@@ -43,13 +42,12 @@ public class UserIntegrationTests : IntegrationTests
 
   public UserIntegrationTests() : base()
   {
-    _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userService = ServiceProvider.GetRequiredService<IUserService>();
 
-    Password password = _passwordService.ValidateAndHash(PasswordString, Realm.PasswordSettings);
+    Password password = ServiceProvider.GetRequiredService<IPasswordService>().ValidateAndHash(PasswordString, Realm.PasswordSettings);
     _user = new User(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password, actorId: null, UserId.NewId(Realm.Id));
   }
 
