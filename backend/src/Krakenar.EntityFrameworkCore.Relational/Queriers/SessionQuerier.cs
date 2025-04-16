@@ -5,6 +5,7 @@ using Krakenar.Contracts.Sessions;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.Sessions;
+using Krakenar.Core.Users;
 using Logitar.Data;
 using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,25 @@ public class SessionQuerier : ISessionQuerier
     ApplicationContext = applicationContext;
     Sessions = context.Sessions;
     SqlHelper = sqlHelper;
+  }
+
+  public virtual async Task<IReadOnlyCollection<SessionId>> FindActiveIdsAsync(UserId userId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await Sessions.AsNoTracking()
+      .Where(x => x.User!.StreamId == userId.Value && x.IsActive)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new SessionId(streamId)).ToList().AsReadOnly();
+  }
+  public virtual async Task<IReadOnlyCollection<SessionId>> FindIdsAsync(UserId userId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await Sessions.AsNoTracking()
+      .Where(x => x.User!.StreamId == userId.Value)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new SessionId(streamId)).ToList().AsReadOnly();
   }
 
   public virtual async Task<SessionDto> ReadAsync(Session session, CancellationToken cancellationToken)

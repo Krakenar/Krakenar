@@ -1,8 +1,5 @@
 ﻿using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
-using Krakenar.Core;
-using Krakenar.Core.Roles.Commands;
-using Krakenar.Core.Roles.Queries;
 using Krakenar.Web.Constants;
 using Krakenar.Web.Models.Role;
 using Microsoft.AspNetCore.Authorization;
@@ -15,84 +12,64 @@ namespace Krakenar.Web.Controllers;
 [Route("api/roles")]
 public class RoleController : ControllerBase
 {
-  private readonly ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> _createOrReplaceRole;
-  private readonly ICommandHandler<DeleteRole, Role?> _deleteRole;
-  private readonly IQueryHandler<ReadRole, Role?> _readRole;
-  private readonly IQueryHandler<SearchRoles, SearchResults<Role>> _searchRoles;
-  private readonly ICommandHandler<UpdateRole, Role?> _updateRole;
+  protected virtual IRoleService RoleService { get; }
 
-  public RoleController(
-    ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult> createOrReplaceRole,
-    ICommandHandler<DeleteRole, Role?> deleteRole,
-    IQueryHandler<ReadRole, Role?> readRole,
-    IQueryHandler<SearchRoles, SearchResults<Role>> searchRoles,
-    ICommandHandler<UpdateRole, Role?> updateRole)
+  public RoleController(IRoleService roleService)
   {
-    _createOrReplaceRole = createOrReplaceRole;
-    _deleteRole = deleteRole;
-    _readRole = readRole;
-    _searchRoles = searchRoles;
-    _updateRole = updateRole;
+    RoleService = roleService;
   }
 
   [HttpPost]
-  public async Task<ActionResult<Role>> CreateAsync([FromBody] CreateOrReplaceRolePayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Role>> CreateAsync([FromBody] CreateOrReplaceRolePayload payload, CancellationToken cancellationToken)
   {
-    CreateOrReplaceRole command = new(Id: null, payload, Version: null);
-    CreateOrReplaceRoleResult result = await _createOrReplaceRole.HandleAsync(command, cancellationToken);
+    CreateOrReplaceRoleResult result = await RoleService.CreateOrReplaceAsync(payload, id: null, version: null, cancellationToken);
     return ToActionResult(result);
   }
 
   [HttpDelete("{id}")]
-  public async Task<ActionResult<Role>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Role>> DeleteAsync(Guid id, CancellationToken cancellationToken)
   {
-    DeleteRole command = new(id);
-    Role? role = await _deleteRole.HandleAsync(command, cancellationToken);
+    Role? role = await RoleService.DeleteAsync(id, cancellationToken);
     return role is null ? NotFound() : Ok(role);
   }
 
   [HttpGet("{id}")]
-  public async Task<ActionResult<Role>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Role>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
-    ReadRole query = new(id, UniqueName: null);
-    Role? role = await _readRole.HandleAsync(query, cancellationToken);
+    Role? role = await RoleService.ReadAsync(id, uniqueName: null, cancellationToken);
     return role is null ? NotFound() : Ok(role);
   }
 
   [HttpGet("name:{uniqueName}")]
-  public async Task<ActionResult<Role>> ReadAsync(string uniqueName, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Role>> ReadAsync(string uniqueName, CancellationToken cancellationToken)
   {
-    ReadRole query = new(Id: null, uniqueName);
-    Role? role = await _readRole.HandleAsync(query, cancellationToken);
+    Role? role = await RoleService.ReadAsync(id: null, uniqueName, cancellationToken);
     return role is null ? NotFound() : Ok(role);
   }
 
   [HttpPut("{id}")]
-  public async Task<ActionResult<Role>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceRolePayload payload, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Role>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceRolePayload payload, long? version, CancellationToken cancellationToken)
   {
-    CreateOrReplaceRole command = new(id, payload, version);
-    CreateOrReplaceRoleResult result = await _createOrReplaceRole.HandleAsync(command, cancellationToken);
+    CreateOrReplaceRoleResult result = await RoleService.CreateOrReplaceAsync(payload, id, version, cancellationToken);
     return ToActionResult(result);
   }
 
   [HttpGet]
-  public async Task<ActionResult<SearchResults<Role>>> SearchAsync([FromQuery] SearchRolesParameters parameters, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<SearchResults<Role>>> SearchAsync([FromQuery] SearchRolesParameters parameters, CancellationToken cancellationToken)
   {
     SearchRolesPayload payload = parameters.ToPayload();
-    SearchRoles query = new(payload);
-    SearchResults<Role> roles = await _searchRoles.HandleAsync(query, cancellationToken);
+    SearchResults<Role> roles = await RoleService.SearchAsync(payload, cancellationToken);
     return Ok(roles);
   }
 
   [HttpPatch("{id}")]
-  public async Task<ActionResult<Role>> UpdateAsync(Guid id, [FromBody] UpdateRolePayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Role>> UpdateAsync(Guid id, [FromBody] UpdateRolePayload payload, CancellationToken cancellationToken)
   {
-    UpdateRole command = new(id, payload);
-    Role? role = await _updateRole.HandleAsync(command, cancellationToken);
+    Role? role = await RoleService.UpdateAsync(id, payload, cancellationToken);
     return role is null ? NotFound() : Ok(role);
   }
 
-  private ActionResult<Role> ToActionResult(CreateOrReplaceRoleResult result)
+  protected virtual ActionResult<Role> ToActionResult(CreateOrReplaceRoleResult result)
   {
     if (result.Role is null)
     {

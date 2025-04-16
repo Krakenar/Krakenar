@@ -24,20 +24,20 @@ public class SignInSessionHandler : ICommandHandler<SignInSession, SessionDto>
   protected virtual IPasswordService PasswordService { get; }
   protected virtual ISessionQuerier SessionQuerier { get; }
   protected virtual ISessionRepository SessionRepository { get; }
-  protected virtual IUserService UserService { get; }
+  protected virtual IUserManager UserManager { get; }
 
   public SignInSessionHandler(
     IApplicationContext applicationContext,
     IPasswordService passwordService,
     ISessionQuerier sessionQuerier,
     ISessionRepository sessionRepository,
-    IUserService userService)
+    IUserManager userManager)
   {
     ApplicationContext = applicationContext;
     PasswordService = passwordService;
     SessionQuerier = sessionQuerier;
     SessionRepository = sessionRepository;
-    UserService = userService;
+    UserManager = userManager;
   }
 
   public virtual async Task<SessionDto> HandleAsync(SignInSession command, CancellationToken cancellationToken)
@@ -57,7 +57,7 @@ public class SignInSessionHandler : ICommandHandler<SignInSession, SessionDto>
       }
     }
 
-    FoundUsers users = await UserService.FindAsync(payload.UniqueName, cancellationToken);
+    FoundUsers users = await UserManager.FindAsync(payload.UniqueName, cancellationToken);
     User user = users.ByUniqueName ?? users.ByEmailAddress ?? throw new UserNotFoundException(realmId, payload.UniqueName, nameof(payload.UniqueName));
 
     ActorId? actorId = ApplicationContext.ActorId;
@@ -77,7 +77,7 @@ public class SignInSessionHandler : ICommandHandler<SignInSession, SessionDto>
     }
     session.Update(actorId);
 
-    await UserService.SaveAsync(user, cancellationToken);
+    await UserManager.SaveAsync(user, cancellationToken);
     await SessionRepository.SaveAsync(session, cancellationToken);
 
     SessionDto dto = await SessionQuerier.ReadAsync(session, cancellationToken);

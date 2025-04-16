@@ -56,11 +56,11 @@ public class CustomIdentifierAlreadyUsedException : ConflictException
   }
 
   public CustomIdentifierAlreadyUsedException(User user, Identifier key, CustomIdentifier value, UserId conflictId)
-    : this(user.RealmId, "User", user.EntityId, conflictId.EntityId, key, value, nameof(user.UniqueName))
+    : this(user.RealmId, "User", user.EntityId, conflictId.EntityId, key, value)
   {
   }
-  private CustomIdentifierAlreadyUsedException(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, Identifier key, CustomIdentifier value, string propertyName)
-    : base(BuildMessage(realmId, entityType, entityId, conflictId, key, value, propertyName))
+  private CustomIdentifierAlreadyUsedException(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, Identifier key, CustomIdentifier value)
+    : base(BuildMessage(realmId, entityType, entityId, conflictId, key, value))
   {
     RealmId = realmId?.ToGuid();
     EntityType = entityType;
@@ -70,7 +70,7 @@ public class CustomIdentifierAlreadyUsedException : ConflictException
     Value = value.Value;
   }
 
-  private static string BuildMessage(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, Identifier key, CustomIdentifier value, string propertyName) => new ErrorMessageBuilder(ErrorMessage)
+  private static string BuildMessage(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, Identifier key, CustomIdentifier value) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(RealmId), realmId?.ToGuid(), "<null>")
     .AddData(nameof(EntityType), entityType)
     .AddData(nameof(EntityId), entityId)

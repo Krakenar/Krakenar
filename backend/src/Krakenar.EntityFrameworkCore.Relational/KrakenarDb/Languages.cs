@@ -5,7 +5,7 @@ namespace Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 
 public static class Languages
 {
-  public static readonly TableId Table = new(Schemas.Identity, nameof(KrakenarContext.Languages), alias: null);
+  public static readonly TableId Table = new(Schemas.Localization, nameof(KrakenarContext.Languages), alias: null);
 
   public static readonly ColumnId CreatedBy = new(nameof(Language.CreatedBy), Table);
   public static readonly ColumnId CreatedOn = new(nameof(Language.CreatedOn), Table);

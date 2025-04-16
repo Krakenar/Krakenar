@@ -15,9 +15,9 @@ public class UpdateRoleHandlerTests
   private readonly CancellationToken _cancellationToken = default;
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<IRoleManager> _roleManager = new();
   private readonly Mock<IRoleQuerier> _roleQuerier = new();
   private readonly Mock<IRoleRepository> _roleRepository = new();
-  private readonly Mock<IRoleService> _roleService = new();
 
   private readonly UpdateRoleHandler _handler;
 
@@ -25,7 +25,7 @@ public class UpdateRoleHandlerTests
 
   public UpdateRoleHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _roleQuerier.Object, _roleRepository.Object, _roleService.Object);
+    _handler = new(_applicationContext.Object, _roleManager.Object, _roleQuerier.Object, _roleRepository.Object);
 
     _applicationContext.SetupGet(x => x.UniqueNameSettings).Returns(_uniqueNameSettings);
   }
@@ -89,7 +89,7 @@ public class UpdateRoleHandlerTests
     Assert.NotNull(result);
     Assert.Same(dto, result);
 
-    _roleService.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
+    _roleManager.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
 
     Assert.Equal(payload.UniqueName, role.UniqueName.Value);
     Assert.Equal(payload.DisplayName.Value?.Trim(), role.DisplayName?.Value);

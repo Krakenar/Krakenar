@@ -1,8 +1,5 @@
 ﻿using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Users;
-using Krakenar.Core;
-using Krakenar.Core.Users.Commands;
-using Krakenar.Core.Users.Queries;
 using Krakenar.Web.Constants;
 using Krakenar.Web.Models.User;
 using Microsoft.AspNetCore.Authorization;
@@ -16,74 +13,117 @@ namespace Krakenar.Web.Controllers;
 [Route("api/users")]
 public class UserController : ControllerBase
 {
-  private readonly ICommandHandler<AuthenticateUser, User> _authenticateUser;
-  private readonly IQueryHandler<ReadUser, User?> _readUser;
-  private readonly IQueryHandler<SearchUsers, SearchResults<User>> _searchUsers;
+  protected virtual IUserService UserService { get; }
 
-  public UserController(
-    ICommandHandler<AuthenticateUser, User> authenticateUser,
-    IQueryHandler<ReadUser, User?> readUser,
-    IQueryHandler<SearchUsers, SearchResults<User>> searchUsers)
+  public UserController(IUserService userService)
   {
-    _authenticateUser = authenticateUser;
-    _readUser = readUser;
-    _searchUsers = searchUsers;
+    UserService = userService;
   }
 
   [HttpPatch("authenticate")]
-  public async Task<ActionResult<User>> AuthenticateAsync([FromBody] AuthenticateUserPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> AuthenticateAsync([FromBody] AuthenticateUserPayload payload, CancellationToken cancellationToken)
   {
-    AuthenticateUser command = new(payload);
-    User user = await _authenticateUser.HandleAsync(command, cancellationToken);
+    User user = await UserService.AuthenticateAsync(payload, cancellationToken);
     return Ok(user);
   }
 
-  // TODO(fpion): create
+  [HttpPost]
+  public virtual async Task<ActionResult<User>> CreateAsync([FromBody] CreateOrReplaceUserPayload payload, CancellationToken cancellationToken)
+  {
+    CreateOrReplaceUserResult result = await UserService.CreateOrReplaceAsync(payload, id: null, version: null, cancellationToken);
+    return ToActionResult(result);
+  }
 
-  // TODO(fpion): delete
+  [HttpDelete("{id}")]
+  public virtual async Task<ActionResult<User>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    User? user = await UserService.DeleteAsync(id, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
   [HttpGet("{id}")]
-  public async Task<ActionResult<User>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
-    ReadUser query = new(id, UniqueName: null, CustomIdentifier: null);
-    User? user = await _readUser.HandleAsync(query, cancellationToken);
+    User? user = await UserService.ReadAsync(id, uniqueName: null, customIdentifier: null, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpGet("name:{uniqueName}")]
-  public async Task<ActionResult<User>> ReadAsync(string uniqueName, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ReadAsync(string uniqueName, CancellationToken cancellationToken)
   {
-    ReadUser query = new(Id: null, uniqueName, CustomIdentifier: null);
-    User? user = await _readUser.HandleAsync(query, cancellationToken);
+    User? user = await UserService.ReadAsync(id: null, uniqueName, customIdentifier: null, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpGet("identifier/key:{key}/value:{value}")]
-  public async Task<ActionResult<User>> ReadAsync(string key, string value, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ReadAsync(string key, string value, CancellationToken cancellationToken)
   {
-    ReadUser query = new(Id: null, UniqueName: null, new CustomIdentifierDto(key, value));
-    User? user = await _readUser.HandleAsync(query, cancellationToken);
+    User? user = await UserService.ReadAsync(id: null, uniqueName: null, new CustomIdentifierDto(key, value), cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpGet]
-  public async Task<ActionResult<SearchResults<User>>> SearchAsync([FromQuery] SearchUsersParameters parameters, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<SearchResults<User>>> SearchAsync([FromQuery] SearchUsersParameters parameters, CancellationToken cancellationToken)
   {
     SearchUsersPayload payload = parameters.ToPayload();
-    SearchUsers query = new(payload);
-    SearchResults<User> users = await _searchUsers.HandleAsync(query, cancellationToken);
+    SearchResults<User> users = await UserService.SearchAsync(payload, cancellationToken);
     return Ok(users);
   }
 
-  // TODO(fpion): replace
+  [HttpPut("{id}")]
+  public virtual async Task<ActionResult<User>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceUserPayload payload, long? version, CancellationToken cancellationToken)
+  {
+    CreateOrReplaceUserResult result = await UserService.CreateOrReplaceAsync(payload, id, version, cancellationToken);
+    return ToActionResult(result);
+  }
 
-  // TODO(fpion): remove custom identifier
+  [HttpDelete("{id}/identifiers/key:{key}")]
+  public virtual async Task<ActionResult<User>> RemoveIdentifierAsync(Guid id, string key, CancellationToken cancellationToken)
+  {
+    User? user = await UserService.RemoveIdentifierAsync(id, key, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
-  // TODO(fpion): reset password
+  [HttpPatch("{id}/password/reset")]
+  public virtual async Task<ActionResult<User>> ResetPasswordAsync(Guid id, [FromBody] ResetUserPasswordPayload payload, CancellationToken cancellationToken)
+  {
+    User? user = await UserService.ResetPasswordAsync(id, payload, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
-  // TODO(fpion): set custom identifier
+  [HttpPut("{id}/identifiers/key:{key}")]
+  public virtual async Task<ActionResult<User>> SaveIdentifierAsync(Guid id, string key, [FromBody] SaveUserIdentifierPayload payload, CancellationToken cancellationToken)
+  {
+    User? user = await UserService.SaveIdentifierAsync(id, key, payload, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
-  // TODO(fpion): sign-out
+  [HttpPatch("{id}/sign/out")]
+  public virtual async Task<ActionResult<User>> SignOutAsync(Guid id, CancellationToken cancellationToken)
+  {
+    User? user = await UserService.SignOutAsync(id, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
 
-  // TODO(fpion): update
+  [HttpPatch("{id}")]
+  public virtual async Task<ActionResult<User>> UpdateAsync(Guid id, [FromBody] UpdateUserPayload payload, CancellationToken cancellationToken)
+  {
+    User? user = await UserService.UpdateAsync(id, payload, cancellationToken);
+    return user is null ? NotFound() : Ok(user);
+  }
+
+  protected virtual ActionResult<User> ToActionResult(CreateOrReplaceUserResult result)
+  {
+    if (result.User is null)
+    {
+      return NotFound();
+    }
+    else if (result.Created)
+    {
+      Uri location = new($"{Request.Scheme}://{Request.Host}/api/users/{result.User.Id}", UriKind.Absolute);
+      return Created(location, result.User);
+    }
+
+    return Ok(result.User);
+  }
 }

@@ -1,35 +1,51 @@
-﻿using Krakenar.Core.Realms.Events;
+﻿using Krakenar.Contracts.Realms;
+using Krakenar.Contracts.Search;
+using Krakenar.Core.Realms.Commands;
+using Krakenar.Core.Realms.Queries;
+using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.Core.Realms;
 
-public interface IRealmService
-{
-  Task SaveAsync(Realm realm, CancellationToken cancellationToken = default);
-}
-
 public class RealmService : IRealmService
 {
-  protected virtual IRealmQuerier RealmQuerier { get; }
-  protected virtual IRealmRepository RealmRepository { get; }
+  protected virtual ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> CreateOrReplaceRealm { get; }
+  protected virtual IQueryHandler<ReadRealm, RealmDto?> ReadRealm { get; }
+  protected virtual IQueryHandler<SearchRealms, SearchResults<RealmDto>> SearchRealms { get; }
+  protected virtual ICommandHandler<UpdateRealm, RealmDto?> UpdateRealm { get; }
 
-  public RealmService(IRealmQuerier realmQuerier, IRealmRepository realmRepository)
+  public RealmService(
+    ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> createOrReplaceRealm,
+    IQueryHandler<ReadRealm, RealmDto?> readRealm,
+    IQueryHandler<SearchRealms, SearchResults<RealmDto>> searchRealms,
+    ICommandHandler<UpdateRealm, RealmDto?> updateRealm)
   {
-    RealmQuerier = realmQuerier;
-    RealmRepository = realmRepository;
+    CreateOrReplaceRealm = createOrReplaceRealm;
+    ReadRealm = readRealm;
+    SearchRealms = searchRealms;
+    UpdateRealm = updateRealm;
   }
 
-  public virtual async Task SaveAsync(Realm realm, CancellationToken cancellationToken)
+  public virtual async Task<CreateOrReplaceRealmResult> CreateOrReplaceAsync(CreateOrReplaceRealmPayload payload, Guid? id, long? version, CancellationToken cancellationToken)
   {
-    bool hasUniqueSlugChanged = realm.Changes.Any(change => change is RealmCreated || change is RealmUniqueSlugChanged);
-    if (hasUniqueSlugChanged)
-    {
-      RealmId? conflictId = await RealmQuerier.FindIdAsync(realm.UniqueSlug, cancellationToken);
-      if (conflictId.HasValue && !conflictId.Value.Equals(realm.Id))
-      {
-        throw new UniqueSlugAlreadyUsedException(realm, conflictId.Value);
-      }
-    }
+    CreateOrReplaceRealm command = new(id, payload, version);
+    return await CreateOrReplaceRealm.HandleAsync(command, cancellationToken);
+  }
 
-    await RealmRepository.SaveAsync(realm, cancellationToken);
+  public virtual async Task<RealmDto?> ReadAsync(Guid? id, string? uniqueSlug, CancellationToken cancellationToken)
+  {
+    ReadRealm query = new(id, uniqueSlug);
+    return await ReadRealm.HandleAsync(query, cancellationToken);
+  }
+
+  public virtual async Task<SearchResults<RealmDto>> SearchAsync(SearchRealmsPayload payload, CancellationToken cancellationToken)
+  {
+    SearchRealms query = new(payload);
+    return await SearchRealms.HandleAsync(query, cancellationToken);
+  }
+
+  public virtual async Task<RealmDto?> UpdateAsync(Guid id, UpdateRealmPayload payload, CancellationToken cancellationToken)
+  {
+    UpdateRealm command = new(id, payload);
+    return await UpdateRealm.HandleAsync(command, cancellationToken);
   }
 }

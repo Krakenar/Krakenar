@@ -42,6 +42,15 @@ public class RoleQuerier : IRoleQuerier
     return streamId is null ? null : new RoleId(streamId);
   }
 
+  public virtual async Task<IReadOnlyDictionary<Guid, string>> ListUniqueNameByIdsAsync(CancellationToken cancellationToken)
+  {
+    Dictionary<Guid, string> uniqueNameByIds = await Roles.AsNoTracking()
+      .Select(x => new { x.Id, x.UniqueName })
+      .ToDictionaryAsync(x => x.Id, x => x.UniqueName, cancellationToken);
+
+    return uniqueNameByIds.AsReadOnly();
+  }
+
   public virtual async Task<RoleDto> ReadAsync(Role role, CancellationToken cancellationToken)
   {
     return await ReadAsync(role.Id, cancellationToken) ?? throw new InvalidOperationException($"The role entity 'StreamId={role.Id}' could not be found.");

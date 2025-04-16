@@ -12,20 +12,20 @@ public record UpdateLanguage(Guid Id, UpdateLanguagePayload Payload) : ICommand<
 public class UpdateLanguageHandler : ICommandHandler<UpdateLanguage, LanguageDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual ILanguageManager LanguageManager { get; }
   protected virtual ILanguageQuerier LanguageQuerier { get; }
   protected virtual ILanguageRepository LanguageRepository { get; }
-  protected virtual ILanguageService LanguageService { get; }
 
   public UpdateLanguageHandler(
     IApplicationContext applicationContext,
+    ILanguageManager languageManager,
     ILanguageQuerier languageQuerier,
-    ILanguageRepository languageRepository,
-    ILanguageService languageService)
+    ILanguageRepository languageRepository)
   {
     ApplicationContext = applicationContext;
+    LanguageManager = languageManager;
     LanguageQuerier = languageQuerier;
     LanguageRepository = languageRepository;
-    LanguageService = languageService;
   }
 
   public virtual async Task<LanguageDto?> HandleAsync(UpdateLanguage command, CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ public class UpdateLanguageHandler : ICommandHandler<UpdateLanguage, LanguageDto
       Locale locale = new(payload.Locale);
       language.SetLocale(locale, ApplicationContext.ActorId);
 
-      await LanguageService.SaveAsync(language, cancellationToken);
+      await LanguageManager.SaveAsync(language, cancellationToken);
     }
 
     return await LanguageQuerier.ReadAsync(language, cancellationToken);

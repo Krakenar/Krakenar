@@ -1,4 +1,6 @@
-﻿namespace Krakenar.Contracts.Actors;
+﻿using Krakenar.Contracts.Users;
+
+namespace Krakenar.Contracts.Actors;
 
 public class Actor
 {
@@ -17,6 +19,15 @@ public class Actor
   public Actor(string displayName)
   {
     DisplayName = displayName;
+  }
+
+  public Actor(User user) : this(user.FullName ?? user.UniqueName)
+  {
+    Type = ActorType.User;
+    Id = user.Id;
+
+    EmailAddress = user.Email?.Address;
+    PictureUrl = user.Picture;
   }
 
   public override bool Equals(object obj) => obj is Actor actor && actor.Type == Type && actor.Id == Id;

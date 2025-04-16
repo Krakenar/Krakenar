@@ -243,7 +243,7 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .IsUnique()
                         .HasFilter("[RealmId] IS NOT NULL");
 
-                    b.ToTable("Languages", "Identity");
+                    b.ToTable("Languages", "Localization");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", b =>
@@ -309,8 +309,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.Property<string>("Secret")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("StreamId")
                         .IsRequired()

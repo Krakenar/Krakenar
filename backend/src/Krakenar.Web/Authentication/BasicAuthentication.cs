@@ -1,6 +1,4 @@
 ﻿using Krakenar.Contracts.Users;
-using Krakenar.Core;
-using Krakenar.Core.Users.Commands;
 using Krakenar.Web.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
@@ -12,12 +10,12 @@ public class BasicAuthenticationOptions : AuthenticationSchemeOptions;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
 {
-  private readonly ICommandHandler<AuthenticateUser, User> _authenticateUser;
+  private readonly IUserService _userService;
 
-  public BasicAuthenticationHandler(ICommandHandler<AuthenticateUser, User> authenticateUser, IOptionsMonitor<BasicAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+  public BasicAuthenticationHandler(IUserService userService, IOptionsMonitor<BasicAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder)
     : base(options, logger, encoder)
   {
-    _authenticateUser = authenticateUser;
+    _userService = userService;
   }
 
   protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -45,8 +43,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticat
           try
           {
             AuthenticateUserPayload payload = new(user: credentials[..index], password: credentials[(index + 1)..]);
-            AuthenticateUser command = new(payload);
-            User user = await _authenticateUser.HandleAsync(command);
+            User user = await _userService.AuthenticateAsync(payload);
 
             Context.SetUser(user);
 

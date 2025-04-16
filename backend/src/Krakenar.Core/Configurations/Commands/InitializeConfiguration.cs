@@ -18,27 +18,27 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
   protected virtual ICacheService CacheService { get; }
   protected virtual IConfigurationQuerier ConfigurationQuerier { get; }
   protected virtual IConfigurationRepository ConfigurationRepository { get; }
-  protected virtual ILanguageService LanguageService { get; }
+  protected virtual ILanguageManager LanguageManager { get; }
   protected virtual IPasswordService PasswordService { get; }
   protected virtual ISecretService SecretService { get; }
-  protected virtual IUserService UserService { get; }
+  protected virtual IUserManager UserManager { get; }
 
   public InitializeConfigurationHandler(
     ICacheService cacheService,
     IConfigurationQuerier configurationQuerier,
     IConfigurationRepository configurationRepository,
-    ILanguageService languageService,
+    ILanguageManager languageManager,
     IPasswordService passwordService,
     ISecretService secretService,
-    IUserService userService)
+    IUserManager userManager)
   {
     CacheService = cacheService;
     ConfigurationQuerier = configurationQuerier;
     ConfigurationRepository = configurationRepository;
-    LanguageService = languageService;
+    LanguageManager = languageManager;
     PasswordService = passwordService;
     SecretService = secretService;
-    UserService = userService;
+    UserManager = userManager;
   }
 
   public virtual async Task HandleAsync(InitializeConfiguration command, CancellationToken cancellationToken)
@@ -60,8 +60,8 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
       User user = new(uniqueName, password, actorId, userId);
 
       await ConfigurationRepository.SaveAsync(configuration, cancellationToken); // NOTE(fpion): this should cache the configuration.
-      await LanguageService.SaveAsync(language, cancellationToken);
-      await UserService.SaveAsync(user, cancellationToken);
+      await LanguageManager.SaveAsync(language, cancellationToken);
+      await UserManager.SaveAsync(user, cancellationToken);
     }
     CacheService.Configuration = await ConfigurationQuerier.ReadAsync(configuration, cancellationToken);
   }

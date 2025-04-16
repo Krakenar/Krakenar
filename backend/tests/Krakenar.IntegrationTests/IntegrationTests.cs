@@ -1,7 +1,12 @@
-﻿using Krakenar.Contracts.Actors;
+﻿using Bogus;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
+using Krakenar.Core.Caching;
 using Krakenar.Core.Configurations.Commands;
+using Krakenar.Core.Localization;
+using Krakenar.Core.Realms;
+using Krakenar.Core.Tokens;
+using Krakenar.Core.Users;
 using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Infrastructure;
@@ -13,8 +18,10 @@ using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ActorDto = Krakenar.Contracts.Actors.Actor;
 using KrakenarDb = Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
-using UserEntity = Krakenar.EntityFrameworkCore.Relational.Entities.User;
+using RealmDto = Krakenar.Contracts.Realms.Realm;
+using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar;
 
@@ -22,9 +29,14 @@ public abstract class IntegrationTests : IAsyncLifetime
 {
   private readonly DatabaseProvider _databaseProvider;
 
+  protected Faker Faker { get; } = new();
+
   private readonly TestApplicationContext _applicationContext = new();
-  protected Actor Actor { get; private set; } = new();
-  protected ActorId ActorId { get; private set; }
+  protected ActorDto Actor { get; private set; } = new();
+  protected ActorId? ActorId => _applicationContext.ActorId;
+  protected Realm Realm { get; }
+  protected RealmDto? RealmDto => _applicationContext.Realm;
+
   protected IServiceProvider ServiceProvider { get; }
   protected KrakenarContext KrakenarContext { get; }
 
@@ -61,6 +73,16 @@ public abstract class IntegrationTests : IAsyncLifetime
     ServiceProvider = services.BuildServiceProvider();
 
     KrakenarContext = ServiceProvider.GetRequiredService<KrakenarContext>();
+
+    RealmId realmId = RealmId.NewId();
+    ISecretService secretService = ServiceProvider.GetRequiredService<ISecretService>();
+    Secret secret = secretService.Generate(realmId);
+    Realm = new Realm(new Slug("kraken"), secret, actorId: null, realmId)
+    {
+      DisplayName = new DisplayName("Kraken"),
+      Description = new Description("This is the realm of the kraken!")
+    };
+    Realm.Update();
   }
 
   public virtual async Task InitializeAsync()
@@ -73,9 +95,12 @@ public abstract class IntegrationTests : IAsyncLifetime
     TableId[] tables =
     [
       KrakenarDb.Languages.Table,
+      KrakenarDb.Sessions.Table,
       KrakenarDb.Users.Table,
-      KrakenarDb.Configuration.Table,
+      KrakenarDb.Roles.Table,
       KrakenarDb.Actors.Table,
+      KrakenarDb.Realms.Table,
+      KrakenarDb.Configuration.Table,
       EventDb.Streams.Table
     ];
     foreach (TableId table in tables)
@@ -89,17 +114,25 @@ public abstract class IntegrationTests : IAsyncLifetime
     ICommandHandler<InitializeConfiguration> configurationHandler = ServiceProvider.GetRequiredService<ICommandHandler<InitializeConfiguration>>();
     await configurationHandler.HandleAsync(initializeConfiguration);
 
-    UserEntity? user = await KrakenarContext.Users.AsNoTracking().SingleOrDefaultAsync();
+    ICacheService cacheService = ServiceProvider.GetRequiredService<ICacheService>();
+    _applicationContext.Configuration = cacheService.Configuration;
+    Assert.NotNull(_applicationContext.Configuration);
+
+    IUserQuerier userQuerier = ServiceProvider.GetRequiredService<IUserQuerier>();
+    UserDto? user = await userQuerier.ReadAsync(initializeConfiguration.UniqueName);
     Assert.NotNull(user);
-    Actor = new Actor(user.FullName ?? user.UniqueName)
-    {
-      Type = ActorType.User,
-      Id = user.Id,
-      EmailAddress = user.EmailAddress,
-      PictureUrl = user.Picture
-    };
-    ActorId = Actor.GetActorId();
-    _applicationContext.ActorId = ActorId;
+    Actor = new ActorDto(user);
+    _applicationContext.ActorId = user.GetActorId();
+
+    IRealmRepository realmRepository = ServiceProvider.GetRequiredService<IRealmRepository>();
+    await realmRepository.SaveAsync(Realm);
+    IRealmQuerier realmQuerier = ServiceProvider.GetRequiredService<IRealmQuerier>();
+    _applicationContext.Realm = await realmQuerier.ReadAsync(Realm);
+    _applicationContext.RealmId = Realm.Id;
+
+    ILanguageRepository languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
+    Language language = new(new Locale(initializeConfiguration.DefaultLocale), isDefault: true, ActorId, LanguageId.NewId(Realm.Id));
+    await languageRepository.SaveAsync(language);
   }
   private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
   {

@@ -16,15 +16,15 @@ public class CreateOrReplaceRoleHandlerTests
   private readonly UniqueNameSettings _uniqueNameSettings = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<IRoleManager> _roleManager = new();
   private readonly Mock<IRoleQuerier> _roleQuerier = new();
   private readonly Mock<IRoleRepository> _roleRepository = new();
-  private readonly Mock<IRoleService> _roleService = new();
 
   private readonly CreateOrReplaceRoleHandler _handler;
 
   public CreateOrReplaceRoleHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _roleQuerier.Object, _roleRepository.Object, _roleService.Object);
+    _handler = new(_applicationContext.Object, _roleManager.Object, _roleQuerier.Object, _roleRepository.Object);
 
     _applicationContext.SetupGet(x => x.UniqueNameSettings).Returns(_uniqueNameSettings);
   }
@@ -54,7 +54,7 @@ public class CreateOrReplaceRoleHandlerTests
     _roleQuerier.Setup(x => x.ReadAsync(It.IsAny<Role>(), _cancellationToken)).ReturnsAsync(dto);
 
     Role? role = null;
-    _roleService.Setup(x => x.SaveAsync(It.IsAny<Role>(), _cancellationToken)).Callback<Role, CancellationToken>((r, _) => role = r);
+    _roleManager.Setup(x => x.SaveAsync(It.IsAny<Role>(), _cancellationToken)).Callback<Role, CancellationToken>((r, _) => role = r);
 
     CreateOrReplaceRole command = new(id, payload, Version: null);
     CreateOrReplaceRoleResult result = await _handler.HandleAsync(command, _cancellationToken);
@@ -126,7 +126,7 @@ public class CreateOrReplaceRoleHandlerTests
     }
 
     _roleRepository.Verify(x => x.LoadAsync(It.IsAny<RoleId>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), Times.Never);
-    _roleService.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
+    _roleManager.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
   }
 
   [Fact(DisplayName = "It should return null when the role does not exist.")]
@@ -204,6 +204,6 @@ public class CreateOrReplaceRoleHandlerTests
     }
 
     _roleRepository.Verify(x => x.LoadAsync(reference.Id, reference.Version, _cancellationToken), Times.Once);
-    _roleService.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
+    _roleManager.Verify(x => x.SaveAsync(role, _cancellationToken), Times.Once);
   }
 }

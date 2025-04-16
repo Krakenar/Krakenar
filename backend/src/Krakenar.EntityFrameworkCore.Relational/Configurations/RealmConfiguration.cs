@@ -1,5 +1,4 @@
 ﻿using Krakenar.Core;
-using Krakenar.Core.Tokens;
 using Krakenar.EntityFrameworkCore.Relational.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -23,7 +22,7 @@ public sealed class RealmConfiguration : AggregateConfiguration<Realm>, IEntityT
     builder.Property(x => x.UniqueSlug).HasMaxLength(Slug.MaximumLength);
     builder.Property(x => x.UniqueSlugNormalized).HasMaxLength(Slug.MaximumLength);
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayName.MaximumLength);
-    builder.Property(x => x.Secret).HasMaxLength(Secret.MaximumLength);
+    builder.Property(x => x.Secret).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.Url).HasMaxLength(Url.MaximumLength);
     builder.Property(x => x.AllowedUniqueNameCharacters).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.PasswordHashingStrategy).HasMaxLength(byte.MaxValue);

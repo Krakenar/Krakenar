@@ -25,7 +25,7 @@ public class SignInSessionHandlerTests
   private readonly Mock<IPasswordService> _passwordService = new();
   private readonly Mock<ISessionQuerier> _sessionQuerier = new();
   private readonly Mock<ISessionRepository> _sessionRepository = new();
-  private readonly Mock<IUserService> _userService = new();
+  private readonly Mock<IUserManager> _userManager = new();
 
   private readonly SignInSessionHandler _handler;
 
@@ -33,11 +33,11 @@ public class SignInSessionHandlerTests
 
   public SignInSessionHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _passwordService.Object, _sessionQuerier.Object, _sessionRepository.Object, _userService.Object);
+    _handler = new(_applicationContext.Object, _passwordService.Object, _sessionQuerier.Object, _sessionRepository.Object, _userManager.Object);
 
     UniqueName uniqueName = new(new UniqueNameSettings(), _faker.Person.UserName);
     _user = new User(uniqueName, new Base64Password(Password));
-    _userService.Setup(x => x.FindAsync(_user.UniqueName.Value, _cancellationToken)).ReturnsAsync(new FoundUsers(null, _user, null, null));
+    _userManager.Setup(x => x.FindAsync(_user.UniqueName.Value, _cancellationToken)).ReturnsAsync(new FoundUsers(null, _user, null, null));
   }
 
   [Fact(DisplayName = "It should create a new ephemereal session.")]
@@ -56,7 +56,7 @@ public class SignInSessionHandlerTests
     Assert.Null(result.RefreshToken);
 
     Assert.Contains(_user.Changes, change => change is UserSignedIn signedIn && signedIn.ActorId?.Value == _user.Id.Value);
-    _userService.Verify(x => x.SaveAsync(_user, _cancellationToken), Times.Once);
+    _userManager.Verify(x => x.SaveAsync(_user, _cancellationToken), Times.Once);
 
     Assert.NotNull(session);
     Assert.Equal(_user.Id.Value, session.CreatedBy?.Value);
@@ -86,7 +86,7 @@ public class SignInSessionHandlerTests
     Email email = new(_faker.Person.Email, isVerified: true);
     user.SetEmail(email);
     Assert.NotNull(user.Email);
-    _userService.Setup(x => x.FindAsync(user.Email.Address, _cancellationToken)).ReturnsAsync(new FoundUsers(null, null, user, null));
+    _userManager.Setup(x => x.FindAsync(user.Email.Address, _cancellationToken)).ReturnsAsync(new FoundUsers(null, null, user, null));
 
     string secretString = RandomStringGenerator.GetBase64String(RefreshToken.SecretLength, out _);
     Base64Password secret = new(secretString);
@@ -112,7 +112,7 @@ public class SignInSessionHandlerTests
     Assert.Equal(secretString, refreshToken.Secret);
 
     Assert.Contains(user.Changes, change => change is UserSignedIn signedIn && signedIn.ActorId == actorId);
-    _userService.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
+    _userManager.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
 
     Assert.NotNull(session);
     Assert.Equal(actorId, session.CreatedBy);
@@ -159,7 +159,7 @@ public class SignInSessionHandlerTests
     SignInSessionPayload payload = new(_faker.Internet.UserName(), Password);
 
     FoundUsers foundUsers = new(null, null, null, null);
-    _userService.Setup(x => x.FindAsync(payload.UniqueName, _cancellationToken)).ReturnsAsync(foundUsers);
+    _userManager.Setup(x => x.FindAsync(payload.UniqueName, _cancellationToken)).ReturnsAsync(foundUsers);
 
     SignInSession command = new(payload);
     var exception = await Assert.ThrowsAsync<UserNotFoundException>(async () => await _handler.HandleAsync(command, _cancellationToken));

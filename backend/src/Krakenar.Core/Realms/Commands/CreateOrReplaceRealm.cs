@@ -9,8 +9,6 @@ using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.Core.Realms.Commands;
 
-public record CreateOrReplaceRealmResult(RealmDto? Realm = null, bool Created = false);
-
 public record CreateOrReplaceRealm(Guid? Id, CreateOrReplaceRealmPayload Payload, long? Version) : ICommand<CreateOrReplaceRealmResult>;
 
 /// <exception cref="UniqueSlugAlreadyUsedException"></exception>
@@ -19,27 +17,27 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
 {
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual ILanguageQuerier LanguageQuerier { get; }
-  protected virtual ILanguageService LanguageService { get; }
+  protected virtual ILanguageRepository LanguageRepository { get; }
+  protected virtual IRealmManager RealmManager { get; }
   protected virtual IRealmQuerier RealmQuerier { get; }
   protected virtual IRealmRepository RealmRepository { get; }
-  protected virtual IRealmService RealmService { get; }
   protected virtual ISecretService SecretService { get; }
 
   public CreateOrReplaceRealmHandler(
     IApplicationContext applicationContext,
     ILanguageQuerier languageQuerier,
-    ILanguageService languageService,
+    ILanguageRepository languageRepository,
+    IRealmManager realmManager,
     IRealmQuerier realmQuerier,
     IRealmRepository realmRepository,
-    IRealmService realmService,
     ISecretService secretService)
   {
     ApplicationContext = applicationContext;
     LanguageQuerier = languageQuerier;
-    LanguageService = languageService;
+    LanguageRepository = languageRepository;
+    RealmManager = realmManager;
     RealmQuerier = realmQuerier;
     RealmRepository = realmRepository;
-    RealmService = realmService;
     SecretService = secretService;
   }
 
@@ -113,21 +111,21 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     }
     if (reference.RequireUniqueEmail != payload.RequireUniqueEmail)
     {
-      reference.RequireUniqueEmail = payload.RequireUniqueEmail;
+      realm.RequireUniqueEmail = payload.RequireUniqueEmail;
     }
     if (reference.RequireConfirmedAccount != payload.RequireConfirmedAccount)
     {
-      reference.RequireConfirmedAccount = payload.RequireConfirmedAccount;
+      realm.RequireConfirmedAccount = payload.RequireConfirmedAccount;
     }
 
     realm.SetCustomAttributes(payload.CustomAttributes, reference);
 
     realm.Update(actorId);
-    await RealmService.SaveAsync(realm, cancellationToken);
+    await RealmManager.SaveAsync(realm, cancellationToken);
 
     if (language is not null)
     {
-      await LanguageService.SaveAsync(language, cancellationToken);
+      await LanguageRepository.SaveAsync(language, cancellationToken);
     }
 
     RealmDto dto = await RealmQuerier.ReadAsync(realm, cancellationToken);

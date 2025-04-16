@@ -69,7 +69,6 @@ public class UserQuerier : IUserQuerier
   public async Task<IReadOnlyCollection<UserId>> FindIdsAsync(RoleId roleId, CancellationToken cancellationToken)
   {
     string[] streamIds = await Users.AsNoTracking()
-      .WhereRealm(ApplicationContext.RealmId)
       .Include(x => x.Roles)
       .Where(x => x.Roles.Any(r => r.StreamId == roleId.Value))
       .Select(x => x.StreamId)
