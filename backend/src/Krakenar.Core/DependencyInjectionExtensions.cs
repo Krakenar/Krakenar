@@ -4,6 +4,7 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Sessions;
+using Krakenar.Contracts.Users;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
@@ -92,7 +93,8 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<ILanguageManager, LanguageManager>()
       .AddTransient<IRealmManager, RealmManager>()
-      .AddTransient<IRoleManager, RoleManager>();
+      .AddTransient<IRoleManager, RoleManager>()
+      .AddTransient<IUserManager, UserManager>();
   }
 
   public static IServiceCollection AddKrakenarQueries(this IServiceCollection services)

@@ -22,13 +22,13 @@ public class InitializeConfigurationHandlerTests
   private readonly Mock<ILanguageManager> _languageManager = new();
   private readonly Mock<IPasswordService> _passwordService = new();
   private readonly Mock<ISecretService> _secretService = new();
-  private readonly Mock<IUserService> _userService = new();
+  private readonly Mock<IUserManager> _userManager = new();
 
   private readonly InitializeConfigurationHandler _handler;
 
   public InitializeConfigurationHandlerTests()
   {
-    _handler = new(_cacheService.Object, _configurationQuerier.Object, _configurationRepository.Object, _languageManager.Object, _passwordService.Object, _secretService.Object, _userService.Object);
+    _handler = new(_cacheService.Object, _configurationQuerier.Object, _configurationRepository.Object, _languageManager.Object, _passwordService.Object, _secretService.Object, _userManager.Object);
   }
 
   [Fact(DisplayName = "It should cache an initialized configuration.")]
@@ -66,7 +66,7 @@ public class InitializeConfigurationHandlerTests
     _languageManager.Setup(x => x.SaveAsync(It.IsAny<Language>(), _cancellationToken)).Callback<Language, CancellationToken>((l, _) => language = l);
 
     User? user = null;
-    _userService.Setup(x => x.SaveAsync(It.IsAny<User>(), _cancellationToken)).Callback<User, CancellationToken>((u, _) => user = u);
+    _userManager.Setup(x => x.SaveAsync(It.IsAny<User>(), _cancellationToken)).Callback<User, CancellationToken>((u, _) => user = u);
 
     await _handler.HandleAsync(command, _cancellationToken);
 

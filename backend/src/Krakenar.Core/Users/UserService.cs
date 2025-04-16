@@ -1,141 +1,106 @@
-﻿using FluentValidation;
-using Krakenar.Core.Settings;
-using Krakenar.Core.Users.Events;
-using Logitar.EventSourcing;
+﻿using Krakenar.Contracts.Search;
+using Krakenar.Contracts.Users;
+using Krakenar.Core.Users.Commands;
+using Krakenar.Core.Users.Queries;
+using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
+using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users;
 
-public interface IUserService
-{
-  Task<FoundUsers> FindAsync(string user, CancellationToken cancellationToken = default);
-
-  Task SaveAsync(User user, CancellationToken cancellationToken = default);
-}
-
 public class UserService : IUserService
 {
-  protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual IUserQuerier UserQuerier { get; }
-  protected virtual IUserRepository UserRepository { get; }
+  protected virtual ICommandHandler<AuthenticateUser, UserDto> AuthenticateUser { get; }
+  protected virtual ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> CreateOrReplaceUser { get; }
+  protected virtual ICommandHandler<DeleteUser, UserDto?> DeleteUser { get; }
+  protected virtual IQueryHandler<ReadUser, UserDto?> ReadUser { get; }
+  protected virtual ICommandHandler<RemoveUserIdentifier, UserDto?> RemoveUserIdentifier { get; }
+  protected virtual ICommandHandler<ResetUserPassword, UserDto?> ResetUserPassword { get; }
+  protected virtual ICommandHandler<SaveUserIdentifier, UserDto?> SaveUserIdentifier { get; }
+  protected virtual IQueryHandler<SearchUsers, SearchResults<UserDto>> SearchUsers { get; }
+  protected virtual ICommandHandler<SignOutUser, UserDto?> SignOutUser { get; }
+  protected virtual ICommandHandler<UpdateUser, UserDto?> UpdateUser { get; }
 
-  public UserService(IApplicationContext applicationContext, IUserQuerier userQuerier, IUserRepository userRepository)
+  public UserService(
+    ICommandHandler<AuthenticateUser, UserDto> authenticateUser,
+    ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> createOrReplaceUser,
+    ICommandHandler<DeleteUser, UserDto?> deleteUser,
+    IQueryHandler<ReadUser, UserDto?> readUser,
+    ICommandHandler<RemoveUserIdentifier, UserDto?> removeUserIdentifier,
+    ICommandHandler<ResetUserPassword, UserDto?> resetUserPassword,
+    ICommandHandler<SaveUserIdentifier, UserDto?> saveUserIdentifier,
+    IQueryHandler<SearchUsers, SearchResults<UserDto>> searchUsers,
+    ICommandHandler<SignOutUser, UserDto?> signOutUser,
+    ICommandHandler<UpdateUser, UserDto?> updateUser)
   {
-    ApplicationContext = applicationContext;
-    UserQuerier = userQuerier;
-    UserRepository = userRepository;
+    AuthenticateUser = authenticateUser;
+    CreateOrReplaceUser = createOrReplaceUser;
+    DeleteUser = deleteUser;
+    ReadUser = readUser;
+    RemoveUserIdentifier = removeUserIdentifier;
+    ResetUserPassword = resetUserPassword;
+    SaveUserIdentifier = saveUserIdentifier;
+    SearchUsers = searchUsers;
+    SignOutUser = signOutUser;
+    UpdateUser = updateUser;
   }
 
-  public virtual async Task<FoundUsers> FindAsync(string user, CancellationToken cancellationToken)
+  public virtual async Task<UserDto> AuthenticateAsync(AuthenticateUserPayload payload, CancellationToken cancellationToken)
   {
-    User? byId = await FindByIdAsync(user, cancellationToken);
-    User? byUniqueName = await FindByUniqueNameAsync(user, cancellationToken);
-    User? byEmailAddress = await FindByEmailAddressAsync(user, cancellationToken);
-    User? byCustomIdentifier = await FindByCustomIdentifierAsync(user, cancellationToken);
-    return new FoundUsers(byId, byUniqueName, byEmailAddress, byCustomIdentifier);
-  }
-  protected virtual async Task<User?> FindByCustomIdentifierAsync(string user, CancellationToken cancellationToken)
-  {
-    int index = user.IndexOf(':');
-    if (index >= 0)
-    {
-      try
-      {
-        Identifier key = new(user[..index]);
-        CustomIdentifier value = new(user[(index + 1)..]);
-        UserId? userId = await UserQuerier.FindIdAsync(key, value, cancellationToken);
-        return userId.HasValue ? await UserRepository.LoadAsync(userId.Value, cancellationToken) : null;
-      }
-      catch (ValidationException)
-      {
-      }
-    }
-    return null;
-  }
-  protected virtual async Task<User?> FindByEmailAddressAsync(string user, CancellationToken cancellationToken)
-  {
-    if (ApplicationContext.RequireUniqueEmail)
-    {
-      try
-      {
-        Email email = new(user);
-        IReadOnlyCollection<UserId> userIds = await UserQuerier.FindIdsAsync(email, cancellationToken);
-        if (userIds.Count == 1)
-        {
-          return await UserRepository.LoadAsync(userIds.Single(), cancellationToken);
-        }
-      }
-      catch (ValidationException)
-      {
-      }
-    }
-    return null;
-  }
-  protected virtual async Task<User?> FindByIdAsync(string user, CancellationToken cancellationToken)
-  {
-    if (Guid.TryParse(user, out Guid entityId))
-    {
-      UserId userId = new(entityId, ApplicationContext.RealmId);
-      return await UserRepository.LoadAsync(userId, cancellationToken);
-    }
-    return null;
-  }
-  protected virtual async Task<User?> FindByUniqueNameAsync(string user, CancellationToken cancellationToken)
-  {
-    try
-    {
-      UniqueNameSettings settings = new(allowedCharacters: null);
-      UniqueName uniqueName = new(settings, user);
-      UserId? userId = await UserQuerier.FindIdAsync(uniqueName, cancellationToken);
-      return userId.HasValue ? await UserRepository.LoadAsync(userId.Value, cancellationToken) : null;
-    }
-    catch (ValidationException)
-    {
-      return null;
-    }
+    AuthenticateUser command = new(payload);
+    return await AuthenticateUser.HandleAsync(command, cancellationToken);
   }
 
-  public virtual async Task SaveAsync(User user, CancellationToken cancellationToken)
+  public virtual async Task<CreateOrReplaceUserResult> CreateOrReplaceAsync(CreateOrReplaceUserPayload payload, Guid? id, long? version, CancellationToken cancellationToken)
   {
-    bool hasUniqueNameChanged = false;
-    bool hasEmailAddressChanged = false;
-    foreach (IEvent change in user.Changes)
-    {
-      if (change is UserCreated || change is UserUniqueNameChanged)
-      {
-        hasUniqueNameChanged = true;
-      }
-      else if (change is UserEmailChanged emailChanged)
-      {
-        hasEmailAddressChanged = true;
-      }
-      else if (change is UserIdentifierChanged identifierChanged)
-      {
-        UserId? conflictId = await UserQuerier.FindIdAsync(identifierChanged.Key, identifierChanged.Value, cancellationToken);
-        if (conflictId.HasValue && !conflictId.Value.Equals(user.Id))
-        {
-          throw new CustomIdentifierAlreadyUsedException(user, identifierChanged.Key, identifierChanged.Value, conflictId.Value);
-        }
-      }
-    }
+    CreateOrReplaceUser command = new(id, payload, version);
+    return await CreateOrReplaceUser.HandleAsync(command, cancellationToken);
+  }
 
-    if (hasUniqueNameChanged)
-    {
-      UserId? conflictId = await UserQuerier.FindIdAsync(user.UniqueName, cancellationToken);
-      if (conflictId.HasValue && !conflictId.Value.Equals(user.Id))
-      {
-        throw new UniqueNameAlreadyUsedException(user, conflictId.Value);
-      }
-    }
+  public virtual async Task<UserDto?> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    DeleteUser command = new(id);
+    return await DeleteUser.HandleAsync(command, cancellationToken);
+  }
 
-    if (hasEmailAddressChanged && user.Email is not null && ApplicationContext.RequireUniqueEmail)
-    {
-      IEnumerable<UserId> conflictIds = (await UserQuerier.FindIdsAsync(user.Email, cancellationToken)).Except([user.Id]);
-      if (conflictIds.Any())
-      {
-        throw new EmailAddressAlreadyUsedException(user, conflictIds);
-      }
-    }
+  public virtual async Task<UserDto?> RemoveIdentifierAsync(Guid id, string key, CancellationToken cancellationToken)
+  {
+    RemoveUserIdentifier command = new(id, key);
+    return await RemoveUserIdentifier.HandleAsync(command, cancellationToken);
+  }
 
-    await UserRepository.SaveAsync(user, cancellationToken);
+  public virtual async Task<UserDto?> ReadAsync(Guid? id, string? uniqueName, CustomIdentifierDto? customIdentifier, CancellationToken cancellationToken)
+  {
+    ReadUser query = new(id, uniqueName, customIdentifier);
+    return await ReadUser.HandleAsync(query, cancellationToken);
+  }
+
+  public virtual async Task<UserDto?> ResetPasswordAsync(Guid id, ResetUserPasswordPayload payload, CancellationToken cancellationToken)
+  {
+    ResetUserPassword command = new(id, payload);
+    return await ResetUserPassword.HandleAsync(command, cancellationToken);
+  }
+
+  public virtual async Task<UserDto?> SaveIdentifierAsync(Guid id, string key, SaveUserIdentifierPayload payload, CancellationToken cancellationToken)
+  {
+    SaveUserIdentifier command = new(id, key, payload);
+    return await SaveUserIdentifier.HandleAsync(command, cancellationToken);
+  }
+
+  public virtual async Task<SearchResults<UserDto>> SearchAsync(SearchUsersPayload payload, CancellationToken cancellationToken)
+  {
+    SearchUsers query = new(payload);
+    return await SearchUsers.HandleAsync(query, cancellationToken);
+  }
+
+  public virtual async Task<UserDto?> SignOutAsync(Guid id, CancellationToken cancellationToken)
+  {
+    SignOutUser command = new(id);
+    return await SignOutUser.HandleAsync(command, cancellationToken);
+  }
+
+  public virtual async Task<UserDto?> UpdateAsync(Guid id, UpdateUserPayload payload, CancellationToken cancellationToken)
+  {
+    UpdateUser command = new(id, payload);
+    return await UpdateUser.HandleAsync(command, cancellationToken);
   }
 }

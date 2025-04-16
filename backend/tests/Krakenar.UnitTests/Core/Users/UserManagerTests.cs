@@ -6,7 +6,7 @@ using Moq;
 namespace Krakenar.Core.Users;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class UserServiceTests
+public class UserManagerTests
 {
   private readonly CancellationToken _cancellationToken = default;
   private readonly Faker _faker = new();
@@ -16,11 +16,11 @@ public class UserServiceTests
   private readonly Mock<IUserQuerier> _userQuerier = new();
   private readonly Mock<IUserRepository> _userRepository = new();
 
-  private readonly UserService _service;
+  private readonly UserManager _manager;
 
-  public UserServiceTests()
+  public UserManagerTests()
   {
-    _service = new(_applicationContext.Object, _userQuerier.Object, _userRepository.Object);
+    _manager = new(_applicationContext.Object, _userQuerier.Object, _userRepository.Object);
 
     _applicationContext.SetupGet(x => x.RequireUniqueEmail).Returns(true);
   }
@@ -32,7 +32,7 @@ public class UserServiceTests
     user.ClearChanges();
 
     user.Delete();
-    await _service.SaveAsync(user, _cancellationToken);
+    await _manager.SaveAsync(user, _cancellationToken);
 
     _userQuerier.Verify(x => x.FindIdAsync(It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
     _userQuerier.Verify(x => x.FindIdsAsync(It.IsAny<IEmail>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -51,7 +51,7 @@ public class UserServiceTests
     user.SetCustomIdentifier(key, value);
     _userQuerier.Setup(x => x.FindIdAsync(key, value, _cancellationToken)).ReturnsAsync(user.Id);
 
-    await _service.SaveAsync(user, _cancellationToken);
+    await _manager.SaveAsync(user, _cancellationToken);
 
     _userQuerier.Verify(x => x.FindIdAsync(It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
     _userQuerier.Verify(x => x.FindIdsAsync(It.IsAny<IEmail>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -70,7 +70,7 @@ public class UserServiceTests
     user.ClearChanges();
     user.SetEmail(email);
 
-    await _service.SaveAsync(user, _cancellationToken);
+    await _manager.SaveAsync(user, _cancellationToken);
 
     _userQuerier.Verify(x => x.FindIdAsync(It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
     _userQuerier.Verify(x => x.FindIdsAsync(It.IsAny<IEmail>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -88,7 +88,7 @@ public class UserServiceTests
     user.ClearChanges();
     user.SetEmail(null);
 
-    await _service.SaveAsync(user, _cancellationToken);
+    await _manager.SaveAsync(user, _cancellationToken);
 
     _userQuerier.Verify(x => x.FindIdAsync(It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
     _userQuerier.Verify(x => x.FindIdsAsync(It.IsAny<IEmail>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -109,7 +109,7 @@ public class UserServiceTests
 
     _userQuerier.Setup(x => x.FindIdsAsync(email, _cancellationToken)).ReturnsAsync(found ? [user.Id] : []);
 
-    await _service.SaveAsync(user, _cancellationToken);
+    await _manager.SaveAsync(user, _cancellationToken);
 
     _userQuerier.Verify(x => x.FindIdAsync(It.IsAny<UniqueName>(), It.IsAny<CancellationToken>()), Times.Never);
     _userQuerier.Verify(x => x.FindIdsAsync(email, _cancellationToken), Times.Once);
@@ -123,7 +123,7 @@ public class UserServiceTests
     User user = new(new UniqueName(_uniqueNameSettings, _faker.Person.UserName));
     _userQuerier.Setup(x => x.FindIdAsync(user.UniqueName, _cancellationToken)).ReturnsAsync(user.Id);
 
-    await _service.SaveAsync(user, _cancellationToken);
+    await _manager.SaveAsync(user, _cancellationToken);
 
     _userQuerier.Verify(x => x.FindIdAsync(user.UniqueName, _cancellationToken), Times.Once);
     _userQuerier.Verify(x => x.FindIdsAsync(It.IsAny<IEmail>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -145,7 +145,7 @@ public class UserServiceTests
     user.ClearChanges();
     user.SetCustomIdentifier(key, value);
 
-    var exception = await Assert.ThrowsAsync<CustomIdentifierAlreadyUsedException>(async () => await _service.SaveAsync(user, _cancellationToken));
+    var exception = await Assert.ThrowsAsync<CustomIdentifierAlreadyUsedException>(async () => await _manager.SaveAsync(user, _cancellationToken));
     Assert.Equal(user.RealmId?.ToGuid(), exception.RealmId);
     Assert.Equal("User", exception.EntityType);
     Assert.Equal(user.EntityId, exception.EntityId);
@@ -167,7 +167,7 @@ public class UserServiceTests
     user.ClearChanges();
     user.SetEmail(email);
 
-    var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(async () => await _service.SaveAsync(user, _cancellationToken));
+    var exception = await Assert.ThrowsAsync<EmailAddressAlreadyUsedException>(async () => await _manager.SaveAsync(user, _cancellationToken));
     Assert.Equal(user.RealmId?.ToGuid(), exception.RealmId);
     Assert.Equal(user.EntityId, exception.UserId);
     Assert.Equal(conflict.EntityId, Assert.Single(exception.ConflictIds));
@@ -185,7 +185,7 @@ public class UserServiceTests
     user.ClearChanges();
     user.SetUniqueName(conflict.UniqueName);
 
-    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(async () => await _service.SaveAsync(user, _cancellationToken));
+    var exception = await Assert.ThrowsAsync<UniqueNameAlreadyUsedException>(async () => await _manager.SaveAsync(user, _cancellationToken));
     Assert.Equal(user.RealmId?.ToGuid(), exception.RealmId);
     Assert.Equal("User", exception.EntityType);
     Assert.Equal(user.EntityId, exception.EntityId);

@@ -11,8 +11,6 @@ using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users.Commands;
 
-public record CreateOrReplaceUserResult(UserDto? User = null, bool Created = false);
-
 public record CreateOrReplaceUser(Guid? Id, CreateOrReplaceUserPayload Payload, long? Version) : ICommand<CreateOrReplaceUserResult>;
 
 /// <exception cref="EmailAddressAlreadyUsedException"></exception>
@@ -28,26 +26,26 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IPasswordService PasswordService { get; }
   protected virtual IRoleManager RoleManager { get; }
+  protected virtual IUserManager UserManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
   protected virtual IUserRepository UserRepository { get; }
-  protected virtual IUserService UserService { get; }
 
   public CreateOrReplaceUserHandler(
     IAddressHelper addressHelper,
     IApplicationContext applicationContext,
     IPasswordService passwordService,
     IRoleManager roleManager,
+    IUserManager userManager,
     IUserQuerier userQuerier,
-    IUserRepository userRepository,
-    IUserService userService)
+    IUserRepository userRepository)
   {
     AddressHelper = addressHelper;
     ApplicationContext = applicationContext;
     PasswordService = passwordService;
     RoleManager = roleManager;
+    UserManager = userManager;
     UserQuerier = userQuerier;
     UserRepository = userRepository;
-    UserService = userService;
   }
 
   public virtual async Task<CreateOrReplaceUserResult> HandleAsync(CreateOrReplaceUser command, CancellationToken cancellationToken)
@@ -119,7 +117,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
     await UpdateRolesAsync(payload, user, reference, actorId, cancellationToken);
 
     user.Update(actorId);
-    await UserService.SaveAsync(user, cancellationToken);
+    await UserManager.SaveAsync(user, cancellationToken);
 
     UserDto dto = await UserQuerier.ReadAsync(user, cancellationToken);
     return new CreateOrReplaceUserResult(dto, created);

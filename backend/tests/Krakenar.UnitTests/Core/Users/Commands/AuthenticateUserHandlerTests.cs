@@ -20,13 +20,13 @@ public class AuthenticateUserHandlerTests
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
   private readonly Mock<IUserQuerier> _userQuerier = new();
-  private readonly Mock<IUserService> _userService = new();
+  private readonly Mock<IUserManager> _userManager = new();
 
   private readonly AuthenticateUserHandler _handler;
 
   public AuthenticateUserHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _userQuerier.Object, _userService.Object);
+    _handler = new(_applicationContext.Object, _userManager.Object, _userQuerier.Object);
   }
 
   [Theory(DisplayName = "It should authenticate the user.")]
@@ -43,7 +43,7 @@ public class AuthenticateUserHandlerTests
     UniqueName uniqueName = new(new UniqueNameSettings(), _faker.Person.UserName);
     Base64Password password = new(PasswordString);
     User user = new(uniqueName, password, actorId, UserId.NewId(realmId));
-    _userService.Setup(x => x.FindAsync(user.UniqueName.Value, _cancellationToken)).ReturnsAsync(new FoundUsers(null, user, null, null));
+    _userManager.Setup(x => x.FindAsync(user.UniqueName.Value, _cancellationToken)).ReturnsAsync(new FoundUsers(null, user, null, null));
 
     UserDto dto = new();
     _userQuerier.Setup(x => x.ReadAsync(user, _cancellationToken)).ReturnsAsync(dto);
@@ -57,7 +57,7 @@ public class AuthenticateUserHandlerTests
     Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(1));
     Assert.Contains(user.Changes, change => change is UserAuthenticated authenticated && authenticated.ActorId == (actorId ?? new ActorId(user.Id.Value)));
 
-    _userService.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
+    _userManager.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
   }
 
   [Fact(DisplayName = "It should throw UserNotFoundException when the user was not found.")]
@@ -66,7 +66,7 @@ public class AuthenticateUserHandlerTests
     RealmId realmId = RealmId.NewId();
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
-    _userService.Setup(x => x.FindAsync(It.IsAny<string>(), _cancellationToken)).ReturnsAsync(new FoundUsers(null, null, null, null));
+    _userManager.Setup(x => x.FindAsync(It.IsAny<string>(), _cancellationToken)).ReturnsAsync(new FoundUsers(null, null, null, null));
 
     AuthenticateUserPayload payload = new(_faker.Person.UserName, PasswordString);
     AuthenticateUser command = new(payload);

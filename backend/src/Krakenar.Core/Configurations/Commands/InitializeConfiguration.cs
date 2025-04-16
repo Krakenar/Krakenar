@@ -21,7 +21,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
   protected virtual ILanguageManager LanguageManager { get; }
   protected virtual IPasswordService PasswordService { get; }
   protected virtual ISecretService SecretService { get; }
-  protected virtual IUserService UserService { get; }
+  protected virtual IUserManager UserManager { get; }
 
   public InitializeConfigurationHandler(
     ICacheService cacheService,
@@ -30,7 +30,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     ILanguageManager languageManager,
     IPasswordService passwordService,
     ISecretService secretService,
-    IUserService userService)
+    IUserManager userManager)
   {
     CacheService = cacheService;
     ConfigurationQuerier = configurationQuerier;
@@ -38,7 +38,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     LanguageManager = languageManager;
     PasswordService = passwordService;
     SecretService = secretService;
-    UserService = userService;
+    UserManager = userManager;
   }
 
   public virtual async Task HandleAsync(InitializeConfiguration command, CancellationToken cancellationToken)
@@ -61,7 +61,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
 
       await ConfigurationRepository.SaveAsync(configuration, cancellationToken); // NOTE(fpion): this should cache the configuration.
       await LanguageManager.SaveAsync(language, cancellationToken);
-      await UserService.SaveAsync(user, cancellationToken);
+      await UserManager.SaveAsync(user, cancellationToken);
     }
     CacheService.Configuration = await ConfigurationQuerier.ReadAsync(configuration, cancellationToken);
   }

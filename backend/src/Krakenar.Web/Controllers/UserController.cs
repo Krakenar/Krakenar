@@ -1,8 +1,5 @@
 ﻿using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Users;
-using Krakenar.Core;
-using Krakenar.Core.Users.Commands;
-using Krakenar.Core.Users.Queries;
 using Krakenar.Web.Constants;
 using Krakenar.Web.Models.User;
 using Microsoft.AspNetCore.Authorization;
@@ -16,147 +13,106 @@ namespace Krakenar.Web.Controllers;
 [Route("api/users")]
 public class UserController : ControllerBase
 {
-  private readonly ICommandHandler<AuthenticateUser, User> _authenticateUser;
-  private readonly ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> _createOrReplaceUser;
-  private readonly ICommandHandler<DeleteUser, User?> _deleteUser;
-  private readonly IQueryHandler<ReadUser, User?> _readUser;
-  private readonly ICommandHandler<RemoveUserIdentifier, User?> _removeUserIdentifier;
-  private readonly ICommandHandler<ResetUserPassword, User?> _resetUserPassword;
-  private readonly ICommandHandler<SaveUserIdentifier, User?> _saveUserIdentifier;
-  private readonly IQueryHandler<SearchUsers, SearchResults<User>> _searchUsers;
-  private readonly ICommandHandler<SignOutUser, User?> _signOutUser;
-  private readonly ICommandHandler<UpdateUser, User?> _updateUser;
+  protected virtual IUserService UserService { get; }
 
-  public UserController(
-    ICommandHandler<AuthenticateUser, User> authenticateUser,
-    ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult> createOrReplaceUser,
-    ICommandHandler<DeleteUser, User?> deleteUser,
-    IQueryHandler<ReadUser, User?> readUser,
-    ICommandHandler<RemoveUserIdentifier, User?> removeUserIdentifier,
-    ICommandHandler<ResetUserPassword, User?> resetUserPassword,
-    ICommandHandler<SaveUserIdentifier, User?> saveUserIdentifier,
-    IQueryHandler<SearchUsers, SearchResults<User>> searchUsers,
-    ICommandHandler<SignOutUser, User?> signOutUser,
-    ICommandHandler<UpdateUser, User?> updateUser)
+  public UserController(IUserService userService)
   {
-    _authenticateUser = authenticateUser;
-    _createOrReplaceUser = createOrReplaceUser;
-    _deleteUser = deleteUser;
-    _readUser = readUser;
-    _removeUserIdentifier = removeUserIdentifier;
-    _resetUserPassword = resetUserPassword;
-    _saveUserIdentifier = saveUserIdentifier;
-    _searchUsers = searchUsers;
-    _signOutUser = signOutUser;
-    _updateUser = updateUser;
+    UserService = userService;
   }
 
   [HttpPatch("authenticate")]
-  public async Task<ActionResult<User>> AuthenticateAsync([FromBody] AuthenticateUserPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> AuthenticateAsync([FromBody] AuthenticateUserPayload payload, CancellationToken cancellationToken)
   {
-    AuthenticateUser command = new(payload);
-    User user = await _authenticateUser.HandleAsync(command, cancellationToken);
+    User user = await UserService.AuthenticateAsync(payload, cancellationToken);
     return Ok(user);
   }
 
   [HttpPost]
-  public async Task<ActionResult<User>> CreateAsync([FromBody] CreateOrReplaceUserPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> CreateAsync([FromBody] CreateOrReplaceUserPayload payload, CancellationToken cancellationToken)
   {
-    CreateOrReplaceUser command = new(Id: null, payload, Version: null);
-    CreateOrReplaceUserResult result = await _createOrReplaceUser.HandleAsync(command, cancellationToken);
+    CreateOrReplaceUserResult result = await UserService.CreateOrReplaceAsync(payload, id: null, version: null, cancellationToken);
     return ToActionResult(result);
   }
 
   [HttpDelete("{id}")]
-  public async Task<ActionResult<User>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> DeleteAsync(Guid id, CancellationToken cancellationToken)
   {
-    DeleteUser command = new(id);
-    User? user = await _deleteUser.HandleAsync(command, cancellationToken);
+    User? user = await UserService.DeleteAsync(id, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpGet("{id}")]
-  public async Task<ActionResult<User>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
-    ReadUser query = new(id, UniqueName: null, CustomIdentifier: null);
-    User? user = await _readUser.HandleAsync(query, cancellationToken);
+    User? user = await UserService.ReadAsync(id, uniqueName: null, customIdentifier: null, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpGet("name:{uniqueName}")]
-  public async Task<ActionResult<User>> ReadAsync(string uniqueName, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ReadAsync(string uniqueName, CancellationToken cancellationToken)
   {
-    ReadUser query = new(Id: null, uniqueName, CustomIdentifier: null);
-    User? user = await _readUser.HandleAsync(query, cancellationToken);
+    User? user = await UserService.ReadAsync(id: null, uniqueName, customIdentifier: null, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpGet("identifier/key:{key}/value:{value}")]
-  public async Task<ActionResult<User>> ReadAsync(string key, string value, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ReadAsync(string key, string value, CancellationToken cancellationToken)
   {
-    ReadUser query = new(Id: null, UniqueName: null, new CustomIdentifierDto(key, value));
-    User? user = await _readUser.HandleAsync(query, cancellationToken);
+    User? user = await UserService.ReadAsync(id: null, uniqueName: null, new CustomIdentifierDto(key, value), cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpGet]
-  public async Task<ActionResult<SearchResults<User>>> SearchAsync([FromQuery] SearchUsersParameters parameters, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<SearchResults<User>>> SearchAsync([FromQuery] SearchUsersParameters parameters, CancellationToken cancellationToken)
   {
     SearchUsersPayload payload = parameters.ToPayload();
-    SearchUsers query = new(payload);
-    SearchResults<User> users = await _searchUsers.HandleAsync(query, cancellationToken);
+    SearchResults<User> users = await UserService.SearchAsync(payload, cancellationToken);
     return Ok(users);
   }
 
   [HttpPut("{id}")]
-  public async Task<ActionResult<User>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceUserPayload payload, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ReplaceAsync(Guid id, [FromBody] CreateOrReplaceUserPayload payload, long? version, CancellationToken cancellationToken)
   {
-    CreateOrReplaceUser command = new(id, payload, version);
-    CreateOrReplaceUserResult result = await _createOrReplaceUser.HandleAsync(command, cancellationToken);
+    CreateOrReplaceUserResult result = await UserService.CreateOrReplaceAsync(payload, id, version, cancellationToken);
     return ToActionResult(result);
   }
 
   [HttpDelete("{id}/identifiers/key:{key}")]
-  public async Task<ActionResult<User>> RemoveIdentifierAsync(Guid id, string key, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> RemoveIdentifierAsync(Guid id, string key, CancellationToken cancellationToken)
   {
-    RemoveUserIdentifier command = new(id, key);
-    User? user = await _removeUserIdentifier.HandleAsync(command, cancellationToken);
+    User? user = await UserService.RemoveIdentifierAsync(id, key, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpPatch("{id}/password/reset")]
-  public async Task<ActionResult<User>> ResetPasswordAsync(Guid id, [FromBody] ResetUserPasswordPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> ResetPasswordAsync(Guid id, [FromBody] ResetUserPasswordPayload payload, CancellationToken cancellationToken)
   {
-    ResetUserPassword command = new(id, payload);
-    User? user = await _resetUserPassword.HandleAsync(command, cancellationToken);
+    User? user = await UserService.ResetPasswordAsync(id, payload, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpPut("{id}/identifiers/key:{key}")]
-  public async Task<ActionResult<User>> SaveIdentifierAsync(Guid id, string key, [FromBody] SaveUserIdentifierPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> SaveIdentifierAsync(Guid id, string key, [FromBody] SaveUserIdentifierPayload payload, CancellationToken cancellationToken)
   {
-    SaveUserIdentifier command = new(id, key, payload);
-    User? user = await _saveUserIdentifier.HandleAsync(command, cancellationToken);
+    User? user = await UserService.SaveIdentifierAsync(id, key, payload, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpPatch("{id}/sign/out")]
-  public async Task<ActionResult<User>> SignOutAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> SignOutAsync(Guid id, CancellationToken cancellationToken)
   {
-    SignOutUser command = new(id);
-    User? user = await _signOutUser.HandleAsync(command, cancellationToken);
+    User? user = await UserService.SignOutAsync(id, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
   [HttpPatch("{id}")]
-  public async Task<ActionResult<User>> UpdateAsync(Guid id, [FromBody] UpdateUserPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<User>> UpdateAsync(Guid id, [FromBody] UpdateUserPayload payload, CancellationToken cancellationToken)
   {
-    UpdateUser command = new(id, payload);
-    User? user = await _updateUser.HandleAsync(command, cancellationToken);
+    User? user = await UserService.UpdateAsync(id, payload, cancellationToken);
     return user is null ? NotFound() : Ok(user);
   }
 
-  private ActionResult<User> ToActionResult(CreateOrReplaceUserResult result)
+  protected virtual ActionResult<User> ToActionResult(CreateOrReplaceUserResult result)
   {
     if (result.User is null)
     {

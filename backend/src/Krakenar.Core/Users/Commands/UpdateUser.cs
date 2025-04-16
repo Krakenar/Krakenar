@@ -29,26 +29,26 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IPasswordService PasswordService { get; }
   protected virtual IRoleManager RoleManager { get; }
+  protected virtual IUserManager UserManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
   protected virtual IUserRepository UserRepository { get; }
-  protected virtual IUserService UserService { get; }
 
   public UpdateUserHandler(
     IAddressHelper addressHelper,
     IApplicationContext applicationContext,
     IPasswordService passwordService,
     IRoleManager roleManager,
+    IUserManager userManager,
     IUserQuerier userQuerier,
-    IUserRepository userRepository,
-    IUserService userService)
+    IUserRepository userRepository)
   {
     AddressHelper = addressHelper;
     ApplicationContext = applicationContext;
     PasswordService = passwordService;
     RoleManager = roleManager;
     UserQuerier = userQuerier;
+    UserManager = userManager;
     UserRepository = userRepository;
-    UserService = userService;
   }
 
   public virtual async Task<UserDto?> HandleAsync(UpdateUser command, CancellationToken cancellationToken)
@@ -103,7 +103,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
     await UpdateRolesAsync(payload, user, actorId, cancellationToken);
 
     user.Update(actorId);
-    await UserService.SaveAsync(user, cancellationToken);
+    await UserManager.SaveAsync(user, cancellationToken);
 
     return await UserQuerier.ReadAsync(user, cancellationToken);
   }

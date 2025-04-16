@@ -17,15 +17,15 @@ public class SaveUserIdentifierHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<IUserManager> _userManager = new();
   private readonly Mock<IUserQuerier> _userQuerier = new();
   private readonly Mock<IUserRepository> _userRepository = new();
-  private readonly Mock<IUserService> _userService = new();
 
   private readonly SaveUserIdentifierHandler _handler;
 
   public SaveUserIdentifierHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _userQuerier.Object, _userRepository.Object, _userService.Object);
+    _handler = new(_applicationContext.Object, _userManager.Object, _userQuerier.Object, _userRepository.Object);
 
     _applicationContext.SetupGet(x => x.PasswordSettings).Returns(new PasswordSettings());
   }
@@ -56,7 +56,7 @@ public class SaveUserIdentifierHandlerTests
     Assert.Contains(user.Changes, change => change is UserIdentifierChanged changed && changed.ActorId == actorId
       && changed.Key.Value == command.Key && changed.Value.Value == payload.Value.Trim());
 
-    _userService.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
+    _userManager.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
   }
 
   [Fact(DisplayName = "It should return null when the user was not found.")]

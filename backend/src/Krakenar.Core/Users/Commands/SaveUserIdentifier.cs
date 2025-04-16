@@ -15,18 +15,18 @@ public class SaveUserIdentifierHandler : ICommandHandler<SaveUserIdentifier, Use
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IUserQuerier UserQuerier { get; }
   protected virtual IUserRepository UserRepository { get; }
-  protected virtual IUserService UserService { get; }
+  protected virtual IUserManager UserManager { get; }
 
   public SaveUserIdentifierHandler(
     IApplicationContext applicationContext,
+    IUserManager userManager,
     IUserQuerier userQuerier,
-    IUserRepository userRepository,
-    IUserService userService)
+    IUserRepository userRepository)
   {
     ApplicationContext = applicationContext;
+    UserManager = userManager;
     UserQuerier = userQuerier;
     UserRepository = userRepository;
-    UserService = userService;
   }
 
   public virtual async Task<UserDto?> HandleAsync(SaveUserIdentifier command, CancellationToken cancellationToken)
@@ -46,7 +46,7 @@ public class SaveUserIdentifierHandler : ICommandHandler<SaveUserIdentifier, Use
     CustomIdentifier value = new(customIdentifier.Value);
     user.SetCustomIdentifier(key, value, ApplicationContext.ActorId);
 
-    await UserService.SaveAsync(user, cancellationToken);
+    await UserManager.SaveAsync(user, cancellationToken);
 
     return await UserQuerier.ReadAsync(user, cancellationToken);
   }
