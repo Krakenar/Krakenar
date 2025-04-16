@@ -1,7 +1,9 @@
 ﻿using Krakenar.Core;
+using Krakenar.Core.Caching;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Events;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ActorEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Actor;
@@ -31,11 +33,13 @@ public class UserEvents : IEventHandler<UserAddressChanged>,
   IEventHandler<UserUniqueNameChanged>,
   IEventHandler<UserUpdated>
 {
+  protected virtual ICacheService CacheService { get; }
   protected virtual KrakenarContext Context { get; }
   protected virtual ILogger<UserEvents> Logger { get; }
 
-  public UserEvents(KrakenarContext context, ILogger<UserEvents> logger)
+  public UserEvents(ICacheService cacheService, KrakenarContext context, ILogger<UserEvents> logger)
   {
+    CacheService = cacheService;
     Context = context;
     Logger = logger;
   }
@@ -392,5 +396,7 @@ public class UserEvents : IEventHandler<UserAddressChanged>,
     {
       actor.IsDeleted = isDeleted.Value;
     }
+
+    CacheService.RemoveActor(new ActorId(actor.Key));
   }
 }

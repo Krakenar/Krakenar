@@ -122,7 +122,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     UserDto? user = await userQuerier.ReadAsync(initializeConfiguration.UniqueName);
     Assert.NotNull(user);
     Actor = new ActorDto(user);
-    _applicationContext.ActorId = user.GetActorId();
+    _applicationContext.ActorId = Actor.GetActorId();
 
     IRealmRepository realmRepository = ServiceProvider.GetRequiredService<IRealmRepository>();
     await realmRepository.SaveAsync(Realm);
