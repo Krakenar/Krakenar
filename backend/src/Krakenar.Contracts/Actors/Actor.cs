@@ -4,6 +4,7 @@ namespace Krakenar.Contracts.Actors;
 
 public class Actor
 {
+  public Guid? RealmId { get; set; }
   public ActorType Type { get; set; }
   public Guid Id { get; set; }
   public bool IsDeleted { get; set; }
@@ -23,6 +24,7 @@ public class Actor
 
   public Actor(User user) : this(user.FullName ?? user.UniqueName)
   {
+    RealmId = user.Realm?.Id;
     Type = ActorType.User;
     Id = user.Id;
 
@@ -30,8 +32,8 @@ public class Actor
     PictureUrl = user.Picture;
   }
 
-  public override bool Equals(object obj) => obj is Actor actor && actor.Type == Type && actor.Id == Id;
-  public override int GetHashCode() => HashCode.Combine(Type, Id);
+  public override bool Equals(object obj) => obj is Actor actor && actor.RealmId == RealmId && actor.Type == Type && actor.Id == Id;
+  public override int GetHashCode() => HashCode.Combine(RealmId, Type, Id);
   public override string ToString()
   {
     StringBuilder actor = new();

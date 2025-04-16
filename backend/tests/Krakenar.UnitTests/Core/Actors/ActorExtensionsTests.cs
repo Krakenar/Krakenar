@@ -1,4 +1,6 @@
-﻿using Krakenar.Contracts.Actors;
+﻿using Bogus;
+using Krakenar.Contracts.Actors;
+using Krakenar.Core.Realms;
 using Logitar;
 using Logitar.EventSourcing;
 
@@ -7,18 +9,47 @@ namespace Krakenar.Core.Actors;
 [Trait(Traits.Category, Categories.Unit)]
 public class ActorExtensionsTests
 {
-  [Theory(DisplayName = "GetActorId: it should return the correct actor ID.")]
-  [InlineData(ActorType.ApiKey, "6c1dd96e-e287-4158-9f86-5b27cdf67b85")]
-  [InlineData(ActorType.User, "139670b3-1707-4bc6-a21a-8dfd376d4dc2")]
-  public void Given_Actor_When_GetActorId_Then_CorrectActorId(ActorType type, string idValue)
+  private readonly Faker _faker = new();
+
+  [Theory(DisplayName = "GetActorId: it should return the correct User actor ID.")]
+  [InlineData(null)]
+  [InlineData("f4f5b92d-7df1-47f4-b760-f35ce0c796a0")]
+  public void Given_User_When_GetActorId_Then_CorrectActorId(string? realmId)
   {
     Actor actor = new()
     {
-      Type = type,
-      Id = Guid.Parse(idValue)
+      Type = ActorType.User,
+      Id = Guid.NewGuid(),
+      DisplayName = _faker.Person.FullName,
+      EmailAddress = _faker.Person.Email,
+      PictureUrl = $"https://www.{_faker.Person.Avatar}"
     };
-    ActorId id = actor.GetActorId();
-    Assert.Equal(string.Concat(actor.Type, ':', Convert.ToBase64String(actor.Id.ToByteArray()).ToUriSafeBase64()), id.Value);
+    if (realmId is not null)
+    {
+      actor.RealmId = Guid.Parse(realmId);
+    }
+
+    ActorId actorId = actor.GetActorId();
+
+    StringBuilder value = new();
+    if (actor.RealmId.HasValue)
+    {
+      value.Append(new RealmId(actor.RealmId.Value)).Append('|');
+    }
+    value.Append(actor.Type).Append(':').Append(Convert.ToBase64String(actor.Id.ToByteArray()).ToUriSafeBase64());
+    Assert.Equal(value.ToString(), actorId.Value);
+  }
+
+  [Fact(DisplayName = "GetActorId: it should throw ArgumentException when the actor type is not supported.")]
+  public void Given_TypeNotSupported_When_GetActorId_Then_ArgumentException()
+  {
+    Actor actor = new()
+    {
+      Type = (ActorType)(-1)
+    };
+    var exception = Assert.Throws<ArgumentException>(() => actor.GetActorId());
+    Assert.StartsWith($"The actor type cannot be {actor.Type}.", exception.Message);
+    Assert.Equal("actor", exception.ParamName);
   }
 
   [Fact(DisplayName = "GetActorId: it should throw ArgumentException when the actor type is System.")]
@@ -28,5 +59,15 @@ public class ActorExtensionsTests
     var exception = Assert.Throws<ArgumentException>(() => system.GetActorId());
     Assert.StartsWith("The actor type cannot be System.", exception.Message);
     Assert.Equal("actor", exception.ParamName);
+  }
+
+  [Fact(DisplayName = "GetActorId: it should throw NotImplementedException when the actor type is ApiKey.")]
+  public void Given_SystemType_When_GetActorId_Then_NotImplementedException()
+  {
+    Actor actor = new()
+    {
+      Type = ActorType.ApiKey
+    };
+    Assert.Throws<NotImplementedException>(() => actor.GetActorId());
   }
 }

@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Configurations;
+﻿using Krakenar.Contracts.Actors;
+using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Settings;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
@@ -31,10 +32,12 @@ public class HttpApplicationContext : IApplicationContext
       User? user = Context.GetUser();
       if (user is not null)
       {
-        return user.GetActorId();
+        return new Actor(user).GetActorId();
       }
 
-      return null; // TODO(fpion): API key
+      // TODO(fpion): API key
+
+      return null;
     }
   }
   public RealmDto? Realm => Context.GetRealm();
