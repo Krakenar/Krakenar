@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Krakenar.Contracts;
 using Krakenar.Contracts.Roles;
+using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
 using Krakenar.Core.Passwords;
@@ -58,8 +59,6 @@ public class UserIntegrationTests : IntegrationTests
 
     await _userRepository.SaveAsync(_user);
   }
-
-  // TODO(fpion): search
 
   [Fact(DisplayName = "It should authenticate the user.")]
   public async Task Given_Valid_When_Authenticate_Then_Authenticated()
@@ -480,12 +479,6 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Contains(user.Roles, r => r.Id == publisher.EntityId);
   }
 
-  [Fact(DisplayName = "It should return null when the user cannot be found.")]
-  public async Task Given_NotFound_When_Read_Then_NullReturned()
-  {
-    Assert.Null(await _userService.ReadAsync(Guid.Empty, "not-found", new CustomIdentifierDto("Google", "1234567890")));
-  }
-
   [Fact(DisplayName = "It should reset the user password.")]
   public async Task Given_UserFound_When_ResetPassword_Then_PasswordReset()
   {
@@ -502,6 +495,169 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(Actor, user.PasswordChangedBy);
     Assert.NotNull(user.PasswordChangedOn);
     Assert.Equal(user.UpdatedOn.AsUniversalTime(), user.PasswordChangedOn.Value.AsUniversalTime());
+  }
+
+  [Fact(DisplayName = "It should return null when the user cannot be found.")]
+  public async Task Given_NotFound_When_Read_Then_NullReturned()
+  {
+    Assert.Null(await _userService.ReadAsync(Guid.Empty, "not-found", new CustomIdentifierDto("Google", "1234567890")));
+  }
+
+  [Fact(DisplayName = "It should return the correct search results.")]
+  public async Task Given_Users_When_Search_Then_CorrectResults()
+  {
+    _user.FirstName = new PersonName(Faker.Person.FirstName);
+    _user.LastName = new PersonName(Faker.Person.LastName);
+    _user.Birthdate = new DateTime(2000, 1, 1);
+    _user.Update(ActorId);
+
+    User user1 = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id))
+    {
+      FirstName = new PersonName(Faker.Name.FirstName()),
+      LastName = _user.LastName,
+      Birthdate = new DateTime(2002, 2, 22)
+    };
+    user1.Update(ActorId);
+
+    User user2 = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id))
+    {
+      FirstName = new PersonName(Faker.Name.FirstName()),
+      LastName = new PersonName(Faker.Name.LastName()),
+      Birthdate = new DateTime(2003, 3, 31)
+    };
+    user1.Update(ActorId);
+
+    User user3 = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id))
+    {
+      FirstName = new PersonName(Faker.Name.FirstName()),
+      LastName = new PersonName(Faker.Name.LastName()),
+      Birthdate = new DateTime(2004, 4, 1)
+    };
+    user1.Update(ActorId);
+
+    await _userRepository.SaveAsync([_user, user1, user2, user3]);
+
+    SearchUsersPayload payload = new()
+    {
+      Ids = [_user.EntityId, user1.EntityId, user3.EntityId, Guid.Empty],
+      Search = new TextSearch([new SearchTerm(_user.LastName.Value), new SearchTerm(user2.FirstName.Value)], SearchOperator.Or),
+      Sort = [new UserSortOption(UserSort.Birthdate, isDescending: true)],
+      Skip = 1,
+      Limit = 1
+    };
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(2, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(_user.EntityId, user.Id);
+  }
+
+  [Theory(DisplayName = "It should return the correct search results (HasAuthenticated).")]
+  [InlineData(false)]
+  [InlineData(true)]
+  public async Task Given_HasAuthenticated_When_Search_Then_CorrectResults(bool hasAuthenticated)
+  {
+    User notAuthenticated = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+
+    _user.Authenticate(PasswordString, ActorId);
+
+    await _userRepository.SaveAsync([_user, notAuthenticated]);
+
+    SearchUsersPayload payload = new()
+    {
+      HasAuthenticated = hasAuthenticated
+    };
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(1, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(hasAuthenticated ? _user.EntityId : notAuthenticated.EntityId, user.Id);
+  }
+
+  [Theory(DisplayName = "It should return the correct search results (HasPassword).")]
+  [InlineData(false)]
+  [InlineData(true)]
+  public async Task Given_HasPassword_When_Search_Then_CorrectResults(bool hasPassword)
+  {
+    User noPassword = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+    await _userRepository.SaveAsync(noPassword);
+
+    SearchUsersPayload payload = new()
+    {
+      HasPassword = hasPassword
+    };
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(1, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(hasPassword ? _user.EntityId : noPassword.EntityId, user.Id);
+  }
+
+  [Theory(DisplayName = "It should return the correct search results (IsConfirmed).")]
+  [InlineData(false)]
+  [InlineData(true)]
+  public async Task Given_IsConfirmed_When_Search_Then_CorrectResults(bool isConfirmed)
+  {
+    User confirmed = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+    confirmed.SetEmail(new Email(Faker.Person.Email, isVerified: true), ActorId);
+    await _userRepository.SaveAsync(confirmed);
+
+    SearchUsersPayload payload = new()
+    {
+      IsConfirmed = isConfirmed
+    };
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(1, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(isConfirmed ? confirmed.EntityId : _user.EntityId, user.Id);
+  }
+
+  [Theory(DisplayName = "It should return the correct search results (IsDisabled).")]
+  [InlineData(false)]
+  [InlineData(true)]
+  public async Task Given_IsDisabled_When_Search_Then_CorrectResults(bool isDisabled)
+  {
+    User disabled = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+    disabled.Disable(ActorId);
+    await _userRepository.SaveAsync(disabled);
+
+    SearchUsersPayload payload = new()
+    {
+      IsDisabled = isDisabled
+    };
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(1, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(isDisabled ? disabled.EntityId : _user.EntityId, user.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (RoleId).")]
+  public async Task Given_RoleId_When_Search_Then_CorrectResults()
+  {
+    Role role = new(new UniqueName(Realm.UniqueNameSettings, "admin"), ActorId, RoleId.NewId(Realm.Id));
+    await _roleRepository.SaveAsync(role);
+
+    _user.AddRole(role, ActorId);
+    User noRole = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+    await _userRepository.SaveAsync([_user, noRole]);
+
+    SearchUsersPayload payload = new()
+    {
+      RoleId = role.EntityId
+    };
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(1, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(_user.EntityId, user.Id);
   }
 
   [Fact(DisplayName = "It should save a user identifier.")]
