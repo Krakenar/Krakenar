@@ -41,11 +41,16 @@ public class CacheService : ICacheService
     string key = GetActorKey(id);
     return MemoryCache.TryGetValue(key, out Actor? actor) ? actor : null;
   }
+  public virtual void RemoveActor(ActorId id)
+  {
+    string key = GetActorKey(id);
+    MemoryCache.Remove(key);
+  }
   public virtual void SetActor(Actor actor)
   {
     ActorId id = actor.GetActorId();
     string key = GetActorKey(id);
     MemoryCache.Set(key, actor, Settings.ActorLifetime);
   }
-  protected virtual string GetActorKey(ActorId id) => $"Actor.Id:{id}";
+  protected virtual string GetActorKey(ActorId id) => $"Actor.Id={id}";
 }
