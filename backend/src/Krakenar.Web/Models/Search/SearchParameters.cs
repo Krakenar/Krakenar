@@ -30,23 +30,23 @@ public record SearchParameters
   {
     payload.Ids = Ids;
 
-    foreach (var term in SearchTerms)
+    foreach (string term in SearchTerms)
     {
       payload.Search.Terms.Add(new SearchTerm(term));
     }
     payload.Search.Operator = SearchOperator;
 
-    foreach (var sort in Sort)
+    foreach (string sort in Sort)
     {
-      var index = sort.IndexOf(SortSeparator);
+      int index = sort.IndexOf(SortSeparator);
       if (index < 0)
       {
         payload.Sort.Add(new SortOption(sort));
       }
       else
       {
-        var field = sort[(index + 1)..];
-        var isDescending = sort[..index].Equals(IsDescending, StringComparison.InvariantCultureIgnoreCase);
+        string field = sort[(index + 1)..];
+        bool isDescending = sort[..index].Equals(IsDescending, StringComparison.InvariantCultureIgnoreCase);
         payload.Sort.Add(new SortOption(field, isDescending));
       }
     }

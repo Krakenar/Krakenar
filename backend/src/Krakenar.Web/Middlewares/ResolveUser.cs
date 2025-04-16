@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Users;
 using Krakenar.Web.Constants;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Primitives;
 
@@ -61,7 +62,7 @@ public class ResolveUser
 
   protected virtual async Task WriteResponseAsync(HttpContext httpContext, int statusCode, Error error)
   {
-    var problemDetails = ProblemDetailsFactory.CreateProblemDetails(httpContext, statusCode, error);
+    ProblemDetails problemDetails = ProblemDetailsFactory.CreateProblemDetails(httpContext, statusCode, error);
 
     httpContext.Response.StatusCode = statusCode;
     ProblemDetailsContext context = new()
