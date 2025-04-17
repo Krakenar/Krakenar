@@ -7,7 +7,6 @@
 - Krakenar.Client
 - KrakenarAdmin
 - RedirectNotFound
-- RenewSession
 - ResolveRealm
 - ResolveUser
 - StaticFiles
