@@ -16,7 +16,8 @@ public class UserClient : BaseClient, IUserService
   public virtual async Task<User> AuthenticateAsync(AuthenticateUserPayload payload, CancellationToken cancellationToken)
   {
     Uri uri = new($"{Path}/authenticate", UriKind.Relative);
-    return (await PatchAsync<User>(uri, payload, cancellationToken)).Value ?? throw new NotImplementedException(); // TODO(fpion): implement; should not be a PATCH
+    return (await PatchAsync<User>(uri, payload, cancellationToken)).Value
+      ?? throw CreateInvalidApiResponseException(nameof(AuthenticateAsync), HttpMethod.Patch, uri, payload);
   }
 
   public virtual async Task<CreateOrReplaceUserResult> CreateOrReplaceAsync(CreateOrReplaceUserPayload payload, Guid? id, long? version, CancellationToken cancellationToken)
@@ -104,7 +105,8 @@ public class UserClient : BaseClient, IUserService
     parameters["sort"] = payload.Sort.Select(sort => (object?)(sort.IsDescending ? $"DESC.{sort.Field}" : sort)).ToList();
 
     Uri uri = new($"{Path}?{parameters.ToQueryString()}", UriKind.Relative);
-    return (await GetAsync<SearchResults<User>>(uri, cancellationToken)).Value ?? throw new NotImplementedException(); // TODO(fpion): implement
+    return (await GetAsync<SearchResults<User>>(uri, cancellationToken)).Value
+      ?? throw CreateInvalidApiResponseException(nameof(SearchAsync), HttpMethod.Get, uri);
   }
 
   public virtual async Task<User?> SignOutAsync(Guid id, CancellationToken cancellationToken)

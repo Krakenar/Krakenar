@@ -65,7 +65,8 @@ public class RoleClient : BaseClient, IRoleService
     parameters["sort"] = payload.Sort.Select(sort => (object?)(sort.IsDescending ? $"DESC.{sort.Field}" : sort)).ToList();
 
     Uri uri = new($"{Path}?{parameters.ToQueryString()}", UriKind.Relative);
-    return (await GetAsync<SearchResults<Role>>(uri, cancellationToken)).Value ?? throw new NotImplementedException(); // TODO(fpion): implement
+    return (await GetAsync<SearchResults<Role>>(uri, cancellationToken)).Value
+      ?? throw CreateInvalidApiResponseException(nameof(SearchAsync), HttpMethod.Get, uri);
   }
 
   public virtual async Task<Role?> UpdateAsync(Guid id, UpdateRolePayload payload, CancellationToken cancellationToken)

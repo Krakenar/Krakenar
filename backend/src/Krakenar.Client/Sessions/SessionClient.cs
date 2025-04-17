@@ -13,7 +13,8 @@ public class SessionClient : BaseClient, ISessionService
 
   public virtual async Task<Session> CreateAsync(CreateSessionPayload payload, CancellationToken cancellationToken)
   {
-    return (await PostAsync<Session>(Path, payload, cancellationToken)).Value ?? throw new NotImplementedException(); // TODO(fpion): implement;
+    return (await PostAsync<Session>(Path, payload, cancellationToken)).Value
+      ?? throw CreateInvalidApiResponseException(nameof(CreateAsync), HttpMethod.Post, Path, payload);
   }
 
   public virtual async Task<Session?> ReadAsync(Guid id, CancellationToken cancellationToken)
@@ -25,7 +26,8 @@ public class SessionClient : BaseClient, ISessionService
   public virtual async Task<Session> RenewAsync(RenewSessionPayload payload, CancellationToken cancellationToken)
   {
     Uri uri = new($"{Path}/renew", UriKind.Relative);
-    return (await PutAsync<Session>(uri, payload, cancellationToken)).Value ?? throw new NotImplementedException(); // TODO(fpion): implement;;
+    return (await PutAsync<Session>(uri, payload, cancellationToken)).Value
+      ?? throw CreateInvalidApiResponseException(nameof(RenewAsync), HttpMethod.Put, uri, payload);
   }
 
   public virtual async Task<SearchResults<Session>> SearchAsync(SearchSessionsPayload payload, CancellationToken cancellationToken)
@@ -37,13 +39,15 @@ public class SessionClient : BaseClient, ISessionService
     parameters["sort"] = payload.Sort.Select(sort => (object?)(sort.IsDescending ? $"DESC.{sort.Field}" : sort)).ToList();
 
     Uri uri = new($"{Path}?{parameters.ToQueryString()}", UriKind.Relative);
-    return (await GetAsync<SearchResults<Session>>(uri, cancellationToken)).Value ?? throw new NotImplementedException(); // TODO(fpion): implement
+    return (await GetAsync<SearchResults<Session>>(uri, cancellationToken)).Value
+      ?? throw CreateInvalidApiResponseException(nameof(SearchAsync), HttpMethod.Get, uri);
   }
 
   public virtual async Task<Session> SignInAsync(SignInSessionPayload payload, CancellationToken cancellationToken)
   {
     Uri uri = new($"{Path}/sign/in", UriKind.Relative);
-    return (await PostAsync<Session>(uri, payload, cancellationToken)).Value ?? throw new NotImplementedException(); // TODO(fpion): implement;
+    return (await PostAsync<Session>(uri, payload, cancellationToken)).Value
+      ?? throw CreateInvalidApiResponseException(nameof(SignInAsync), HttpMethod.Post, uri, payload);
   }
 
   public virtual async Task<Session?> SignOutAsync(Guid id, CancellationToken cancellationToken)

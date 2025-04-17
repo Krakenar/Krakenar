@@ -128,4 +128,10 @@ public abstract class BaseClient : IDisposable
 
     return result;
   }
+
+  protected virtual InvalidApiResponseException CreateInvalidApiResponseException(string methodName, HttpMethod httpMethod, Uri uri, object? content = null)
+  {
+    string? serializedContent = content is null ? null : JsonSerializer.Serialize(content, content.GetType(), SerializerOptions);
+    return new InvalidApiResponseException(GetType(), methodName, httpMethod, uri, serializedContent);
+  }
 }
