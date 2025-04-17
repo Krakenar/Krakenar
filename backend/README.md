@@ -18,4 +18,4 @@ All the following environment variables are optional.
 - `PASSWORDS_PBKDF2_HASH_LENGTH`: the hash length (in bytes) for PBKDF2. When not specified, will defaut to salt length.
 - `PASSWORDS_PBKDF2_ITERATIONS`: the hashing iterations for PBKDF2 passwords. Defaults to 600000.
 - `PASSWORDS_PBKDF2_SALT_LENGTH`: the salt length (in bytes) for PBKDF2 passwords. Defaults to 32 (256 bits).
-- `SQLCONNSTR_Krakenar`: the Microsoft SQL Server connection stirng.
+- `SQLCONNSTR_Krakenar`: the Microsoft SQL Server connection string.

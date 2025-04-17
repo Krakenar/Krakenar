@@ -8,7 +8,7 @@ public class LanguageClient : BaseClient, ILanguageService
 {
   protected virtual Uri Path { get; } = new("/api/Languages", UriKind.Relative);
 
-  public LanguageClient(IKrakenarSettings settings) : base(settings)
+  public LanguageClient(HttpClient httpClient, IKrakenarSettings settings) : base(httpClient, settings)
   {
   }
 

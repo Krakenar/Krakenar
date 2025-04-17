@@ -8,7 +8,7 @@ public class RoleClient : BaseClient, IRoleService
 {
   protected virtual Uri Path { get; } = new("/api/roles", UriKind.Relative);
 
-  public RoleClient(IKrakenarSettings settings) : base(settings)
+  public RoleClient(HttpClient httpClient, IKrakenarSettings settings) : base(httpClient, settings)
   {
   }
 

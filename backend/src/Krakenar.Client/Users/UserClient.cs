@@ -8,7 +8,7 @@ public class UserClient : BaseClient, IUserService
 {
   protected virtual Uri Path { get; } = new("/api/users", UriKind.Relative);
 
-  public UserClient(IKrakenarSettings settings) : base(settings)
+  public UserClient(HttpClient httpClient, IKrakenarSettings settings) : base(httpClient, settings)
   {
   }
 

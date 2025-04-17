@@ -2,14 +2,14 @@
 
 namespace Krakenar.Client;
 
-public abstract class BaseClient : IDisposable
+public abstract class BaseClient
 {
   protected virtual HttpClient HttpClient { get; }
   protected virtual JsonSerializerOptions SerializerOptions { get; } = new();
 
-  protected BaseClient(IKrakenarSettings settings)
+  protected BaseClient(HttpClient httpClient, IKrakenarSettings settings)
   {
-    HttpClient = new();
+    HttpClient = httpClient;
     if (!string.IsNullOrWhiteSpace(settings.BaseUrl))
     {
       HttpClient.BaseAddress = new Uri(settings.BaseUrl.Trim(), UriKind.Absolute);
@@ -30,12 +30,6 @@ public abstract class BaseClient : IDisposable
 
     SerializerOptions.Converters.Add(new JsonStringEnumConverter());
     SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-  }
-
-  public void Dispose()
-  {
-    HttpClient.Dispose();
-    GC.SuppressFinalize(this);
   }
 
   protected virtual async Task<ApiResult<T>> DeleteAsync<T>(Uri uri, CancellationToken cancellationToken)

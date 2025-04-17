@@ -8,7 +8,7 @@ public class RealmClient : BaseClient, IRealmService
 {
   protected virtual Uri Path { get; } = new("/api/realms", UriKind.Relative);
 
-  public RealmClient(IKrakenarSettings settings) : base(settings)
+  public RealmClient(HttpClient httpClient, IKrakenarSettings settings) : base(httpClient, settings)
   {
   }
 

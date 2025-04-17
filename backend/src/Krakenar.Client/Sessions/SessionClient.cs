@@ -7,7 +7,7 @@ public class SessionClient : BaseClient, ISessionService
 {
   protected virtual Uri Path { get; } = new("/api/sessions", UriKind.Relative);
 
-  public SessionClient(IKrakenarSettings settings) : base(settings)
+  public SessionClient(HttpClient httpClient, IKrakenarSettings settings) : base(httpClient, settings)
   {
   }
 

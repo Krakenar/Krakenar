@@ -6,7 +6,7 @@ public class ConfigurationClient : BaseClient, IConfigurationService
 {
   protected virtual Uri Path { get; } = new("/api/configuration", UriKind.Relative);
 
-  public ConfigurationClient(IKrakenarSettings settings) : base(settings)
+  public ConfigurationClient(HttpClient httpClient, IKrakenarSettings settings) : base(httpClient, settings)
   {
   }
 
