@@ -10,7 +10,6 @@ using Krakenar.Core.Sessions;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
-using Krakenar.EntityFrameworkCore.Relational.Entities;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
