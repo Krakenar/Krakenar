@@ -2,56 +2,39 @@
 using Krakenar.Contracts.Users;
 using Krakenar.Models.Account;
 using Krakenar.Web.Constants;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Krakenar;
 
 [Trait(Traits.Category, Categories.EndToEnd)]
-public class SessionE2ETests
+public class SessionE2ETests : E2ETests
 {
-  private readonly Uri _baseUri;
-  private readonly JsonSerializerOptions _serializerOptions = new();
-
-  public SessionE2ETests()
+  public SessionE2ETests() : base()
   {
-    _serializerOptions.Converters.Add(new JsonStringEnumConverter());
-    _serializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
-    IConfiguration configuration = new ConfigurationBuilder()
-      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-      .Build();
-    _baseUri = new Uri(configuration.GetValue<string>("BaseUrl") ?? string.Empty, UriKind.Absolute);
   }
 
   [Fact(DisplayName = "Session authentication should work correctly.")]
   public async Task Given_ValidCredentials_When_SignIn_Then_SessionAuthenticated()
   {
-    using HttpClient client = new();
-    client.BaseAddress = _baseUri;
-
     Uri requestUri = new("/api/sign/in", UriKind.Relative);
     using HttpRequestMessage signInRequest = new(HttpMethod.Post, requestUri);
     SignInAccountPayload payload = new("admin", "P@s$W0rD");
-    signInRequest.Content = JsonContent.Create(payload, mediaType: null, _serializerOptions);
+    signInRequest.Content = JsonContent.Create(payload, mediaType: null, SerializerOptions);
 
-    using var signInResponse = await client.SendAsync(signInRequest);
+    using HttpResponseMessage signInResponse = await HttpClient.SendAsync(signInRequest);
     signInResponse.EnsureSuccessStatusCode();
-    var currentUser = await signInResponse.Content.ReadFromJsonAsync<CurrentUser>();
+    CurrentUser? currentUser = await signInResponse.Content.ReadFromJsonAsync<CurrentUser>();
     Assert.NotNull(currentUser);
 
-    Assert.True(signInResponse.Headers.TryGetValues("Set-Cookie", out var values));
-    var session = values.Single(v => v.StartsWith(".AspNetCore.Session="));
+    Assert.True(signInResponse.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? cookies));
+    string session = cookies.Single(v => v.StartsWith(".AspNetCore.Session="));
 
     requestUri = new($"/api/users/{currentUser.Id}", UriKind.Relative);
     using HttpRequestMessage readUserRequest = new(HttpMethod.Get, requestUri);
     readUserRequest.Headers.Add("Cookie", session);
 
-    using var readUserResponse = await client.SendAsync(readUserRequest);
+    using HttpResponseMessage readUserResponse = await HttpClient.SendAsync(readUserRequest);
     readUserResponse.EnsureSuccessStatusCode();
-    var user = await readUserResponse.Content.ReadFromJsonAsync<User>(_serializerOptions);
+    User? user = await readUserResponse.Content.ReadFromJsonAsync<User>(SerializerOptions);
     Assert.NotNull(user);
 
     Assert.Equal(currentUser.Id, user.Id);
@@ -66,29 +49,26 @@ public class SessionE2ETests
   [Fact(DisplayName = "Session renewal middleware should work correctly.")]
   public async Task Given_RefreshToken_When_RenewSession_Then_SessionRenewed()
   {
-    using HttpClient client = new();
-    client.BaseAddress = _baseUri;
-
     Uri requestUri = new("/api/sign/in", UriKind.Relative);
     using HttpRequestMessage signInRequest = new(HttpMethod.Post, requestUri);
     SignInAccountPayload payload = new("admin", "P@s$W0rD");
-    signInRequest.Content = JsonContent.Create(payload, mediaType: null, _serializerOptions);
+    signInRequest.Content = JsonContent.Create(payload, mediaType: null, SerializerOptions);
 
-    using var signInResponse = await client.SendAsync(signInRequest);
+    using HttpResponseMessage signInResponse = await HttpClient.SendAsync(signInRequest);
     signInResponse.EnsureSuccessStatusCode();
-    var currentUser = await signInResponse.Content.ReadFromJsonAsync<CurrentUser>();
+    CurrentUser? currentUser = await signInResponse.Content.ReadFromJsonAsync<CurrentUser>();
     Assert.NotNull(currentUser);
 
-    Assert.True(signInResponse.Headers.TryGetValues("Set-Cookie", out var values));
-    var refreshToken = values.Single(v => v.StartsWith(Cookies.RefreshToken));
+    Assert.True(signInResponse.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? cookies));
+    string refreshToken = cookies.Single(v => v.StartsWith(Cookies.RefreshToken));
 
     requestUri = new($"/api/sessions/{currentUser.SessionId}", UriKind.Relative);
     using HttpRequestMessage readSessionRequest = new(HttpMethod.Get, requestUri);
     readSessionRequest.Headers.Add("Cookie", refreshToken);
 
-    using var readSessionResponse = await client.SendAsync(readSessionRequest);
+    using HttpResponseMessage readSessionResponse = await HttpClient.SendAsync(readSessionRequest);
     readSessionResponse.EnsureSuccessStatusCode();
-    var session = await readSessionResponse.Content.ReadFromJsonAsync<Session>(_serializerOptions);
+    Session? session = await readSessionResponse.Content.ReadFromJsonAsync<Session>(SerializerOptions);
     Assert.NotNull(session);
     Assert.Equal(currentUser.SessionId, session.Id);
     Assert.Equal(currentUser.Id, session.User.Id);
@@ -96,8 +76,8 @@ public class SessionE2ETests
     Assert.True(session.IsActive);
     Assert.NotEmpty(session.CustomAttributes);
 
-    Assert.True(readSessionResponse.Headers.TryGetValues("Set-Cookie", out values));
-    Assert.Contains(values, value => value.StartsWith(".AspNetCore.Session="));
-    Assert.NotEqual(refreshToken, values.Single(value => value.StartsWith(Cookies.RefreshToken)));
+    Assert.True(readSessionResponse.Headers.TryGetValues("Set-Cookie", out cookies));
+    Assert.Contains(cookies, value => value.StartsWith(".AspNetCore.Session="));
+    Assert.NotEqual(refreshToken, cookies.Single(value => value.StartsWith(Cookies.RefreshToken)));
   }
 }
