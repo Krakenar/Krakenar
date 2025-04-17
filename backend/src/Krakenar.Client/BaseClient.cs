@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -85,7 +86,6 @@ public abstract class BaseClient : IDisposable
     }
     catch (Exception)
     {
-      // TODO(fpion): what to do with exception?
     }
 
     Dictionary<string, IReadOnlyCollection<string>> headers = [];
@@ -104,10 +104,22 @@ public abstract class BaseClient : IDisposable
 
     if (!response.IsSuccessStatusCode)
     {
-      // TODO(fpion): handle error
-      // any with error
-      // 404 without error
-      // any without error
+      ProblemDetails? problemDetails = null;
+      if (result.Content is not null)
+      {
+        try
+        {
+          problemDetails = JsonSerializer.Deserialize<ProblemDetails>(result.Content, SerializerOptions);
+        }
+        catch (Exception)
+        {
+        }
+      }
+
+      if (response.StatusCode != HttpStatusCode.NotFound || (problemDetails is not null && problemDetails.Error is not null))
+      {
+        throw new KrakenarClientException(result, problemDetails);
+      }
     }
     else if (result.Content is not null)
     {
