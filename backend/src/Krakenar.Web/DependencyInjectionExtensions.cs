@@ -1,4 +1,5 @@
-﻿using Krakenar.Core;
+﻿using Krakenar.Contracts.Constants;
+using Krakenar.Core;
 using Krakenar.Web.Authentication;
 using Krakenar.Web.Authorization;
 using Krakenar.Web.Constants;
@@ -15,7 +16,7 @@ public static class DependencyInjectionExtensions
     services.AddControllersWithViews()
       .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-    string[] authenticationSchemes = Schemes.GetEnabled(configuration);
+    string[] authenticationSchemes = configuration.GetKrakenarAuthenticationSchemes();
 
     AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
       .AddScheme<SessionAuthenticationOptions, SessionAuthenticationHandler>(Schemes.Session, options => { });
@@ -46,5 +47,27 @@ public static class DependencyInjectionExtensions
       .AddHttpContextAccessor()
       .AddProblemDetails()
       .AddSingleton<IApplicationContext, HttpApplicationContext>();
+  }
+
+  public static string[] GetKrakenarAuthenticationSchemes(this IConfiguration configuration)
+  {
+    List<string> schemes = new(capacity: 4)
+    {
+      Schemes.ApiKey,
+      Schemes.Bearer,
+      Schemes.Session
+    };
+
+    string? enableBasicAuthentication = Environment.GetEnvironmentVariable("ENABLE_BASIC_AUTHENTICATION");
+    if (string.IsNullOrWhiteSpace(enableBasicAuthentication) || !bool.TryParse(enableBasicAuthentication, out bool isBasicAuthenticationEnabled))
+    {
+      isBasicAuthenticationEnabled = configuration.GetValue<bool>("EnableBasicAuthentication");
+    }
+    if (isBasicAuthenticationEnabled)
+    {
+      schemes.Add(Schemes.Basic);
+    }
+
+    return [.. schemes];
   }
 }

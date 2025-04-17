@@ -64,6 +64,7 @@ public class ExceptionHandler : IExceptionHandler
 
   private static bool IsBadRequest(Exception exception) => exception is BadRequestException
     || exception is InvalidCredentialsException
+    || exception is TooManyResultsException
     || exception is ValidationException;
 
   private static Error ToError(Exception exception)

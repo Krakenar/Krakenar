@@ -11,10 +11,11 @@ All the following environment variables are optional.
 - `DEFAULT_LOCALE`: the default locale code of the system. A string representing a [CultureInfo](https://learn.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=net-9.0), ex.: `en` (English) or `fr-CA` (Canadian French).
 - `DEFAULT_PASSWORD`: the default password of the admin user, ex.: `P@s$W0rD`.
 - `DEFAULT_USERNAME`: the default username of the admin user, ex.: `admin`.
+- `ENABLE_BASIC_AUTHENTICATION`: a boolean value indicating whether or not to enable Basic authentication. API keys should be preferred in Production environment for security purposes.
 - `ENCRYPTION_KEY`: the encryption key used by the platform. It should be 32-characters long (256 bits), including lowercase and uppercase letters, digits and special characters as well.
 - `EXPOSE_ERROR_DETAIL`: a boolean value indicating whether or not to expose detail for `500 Internal Server Error`. Should not be enabled in Production environment for security purposes.
 - `PASSWORDS_PBKDF2_ALGORITHM`: the hashing algorithm for PBKDF2 passwords. Defaults to `HMACSHA256`.
 - `PASSWORDS_PBKDF2_HASH_LENGTH`: the hash length (in bytes) for PBKDF2. When not specified, will defaut to salt length.
 - `PASSWORDS_PBKDF2_ITERATIONS`: the hashing iterations for PBKDF2 passwords. Defaults to 600000.
 - `PASSWORDS_PBKDF2_SALT_LENGTH`: the salt length (in bytes) for PBKDF2 passwords. Defaults to 32 (256 bits).
-- `SQLCONNSTR_Krakenar`: the Microsoft SQL Server connection stirng.
+- `SQLCONNSTR_Krakenar`: the Microsoft SQL Server connection string.

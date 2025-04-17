@@ -1,5 +1,5 @@
 ﻿using Krakenar.Constants;
-using Krakenar.Web.Constants;
+using Krakenar.Contracts.Constants;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts;
+using Logitar;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -12,7 +13,7 @@ public static class ProblemDetailsExtensions
     ProblemDetails problemDetails = factory.CreateProblemDetails(
       httpContext,
       statusCode,
-      title: error.Code.FormatToTitle(),
+      title: error.Code.Humanize(),
       type: null,
       detail: error.Message,
       instance: httpContext.Request.GetDisplayUrl());

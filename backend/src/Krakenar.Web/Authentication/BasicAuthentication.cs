@@ -1,5 +1,5 @@
-﻿using Krakenar.Contracts.Users;
-using Krakenar.Web.Constants;
+﻿using Krakenar.Contracts.Constants;
+using Krakenar.Contracts.Users;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;

@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Krakenar.Contracts;
+using Moq;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 using LocaleDto = Krakenar.Contracts.Localization.Locale;
 

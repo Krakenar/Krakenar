@@ -1,4 +1,5 @@
-﻿using RoleDto = Krakenar.Contracts.Roles.Role;
+﻿using Krakenar.Contracts;
+using RoleDto = Krakenar.Contracts.Roles.Role;
 
 namespace Krakenar.Core.Roles.Queries;
 

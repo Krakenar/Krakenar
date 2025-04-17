@@ -26,8 +26,6 @@ public class RealmController : ControllerBase
     return ToActionResult(result);
   }
 
-  // TODO(fpion): delete
-
   [HttpGet("{id}")]
   public virtual async Task<ActionResult<Realm>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {

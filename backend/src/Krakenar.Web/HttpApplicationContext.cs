@@ -35,7 +35,7 @@ public class HttpApplicationContext : IApplicationContext
         return new Actor(user).GetActorId();
       }
 
-      // TODO(fpion): API key
+      // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
 
       return null;
     }

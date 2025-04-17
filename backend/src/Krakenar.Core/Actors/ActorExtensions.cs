@@ -12,7 +12,7 @@ public static class ActorExtensions
     switch (actor.Type)
     {
       case ActorType.ApiKey:
-        throw new NotImplementedException(); // TODO(fpion): API key
+        throw new NotImplementedException(); // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
       case ActorType.User:
         RealmId? realmId = actor.RealmId.HasValue ? new RealmId(actor.RealmId.Value) : null;
         UserId userId = new(actor.Id, realmId);

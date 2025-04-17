@@ -1,9 +1,8 @@
-﻿using Krakenar.Contracts;
-using Logitar;
+﻿using Logitar;
 
-namespace Krakenar.Core;
+namespace Krakenar.Contracts;
 
-public class TooManyResultsException : BadRequestException
+public class TooManyResultsException : ErrorException
 {
   private const string ErrorMessage = "There are too many results.";
 

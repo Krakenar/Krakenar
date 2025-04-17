@@ -21,7 +21,7 @@ public static class ClaimsExtensions
   //  }
 
   //  return identity;
-  //} // TODO(fpion): API key
+  //} // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
 
   public static ClaimsIdentity CreateClaimsIdentity(this Session session, string? authenticationType = null)
   {
