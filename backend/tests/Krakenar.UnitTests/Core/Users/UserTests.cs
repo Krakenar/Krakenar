@@ -395,7 +395,7 @@ public class UserTests
     Assert.False(_user.HasChanges);
     Assert.Empty(_user.Changes);
 
-    _user.Picture = new Url($"https://www.{_faker.Person.Avatar}");
+    _user.Picture = new Url(_faker.Person.Avatar);
     _user.Update();
     Assert.NotNull(_user.Picture);
     Assert.True(_user.HasChanges);

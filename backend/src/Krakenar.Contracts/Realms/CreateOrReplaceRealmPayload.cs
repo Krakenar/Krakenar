@@ -4,7 +4,7 @@ namespace Krakenar.Contracts.Realms;
 
 public record CreateOrReplaceRealmPayload
 {
-  public string UniqueSlug { get; set; } = string.Empty;
+  public string UniqueSlug { get; set; }
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
 
@@ -16,4 +16,13 @@ public record CreateOrReplaceRealmPayload
   public bool RequireConfirmedAccount { get; set; }
 
   public List<CustomAttribute> CustomAttributes { get; set; } = [];
+
+  public CreateOrReplaceRealmPayload() : this(string.Empty)
+  {
+  }
+
+  public CreateOrReplaceRealmPayload(string uniqueSlug)
+  {
+    UniqueSlug = uniqueSlug;
+  }
 }

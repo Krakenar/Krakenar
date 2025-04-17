@@ -39,4 +39,8 @@
     <Using Include="System.Text.Json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Krakenar.E2ETests" />
+  </ItemGroup>
+
 </Project>

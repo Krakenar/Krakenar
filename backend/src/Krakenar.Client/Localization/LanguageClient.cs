@@ -16,7 +16,7 @@ public class LanguageClient : BaseClient, ILanguageService
   {
     ApiResult<Language> result = id is null
       ? await PostAsync<Language>(Path, payload, cancellationToken)
-      : await PutAsync<Language>(new Uri($"{Path}/{id}?version={version}"), payload, cancellationToken);
+      : await PutAsync<Language>(new Uri($"{Path}/{id}?version={version}", UriKind.Relative), payload, cancellationToken);
     return new CreateOrReplaceLanguageResult(result.Value, result.StatusCode == HttpStatusCode.Created);
   }
 

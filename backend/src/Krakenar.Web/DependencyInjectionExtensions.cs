@@ -55,8 +55,8 @@ public static class DependencyInjectionExtensions
   {
     List<string> schemes = new(capacity: 4)
     {
-      Schemes.ApiKey,
-      Schemes.Bearer,
+      //Schemes.ApiKey, // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
+      //Schemes.Bearer, // ISSUE #17: https://github.com/Krakenar/Krakenar/issues/17
       Schemes.Session
     };
 
