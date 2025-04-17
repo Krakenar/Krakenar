@@ -16,8 +16,10 @@ public static class DependencyInjectionExtensions
     services.AddControllersWithViews()
       .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-    string[] authenticationSchemes = configuration.GetKrakenarAuthenticationSchemes();
+    services.AddSingleton(CorsSettings.Initialize(configuration));
+    services.AddCors();
 
+    string[] authenticationSchemes = configuration.GetKrakenarAuthenticationSchemes();
     AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
       .AddScheme<SessionAuthenticationOptions, SessionAuthenticationHandler>(Schemes.Session, options => { });
     if (authenticationSchemes.Contains(Schemes.Basic))
