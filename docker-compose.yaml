@@ -26,17 +26,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # krakenar:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: /src/Krakenar/Dockerfile
-  #   image: krakenar
-  #   container_name: Krakenar
-  #   restart: unless-stopped
-  #   environment:
-  #     ASPNETCORE_Environment: Development
-  #   ports:
-  #     - 8096:8080
+  krakenar:
+    build:
+      context: ./backend
+      dockerfile: /src/Krakenar/Dockerfile
+    image: krakenar
+    container_name: Krakenar
+    depends_on:
+      - krakenar_mssql
+      - krakenar_postgres
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_Environment: Development
+      SQLCONNSTR_Krakenar: Server=krakenar_mssql;Database=Krakenar;User Id=SA;Password=H8A9VsMra2vqmpGE;Persist Security Info=False;Encrypt=False;
+    ports:
+      - 8096:8080
 
 volumes:
   mssql_backup:
