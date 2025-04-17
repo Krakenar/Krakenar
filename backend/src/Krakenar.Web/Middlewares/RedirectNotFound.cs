@@ -17,7 +17,7 @@ public class RedirectNotFound
 
     if (context.Response.StatusCode == StatusCodes.Status404NotFound && !context.Request.Path.StartsWithSegments("/api"))
     {
-      context.Response.Redirect($"/app/{UriHelper.GetEncodedPathAndQuery(context.Request).Trim('/')}"); // TODO(fpion): app?
+      context.Response.Redirect($"/app/{UriHelper.GetEncodedPathAndQuery(context.Request).Trim('/')}");
     }
   }
 }

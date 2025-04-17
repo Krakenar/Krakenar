@@ -3,7 +3,7 @@
 namespace Krakenar.Web.Controllers;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-[Route("app")] // TODO(fpion): app?
+[Route("app")]
 public class AppController : Controller
 {
   [HttpGet("{**anything}")]
