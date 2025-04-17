@@ -252,8 +252,6 @@ public class User : AggregateRoot, ICustomizable
       throw new IncorrectUserPasswordException(this, password);
     }
 
-    // TODO(fpion): RequireConfirmedAccount
-
     actorId ??= new(Id.Value);
     Raise(new UserAuthenticated(), actorId.Value);
   }
@@ -276,8 +274,6 @@ public class User : AggregateRoot, ICustomizable
     {
       throw new IncorrectUserPasswordException(this, currentPassword);
     }
-
-    // TODO(fpion): RequireConfirmedAccount
 
     actorId ??= new(Id.Value);
     Raise(new UserPasswordChanged(newPassword), actorId.Value);
@@ -379,8 +375,6 @@ public class User : AggregateRoot, ICustomizable
     {
       throw new UserIsDisabledException(this);
     }
-
-    // TODO(fpion): RequireConfirmedAccount
 
     actorId ??= new(Id.Value);
     Raise(new UserPasswordReset(password), actorId.Value);
@@ -497,8 +491,6 @@ public class User : AggregateRoot, ICustomizable
         throw new IncorrectUserPasswordException(this, password);
       }
     }
-
-    // TODO(fpion): RequireConfirmedAccount
 
     actorId ??= new(Id.Value);
     SessionId id = sessionId.HasValue ? new SessionId(sessionId.Value, RealmId) : SessionId.NewId(RealmId);

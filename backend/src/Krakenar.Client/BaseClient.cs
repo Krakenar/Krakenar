@@ -12,8 +12,7 @@ public abstract class BaseClient : IDisposable
     {
       HttpClient.BaseAddress = new Uri(settings.BaseUrl.Trim(), UriKind.Absolute);
     }
-    // TODO(fpion): Authorization: Basic, Bearer
-    // TODO(fpion): X-API-Key
+    // TODO(fpion): Authorization: Basic
     // TODO(fpion): X-Realm
     // TODO(fpion): X-User
 
@@ -57,8 +56,7 @@ public abstract class BaseClient : IDisposable
     {
       request.Content = JsonContent.Create(payload, payload.GetType(), mediaType: null, SerializerOptions);
     }
-    // TODO(fpion): Authorization: Basic, Bearer
-    // TODO(fpion): X-API-Key
+    // TODO(fpion): Authorization: Basic
     // TODO(fpion): X-Realm
     // TODO(fpion): X-User
 

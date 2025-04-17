@@ -32,7 +32,7 @@ public class KrakenarAdminHandler : AuthorizationHandler<KrakenarAdminRequiremen
         }
       }
 
-      // TODO(fpion): API key
+      // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
     }
 
     return Task.CompletedTask;
