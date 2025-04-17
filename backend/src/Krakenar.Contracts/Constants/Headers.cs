@@ -1,4 +1,4 @@
-﻿namespace Krakenar.Web.Constants;
+﻿namespace Krakenar.Contracts.Constants;
 
 public static class Headers
 {

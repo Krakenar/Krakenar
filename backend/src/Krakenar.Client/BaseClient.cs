@@ -1,4 +1,6 @@
-﻿namespace Krakenar.Client;
+﻿using Krakenar.Contracts.Constants;
+
+namespace Krakenar.Client;
 
 public abstract class BaseClient : IDisposable
 {
@@ -12,9 +14,19 @@ public abstract class BaseClient : IDisposable
     {
       HttpClient.BaseAddress = new Uri(settings.BaseUrl.Trim(), UriKind.Absolute);
     }
-    // TODO(fpion): Authorization: Basic
-    // TODO(fpion): X-Realm
-    // TODO(fpion): X-User
+    if (settings.Basic is not null && !string.IsNullOrWhiteSpace(settings.Basic.Username) && !string.IsNullOrWhiteSpace(settings.Basic.Password))
+    {
+      string value = string.Join(' ', Schemes.Basic, Convert.ToBase64String(Encoding.UTF8.GetBytes(settings.Basic.ToString())));
+      HttpClient.DefaultRequestHeaders.Add(Headers.Authorization, value);
+    }
+    if (!string.IsNullOrWhiteSpace(settings.Realm))
+    {
+      HttpClient.DefaultRequestHeaders.Add(Headers.Realm, settings.Realm.Trim());
+    }
+    if (!string.IsNullOrWhiteSpace(settings.User))
+    {
+      HttpClient.DefaultRequestHeaders.Add(Headers.User, settings.User.Trim());
+    }
 
     SerializerOptions.Converters.Add(new JsonStringEnumConverter());
     SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -56,9 +68,6 @@ public abstract class BaseClient : IDisposable
     {
       request.Content = JsonContent.Create(payload, payload.GetType(), mediaType: null, SerializerOptions);
     }
-    // TODO(fpion): Authorization: Basic
-    // TODO(fpion): X-Realm
-    // TODO(fpion): X-User
 
     using HttpResponseMessage response = await HttpClient.SendAsync(request, cancellationToken);
 

@@ -1,6 +1,6 @@
 ﻿using Krakenar.Contracts;
+using Krakenar.Contracts.Constants;
 using Krakenar.Contracts.Users;
-using Krakenar.Web.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Primitives;
