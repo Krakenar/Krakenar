@@ -18,6 +18,7 @@ public abstract class BaseClient : IDisposable
     // TODO(fpion): X-User
 
     SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
   }
 
   public void Dispose()
