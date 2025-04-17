@@ -1,4 +1,3 @@
 ﻿# TODO
 
-- ExceptionHandler
 - ⚠️KrakenarAdmin
