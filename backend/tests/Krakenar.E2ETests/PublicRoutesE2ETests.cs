@@ -17,10 +17,11 @@ public class PublicRoutesE2ETests : E2ETests
     {
       AllowAutoRedirect = false
     };
-    using HttpClient httpClient = new(handler)
+    using HttpClient httpClient = new(handler);
+    if (!string.IsNullOrWhiteSpace(KrakenarSettings.BaseUrl))
     {
-      BaseAddress = BaseUri
-    };
+      httpClient.BaseAddress = new Uri(KrakenarSettings.BaseUrl.Trim(), UriKind.Absolute);
+    }
 
     Uri requestUri = new("/404", UriKind.Relative);
     using HttpRequestMessage request = new(HttpMethod.Get, requestUri);

@@ -2,7 +2,7 @@
 
 public record CreateOrReplaceUserPayload
 {
-  public string UniqueName { get; set; } = string.Empty;
+  public string UniqueName { get; set; }
   public ChangePasswordPayload? Password { get; set; }
   public bool? IsDisabled { get; set; }
 
@@ -26,4 +26,13 @@ public record CreateOrReplaceUserPayload
 
   public List<CustomAttribute> CustomAttributes { get; set; } = [];
   public List<string> Roles { get; set; } = [];
+
+  public CreateOrReplaceUserPayload() : this(string.Empty)
+  {
+  }
+
+  public CreateOrReplaceUserPayload(string uniqueName)
+  {
+    UniqueName = uniqueName;
+  }
 }

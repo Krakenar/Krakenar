@@ -22,7 +22,7 @@ public class ActorExtensionsTests
       Id = Guid.NewGuid(),
       DisplayName = _faker.Person.FullName,
       EmailAddress = _faker.Person.Email,
-      PictureUrl = $"https://www.{_faker.Person.Avatar}"
+      PictureUrl = _faker.Person.Avatar
     };
     if (realmId is not null)
     {

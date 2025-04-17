@@ -91,7 +91,7 @@ public class UserIntegrationTests : IntegrationTests
       Gender = Faker.Person.Gender.ToString(),
       Locale = Faker.Locale,
       TimeZone = "America/New_York",
-      Picture = $"https://www.{Faker.Person.Avatar}",
+      Picture = Faker.Person.Avatar,
       Profile = $"https://www.{Faker.Person.Website}/profile",
       Website = $"https://www.{Faker.Person.Website}"
     };
@@ -269,7 +269,7 @@ public class UserIntegrationTests : IntegrationTests
       Gender = Faker.Person.Gender.ToString(),
       Locale = Faker.Locale,
       TimeZone = "America/New_York",
-      Picture = $"https://www.{Faker.Person.Avatar}",
+      Picture = Faker.Person.Avatar,
       Profile = $"https://www.{Faker.Person.Website}/profile",
       Website = $"https://www.{Faker.Person.Website}"
     };
@@ -390,7 +390,7 @@ public class UserIntegrationTests : IntegrationTests
       Gender = Faker.Person.Gender.ToString(),
       Locale = Faker.Locale,
       TimeZone = "America/New_York",
-      Picture = $"https://www.{Faker.Person.Avatar}",
+      Picture = Faker.Person.Avatar,
       Profile = $"https://www.{Faker.Person.Website}/profile",
       Website = $"https://www.{Faker.Person.Website}"
     };

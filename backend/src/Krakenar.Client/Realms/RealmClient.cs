@@ -16,7 +16,7 @@ public class RealmClient : BaseClient, IRealmService
   {
     ApiResult<Realm> result = id is null
       ? await PostAsync<Realm>(Path, payload, cancellationToken)
-      : await PutAsync<Realm>(new Uri($"{Path}/{id}?version={version}"), payload, cancellationToken);
+      : await PutAsync<Realm>(new Uri($"{Path}/{id}?version={version}", UriKind.Relative), payload, cancellationToken);
     return new CreateOrReplaceRealmResult(result.Value, result.StatusCode == HttpStatusCode.Created);
   }
 

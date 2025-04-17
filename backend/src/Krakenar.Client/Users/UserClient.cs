@@ -23,7 +23,7 @@ public class UserClient : BaseClient, IUserService
   {
     ApiResult<User> result = id is null
       ? await PostAsync<User>(Path, payload, cancellationToken)
-      : await PutAsync<User>(new Uri($"{Path}/{id}?version={version}"), payload, cancellationToken);
+      : await PutAsync<User>(new Uri($"{Path}/{id}?version={version}", UriKind.Relative), payload, cancellationToken);
     return new CreateOrReplaceUserResult(result.Value, result.StatusCode == HttpStatusCode.Created);
   }
 

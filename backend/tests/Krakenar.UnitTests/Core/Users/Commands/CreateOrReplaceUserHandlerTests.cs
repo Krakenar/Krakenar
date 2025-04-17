@@ -80,7 +80,7 @@ public class CreateOrReplaceUserHandlerTests
       Gender = _faker.Person.Gender.ToString(),
       Locale = _faker.Locale,
       TimeZone = "America/New_York",
-      Picture = $"https://www.{_faker.Person.Avatar}",
+      Picture = _faker.Person.Avatar,
       Profile = $"https://www.{_faker.Person.Website}/profile",
       Website = $"https://www.{_faker.Person.Website}"
     };

@@ -17,7 +17,8 @@ public class SessionE2ETests : E2ETests
   {
     Uri requestUri = new("/api/sign/in", UriKind.Relative);
     using HttpRequestMessage signInRequest = new(HttpMethod.Post, requestUri);
-    SignInAccountPayload payload = new("admin", "P@s$W0rD");
+    Assert.NotNull(KrakenarSettings.Basic);
+    SignInAccountPayload payload = new(KrakenarSettings.Basic.Username.Trim(), KrakenarSettings.Basic.Password.Trim());
     signInRequest.Content = JsonContent.Create(payload, mediaType: null, SerializerOptions);
 
     using HttpResponseMessage signInResponse = await HttpClient.SendAsync(signInRequest);
@@ -43,7 +44,7 @@ public class SessionE2ETests : E2ETests
     Assert.Equal(currentUser.PictureUrl, user.Picture);
 
     Assert.NotNull(user.AuthenticatedOn);
-    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value, TimeSpan.FromSeconds(10));
+    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value, TimeSpan.FromSeconds(1));
   }
 
   [Fact(DisplayName = "Session renewal middleware should work correctly.")]
@@ -51,7 +52,8 @@ public class SessionE2ETests : E2ETests
   {
     Uri requestUri = new("/api/sign/in", UriKind.Relative);
     using HttpRequestMessage signInRequest = new(HttpMethod.Post, requestUri);
-    SignInAccountPayload payload = new("admin", "P@s$W0rD");
+    Assert.NotNull(KrakenarSettings.Basic);
+    SignInAccountPayload payload = new(KrakenarSettings.Basic.Username.Trim(), KrakenarSettings.Basic.Password.Trim());
     signInRequest.Content = JsonContent.Create(payload, mediaType: null, SerializerOptions);
 
     using HttpResponseMessage signInResponse = await HttpClient.SendAsync(signInRequest);

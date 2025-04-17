@@ -16,7 +16,7 @@ public class RoleClient : BaseClient, IRoleService
   {
     ApiResult<Role> result = id is null
       ? await PostAsync<Role>(Path, payload, cancellationToken)
-      : await PutAsync<Role>(new Uri($"{Path}/{id}?version={version}"), payload, cancellationToken);
+      : await PutAsync<Role>(new Uri($"{Path}/{id}?version={version}", UriKind.Relative), payload, cancellationToken);
     return new CreateOrReplaceRoleResult(result.Value, result.StatusCode == HttpStatusCode.Created);
   }
 
