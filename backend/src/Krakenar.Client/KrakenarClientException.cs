@@ -1,6 +1,5 @@
 ﻿using Krakenar.Contracts;
 using Logitar;
-using System.Text.Json;
 
 namespace Krakenar.Client;
 

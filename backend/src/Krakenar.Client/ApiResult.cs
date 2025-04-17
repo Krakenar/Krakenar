@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Krakenar.Client;
+﻿namespace Krakenar.Client;
 
 public record ApiResult
 {

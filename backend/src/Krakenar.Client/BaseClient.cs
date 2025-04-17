@@ -1,9 +1,4 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
-namespace Krakenar.Client;
+﻿namespace Krakenar.Client;
 
 public abstract class BaseClient : IDisposable
 {

@@ -1,7 +1,6 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Search;
-using System.Net;
 
 namespace Krakenar.Client.Realms;
 

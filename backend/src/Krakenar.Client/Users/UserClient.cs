@@ -1,7 +1,6 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Users;
-using System.Net;
 
 namespace Krakenar.Client.Users;
 
