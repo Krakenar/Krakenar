@@ -11,7 +11,7 @@ public sealed class RoleConfiguration : AggregateConfiguration<Role>, IEntityTyp
   {
     base.Configure(builder);
 
-    builder.ToTable(KrakenarDb.Roles.Table.Table!, KrakenarDb.Roles.Table.Schema);
+    builder.ToTable(KrakenarDb.Roles.Table.Table ?? string.Empty, KrakenarDb.Roles.Table.Schema);
     builder.HasKey(x => x.RoleId);
 
     builder.HasIndex(x => new { x.RealmId, x.Id }).IsUnique();

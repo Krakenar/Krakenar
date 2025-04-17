@@ -13,7 +13,7 @@ public sealed class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
 {
   public void Configure(EntityTypeBuilder<ActorEntity> builder)
   {
-    builder.ToTable(KrakenarDb.Actors.Table.Table!, KrakenarDb.Actors.Table.Schema);
+    builder.ToTable(KrakenarDb.Actors.Table.Table ?? string.Empty, KrakenarDb.Actors.Table.Schema);
     builder.HasKey(x => x.ActorId);
 
     builder.HasIndex(x => x.Key).IsUnique();

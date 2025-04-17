@@ -12,7 +12,7 @@ public sealed class LanguageConfiguration : AggregateConfiguration<LanguageEntit
   {
     base.Configure(builder);
 
-    builder.ToTable(KrakenarDb.Languages.Table.Table!, KrakenarDb.Languages.Table.Schema);
+    builder.ToTable(KrakenarDb.Languages.Table.Table ?? string.Empty, KrakenarDb.Languages.Table.Schema);
     builder.HasKey(x => x.LanguageId);
 
     builder.HasIndex(x => new { x.RealmId, x.Id }).IsUnique();
