@@ -1,4 +1,4 @@
-using Krakenar.EntityFrameworkCore.Relational.Entities;
+﻿using Krakenar.EntityFrameworkCore.Relational.Entities;
 using Logitar.Data;
 
 namespace Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
