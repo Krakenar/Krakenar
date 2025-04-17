@@ -17,7 +17,6 @@ public class HttpApplicationContext : IApplicationContext
   protected virtual IHttpContextAccessor HttpContextAccessor { get; }
 
   protected virtual Configuration Configuration => CacheService.Configuration ?? throw new InvalidOperationException("The configuration was not found in the cache.");
-  protected virtual HttpContext Context => HttpContextAccessor.HttpContext ?? throw new InvalidOperationException($"The {nameof(HttpContextAccessor.HttpContext)} is required.");
 
   public HttpApplicationContext(ICacheService cacheService, IHttpContextAccessor httpContextAccessor)
   {
@@ -29,7 +28,7 @@ public class HttpApplicationContext : IApplicationContext
   {
     get
     {
-      User? user = Context.GetUser();
+      User? user = HttpContextAccessor.HttpContext?.GetUser();
       if (user is not null)
       {
         return new Actor(user).GetActorId();
@@ -40,7 +39,7 @@ public class HttpApplicationContext : IApplicationContext
       return null;
     }
   }
-  public RealmDto? Realm => Context.GetRealm();
+  public RealmDto? Realm => HttpContextAccessor.HttpContext?.GetRealm();
   public RealmId? RealmId => Realm is null ? null : new RealmId(Realm.Id);
 
   public IUniqueNameSettings UniqueNameSettings => Realm?.UniqueNameSettings ?? Configuration.UniqueNameSettings;

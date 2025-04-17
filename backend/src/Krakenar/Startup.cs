@@ -73,12 +73,12 @@ internal class Startup : StartupBase
     }
 
     application.UseHttpsRedirection();
-    // TODO(fpion): CORS
-    // TODO(fpion): StaticFiles
+    application.UseCors();
+    application.UseStaticFiles();
     application.UseExceptionHandler();
     application.UseSession();
     application.UseMiddleware<RenewSession>();
-    // TODO(fpion): RedirectNotFound
+    application.UseMiddleware<RedirectNotFound>();
     application.UseAuthentication();
     application.UseAuthorization();
     application.UseMiddleware<ResolveRealm>();

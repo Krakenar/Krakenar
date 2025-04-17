@@ -55,9 +55,9 @@ public class ResolveUser
 
         context.SetUser(user);
       }
-
-      await Next(context);
     }
+
+    await Next(context);
   }
 
   protected virtual async Task WriteResponseAsync(HttpContext httpContext, int statusCode, Error error)
