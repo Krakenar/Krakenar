@@ -11,7 +11,7 @@ public sealed class RealmConfiguration : AggregateConfiguration<Realm>, IEntityT
   {
     base.Configure(builder);
 
-    builder.ToTable(KrakenarDb.Realms.Table.Table!, KrakenarDb.Realms.Table.Schema);
+    builder.ToTable(KrakenarDb.Realms.Table.Table ?? string.Empty, KrakenarDb.Realms.Table.Schema);
     builder.HasKey(x => x.RealmId);
 
     builder.HasIndex(x => x.Id).IsUnique();

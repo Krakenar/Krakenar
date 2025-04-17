@@ -9,7 +9,7 @@ public sealed class ConfigurationConfiguration : IEntityTypeConfiguration<Config
 {
   public void Configure(EntityTypeBuilder<Configuration> builder)
   {
-    builder.ToTable(KrakenarDb.Configuration.Table.Table!, KrakenarDb.Configuration.Table.Schema);
+    builder.ToTable(KrakenarDb.Configuration.Table.Table ?? string.Empty, KrakenarDb.Configuration.Table.Schema);
     builder.HasKey(x => x.ConfigurationId);
 
     builder.HasIndex(x => x.Key).IsUnique();
