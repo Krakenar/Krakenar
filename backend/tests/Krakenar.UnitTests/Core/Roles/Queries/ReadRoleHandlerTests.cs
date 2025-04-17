@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Krakenar.Contracts;
+using Moq;
 using RoleDto = Krakenar.Contracts.Roles.Role;
 
 namespace Krakenar.Core.Roles.Queries;

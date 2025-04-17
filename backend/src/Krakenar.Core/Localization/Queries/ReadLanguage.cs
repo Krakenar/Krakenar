@@ -1,4 +1,5 @@
-﻿using LanguageDto = Krakenar.Contracts.Localization.Language;
+﻿using Krakenar.Contracts;
+using LanguageDto = Krakenar.Contracts.Localization.Language;
 
 namespace Krakenar.Core.Localization.Queries;
 

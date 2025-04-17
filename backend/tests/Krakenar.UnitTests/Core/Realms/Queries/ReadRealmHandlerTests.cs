@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Krakenar.Contracts;
+using Moq;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.Core.Realms.Queries;

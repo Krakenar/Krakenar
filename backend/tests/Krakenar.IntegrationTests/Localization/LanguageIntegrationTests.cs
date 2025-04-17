@@ -1,6 +1,6 @@
-﻿using Krakenar.Contracts.Localization;
+﻿using Krakenar.Contracts;
+using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Search;
-using Krakenar.Core;
 using Krakenar.Core.Localization;
 using Logitar;
 using Microsoft.EntityFrameworkCore;

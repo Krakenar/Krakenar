@@ -1,5 +1,5 @@
 ﻿using Krakenar.Contracts;
-using System.Text;
+using Logitar;
 using System.Text.Json;
 
 namespace Krakenar.Client;
@@ -26,7 +26,7 @@ public class KrakenarClientException : ErrorException
       Error? error = ProblemDetails?.Error;
       if (error is null)
       {
-        error = new Error("KrakenarClient", ErrorMessage);
+        error = new Error(this.GetErrorCode(), ErrorMessage);
         error.Data[nameof(Result)] = Result;
         error.Data[nameof(ProblemDetails)] = ProblemDetails;
       }
@@ -40,12 +40,8 @@ public class KrakenarClientException : ErrorException
     ProblemDetails = problemDetails;
   }
 
-  private static string BuildMessage(ApiResult result, ProblemDetails? problemDetails)
-  {
-    StringBuilder message = new();
-    message.AppendLine(ErrorMessage);
-    message.Append(nameof(Result)).Append(": ").AppendLine(JsonSerializer.Serialize(result));
-    message.Append(nameof(ProblemDetails)).Append(": ").AppendLine(problemDetails is null ? "<null>" : JsonSerializer.Serialize(problemDetails));
-    return message.ToString();
-  }
+  private static string BuildMessage(ApiResult result, ProblemDetails? problemDetails) => new ErrorMessageBuilder(ErrorMessage)
+    .AddData(nameof(Result), JsonSerializer.Serialize(result))
+    .AddData(nameof(ProblemDetails), problemDetails is null ? "<null>" : JsonSerializer.Serialize(problemDetails))
+    .Build();
 }

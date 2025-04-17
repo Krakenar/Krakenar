@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Localization;
+﻿using Krakenar.Contracts;
+using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Search;
 using System.Net;
 
@@ -62,7 +63,7 @@ public class LanguageClient : BaseClient, ILanguageService
 
     if (languages.Count > 1)
     {
-      throw new NotImplementedException(); // TODO(fpion): implement
+      throw TooManyResultsException<Language>.ExpectedSingle(languages.Count);
     }
 
     return languages.SingleOrDefault().Value;

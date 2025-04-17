@@ -69,7 +69,7 @@ public class UserClient : BaseClient, IUserService
 
     if (users.Count > 1)
     {
-      throw new NotImplementedException(); // TODO(fpion): implement
+      throw TooManyResultsException<User>.ExpectedSingle(users.Count);
     }
 
     return users.SingleOrDefault().Value;

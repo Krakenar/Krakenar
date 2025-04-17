@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Realms;
+﻿using Krakenar.Contracts;
+using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Search;
 using System.Net;
 
@@ -46,7 +47,7 @@ public class RealmClient : BaseClient, IRealmService
 
     if (realms.Count > 1)
     {
-      throw new NotImplementedException(); // TODO(fpion): implement
+      throw TooManyResultsException<Realm>.ExpectedSingle(realms.Count);
     }
 
     return realms.SingleOrDefault().Value;

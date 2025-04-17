@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Krakenar.Contracts;
 using Krakenar.Contracts.Users;
 using Moq;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
