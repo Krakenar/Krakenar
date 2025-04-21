@@ -19,7 +19,7 @@ const account = useAccountStore();
 const apiBaseUrl: string = import.meta.env.VITE_APP_API_BASE_URL ?? "";
 const environment = import.meta.env.MODE.toLowerCase();
 const i18n = useI18nStore();
-const isOpenApiEnabled: boolean = parseBoolean(import.meta.env.VITE_APP_ENABLE_OPENAPI) ?? false;
+const isSwaggerEnabled: boolean = parseBoolean(import.meta.env.VITE_APP_ENABLE_SWAGGER) ?? false;
 const { availableLocales, locale, t } = useI18n();
 
 const otherLocales = computed<Locale[]>(() => {
@@ -29,7 +29,7 @@ const otherLocales = computed<Locale[]>(() => {
     "nativeName",
   );
 });
-const scalarUrl = computed<string | undefined>(() => (isOpenApiEnabled ? combineURL(apiBaseUrl, "/scalar/v1") : undefined));
+const swaggerUrl = computed<string | undefined>(() => (isSwaggerEnabled ? combineURL(apiBaseUrl, "/swagger") : undefined));
 const user = computed<CurrentUser | undefined>(() => account.currentUser);
 
 watchEffect(() => {
@@ -66,28 +66,28 @@ watchEffect(() => {
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li v-if="scalarUrl" class="nav-item">
-            <a class="nav-link" :href="scalarUrl" target="_blank"> <font-awesome-icon icon="fas fa-vial" /> Scalar</a>
+          <li v-if="swaggerUrl" class="nav-item">
+            <a class="nav-link" :href="swaggerUrl" target="_blank"> <font-awesome-icon icon="fas fa-vial" /> Swagger</a>
           </li>
           <template v-if="user">
-            <li class="nav-item">
+            <!--<li class="nav-item">
               <RouterLink :to="{ name: 'Configuration' }" class="nav-link"><font-awesome-icon icon="fas fa-gear" /> {{ t("configuration.title") }}</RouterLink>
-            </li>
-            <li class="nav-item">
+            </li>-->
+            <!--<li class="nav-item">
               <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><font-awesome-icon icon="fas fa-chess-rook" /> {{ t("realms.list") }}</RouterLink>
-            </li>
-            <li class="nav-item">
+            </li>-->
+            <!--<li class="nav-item">
               <RouterLink :to="{ name: 'RoleList' }" class="nav-link"><font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.list") }}</RouterLink>
-            </li>
-            <li class="nav-item">
+            </li>-->
+            <!--<li class="nav-item">
               <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.list") }}</RouterLink>
-            </li>
-            <li class="nav-item">
+            </li>-->
+            <!--<li class="nav-item">
               <RouterLink :to="{ name: 'Tokens' }" class="nav-link"> <font-awesome-icon icon="fas fa-id-card" /> {{ t("tokens.title") }} </RouterLink>
-            </li>
-            <li class="nav-item">
+            </li>-->
+            <!--<li class="nav-item">
               <RouterLink :to="{ name: 'LanguageList' }" class="nav-link"><font-awesome-icon icon="fas fa-language" /> {{ t("languages.list") }}</RouterLink>
-            </li>
+            </li>-->
           </template>
         </ul>
 
@@ -106,12 +106,12 @@ watchEffect(() => {
             </li>
           </template>
           <template v-if="user">
-            <li class="nav-item d-block d-lg-none">
+            <!--<li class="nav-item d-block d-lg-none">
               <RouterLink class="nav-link" :to="{ name: 'Profile' }">
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
                 {{ user.displayName }}
               </RouterLink>
-            </li>
+            </li>-->
             <li class="nav-item d-block d-lg-none">
               <RouterLink class="nav-link" :to="{ name: 'SignOut' }">
                 <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut") }}
@@ -122,9 +122,9 @@ watchEffect(() => {
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li>
+                <!--<li>
                   <RouterLink class="dropdown-item" :to="{ name: 'Profile' }"><font-awesome-icon icon="fas fa-user" /> {{ user.displayName }}</RouterLink>
-                </li>
+                </li>-->
                 <li>
                   <RouterLink class="dropdown-item" :to="{ name: 'SignOut' }">
                     <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut") }}

@@ -5,7 +5,7 @@ import { provide } from "vue";
 
 import AppFooter from "./components/layout/AppFooter.vue";
 import AppNavbar from "./components/layout/AppNavbar.vue";
-import type { ApiError } from "./types/api";
+import type { ApiFailure } from "./types/api";
 import { handleErrorKey } from "./inject/App";
 import { useAccountStore } from "./stores/account";
 import { useToastStore } from "./stores/toast";
@@ -17,7 +17,7 @@ const toasts = useToastStore();
 
 function handleError(e: unknown): void {
   if (e) {
-    const { status } = e as ApiError;
+    const { status } = e as ApiFailure;
     if (status === 401) {
       account.signOut();
       toasts.warning("toasts.warning.signedOut");

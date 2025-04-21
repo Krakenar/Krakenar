@@ -26,6 +26,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.5",
+    "logitar-validation": "^1.0.0",
     "logitar-vue3-ui": "^3.1.0",
     "pinia": "^3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",

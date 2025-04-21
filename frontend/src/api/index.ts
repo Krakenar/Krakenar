@@ -1,6 +1,6 @@
 import { stringUtils } from "logitar-js";
 
-import type { ApiError, ApiResult, ApiVersion } from "@/types/api";
+import type { ApiFailure, ApiResult, ApiVersion } from "@/types/api";
 
 const apiBaseUrl: string = import.meta.env.VITE_APP_API_BASE_URL ?? "";
 const contentType: string = "Content-Type";
@@ -30,7 +30,7 @@ async function execute<TData, TResult>(method: string, url: string, data?: TData
   }
 
   if (!response.ok) {
-    const error: ApiError = { data: result, status: response.status };
+    const error: ApiFailure = { data: result, status: response.status };
     throw error;
   }
 
