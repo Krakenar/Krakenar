@@ -10,7 +10,6 @@ withDefaults(
     id?: string;
     label?: string;
     modelValue?: string;
-    placeholder?: string;
     required?: boolean | string;
   }>(),
   {
@@ -28,12 +27,5 @@ defineEmits<{
 </script>
 
 <template>
-  <AppInput
-    :id="id"
-    :label="t(label)"
-    :model-value="modelValue"
-    :placeholder="t(placeholder ?? label)"
-    :required="required"
-    @update:model-value="$emit('update:model-value', $event)"
-  />
+  <AppInput :id="id" :label="t(label)" :model-value="modelValue" :required="required" @update:model-value="$emit('update:model-value', $event)" />
 </template>

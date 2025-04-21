@@ -12,7 +12,6 @@ withDefaults(
     id?: string;
     label?: string;
     modelValue?: string;
-    placeholder?: string;
     required?: boolean | string;
     type?: InputType;
   }>(),
@@ -43,7 +42,6 @@ defineExpose({ focus });
     :id="id"
     :label="t(label)"
     :model-value="modelValue"
-    :placeholder="t(placeholder ?? label)"
     ref="inputRef"
     :required="required"
     :type="type"
