@@ -1,0 +1,40 @@
+name: Build Krakenar Frontend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./frontend
+
+jobs:
+  build:
+    name: Build Krakenar Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Install dependencies
+        run: npm clean-install
+
+      - name: Build for Production
+        run: npm run build
+
+      - name: Run Tests & Coverage
+        run: npm run test
