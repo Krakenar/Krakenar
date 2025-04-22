@@ -30,6 +30,17 @@ const router = createRouter({
       path: "/configuration",
       component: () => import("./views/ConfigurationEdit.vue"),
     },
+    // Realms
+    {
+      name: "RealmList",
+      path: "/realms",
+      component: () => import("./views/realms/RealmList.vue"),
+    },
+    {
+      name: "RealmEdit",
+      path: "/realms/:id",
+      component: () => import("./views/realms/RealmEdit.vue"),
+    },
     // NotFound
     {
       name: "NotFound",

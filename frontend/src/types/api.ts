@@ -19,6 +19,15 @@ export type ApiVersion = {
   version: string;
 };
 
+export enum ErrorCodes {
+  IncorrectUserPassword = "IncorrectUserPassword",
+  InvalidCredentials = "InvalidCredentials",
+  UniqueSlugAlreadyUsed = "UniqueSlugAlreadyUsed",
+  UserHasNoPassword = "UserHasNoPassword",
+  UserIsDisabled = "UserIsDisabled",
+  UserNotFound = "UserNotFound",
+}
+
 export type ProblemDetails = {
   type?: string | null;
   title?: string | null;
@@ -27,3 +36,9 @@ export type ProblemDetails = {
   instance?: string | null;
   error?: ApiError | null;
 };
+
+export enum StatusCodes {
+  BadRequest = 400,
+  Conflict = 409,
+  NotFound = 404,
+}
