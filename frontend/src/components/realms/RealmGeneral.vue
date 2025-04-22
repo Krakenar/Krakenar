@@ -7,7 +7,7 @@ import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import UniqueSlugAlreadyUsed from "./UniqueSlugAlreadyUsed.vue";
 import UniqueSlugInput from "./UniqueSlugInput.vue";
-// TODO(fpion): import UrlInput from "@/components/shared/UrlInput.vue";
+import UrlInput from "@/components/shared/UrlInput.vue";
 import type { Realm, UpdateRealmPayload } from "@/types/realms";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { isError } from "@/helpers/error";
@@ -63,6 +63,7 @@ watch(
     displayName.value = realm.displayName ?? "";
     uniqueSlug.value = realm.uniqueSlug;
     description.value = realm.description ?? "";
+    url.value = realm.url ?? "";
   },
   { deep: true, immediate: true },
 );
@@ -76,18 +77,11 @@ watch(
         <DisplayNameInput class="col" v-model="displayName" />
         <UniqueSlugInput class="col" :name-value="displayName" required v-model="uniqueSlug" />
       </div>
-      <!-- TODO(fpion): <UrlInput
-        described-by="url-help"
-        :go-text="t('actions.go')"
-        id="url"
-        :label="t('realms.url.label')"
-        :placeholder="t('realms.url.label')"
-        v-model="url"
-      >
+      <UrlInput described-by="url-help" id="url" :label="t('realms.url.label')" v-model="url">
         <template #after>
           <div id="url-help" class="form-text">{{ t("realms.url.help") }}</div>
         </template>
-      </UrlInput>-->
+      </UrlInput>
       <DescriptionTextarea v-model="description" />
       <div class="mb-3">
         <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :text="t('actions.save')" type="submit" />
