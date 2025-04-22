@@ -52,7 +52,7 @@ public record PasswordSettings : IPasswordSettings
     RequireLowercase = requireLowercase;
     RequireUppercase = requireUppercase;
     RequireDigit = requireDigit;
-    HashingStrategy = hashingStrategy;
+    HashingStrategy = hashingStrategy.Trim();
     new PasswordSettingsValidator().ValidateAndThrow(this);
   }
 }
