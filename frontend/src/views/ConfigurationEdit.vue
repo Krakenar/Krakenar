@@ -4,6 +4,7 @@ import { inject, onMounted, ref } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
+import LoggingSettingsEdit from "@/components/settings/LoggingSettingsEdit.vue";
 import PasswordSettingsEdit from "@/components/settings/PasswordSettingsEdit.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UniqueNameSettingsEdit from "@/components/settings/UniqueNameSettingsEdit.vue";
@@ -34,6 +35,7 @@ const uniqueNameSettings = ref<UniqueNameSettings>({});
 
 function setModel(model: Configuration): void {
   configuration.value = model;
+  loggingSettings.value = { ...model.loggingSettings };
   passwordSettings.value = { ...model.passwordSettings };
   uniqueNameSettings.value = { allowedCharacters: model.uniqueNameSettings.allowedCharacters ?? undefined };
 }
@@ -74,11 +76,11 @@ onMounted(async () => {
   <main class="container">
     <template v-if="configuration">
       <h1>{{ t("configuration.title") }}</h1>
-      <p>{{ configuration }}</p>
       <StatusDetail :aggregate="configuration" />
       <form @submit.prevent="submit">
         <UniqueNameSettingsEdit v-model="uniqueNameSettings" />
         <PasswordSettingsEdit v-model="passwordSettings" />
+        <LoggingSettingsEdit v-model="loggingSettings" />
         <div class="mb-3">
           <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :text="t('actions.save')" type="submit" />
         </div>

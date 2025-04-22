@@ -14,10 +14,10 @@ const emit = defineEmits<{
   (e: "update:model-value", value: UniqueNameSettings): void;
 }>();
 
-const onAllowedCharactersUpdated = (allowedCharacters: string) => {
+function onAllowedCharactersUpdated(allowedCharacters: string): void {
   const modelValue: UniqueNameSettings = { ...props.modelValue, allowedCharacters };
   emit("update:model-value", modelValue);
-};
+}
 </script>
 
 <template>

@@ -1,4 +1,22 @@
 {
+  "logging": {
+    "extent": {
+      "help": {
+        "ActivityOnly": "Seulement les requêtes menant à une activité seront journalisées.",
+        "Full": "Toutes les requêtes seront journalisées.",
+        "None": "Aucune requête ne sera journalisée."
+      },
+      "label": "Étendue",
+      "options": {
+        "ActivityOnly": "Activités seulement",
+        "Full": "Complète",
+        "None": "Aucune"
+      },
+      "placeholder": "Sélectionner l’étendue de la journalisation"
+    },
+    "onlyErrors": "Erreurs seulement",
+    "title": "Journalisation"
+  },
   "password": {
     "requireDigit": "Exiger un chiffre (0-9)",
     "requireLowercase": "Exiger une minuscule (a-z)",
@@ -28,7 +46,7 @@
       "label": "Exiger un compte confirmé"
     },
     "requireUniqueEmail": {
-      "help": "Lorsque activé, l’unicité des adresses courriel sera appliquée lors de la création ou de la modification d’un utilisateur.",
+      "help": "Lorsque activé, l’unicité des adresses courriel sera vérifiée lors de la création ou de la modification d’un utilisateur.",
       "label": "Exiger une adresse courriel unique"
     },
     "title": "Utilisateurs"

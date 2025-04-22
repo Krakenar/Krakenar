@@ -1,4 +1,22 @@
 {
+  "logging": {
+    "extent": {
+      "help": {
+        "ActivityOnly": "Only requests leading to an activity will be logged.",
+        "Full": "All requests will be logged.",
+        "None": "No request will be logged."
+      },
+      "label": "Extent",
+      "options": {
+        "ActivityOnly": "Only activities",
+        "Full": "Full",
+        "None": "None"
+      },
+      "placeholder": "Select the extent of logging"
+    },
+    "onlyErrors": "Only errors",
+    "title": "Logging"
+  },
   "password": {
     "requireDigit": "Require digit (0-9)",
     "requireLowercase": "Require lowercase (a-z)",
