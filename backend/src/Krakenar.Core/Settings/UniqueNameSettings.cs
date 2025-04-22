@@ -19,7 +19,7 @@ public record UniqueNameSettings : IUniqueNameSettings
   [JsonConstructor]
   public UniqueNameSettings(string? allowedCharacters)
   {
-    AllowedCharacters = allowedCharacters;
+    AllowedCharacters = string.IsNullOrWhiteSpace(allowedCharacters) ? null : new string([.. allowedCharacters.Distinct()]);
     new UniqueNameSettingsValidator().ValidateAndThrow(this);
   }
 }
