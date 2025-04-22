@@ -31,9 +31,24 @@ defineEmits<{
 
 <template>
   <AppInput :max="max" :model-value="modelValue" :type="type" @update:model-value="$emit('update:model-value', $event)">
+    <template #before>
+      <slot name="before"></slot>
+    </template>
+    <template #prepend>
+      <slot name="prepend"></slot>
+    </template>
+    <template #label-override>
+      <slot name="label-override"></slot>
+    </template>
+    <template #label-required>
+      <slot name="label-required"></slot>
+    </template>
     <template #append>
       <slot name="append"></slot>
       <TarButton :disabled="isNullOrWhiteSpace(modelValue)" icon="fas fa-arrow-up-right-from-square" :text="t('actions.go')" variant="info" @click="go" />
+    </template>
+    <template #after>
+      <slot name="after"></slot>
     </template>
   </AppInput>
 </template>

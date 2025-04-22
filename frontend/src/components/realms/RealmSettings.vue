@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { TarButton, TarCheckbox } from "logitar-vue3-ui";
 import { ref, watch } from "vue";
+import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
 import PasswordSettingsEdit from "@/components/settings/PasswordSettingsEdit.vue";
 import UniqueNameSettingsEdit from "@/components/settings/UniqueNameSettingsEdit.vue";
 import type { PasswordSettings, UniqueNameSettings } from "@/types/settings";
 import type { Realm, UpdateRealmPayload } from "@/types/realms";
+import { arePasswordEqual, areUniqueNameEqual } from "@/helpers/settings";
 import { updateRealm } from "@/api/realms";
 
+const { isNullOrWhiteSpace } = stringUtils;
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -29,14 +32,6 @@ const requireConfirmedAccount = ref<boolean>(true);
 const requireUniqueEmail = ref<boolean>(true);
 const uniqueNameSettings = ref<UniqueNameSettings>({});
 
-function areUniqueNameEqual(a: any, b: any): boolean {
-  return true;
-} // TODO(fpion): implement
-
-function arePasswordEqual(a: any, b: any): boolean {
-  return true;
-} // TODO(fpion): implement
-
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
   (e: "updated", value: Realm): void;
@@ -47,8 +42,14 @@ async function submit(): Promise<void> {
     isLoading.value = true;
     try {
       const payload: UpdateRealmPayload = {
-        uniqueNameSettings: areUniqueNameEqual(props.realm.uniqueNameSettings, uniqueNameSettings.value) ? undefined : uniqueNameSettings.value,
-        passwordSettings: arePasswordEqual(props.realm.passwordSettings, passwordSettings.value) ? undefined : passwordSettings.value,
+        uniqueNameSettings: !areUniqueNameEqual(props.realm.uniqueNameSettings, uniqueNameSettings.value)
+          ? {
+              allowedCharacters: isNullOrWhiteSpace(uniqueNameSettings.value.allowedCharacters ?? undefined)
+                ? null
+                : uniqueNameSettings.value.allowedCharacters,
+            }
+          : undefined,
+        passwordSettings: !arePasswordEqual(props.realm.passwordSettings, passwordSettings.value) ? passwordSettings.value : undefined,
         requireUniqueEmail: props.realm.requireUniqueEmail !== requireUniqueEmail.value ? requireUniqueEmail.value : undefined,
         requireConfirmedAccount: props.realm.requireConfirmedAccount !== requireConfirmedAccount.value ? requireConfirmedAccount.value : undefined,
         customAttributes: [],
