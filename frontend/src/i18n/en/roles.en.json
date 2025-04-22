@@ -1,0 +1,15 @@
+{
+  "create": "New Role",
+  "created": "The role has been created.",
+  "empty": "This list is empty.",
+  "sort": {
+    "options": {
+      "CreatedOn": "Created on",
+      "DisplayName": "Display Name",
+      "UniqueName": "Unique Name",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": "Roles",
+  "updated": "The role has been updated."
+}
