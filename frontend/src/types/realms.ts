@@ -39,7 +39,7 @@ export type SearchRealmsPayload = SearchPayload & {
 };
 
 export type UpdateRealmPayload = {
-  uniqueSlug?: string;
+  uniqueSlug?: string | null;
   displayName?: Change<string> | null;
   description?: Change<string> | null;
   url?: Change<string> | null;

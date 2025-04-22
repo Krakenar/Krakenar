@@ -14,8 +14,8 @@ import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
-const { t } = useI18n();
 const toasts = useToastStore();
+const { t } = useI18n();
 
 const realm = ref<Realm>();
 

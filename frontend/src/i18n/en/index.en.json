@@ -64,5 +64,12 @@
       "signedOut": "You have been signed-out, please try sign-in to your account again.",
       "title": "Warning!"
     }
+  },
+  "uniqueName": {
+    "alreadyUsed": {
+      "help": "Please enter a different unique name.",
+      "lead": "The unique name is already used."
+    },
+    "label": "Unique Name"
   }
 }

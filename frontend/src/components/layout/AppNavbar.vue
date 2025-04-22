@@ -76,9 +76,9 @@ watchEffect(() => {
             <li class="nav-item">
               <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><font-awesome-icon icon="fas fa-chess-rook" /> {{ t("realms.title") }}</RouterLink>
             </li>
-            <!--<li class="nav-item">
-              <RouterLink :to="{ name: 'RoleList' }" class="nav-link"><font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.list") }}</RouterLink>
-            </li>-->
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'RoleList' }" class="nav-link"><font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.title") }}</RouterLink>
+            </li>
             <!--<li class="nav-item">
               <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.list") }}</RouterLink>
             </li>-->

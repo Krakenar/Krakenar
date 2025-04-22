@@ -1,0 +1,15 @@
+{
+  "create": "Nouveau rôle",
+  "created": "Le rôle a été créé.",
+  "empty": "Cette liste est vide.",
+  "sort": {
+    "options": {
+      "CreatedOn": "Date de création",
+      "DisplayName": "Nom d’affichage",
+      "UniqueName": "Nom unique",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Roles",
+  "updated": "Le rôle a été enregistré."
+}

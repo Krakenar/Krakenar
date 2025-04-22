@@ -16,6 +16,7 @@ import {
   faRotate,
   faSave,
   faUser,
+  faUsersGear,
   faVial,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -33,6 +34,7 @@ library.add(
   faRotate,
   faSave,
   faUser,
+  faUsersGear,
   faVial,
 );
 

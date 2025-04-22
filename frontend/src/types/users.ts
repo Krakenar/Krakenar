@@ -10,7 +10,7 @@ export type Address = Contact & {
   street: string;
   locality: string;
   postalCode?: string | null;
-  region?: string;
+  region?: string | null;
   country: string;
   formatted: string;
 };
