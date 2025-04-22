@@ -1,0 +1,27 @@
+{
+  "create": "Nouveau royaume",
+  "created": "Le royaume a été créé.",
+  "empty": "Cette liste est vide.",
+  "sort": {
+    "options": {
+      "CreatedOn": "Date de création",
+      "DisplayName": "Nom d’affichage",
+      "UniqueSlug": "Alias unique",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Royaumes",
+  "uniqueSlug": {
+    "alreadyUsed": {
+      "help": "Veuillez entrer un autre alias unique.",
+      "lead": "L’alias unique est déjà utilisé."
+    },
+    "custom": "Personnalisé",
+    "label": "Alias unique"
+  },
+  "updated": "Le royaume a été enregistré.",
+  "url": {
+    "help": "L’URL de l’application cliente du royaume. Elle est utilisée comme audience des jetons (JWT) générés dans ce royaume. L’alias unique est utilisé lorsque aucune URL n’est spécifiée.",
+    "label": "URL"
+  }
+}

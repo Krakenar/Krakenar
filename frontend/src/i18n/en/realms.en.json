@@ -1,0 +1,27 @@
+{
+  "create": "New Realm",
+  "created": "The realm has been created.",
+  "empty": "This list is empty.",
+  "sort": {
+    "options": {
+      "CreatedOn": "Created on",
+      "DisplayName": "Display Name",
+      "UniqueSlug": "Unique Slug",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": "Realms",
+  "uniqueSlug": {
+    "alreadyUsed": {
+      "help": "Please enter a different unique slug.",
+      "lead": "The unique slug is already used."
+    },
+    "custom": "Custom",
+    "label": "Unique Slug"
+  },
+  "updated": "The realm has been updated.",
+  "url": {
+    "help": "The URL of the client application. It is used as the audience of tokens (JWT) generated within this realm. The unique slug is used when no URL is specified.",
+    "label": "URL"
+  }
+}

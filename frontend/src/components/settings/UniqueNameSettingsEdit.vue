@@ -27,7 +27,7 @@ function onAllowedCharactersUpdated(allowedCharacters: string): void {
       described-by="allowed-characters-help"
       id="allowed-characters"
       :label="t('settings.uniqueName.allowedCharacters.label')"
-      :max="255"
+      max="255"
       :model-value="modelValue.allowedCharacters ?? ''"
       @update:model-value="onAllowedCharactersUpdated"
     >

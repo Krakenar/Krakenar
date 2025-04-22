@@ -1,15 +1,52 @@
 {
   "actions": {
+    "cancel": "Cancel",
     "close": "Close",
+    "create": "Create",
+    "go": "Go",
+    "refresh": "Refresh",
     "save": "Save"
   },
   "brand": "Krakenar",
+  "by": "By",
   "copyright": "© Krakenar {version} {year}.",
+  "count": "Count",
+  "customAttributes": {
+    "key": "Key",
+    "label": "Custom Attributes",
+    "value": "Value"
+  },
+  "description": "Description",
+  "displayName": "Display Name",
+  "general": "General",
   "loading": "Loading…",
+  "locale": {
+    "alreadyUsed": {
+      "help": "Please select another locale.",
+      "lead": "The locale is already used."
+    },
+    "label": "Locale",
+    "placeholder": "Select a locale"
+  },
   "notFound": {
     "help": "The requested page could not be found.",
     "lead": "Page Not Found",
     "link": "Go to Home"
+  },
+  "pagination": {
+    "first": "First",
+    "label": "Pagination",
+    "last": "Last",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "search": "Search",
+  "sort": {
+    "isDescending": "Is descending",
+    "select": {
+      "label": "Sort",
+      "placeholder": "Select a sort"
+    }
   },
   "status": {
     "createdOn": "Created on {date} by",

@@ -1,15 +1,52 @@
 {
   "actions": {
+    "cancel": "Annuler",
     "close": "Fermer",
+    "create": "Créer",
+    "go": "Aller",
+    "refresh": "Rafraîchir",
     "save": "Enregistrer"
   },
   "brand": "Krakenar",
+  "by": "Par",
   "copyright": "© Krakenar {version} {year}.",
+  "count": "Nombre de résultats",
+  "customAttributes": {
+    "key": "Clé",
+    "label": "Attributs personnalisés",
+    "value": "Valeur"
+  },
+  "description": "Description",
+  "displayName": "Nom d’affichage",
+  "general": "Général",
   "loading": "Chargement…",
+  "locale": {
+    "alreadyUsed": {
+      "help": "Veuillez sélectionner une autre langue.",
+      "lead": "La langue existe déjà."
+    },
+    "label": "Langue",
+    "placeholder": "Sélectionnez une langue"
+  },
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",
     "lead": "Page introuvable",
     "link": "Aller à l’accueil"
+  },
+  "pagination": {
+    "first": "Première page",
+    "label": "Pagination",
+    "last": "Dernière page",
+    "next": "Prochaine page",
+    "previous": "Page précédente"
+  },
+  "search": "Recherche",
+  "sort": {
+    "isDescending": "Descendant",
+    "select": {
+      "label": "Tri",
+      "placeholder": "Sélectionnez un tri"
+    }
   },
   "status": {
     "createdOn": "Création le {date} par",

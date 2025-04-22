@@ -10,8 +10,8 @@ public record UpdateRealmPayload
 
   public Change<string>? Url { get; set; }
 
-  public UniqueNameSettings? UniqueNameSettings { get; set; } = new();
-  public PasswordSettings? PasswordSettings { get; set; } = new();
+  public UniqueNameSettings? UniqueNameSettings { get; set; }
+  public PasswordSettings? PasswordSettings { get; set; }
   public bool? RequireUniqueEmail { get; set; }
   public bool? RequireConfirmedAccount { get; set; }
 
