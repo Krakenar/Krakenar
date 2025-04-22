@@ -24,6 +24,12 @@ const router = createRouter({
       path: "/sign-out",
       component: () => import("./views/account/SignOutView.vue"),
     },
+    // Configuration
+    {
+      name: "Configuration",
+      path: "/configuration",
+      component: () => import("./views/ConfigurationEdit.vue"),
+    },
     // NotFound
     {
       name: "NotFound",

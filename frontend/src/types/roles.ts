@@ -5,7 +5,7 @@ import type { Realm } from "./realms";
 export type Role = Aggregate & {
   realm?: Realm;
   uniqueName: string;
-  displayName?: string;
-  description?: string;
+  displayName?: string | null;
+  description?: string | null;
   customAttributes: CustomAttribute[];
 };

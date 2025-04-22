@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Logitar.Security.Cryptography;
 using UniqueNameSettingsDto = Krakenar.Contracts.Settings.UniqueNameSettings;
 
 namespace Krakenar.Core.Settings;
@@ -20,21 +19,40 @@ public class UniqueNameSettingsTests
     Assert.Equal(instance.AllowedCharacters, settings.AllowedCharacters);
   }
 
-  [Fact(DisplayName = "It should construct the correct instance from arguments.")]
-  public void Given_Arguments_When_ctor_Then_Constructed()
+  [Theory(DisplayName = "It should construct the correct instance from arguments.")]
+  [InlineData(null)]
+  [InlineData("")]
+  [InlineData("  ")]
+  [InlineData("012345067890")]
+  [InlineData("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+")]
+  public void Given_Arguments_When_ctor_Then_Constructed(string? allowedCharacters)
   {
-    UniqueNameSettings settings = new();
-    Assert.Equal("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+", settings.AllowedCharacters);
+    UniqueNameSettings settings = new(allowedCharacters);
 
-    string allowedCharacters = "0123456789";
-    settings = new(allowedCharacters);
-    Assert.Equal(allowedCharacters, settings.AllowedCharacters);
+    if (string.IsNullOrWhiteSpace(allowedCharacters))
+    {
+      Assert.Null(settings.AllowedCharacters);
+    }
+    else
+    {
+      Assert.Equal(new string([.. new HashSet<char>(allowedCharacters)]), settings.AllowedCharacters);
+    }
   }
 
   [Fact(DisplayName = "It should throw ValidationException when the arguments are not valid.")]
   public void Given_Invalid_When_ctor_Then_ValidationException()
   {
-    var exception = Assert.Throws<ValidationException>(() => new UniqueNameSettings(RandomStringGenerator.GetString(999)));
+    StringBuilder characters = new(capacity: 256);
+    HashSet<int> skip = [127, 129, 141, 143, 144, 157];
+    for (int i = 32; i <= 300; i++)
+    {
+      if (!skip.Contains(i))
+      {
+        characters.Append((char)i);
+      }
+    }
+
+    var exception = Assert.Throws<ValidationException>(() => new UniqueNameSettings(characters.ToString()));
     Assert.Single(exception.Errors);
     Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "AllowedCharacters");
   }

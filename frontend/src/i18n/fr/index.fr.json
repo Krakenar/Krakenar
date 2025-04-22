@@ -1,8 +1,9 @@
 {
   "actions": {
-    "close": "Fermer"
+    "close": "Fermer",
+    "save": "Enregistrer"
   },
-  "brand": "Kraken",
+  "brand": "Krakenar",
   "copyright": "© Krakenar {version} {year}.",
   "loading": "Chargement…",
   "notFound": {
@@ -10,6 +11,12 @@
     "lead": "Page introuvable",
     "link": "Aller à l’accueil"
   },
+  "status": {
+    "createdOn": "Création le {date} par",
+    "revision": " (révision {revision})",
+    "updatedOn": "Dernière modification le {date} par"
+  },
+  "system": "Système",
   "toasts": {
     "error": {
       "message": "Une erreur inattendue s’est produite. Veuillez réessayer plus tard ou contacter notre équipe de support.",

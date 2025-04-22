@@ -4,9 +4,9 @@ import type { PasswordSettings, UniqueNameSettings } from "./settings";
 
 export type Realm = Aggregate & {
   uniqueSlug: string;
-  displayName?: string;
-  description?: string;
-  url?: string;
+  displayName?: string | null;
+  description?: string | null;
+  url?: string | null;
   uniqueNameSettings: UniqueNameSettings;
   passwordSettings: PasswordSettings;
   requireUniqueEmail: boolean;

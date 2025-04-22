@@ -70,9 +70,9 @@ watchEffect(() => {
             <a class="nav-link" :href="swaggerUrl" target="_blank"> <font-awesome-icon icon="fas fa-vial" /> Swagger</a>
           </li>
           <template v-if="user">
-            <!--<li class="nav-item">
+            <li class="nav-item">
               <RouterLink :to="{ name: 'Configuration' }" class="nav-link"><font-awesome-icon icon="fas fa-gear" /> {{ t("configuration.title") }}</RouterLink>
-            </li>-->
+            </li>
             <!--<li class="nav-item">
               <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><font-awesome-icon icon="fas fa-chess-rook" /> {{ t("realms.list") }}</RouterLink>
             </li>-->
