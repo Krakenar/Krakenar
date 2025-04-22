@@ -1,0 +1,22 @@
+{
+  "create": "New Language",
+  "created": "The language has been created.",
+  "default": {
+    "label": "Default",
+    "set": "The language has been set default."
+  },
+  "empty": "This list is empty.",
+  "otherNames": "Other Names",
+  "sort": {
+    "options": {
+      "Code": "Code",
+      "CreatedOn": "Created on",
+      "DisplayName": "Display Name",
+      "EnglishName": "English Name",
+      "NativeName": "Native Name",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": "Languages",
+  "updated": "The language has been updated."
+}

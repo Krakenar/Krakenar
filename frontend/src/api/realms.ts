@@ -6,9 +6,9 @@ import { get, patch, post, put } from ".";
 
 function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
   if (id) {
-    return new urlUtils.UrlBuilder({ path: `/api/realms/${id}` }).setParameter("id", id);
+    return new urlUtils.UrlBuilder({ path: "/api/realms/{id}" }).setParameter("id", id);
   }
-  return new urlUtils.UrlBuilder({ path: `/api/realms` });
+  return new urlUtils.UrlBuilder({ path: "/api/realms" });
 }
 
 export async function createRealm(payload: CreateOrReplaceRealmPayload): Promise<Realm> {
