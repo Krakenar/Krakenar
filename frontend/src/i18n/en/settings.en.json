@@ -1,0 +1,36 @@
+{
+  "password": {
+    "requireDigit": "Require digit (0-9)",
+    "requireLowercase": "Require lowercase (a-z)",
+    "requireNonAlphanumeric": "Require non alphanumeric (ex.: ! / $ % ? & * _ +)",
+    "requireUppercase": "Require uppercase (A-Z)",
+    "requiredLength": {
+      "help": "The minimum length of a password, in number of characters.",
+      "label": "Required Length"
+    },
+    "requiredUniqueChars": {
+      "help": "The minimum number of different characters in a password.",
+      "label": "Required Unique Characters"
+    },
+    "title": "Passwords"
+  },
+  "title": "Settings",
+  "uniqueName": {
+    "allowedCharacters": {
+      "help": "The allowed characters in unique names (users, roles, field types and contents).",
+      "label": "Allowed Characters"
+    },
+    "title": "Unique Names"
+  },
+  "users": {
+    "requireConfirmedAccount": {
+      "help": "When enabled, users need a confirmed account (any verified contact) to sign-in.",
+      "label": "Require confirmed account"
+    },
+    "requireUniqueEmail": {
+      "help": "When enabled, user email address uniqueness will be enforced when creating or updating an user.",
+      "label": "Require unique email address"
+    },
+    "title": "Users"
+  }
+}

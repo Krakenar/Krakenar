@@ -20,10 +20,10 @@ export type ApiVersion = {
 };
 
 export type ProblemDetails = {
-  type?: string;
-  title?: string;
-  status?: number;
-  detail?: string;
-  instance?: string;
-  error?: ApiError;
+  type?: string | null;
+  title?: string | null;
+  status?: number | null;
+  detail?: string | null;
+  instance?: string | null;
+  error?: ApiError | null;
 };

@@ -1,3 +1,10 @@
+export type LoggingExtent = "None" | "ActivityOnly" | "Full";
+
+export type LoggingSettings = {
+  extent: LoggingExtent;
+  onlyErrors: boolean;
+};
+
 export type PasswordSettings = {
   requiredLength: number;
   requiredUniqueChars: number;
@@ -9,5 +16,5 @@ export type PasswordSettings = {
 };
 
 export type UniqueNameSettings = {
-  allowedCharacters?: string;
+  allowedCharacters?: string | null;
 };

@@ -1,0 +1,36 @@
+{
+  "password": {
+    "requireDigit": "Exiger un chiffre (0-9)",
+    "requireLowercase": "Exiger une minuscule (a-z)",
+    "requireNonAlphanumeric": "Exiger un caractère spécial (ex.: ! / $ % ? & * _ +)",
+    "requireUppercase": "Exiger une majuscule (A-Z)",
+    "requiredLength": {
+      "help": "La longueur maximale d’un mot de passe, en nombre de caractères.",
+      "label": "Nombre de caractères minimal"
+    },
+    "requiredUniqueChars": {
+      "help": "Le nombre minimal de caractères différents dans un mot de passe.",
+      "label": "Nombre de caractères uniques"
+    },
+    "title": "Mots de passe"
+  },
+  "title": "Paramètres",
+  "uniqueName": {
+    "allowedCharacters": {
+      "help": "Les caractères permis dans les noms uniques (utilisateurs, rôles, types de champs et contenus).",
+      "label": "Caractères permis"
+    },
+    "title": "Noms uniques"
+  },
+  "users": {
+    "requireConfirmedAccount": {
+      "help": "Lorsque activé, les comptes utilisateurs doivent être confirmés (n’importe quel contact vérifié) afin de s’y connecter.",
+      "label": "Exiger un compte confirmé"
+    },
+    "requireUniqueEmail": {
+      "help": "Lorsque activé, l’unicité des adresses courriel sera appliquée lors de la création ou de la modification d’un utilisateur.",
+      "label": "Exiger une adresse courriel unique"
+    },
+    "title": "Utilisateurs"
+  }
+}

@@ -9,7 +9,7 @@ import type { Session } from "./sessions";
 export type Address = Contact & {
   street: string;
   locality: string;
-  postalCode?: string;
+  postalCode?: string | null;
   region?: string;
   country: string;
   formatted: string;
@@ -17,8 +17,8 @@ export type Address = Contact & {
 
 export type Contact = {
   isVerified: boolean;
-  verifiedBy?: Actor;
-  verifiedOn?: string;
+  verifiedBy?: Actor | null;
+  verifiedOn?: string | null;
 };
 
 export type Email = Contact & {
@@ -26,38 +26,38 @@ export type Email = Contact & {
 };
 
 export type Phone = Contact & {
-  countryCode?: string;
+  countryCode?: string | null;
   number: string;
-  extension?: string;
+  extension?: string | null;
   e164Formatted: string;
 };
 
 export type User = Aggregate & {
-  realm?: Realm;
+  realm?: Realm | null;
   uniqueName: string;
   hasPassword: boolean;
-  passwordChangedBy?: Actor;
-  passwordChangedOn?: string;
-  disabledBy?: Actor;
-  disabledOn?: string;
+  passwordChangedBy?: Actor | null;
+  passwordChangedOn?: string | null;
+  disabledBy?: Actor | null;
+  disabledOn?: string | null;
   isDisabled: boolean;
-  address?: Address;
-  email?: Email;
-  phone?: Phone;
+  address?: Address | null;
+  email?: Email | null;
+  phone?: Phone | null;
   isConfirmed: boolean;
-  firstName?: string;
-  middleName?: string;
-  lastName?: string;
-  fullName?: string;
-  nickname?: string;
-  birthdate?: string;
-  gender?: string;
-  locale?: Locale;
-  timeZone?: string;
-  picture?: string;
-  profile?: string;
-  website?: string;
-  authenticatedOn?: string;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
+  fullName?: string | null;
+  nickname?: string | null;
+  birthdate?: string | null;
+  gender?: string | null;
+  locale?: Locale | null;
+  timeZone?: string | null;
+  picture?: string | null;
+  profile?: string | null;
+  website?: string | null;
+  authenticatedOn?: string | null;
   customAttributes: CustomAttribute[];
   customIdentifiers: CustomIdentifier[];
   roles: Role[];

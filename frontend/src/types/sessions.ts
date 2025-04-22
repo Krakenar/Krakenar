@@ -6,9 +6,9 @@ import type { User } from "./users";
 export type Session = Aggregate & {
   user: User;
   isPersistent: boolean;
-  refreshToken?: string;
+  refreshToken?: string | null;
   isActive: boolean;
-  signedOutBy?: Actor;
-  signedOutOn?: string;
+  signedOutBy?: Actor | null;
+  signedOutOn?: string | null;
   customAttributes: CustomAttribute[];
 };
