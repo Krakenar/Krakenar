@@ -35,25 +35,25 @@ async function submit(): Promise<void> {
   if (!isLoading.value) {
     isLoading.value = true;
     uniqueSlugAlreadyUsed.value = false;
-  try {
-    const payload: UpdateRealmPayload = {
-      uniqueSlug: props.realm.uniqueSlug !== uniqueSlug.value ? uniqueSlug.value : undefined,
-      displayName: (props.realm.displayName ?? "") !== displayName.value ? { value: displayName.value } : undefined,
-      description: (props.realm.description ?? "") !== description.value ? { value: description.value } : undefined,
-      url: (props.realm.url ?? "") !== url.value ? { value: url.value } : undefined,
-      customAttributes: [],
-    };
-    const realm: Realm = await updateRealm(props.realm.id, payload);
-    emit("updated", realm);
-  } catch (e: unknown) {
-    if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueSlugAlreadyUsed)) {
-      uniqueSlugAlreadyUsed.value = true;
-    } else {
-      emit("error", e);
+    try {
+      const payload: UpdateRealmPayload = {
+        uniqueSlug: props.realm.uniqueSlug !== uniqueSlug.value ? uniqueSlug.value : undefined,
+        displayName: (props.realm.displayName ?? "") !== displayName.value ? { value: displayName.value } : undefined,
+        description: (props.realm.description ?? "") !== description.value ? { value: description.value } : undefined,
+        url: (props.realm.url ?? "") !== url.value ? { value: url.value } : undefined,
+        customAttributes: [],
+      };
+      const realm: Realm = await updateRealm(props.realm.id, payload);
+      emit("updated", realm);
+    } catch (e: unknown) {
+      if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueSlugAlreadyUsed)) {
+        uniqueSlugAlreadyUsed.value = true;
+      } else {
+        emit("error", e);
+      }
+    } finally {
+      isLoading.value = false;
     }
-  } finally {
-    isLoading.value = false
-  }
   }
 }
 
@@ -90,8 +90,8 @@ watch(
       </UrlInput>-->
       <DescriptionTextarea v-model="description" />
       <div class="mb-3">
-      <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :text="t('actions.save')" type="submit" />
-    </div>
+        <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :text="t('actions.save')" type="submit" />
+      </div>
     </form>
   </div>
 </template>
