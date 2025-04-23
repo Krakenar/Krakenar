@@ -28,6 +28,7 @@
     "label": "Langue",
     "placeholder": "Sélectionnez une langue"
   },
+  "no": "Non",
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",
     "lead": "Page introuvable",
@@ -40,6 +41,7 @@
     "next": "Prochaine page",
     "previous": "Page précédente"
   },
+  "placeholder": "Sélectionnez une option",
   "search": "Recherche",
   "sort": {
     "isDescending": "Descendant",
@@ -71,5 +73,6 @@
       "lead": "Le nom unique est déjà utilisé."
     },
     "label": "Nom unique"
-  }
+  },
+  "yes": "Oui"
 }

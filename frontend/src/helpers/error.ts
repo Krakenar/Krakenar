@@ -3,7 +3,7 @@ import { ErrorCodes, StatusCodes, type ApiFailure, type ProblemDetails } from "@
 export function isError(e: unknown, statusCode?: StatusCodes, errorCode?: ErrorCodes): boolean {
   try {
     const failure = e as ApiFailure;
-    const details = failure.data as ProblemDetails;
+    const details = failure?.data as ProblemDetails;
     if (!details || !details.error) {
       return false;
     }

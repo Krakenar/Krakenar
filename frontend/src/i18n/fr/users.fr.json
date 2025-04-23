@@ -2,6 +2,10 @@
   "password": {
     "label": "Mot de passe"
   },
+  "select": {
+    "label": "Utilisateur",
+    "placeholder": "Sélectionnez un utilisateur"
+  },
   "signIn": {
     "invalidCredentials": {
       "help": "Veuillez vérifier que vous avez bien entré votre nom d’utilisateur et mot de passe.",

@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
+import { nanoid } from "nanoid";
 
+import type { Actor } from "@/types/actor";
 import type { Locale } from "@/types/i18n";
-import { formatLocale } from "../format";
+import type { User } from "@/types/users";
+import { formatLocale, formatUser } from "../format";
 
 describe("formatLocale", () => {
   it.concurrent("should format the locale (with region) correctly", () => {
@@ -24,5 +27,56 @@ describe("formatLocale", () => {
       nativeName: "English",
     };
     expect(formatLocale(locale)).toBe("English (en)");
+  });
+});
+
+const actor: Actor = {
+  type: "User",
+  id: nanoid(),
+  isDeleted: false,
+  displayName: "Administrator",
+};
+const now: string = new Date().toISOString();
+
+describe("formatUser", () => {
+  it.concurrent("should format the user with full name correctly", () => {
+    const user: User = {
+      id: actor.id,
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "admin",
+      hasPassword: false,
+      isDisabled: false,
+      isConfirmed: false,
+      fullName: actor.displayName,
+      customAttributes: [],
+      customIdentifiers: [],
+      roles: [],
+      sessions: [],
+    };
+    expect(formatUser(user)).toBe("Administrator (admin)");
+  });
+
+  it.concurrent("should format the user without full name correctly", () => {
+    const user: User = {
+      id: actor.id,
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "admin",
+      hasPassword: false,
+      isDisabled: false,
+      isConfirmed: false,
+      customAttributes: [],
+      customIdentifiers: [],
+      roles: [],
+      sessions: [],
+    };
+    expect(formatUser(user)).toBe("admin");
   });
 });

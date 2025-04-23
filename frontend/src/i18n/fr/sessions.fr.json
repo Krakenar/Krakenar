@@ -1,0 +1,13 @@
+{
+  "active": "Active",
+  "empty": "Cette liste est vide.",
+  "persistent": "Persistante",
+  "sort": {
+    "options": {
+      "CreatedOn": "Date de création",
+      "SignedOutOn": "Date de déconnexion",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Sessions"
+}

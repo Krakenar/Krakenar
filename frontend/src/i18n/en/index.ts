@@ -3,6 +3,7 @@ import index from "./index.en.json";
 import languages from "./languages.en.json";
 import realms from "./realms.en.json";
 import roles from "./roles.en.json";
+import sessions from "./sessions.en.json";
 import settings from "./settings.en.json";
 import users from "./users.en.json";
 
@@ -12,6 +13,7 @@ export default {
   languages,
   realms,
   roles,
+  sessions,
   settings,
   users,
 };

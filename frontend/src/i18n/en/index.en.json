@@ -33,6 +33,8 @@
     "lead": "Page Not Found",
     "link": "Go to Home"
   },
+  "no": "No",
+  "placeholder": "Select an option",
   "pagination": {
     "first": "First",
     "label": "Pagination",
@@ -71,5 +73,6 @@
       "lead": "The unique name is already used."
     },
     "label": "Unique Name"
-  }
+  },
+  "yes": "Yes"
 }

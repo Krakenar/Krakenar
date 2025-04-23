@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
+import { TarAvatar, type AvatarOptions, TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -8,47 +8,50 @@ import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import CreateLanguage from "@/components/languages/CreateLanguage.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
-import type { Language, LanguageSort, SearchLanguagesPayload } from "@/types/languages";
+import UserSelect from "@/components/users/UserSelect.vue";
+import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { SearchResults } from "@/types/search";
-import { formatLocale } from "@/helpers/format";
+import type { Session, SessionSort, SearchSessionsPayload } from "@/types/sessions";
 import { handleErrorKey } from "@/inject/App";
-import { searchLanguages } from "@/api/languages";
-import { useToastStore } from "@/stores/toast";
+import { searchSessions } from "@/api/sessions";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
-const toasts = useToastStore();
 const { isEmpty } = objectUtils;
 const { orderBy } = arrayUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
-const { rt, t, tm } = useI18n();
+const { d, rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
-const languages = ref<Language[]>([]);
+const sessions = ref<Session[]>([]);
 const timestamp = ref<number>(0);
 const total = ref<number>(0);
 
 const count = computed<number>(() => parseNumber(route.query.count?.toString()) || 10);
+const isActive = computed<boolean | undefined>(() => parseBoolean(route.query.active?.toString()));
 const isDescending = computed<boolean>(() => parseBoolean(route.query.isDescending?.toString()) ?? false);
+const isPersistent = computed<boolean | undefined>(() => parseBoolean(route.query.persistent?.toString()));
 const page = computed<number>(() => parseNumber(route.query.page?.toString()) || 1);
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
+const userId = computed<string>(() => route.query.user?.toString() ?? "");
 
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
-    Object.entries(tm(rt("languages.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    Object.entries(tm(rt("sessions.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
     "text",
   ),
 );
 
 async function refresh(): Promise<void> {
-  const payload: SearchLanguagesPayload = {
+  const payload: SearchSessionsPayload = {
     ids: [],
+    isActive: isActive.value,
+    isPersistent: isPersistent.value,
     search: {
       terms: search.value
         .split(" ")
@@ -56,7 +59,8 @@ async function refresh(): Promise<void> {
         .map((term) => ({ value: `%${term}%` })),
       operator: "And",
     },
-    sort: sort.value ? [{ field: sort.value as LanguageSort, isDescending: isDescending.value }] : [],
+    userId: userId.value,
+    sort: sort.value ? [{ field: sort.value as SessionSort, isDescending: isDescending.value }] : [],
     skip: (page.value - 1) * count.value,
     limit: count.value,
   };
@@ -64,9 +68,9 @@ async function refresh(): Promise<void> {
   const now = Date.now();
   timestamp.value = now;
   try {
-    const results: SearchResults<Language> = await searchLanguages(payload);
+    const results: SearchResults<Session> = await searchSessions(payload);
     if (now === timestamp.value) {
-      languages.value = results.items;
+      sessions.value = results.items;
       total.value = results.total;
     }
   } catch (e: unknown) {
@@ -81,7 +85,10 @@ async function refresh(): Promise<void> {
 function setQuery(key: string, value: string): void {
   const query = { ...route.query, [key]: value };
   switch (key) {
+    case "active":
+    case "persistent":
     case "search":
+    case "user":
     case "count":
       query.page = "1";
       break;
@@ -89,22 +96,20 @@ function setQuery(key: string, value: string): void {
   router.replace({ ...route, query });
 }
 
-function onCreated(language: Language) {
-  toasts.success("languages.created");
-  router.push({ name: "LanguageEdit", params: { id: language.id } });
-}
-
 watch(
   () => route,
   (route) => {
-    if (route.name === "LanguageList") {
+    if (route.name === "SessionList") {
       const { query } = route;
       if (!query.page || !query.count) {
         router.replace({
           ...route,
           query: isEmpty(query)
             ? {
+                active: "",
+                persistent: "",
                 search: "",
+                user: "",
                 sort: "UpdatedOn",
                 isDescending: "true",
                 page: 1,
@@ -127,18 +132,20 @@ watch(
 
 <template>
   <main class="container">
-    <h1>{{ t("languages.title") }}</h1>
+    <h1>{{ t("sessions.title") }}</h1>
     <div class="my-3">
-      <TarButton
-        class="me-1"
-        :disabled="isLoading"
-        icon="fas fa-rotate"
-        :loading="isLoading"
-        :status="t('loading')"
-        :text="t('actions.refresh')"
-        @click="refresh()"
+      <TarButton :disabled="isLoading" icon="fas fa-rotate" :loading="isLoading" :status="t('loading')" :text="t('actions.refresh')" @click="refresh()" />
+    </div>
+    <div class="row">
+      <UserSelect class="col" :model-value="userId" @error="handleError" @update:model-value="setQuery('user', $event)" />
+      <YesNoSelect class="col" id="active" label="sessions.active" :model-value="isActive" @update:model-value="setQuery('active', $event?.toString() ?? '')" />
+      <YesNoSelect
+        class="col"
+        id="persistent"
+        label="sessions.persistent"
+        :model-value="isPersistent"
+        @update:model-value="setQuery('persistent', $event?.toString() ?? '')"
       />
-      <CreateLanguage class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
@@ -152,37 +159,53 @@ watch(
       />
       <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
-    <template v-if="languages.length">
+    <template v-if="sessions.length">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">{{ t("locale.label") }}</th>
-            <th scope="col">{{ t("languages.otherNames") }}</th>
-            <th scope="col">{{ t("languages.sort.options.UpdatedOn") }}</th>
+            <th scope="col">{{ t("sessions.sort.options.CreatedOn") }}</th>
+            <th scope="col">{{ t("users.select.label") }}</th>
+            <th scope="col">{{ t("sessions.sort.options.SignedOutOn") }}</th>
+            <th scope="col">{{ t("sessions.sort.options.UpdatedOn") }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="language in languages" :key="language.id">
+          <tr v-for="session in sessions" :key="session.id">
             <td>
-              <RouterLink :to="{ name: 'LanguageEdit', params: { id: language.id } }">
-                <font-awesome-icon icon="fas fa-edit" /> {{ formatLocale(language.locale) }}
+              <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }">
+                <font-awesome-icon icon="fas fa-edit" /> {{ d(session.createdOn, "medium") }}
               </RouterLink>
-              <template v-if="language.isDefault">
+              <template v-if="session.isPersistent">
                 <br />
-                <TarBadge variant="info"><font-awesome-icon icon="fas fa-check" /> {{ t("languages.default.label") }}</TarBadge>
+                <TarBadge variant="info"><font-awesome-icon icon="fas fa-check" /> {{ t("sessions.persistent") }}</TarBadge>
               </template>
             </td>
             <td>
-              {{ language.locale.englishName }}
-              <br />
-              {{ language.locale.nativeName }}
+              <RouterLink :to="{ name: 'UserEdit', params: { id: session.user.id } }" target="_blank">
+                <TarAvatar
+                  :display-name="session.user.fullName ?? session.user.uniqueName"
+                  :email-address="session.user.email?.address"
+                  :url="session.user.picture"
+                />
+                {{ session.user.fullName ?? session.user.uniqueName }}
+                <template v-if="session.user.fullName">
+                  <br />
+                  {{ session.user.uniqueName }}
+                </template>
+              </RouterLink>
             </td>
-            <td><StatusBlock :actor="language.updatedBy" :date="language.updatedOn" /></td>
+            <td>
+              <StatusBlock v-if="session.signedOutBy && session.signedOutOn" :actor="session.signedOutBy" :date="session.signedOutOn" />
+              <TarBadge v-else variant="info"> <font-awesome-icon icon="fas fa-hourglass-half" /> {{ t("sessions.active") }} </TarBadge>
+            </td>
+            <td><StatusBlock :actor="session.updatedBy" :date="session.updatedOn" /></td>
           </tr>
         </tbody>
       </table>
       <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
     </template>
-    <p v-else>{{ t("languages.empty") }}</p>
+    <p v-else>{{ t("sessions.empty") }}</p>
   </main>
 </template>
+
+// isPersistent // isActive, signedOutBy, signedOutOn
