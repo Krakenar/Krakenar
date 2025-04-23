@@ -1,0 +1,22 @@
+{
+  "create": "Nouvelle langue",
+  "created": "La langue a été créée.",
+  "empty": "Cette liste est vide.",
+  "default": {
+    "label": "Par défaut",
+    "set": "La langue a été définie par défaut."
+  },
+  "otherNames": "Autres noms",
+  "sort": {
+    "options": {
+      "Code": "Code",
+      "CreatedOn": "Date de création",
+      "DisplayName": "Nom d’affichage",
+      "EnglishName": "Nom anglais",
+      "NativeName": "Nom natif",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Langues",
+  "updated": "La langue a été enregistrée."
+}

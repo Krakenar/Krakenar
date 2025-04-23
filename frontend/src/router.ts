@@ -30,6 +30,17 @@ const router = createRouter({
       path: "/configuration",
       component: () => import("./views/ConfigurationEdit.vue"),
     },
+    // Languages
+    {
+      name: "LanguageList",
+      path: "/languages",
+      component: () => import("./views/languages/LanguageList.vue"),
+    },
+    {
+      name: "LanguageEdit",
+      path: "/languages/:id",
+      component: () => import("./views/languages/LanguageEdit.vue"),
+    },
     // Realms
     {
       name: "RealmList",

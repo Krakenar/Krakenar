@@ -6,9 +6,9 @@ import { _delete, get, patch, post, put } from ".";
 
 function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
   if (id) {
-    return new urlUtils.UrlBuilder({ path: `/api/roles/${id}` }).setParameter("id", id);
+    return new urlUtils.UrlBuilder({ path: "/api/roles/{id}" }).setParameter("id", id);
   }
-  return new urlUtils.UrlBuilder({ path: `/api/roles` });
+  return new urlUtils.UrlBuilder({ path: "/api/roles" });
 }
 
 export async function createRole(payload: CreateOrReplaceRolePayload): Promise<Role> {
