@@ -1,5 +1,5 @@
 export type Locale = {
-  id: number; // TODO(fpion): named LCID in the backend
+  id: number;
   code: string;
   displayName: string;
   englishName: string;

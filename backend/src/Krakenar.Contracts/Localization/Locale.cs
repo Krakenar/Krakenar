@@ -2,7 +2,9 @@
 
 public record Locale
 {
+  [JsonPropertyName("id")]
   public int LCID { get; set; }
+
   public string Code { get; set; }
   public string DisplayName { get; set; }
   public string EnglishName { get; set; }

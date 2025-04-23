@@ -51,7 +51,6 @@ onMounted(async () => {
     <template v-if="role">
       <h1>{{ role.displayName ?? role.uniqueName }}</h1>
       <StatusDetail :aggregate="role" />
-      <!-- TODO(fpion): delete -->
       <TarTabs>
         <TarTab active id="general" :title="t('general')">
           <RoleGeneral :role="role" @error="handleError" @updated="onGeneralUpdated" />

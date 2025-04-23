@@ -3,6 +3,8 @@ import { TarButton, TarModal } from "logitar-vue3-ui";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import LocaleAlreadyUsed from "@/components/shared/LocaleAlreadyUsed.vue";
+import LocaleSelect from "@/components/shared/LocaleSelect.vue";
 import type { CreateOrReplaceLanguagePayload, Language } from "@/types/languages";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { createLanguage } from "@/api/languages";
@@ -63,9 +65,9 @@ async function submit(): Promise<void> {
   <span>
     <TarButton icon="fas fa-plus" :text="t('actions.create')" variant="success" data-bs-toggle="modal" data-bs-target="#create-language" />
     <TarModal :close="t('actions.close')" id="create-language" ref="modalRef" :title="t('languages.create')">
-      <!-- TODO(fpion): <LocaleAlreadyUsed v-model="localeAlreadyUsed" />-->
+      <LocaleAlreadyUsed v-model="localeAlreadyUsed" />
       <form @submit.prevent="submit">
-        <!-- TODO(fpion): LocaleSelect -->
+        <LocaleSelect required v-model="locale" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
