@@ -3,7 +3,7 @@ import { TarButton, TarModal } from "logitar-vue3-ui";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import LocaleAlreadyUsed from "@/components/shared/LocaleAlreadyUsed.vue";
+import LocaleAlreadyUsed from "./LocaleAlreadyUsed.vue";
 import LocaleSelect from "@/components/shared/LocaleSelect.vue";
 import type { CreateOrReplaceLanguagePayload, Language } from "@/types/languages";
 import { ErrorCodes, StatusCodes } from "@/types/api";

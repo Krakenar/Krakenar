@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 import DefaultButton from "@/components/languages/DefaultButton.vue";
-import LocaleAlreadyUsed from "@/components/shared/LocaleAlreadyUsed.vue";
+import LocaleAlreadyUsed from "@/components/languages/LocaleAlreadyUsed.vue";
 import LocaleSelect from "@/components/shared/LocaleSelect.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Language } from "@/types/languages";
