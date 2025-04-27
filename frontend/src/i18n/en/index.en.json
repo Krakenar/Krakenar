@@ -12,6 +12,7 @@
   "copyright": "© Krakenar {version} {year}.",
   "count": "Count",
   "customAttributes": {
+    "empty": "This list is empty.",
     "key": "Key",
     "label": "Custom Attributes",
     "value": "Value"
@@ -33,6 +34,8 @@
     "lead": "Page Not Found",
     "link": "Go to Home"
   },
+  "no": "No",
+  "placeholder": "Select an option",
   "pagination": {
     "first": "First",
     "label": "Pagination",
@@ -71,5 +74,6 @@
       "lead": "The unique name is already used."
     },
     "label": "Unique Name"
-  }
+  },
+  "yes": "Yes"
 }

@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 
 import type { CurrentUser } from "@/types/account";
 import { handleErrorKey } from "@/inject/App";
-import { signOut } from "@/api/sessions";
+import { signOutSession } from "@/api/sessions";
 import { useAccountStore } from "@/stores/account";
 
 const account = useAccountStore();
@@ -15,7 +15,7 @@ onMounted(async () => {
   const currentUser: CurrentUser | undefined = account.currentUser;
   if (currentUser) {
     try {
-      await signOut(currentUser.sessionId);
+      await signOutSession(currentUser.sessionId);
       account.signOut();
     } catch (e: unknown) {
       handleError(e);

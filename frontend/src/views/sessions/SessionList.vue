@@ -1,53 +1,59 @@
 <script setup lang="ts">
-import { TarButton, type SelectOption } from "logitar-vue3-ui";
+import { TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import ActiveBadge from "@/components/sessions/ActiveBadge.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import CreateRole from "@/components/roles/CreateRole.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
-import type { Role, RoleSort, SearchRolesPayload } from "@/types/roles";
+import UserAvatar from "@/views/users/UserAvatar.vue";
+import UserSelect from "@/components/users/UserSelect.vue";
+import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { SearchResults } from "@/types/search";
+import type { Session, SessionSort, SearchSessionsPayload } from "@/types/sessions";
 import { handleErrorKey } from "@/inject/App";
-import { searchRoles } from "@/api/roles";
-import { useToastStore } from "@/stores/toast";
+import { searchSessions } from "@/api/sessions";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
-const toasts = useToastStore();
 const { isEmpty } = objectUtils;
 const { orderBy } = arrayUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
-const { rt, t, tm } = useI18n();
+const { d, rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
-const roles = ref<Role[]>([]);
+const sessions = ref<Session[]>([]);
 const timestamp = ref<number>(0);
 const total = ref<number>(0);
 
 const count = computed<number>(() => parseNumber(route.query.count?.toString()) || 10);
+const isActive = computed<boolean | undefined>(() => parseBoolean(route.query.active?.toString()));
 const isDescending = computed<boolean>(() => parseBoolean(route.query.isDescending?.toString()) ?? false);
+const isPersistent = computed<boolean | undefined>(() => parseBoolean(route.query.persistent?.toString()));
 const page = computed<number>(() => parseNumber(route.query.page?.toString()) || 1);
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
+const userId = computed<string>(() => route.query.user?.toString() ?? "");
 
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
-    Object.entries(tm(rt("roles.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    Object.entries(tm(rt("sessions.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
     "text",
   ),
 );
 
 async function refresh(): Promise<void> {
-  const payload: SearchRolesPayload = {
+  const payload: SearchSessionsPayload = {
     ids: [],
+    isActive: isActive.value,
+    isPersistent: isPersistent.value,
     search: {
       terms: search.value
         .split(" ")
@@ -55,7 +61,8 @@ async function refresh(): Promise<void> {
         .map((term) => ({ value: `%${term}%` })),
       operator: "And",
     },
-    sort: sort.value ? [{ field: sort.value as RoleSort, isDescending: isDescending.value }] : [],
+    userId: userId.value,
+    sort: sort.value ? [{ field: sort.value as SessionSort, isDescending: isDescending.value }] : [],
     skip: (page.value - 1) * count.value,
     limit: count.value,
   };
@@ -63,9 +70,9 @@ async function refresh(): Promise<void> {
   const now = Date.now();
   timestamp.value = now;
   try {
-    const results: SearchResults<Role> = await searchRoles(payload);
+    const results: SearchResults<Session> = await searchSessions(payload);
     if (now === timestamp.value) {
-      roles.value = results.items;
+      sessions.value = results.items;
       total.value = results.total;
     }
   } catch (e: unknown) {
@@ -80,7 +87,10 @@ async function refresh(): Promise<void> {
 function setQuery(key: string, value: string): void {
   const query = { ...route.query, [key]: value };
   switch (key) {
+    case "active":
+    case "persistent":
     case "search":
+    case "user":
     case "count":
       query.page = "1";
       break;
@@ -88,22 +98,20 @@ function setQuery(key: string, value: string): void {
   router.replace({ ...route, query });
 }
 
-function onCreated(role: Role) {
-  toasts.success("roles.created");
-  router.push({ name: "RoleEdit", params: { id: role.id } });
-}
-
 watch(
   () => route,
   (route) => {
-    if (route.name === "RoleList") {
+    if (route.name === "SessionList") {
       const { query } = route;
       if (!query.page || !query.count) {
         router.replace({
           ...route,
           query: isEmpty(query)
             ? {
+                active: "",
+                persistent: "",
                 search: "",
+                user: "",
                 sort: "UpdatedOn",
                 isDescending: "true",
                 page: 1,
@@ -126,18 +134,20 @@ watch(
 
 <template>
   <main class="container">
-    <h1>{{ t("roles.title") }}</h1>
+    <h1>{{ t("sessions.title.list") }}</h1>
     <div class="my-3">
-      <TarButton
-        class="me-1"
-        :disabled="isLoading"
-        icon="fas fa-rotate"
-        :loading="isLoading"
-        :status="t('loading')"
-        :text="t('actions.refresh')"
-        @click="refresh()"
+      <TarButton :disabled="isLoading" icon="fas fa-rotate" :loading="isLoading" :status="t('loading')" :text="t('actions.refresh')" @click="refresh()" />
+    </div>
+    <div class="row">
+      <UserSelect class="col" :model-value="userId" @error="handleError" @update:model-value="setQuery('user', $event)" />
+      <YesNoSelect class="col" id="active" label="sessions.active" :model-value="isActive" @update:model-value="setQuery('active', $event?.toString() ?? '')" />
+      <YesNoSelect
+        class="col"
+        id="persistent"
+        label="sessions.persistent"
+        :model-value="isPersistent"
+        @update:model-value="setQuery('persistent', $event?.toString() ?? '')"
       />
-      <CreateRole class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
@@ -151,27 +161,42 @@ watch(
       />
       <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
-    <template v-if="roles.length">
+    <template v-if="sessions.length">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">{{ t("roles.sort.options.UniqueName") }}</th>
-            <th scope="col">{{ t("roles.sort.options.DisplayName") }}</th>
-            <th scope="col">{{ t("roles.sort.options.UpdatedOn") }}</th>
+            <th scope="col">{{ t("sessions.sort.options.CreatedOn") }}</th>
+            <th scope="col">{{ t("users.select.label") }}</th>
+            <th scope="col">{{ t("sessions.sort.options.SignedOutOn") }}</th>
+            <th scope="col">{{ t("sessions.sort.options.UpdatedOn") }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="role in roles" :key="role.id">
+          <tr v-for="session in sessions" :key="session.id">
             <td>
-              <RouterLink :to="{ name: 'RoleEdit', params: { id: role.id } }"> <font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }} </RouterLink>
+              <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }">
+                <font-awesome-icon icon="fas fa-edit" /> {{ d(session.createdOn, "medium") }}
+              </RouterLink>
+              <template v-if="session.isPersistent">
+                <br />
+                <TarBadge variant="info"><font-awesome-icon icon="fas fa-check" /> {{ t("sessions.persistent") }}</TarBadge>
+              </template>
             </td>
-            <td>{{ role.displayName ?? "—" }}</td>
-            <td><StatusBlock :actor="role.updatedBy" :date="role.updatedOn" /></td>
+            <td>
+              <UserAvatar :user="session.user" />
+            </td>
+            <td>
+              <StatusBlock v-if="session.signedOutBy && session.signedOutOn" :actor="session.signedOutBy" :date="session.signedOutOn" />
+              <ActiveBadge v-else />
+            </td>
+            <td><StatusBlock :actor="session.updatedBy" :date="session.updatedOn" /></td>
           </tr>
         </tbody>
       </table>
       <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
     </template>
-    <p v-else>{{ t("roles.empty") }}</p>
+    <p v-else>{{ t("sessions.empty") }}</p>
   </main>
 </template>
+
+// isPersistent // isActive, signedOutBy, signedOutOn

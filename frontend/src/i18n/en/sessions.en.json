@@ -1,0 +1,27 @@
+{
+  "active": "Active",
+  "additionalInformation": {
+    "empty": "No additional information to show",
+    "title": "Additional Information"
+  },
+  "empty": "This list is empty.",
+  "ipAddress": "IP Address",
+  "persistent": "Persistent",
+  "signOut": {
+    "confirm": "Do you really want to sign out the current session? You will be signed out of the application.",
+    "submit": "Sign out",
+    "title": "Sign out session"
+  },
+  "signedOut": "The session has been signed-out.",
+  "sort": {
+    "options": {
+      "CreatedOn": "Created on",
+      "SignedOutOn": "Signed-out on",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": {
+    "edit": "Session",
+    "list": "Sessions"
+  }
+}

@@ -4,6 +4,7 @@ import type { CustomAttribute, CustomIdentifier } from "./custom";
 import type { Locale } from "./i18n";
 import type { Realm } from "./realms";
 import type { Role } from "./roles";
+import type { SearchPayload, SortOption } from "./search";
 import type { Session } from "./sessions";
 
 export type Address = Contact & {
@@ -30,6 +31,15 @@ export type Phone = Contact & {
   number: string;
   extension?: string | null;
   e164Formatted: string;
+};
+
+export type SearchUsersPayload = SearchPayload & {
+  hasPassword?: boolean | null;
+  isDisabled?: boolean | null;
+  isConfirmed?: boolean | null;
+  hasAuthenticated?: boolean | null;
+  roleId?: string | null;
+  sort: UserSortOption[];
 };
 
 export type User = Aggregate & {
@@ -62,4 +72,24 @@ export type User = Aggregate & {
   customIdentifiers: CustomIdentifier[];
   roles: Role[];
   sessions: Session[];
+};
+
+export type UserSort =
+  | "AuthenticatedOn"
+  | "Birthdate"
+  | "CreatedOn"
+  | "DisabledOn"
+  | "EmailAddress"
+  | "FirstName"
+  | "FullName"
+  | "LastName"
+  | "MiddleName"
+  | "Nickname"
+  | "PasswordChangedOn"
+  | "PhoneNumber"
+  | "UniqueName"
+  | "UpdatedOn";
+
+export type UserSortOption = SortOption & {
+  field: UserSort;
 };

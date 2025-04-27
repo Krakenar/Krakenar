@@ -79,6 +79,11 @@ watchEffect(() => {
             <li class="nav-item">
               <RouterLink :to="{ name: 'RoleList' }" class="nav-link"><font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.title") }}</RouterLink>
             </li>
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'SessionList' }" class="nav-link"
+                ><font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}</RouterLink
+              >
+            </li>
             <!--<li class="nav-item">
               <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.list") }}</RouterLink>
             </li>-->
@@ -106,15 +111,15 @@ watchEffect(() => {
             </li>
           </template>
           <template v-if="user">
-            <!--<li class="nav-item d-block d-lg-none">
-              <RouterLink class="nav-link" :to="{ name: 'Profile' }">
+            <li class="nav-item d-block d-lg-none">
+              <RouterLink class="nav-link" :to="{ name: 'UserEdit', params: { id: user.id } }">
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
                 {{ user.displayName }}
               </RouterLink>
-            </li>-->
+            </li>
             <li class="nav-item d-block d-lg-none">
               <RouterLink class="nav-link" :to="{ name: 'SignOut' }">
-                <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut") }}
+                <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut.title.page") }}
               </RouterLink>
             </li>
             <li class="nav-item dropdown d-none d-lg-block">
@@ -122,12 +127,14 @@ watchEffect(() => {
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
-                <!--<li>
-                  <RouterLink class="dropdown-item" :to="{ name: 'Profile' }"><font-awesome-icon icon="fas fa-user" /> {{ user.displayName }}</RouterLink>
-                </li>-->
+                <li>
+                  <RouterLink class="dropdown-item" :to="{ name: 'UserEdit', params: { id: user.id } }">
+                    <font-awesome-icon icon="fas fa-user" /> {{ user.displayName }}
+                  </RouterLink>
+                </li>
                 <li>
                   <RouterLink class="dropdown-item" :to="{ name: 'SignOut' }">
-                    <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut") }}
+                    <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut.title.page") }}
                   </RouterLink>
                 </li>
               </ul>

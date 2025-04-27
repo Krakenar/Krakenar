@@ -63,6 +63,28 @@ const router = createRouter({
       path: "/roles/:id",
       component: () => import("./views/roles/RoleEdit.vue"),
     },
+    // Sessions
+    {
+      name: "SessionList",
+      path: "/sessions",
+      component: () => import("./views/sessions/SessionList.vue"),
+    },
+    {
+      name: "SessionEdit",
+      path: "/sessions/:id",
+      component: () => import("./views/sessions/SessionEdit.vue"),
+    },
+    // Users
+    {
+      name: "UserList",
+      path: "/users",
+      component: () => import("./views/users/UserList.vue"),
+    },
+    {
+      name: "UserEdit",
+      path: "/users/:id",
+      component: () => import("./views/users/UserEdit.vue"),
+    },
     // NotFound
     {
       name: "NotFound",

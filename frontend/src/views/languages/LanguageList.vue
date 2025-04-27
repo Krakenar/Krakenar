@@ -141,14 +141,14 @@ watch(
       <CreateLanguage class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
-      <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event ?? '')" />
+      <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
       <SortSelect
         class="col"
         :descending="isDescending"
         :model-value="sort"
         :options="sortOptions"
         @descending="setQuery('isDescending', $event.toString())"
-        @update:model-value="setQuery('sort', $event ?? '')"
+        @update:model-value="setQuery('sort', $event)"
       />
       <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>

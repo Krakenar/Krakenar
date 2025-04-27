@@ -7,6 +7,7 @@ import "./assets/styles/main.css";
 import App from "./App.vue";
 import fontAwesome from "./fontAwesome";
 import i18n from "./i18n";
+import jsonViewer from "./jsonViewer";
 import router from "./router";
 
 const app = createApp(App);
@@ -16,6 +17,7 @@ pinia.use(persistedState);
 
 app.use(fontAwesome);
 app.use(i18n);
+app.use(jsonViewer);
 app.use(pinia);
 app.use(router);
 

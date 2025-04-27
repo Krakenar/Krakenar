@@ -2,6 +2,10 @@
   "password": {
     "label": "Password"
   },
+  "select": {
+    "label": "User",
+    "placeholder": "Select a user"
+  },
   "signIn": {
     "invalidCredentials": {
       "help": "Please check you provided the correct email username and password.",
@@ -10,6 +14,19 @@
     "submit": "Sign in",
     "title": "Sign In"
   },
-  "signOut": "Sign Out",
+  "signOut": {
+    "confirm": "Do you really want to sign out this user?",
+    "other": {
+      "admin": "The user will be signed out of the application and any other device using this application.",
+      "realm": "The user will be signed out of any application using Krakenar."
+    },
+    "self": "You will be signed out of the application and any other device using this application.",
+    "submit": "Sign out user",
+    "success": "The user has been signed-out.",
+    "title": {
+      "modal": "Sign out user",
+      "page": "Sign Out"
+    }
+  },
   "username": "Username"
 }

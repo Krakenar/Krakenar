@@ -16,6 +16,7 @@ describe("isError", () => {
         status: StatusCodes.BadRequest,
       } as ProblemDetails,
     };
+    expect(isError(failure)).toBe(false);
   });
 
   it.concurrent("should return false when the status code does not match", () => {
