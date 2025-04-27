@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { RuleExecutionResult, ValidationResult, ValidationRuleSet } from "logitar-validation";
-import { TarInput, inputUtils, type InputOptions, type InputStatus } from "logitar-vue3-ui";
+import { TarTextarea, type TextareaOptions, type TextareaStatus } from "logitar-vue3-ui";
 import { computed, ref } from "vue";
 import { nanoid } from "nanoid";
 import { parsingUtils } from "logitar-js";
@@ -8,25 +8,30 @@ import { useI18n } from "vue-i18n";
 
 import validator, { isValidationFailure } from "@/validation";
 
-const { isDateTimeInput } = inputUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
-const props = withDefaults(defineProps<InputOptions>(), {
+const props = withDefaults(defineProps<TextareaOptions>(), {
   floating: true,
   id: () => nanoid(),
 });
 
 const errors = ref<RuleExecutionResult[]>([]);
-const inputRef = ref<InstanceType<typeof TarInput> | null>(null);
 const isValid = ref<boolean | undefined>();
+const textareaRef = ref<InstanceType<typeof TarTextarea> | null>(null);
 
 const feedbackId = computed<string>(() => `${props.id}-feedback`);
-const inputDescribedBy = computed<string>(() => [feedbackId.value, props.describedBy].filter((id) => typeof id === "string").join(" "));
-const inputMax = computed<number | string | undefined>(() => (isDateTimeInput(props.type) ? props.max : undefined));
-const inputMin = computed<number | string | undefined>(() => (isDateTimeInput(props.type) ? props.min : undefined));
-const inputRequired = computed<boolean | "label">(() => (parseBoolean(props.required) ? "label" : false));
-const inputStatus = computed<InputStatus | undefined>(() => {
+const rules = computed<ValidationRuleSet>(() => {
+  const rules: ValidationRuleSet = {
+    required: parseBoolean(props.required),
+    minimumLength: parseNumber(props.min),
+    maximumLength: parseNumber(props.max),
+  };
+  return rules;
+});
+const textareaDescribedBy = computed<string>(() => [feedbackId.value, props.describedBy].filter((id) => typeof id === "string").join(" "));
+const textareaRequired = computed<boolean | "label">(() => (parseBoolean(props.required) ? "label" : false));
+const textareaStatus = computed<TextareaStatus | undefined>(() => {
   if (props.status) {
     return props.status;
   }
@@ -38,15 +43,6 @@ const inputStatus = computed<InputStatus | undefined>(() => {
   }
   return undefined;
 });
-const rules = computed<ValidationRuleSet>(() => {
-  const rules: ValidationRuleSet = {
-    required: parseBoolean(props.required),
-    minimumLength: parseNumber(props.min),
-    maximumLength: parseNumber(props.max),
-    email: props.type === "email",
-  };
-  return rules;
-});
 
 const emit = defineEmits<{
   (e: "update:model-value", value: string): void;
@@ -54,7 +50,7 @@ const emit = defineEmits<{
 }>();
 
 function handleChange(e: Event, validate: boolean = true): void {
-  const value: string = (e.target as HTMLInputElement)?.value ?? "";
+  const value: string = (e.target as HTMLTextAreaElement)?.value ?? "";
   emit("update:model-value", value);
   if (validate) {
     const name: string = props.label?.toLowerCase() ?? props.name ?? props.id;
@@ -66,35 +62,33 @@ function handleChange(e: Event, validate: boolean = true): void {
 }
 
 function focus(): void {
-  inputRef.value?.focus();
+  textareaRef.value?.focus();
 }
 defineExpose({ focus });
 </script>
 
 <template>
-  <TarInput
+  <TarTextarea
     class="mb-3"
-    :described-by="inputDescribedBy"
+    :cols="cols"
+    :described-by="textareaDescribedBy"
     :disabled="disabled"
     :floating="floating"
     :id="id"
     :label="label"
-    :max="inputMax"
-    :min="inputMin"
     :model-value="modelValue"
     :name="name"
     :placeholder="placeholder ?? label"
     :plaintext="plaintext"
     :readonly="readonly"
-    ref="inputRef"
-    :required="inputRequired"
+    ref="textareaRef"
+    :required="textareaRequired"
+    :rows="rows"
     :size="size"
-    :status="inputStatus"
-    :step="step"
-    :type="type"
+    :status="textareaStatus"
     @blur="handleChange"
     @change="handleChange"
-    @input="handleChange($event, inputStatus === 'invalid')"
+    @input="handleChange($event, textareaStatus === 'invalid')"
   >
     <template #before>
       <slot name="before"></slot>
@@ -117,5 +111,5 @@ defineExpose({ focus });
       </div>
       <slot name="after"></slot>
     </template>
-  </TarInput>
+  </TarTextarea>
 </template>
