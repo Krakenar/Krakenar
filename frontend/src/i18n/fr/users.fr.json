@@ -14,6 +14,19 @@
     "submit": "Se connecter",
     "title": "Connexion"
   },
-  "signOut": "Déconnexion",
+  "signOut": {
+    "confirm": "Désirez-vous vraiment déconnecter l’utilisateur suivant ?",
+    "other": {
+      "admin": "L’utilisateur sera déconnecté de l’application et de tout appareil utilisant cette application.",
+      "realm": "L’utilisateur sera déconnecté de toute application utilisant Krakenar."
+    },
+    "self": "Vous serez déconnecté de l’application et de tout appareil utilisant cette application.",
+    "submit": "Déconnecter l’utilisateur",
+    "success": "L’utilisateur a été déconnecté.",
+    "title": {
+      "modal": "Déconnecter l’utilisateur",
+      "page": "Déconnexion"
+    }
+  },
   "username": "Nom d’utilisateur"
 }

@@ -1,7 +1,18 @@
 {
   "active": "Active",
+  "additionalInformation": {
+    "empty": "Aucune information additionnelle à afficher.",
+    "title": "Informations additionnelles"
+  },
   "empty": "Cette liste est vide.",
+  "ipAddress": "Adresse IP",
   "persistent": "Persistante",
+  "signOut": {
+    "confirm": "Désirez-vous vraiment déconnecter la session suivante ? Vous serez déconnecté de l’application.",
+    "submit": "Déconnecter",
+    "title": "Déconnecter une session"
+  },
+  "signedOut": "La session a été déconnectée.",
   "sort": {
     "options": {
       "CreatedOn": "Date de création",
@@ -9,5 +20,8 @@
       "UpdatedOn": "Dernière modification"
     }
   },
-  "title": "Sessions"
+  "title": {
+    "edit": "Session",
+    "list": "Sessions"
+  }
 }

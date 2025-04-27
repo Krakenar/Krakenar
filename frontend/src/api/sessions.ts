@@ -11,6 +11,11 @@ function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
   return new urlUtils.UrlBuilder({ path: "/api/sessions" });
 }
 
+export async function readSession(id: string): Promise<Session> {
+  const url: string = createUrlBuilder(id).buildRelative();
+  return (await get<Session>(url)).data;
+}
+
 export async function searchSessions(payload: SearchSessionsPayload): Promise<SearchResults<Session>> {
   const url: string = createUrlBuilder()
     .setQuery("active", payload.isActive?.toString() ?? "")

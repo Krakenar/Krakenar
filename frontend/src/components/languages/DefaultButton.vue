@@ -39,6 +39,7 @@ async function onClick(): Promise<void> {
     :disabled="language.isDefault"
     :icon="language.isDefault ? 'fas fa-check' : 'fas fa-star'"
     :loading="isLoading"
+    :status="t('loading')"
     :text="t('languages.default.label')"
     :variant="language.isDefault ? 'info' : 'warning'"
     @click="onClick"

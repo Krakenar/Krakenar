@@ -80,7 +80,9 @@ watchEffect(() => {
               <RouterLink :to="{ name: 'RoleList' }" class="nav-link"><font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.title") }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink :to="{ name: 'SessionList' }" class="nav-link"><font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title") }}</RouterLink>
+              <RouterLink :to="{ name: 'SessionList' }" class="nav-link"
+                ><font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}</RouterLink
+              >
             </li>
             <!--<li class="nav-item">
               <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.list") }}</RouterLink>
@@ -117,7 +119,7 @@ watchEffect(() => {
             </li>
             <li class="nav-item d-block d-lg-none">
               <RouterLink class="nav-link" :to="{ name: 'SignOut' }">
-                <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut") }}
+                <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut.title.page") }}
               </RouterLink>
             </li>
             <li class="nav-item dropdown d-none d-lg-block">
@@ -132,7 +134,7 @@ watchEffect(() => {
                 </li>
                 <li>
                   <RouterLink class="dropdown-item" :to="{ name: 'SignOut' }">
-                    <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut") }}
+                    <font-awesome-icon icon="fas fa-arrow-right-from-bracket" /> {{ t("users.signOut.title.page") }}
                   </RouterLink>
                 </li>
               </ul>

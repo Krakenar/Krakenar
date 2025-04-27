@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import { TarAvatar, type AvatarOptions, TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
+import { TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import ActiveBadge from "@/components/sessions/ActiveBadge.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
+import UserAvatar from "@/views/users/UserAvatar.vue";
 import UserSelect from "@/components/users/UserSelect.vue";
 import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { SearchResults } from "@/types/search";
@@ -132,7 +134,7 @@ watch(
 
 <template>
   <main class="container">
-    <h1>{{ t("sessions.title") }}</h1>
+    <h1>{{ t("sessions.title.list") }}</h1>
     <div class="my-3">
       <TarButton :disabled="isLoading" icon="fas fa-rotate" :loading="isLoading" :status="t('loading')" :text="t('actions.refresh')" @click="refresh()" />
     </div>
@@ -181,22 +183,11 @@ watch(
               </template>
             </td>
             <td>
-              <RouterLink :to="{ name: 'UserEdit', params: { id: session.user.id } }" target="_blank">
-                <TarAvatar
-                  :display-name="session.user.fullName ?? session.user.uniqueName"
-                  :email-address="session.user.email?.address"
-                  :url="session.user.picture"
-                />
-                {{ session.user.fullName ?? session.user.uniqueName }}
-                <template v-if="session.user.fullName">
-                  <br />
-                  {{ session.user.uniqueName }}
-                </template>
-              </RouterLink>
+              <UserAvatar :user="session.user" />
             </td>
             <td>
               <StatusBlock v-if="session.signedOutBy && session.signedOutOn" :actor="session.signedOutBy" :date="session.signedOutOn" />
-              <TarBadge v-else variant="info"> <font-awesome-icon icon="fas fa-hourglass-half" /> {{ t("sessions.active") }} </TarBadge>
+              <ActiveBadge v-else />
             </td>
             <td><StatusBlock :actor="session.updatedBy" :date="session.updatedOn" /></td>
           </tr>

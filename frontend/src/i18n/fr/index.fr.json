@@ -12,6 +12,7 @@
   "copyright": "© Krakenar {version} {year}.",
   "count": "Nombre de résultats",
   "customAttributes": {
+    "empty": "Cette liste est vide.",
     "key": "Clé",
     "label": "Attributs personnalisés",
     "value": "Valeur"

@@ -106,7 +106,7 @@ watch(
       </TarCheckbox>
     </div>
     <div class="mb-3">
-      <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :text="t('actions.save')" type="submit" />
+      <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :status="t('loading')" :text="t('actions.save')" type="submit" />
     </div>
   </form>
 </template>
