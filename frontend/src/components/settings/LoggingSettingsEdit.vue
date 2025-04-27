@@ -26,6 +26,8 @@ function onOnlyErrorsUpdated(onlyErrors: boolean): void {
   const modelValue: LoggingSettings = { ...props.modelValue, onlyErrors };
   emit("update:model-value", modelValue);
 }
+
+// TODO(fpion): help text for checkbox
 </script>
 
 <template>
