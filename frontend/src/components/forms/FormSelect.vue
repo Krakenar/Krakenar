@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import type { RuleExecutionResult, ValidationResult, ValidationRuleSet } from "logitar-validation";
+import type { ValidationResult, ValidationRuleSet } from "logitar-validation";
 import { TarSelect, type SelectOptions, type SelectStatus } from "logitar-vue3-ui";
-import { computed, inject, onMounted, onUnmounted, ref } from "vue";
+import { computed, onUnmounted, ref } from "vue";
 import { nanoid } from "nanoid";
 import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
-import validator, { isValidationFailure } from "@/validation";
-import { bindFieldKey, unbindFieldKey, type FieldOptions } from "@/types/forms";
+import { useField } from "@/forms";
 
-const bindField: ((id: string, options: FieldOptions) => void) | undefined = inject(bindFieldKey);
-const unbindField: ((id: string) => void) | undefined = inject(unbindFieldKey);
 const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
@@ -26,9 +23,6 @@ const props = withDefaults(
   },
 );
 
-const errors = ref<RuleExecutionResult[]>([]);
-const initialValue = ref<string>(props.modelValue ?? "");
-const isValid = ref<boolean | undefined>();
 const selectRef = ref<InstanceType<typeof TarSelect> | null>(null);
 
 const feedbackId = computed<string>(() => `${props.id}-feedback`);
@@ -46,56 +40,30 @@ const selectStatus = computed<SelectStatus | undefined>(() => {
   }
   return undefined;
 });
-const validationRules = computed<ValidationRuleSet>(() => {
+
+defineEmits<{
+  (e: "update:model-value", value: string): void;
+  (e: "validated", value: ValidationResult): void;
+}>();
+
+const rules = computed<ValidationRuleSet>(() => {
   const rules: ValidationRuleSet = {
     required: parseBoolean(props.required),
   };
   return { ...rules, ...props.rules };
 });
-
-const emit = defineEmits<{
-  (e: "update:model-value", value: string): void;
-  (e: "validated", value: ValidationResult): void;
-}>();
-
-function handleChange(e: Event, shouldValidate: boolean = true): void {
-  const value: string = (e.target as HTMLSelectElement)?.value ?? "";
-  emit("update:model-value", value);
-  if (shouldValidate) {
-    validate(value);
-  }
-}
+const { errors, isValid, value, handleChange, unbindField } = useField(props.id, {
+  focus,
+  initialValue: props.modelValue,
+  name: props.label?.toLowerCase() ?? props.name,
+  rules,
+});
 
 function focus(): void {
   selectRef.value?.focus();
 }
-function reinitialize(): void {
-  errors.value = [];
-  initialValue.value = props.modelValue ?? "";
-  isValid.value = undefined;
-}
-function reset(): void {
-  errors.value = [];
-  isValid.value = undefined;
-  emit("update:model-value", initialValue.value);
-}
-function validate(value?: string): ValidationResult {
-  const name: string = props.label?.toLowerCase() ?? props.name ?? props.id;
-  value ??= props.modelValue;
-  const result: ValidationResult = validator.validate(name, value, validationRules.value);
-  isValid.value = result.isValid;
-  errors.value = Object.values(result.rules).filter(isValidationFailure);
-  emit("validated", result);
-  return result;
-}
-defineExpose({ focus, reinitialize, reset, validate });
+defineExpose({ focus });
 
-const fieldOptions: FieldOptions = { focus, reinitialize, reset, validate };
-onMounted(() => {
-  if (bindField) {
-    bindField(props.id, fieldOptions);
-  }
-});
 onUnmounted(() => {
   if (unbindField) {
     unbindField(props.id);
@@ -112,7 +80,7 @@ onUnmounted(() => {
     :floating="floating"
     :id="id"
     :label="label"
-    :model-value="modelValue"
+    :model-value="value"
     :multiple="multiple"
     :name="name"
     :options="options"

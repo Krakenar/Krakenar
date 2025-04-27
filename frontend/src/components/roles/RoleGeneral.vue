@@ -3,7 +3,6 @@ import { TarButton } from "logitar-vue3-ui";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-import AppForm from "@/components/forms/AppForm.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue";
@@ -14,6 +13,7 @@ import type { UniqueNameSettings } from "@/types/settings";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { isError } from "@/helpers/error";
 import { updateRole } from "@/api/roles";
+import { useForm } from "@/forms";
 
 const { t } = useI18n();
 
@@ -24,7 +24,6 @@ const props = defineProps<{
 
 const description = ref<string>("");
 const displayName = ref<string>("");
-const isLoading = ref<boolean>(false);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
 
@@ -35,7 +34,8 @@ const emit = defineEmits<{
   (e: "updated", value: Role): void;
 }>();
 
-async function submit(): Promise<void> {
+const { hasChanges, isSubmitting, handleSubmit } = useForm();
+async function onSubmit(): Promise<void> {
   uniqueNameAlreadyUsed.value = false;
   try {
     const payload: UpdateRolePayload = {
@@ -68,7 +68,7 @@ watch(
 
 <template>
   <div>
-    <AppForm :submit="submit" @loading="isLoading = $event">
+    <form @submit.prevent="handleSubmit(onSubmit)">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <div class="row">
         <UniqueNameInput class="col" :settings="uniqueNameSettings" v-model="uniqueName" />
@@ -76,8 +76,15 @@ watch(
       </div>
       <DescriptionTextarea v-model="description" />
       <div class="mb-3">
-        <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :status="t('loading')" :text="t('actions.save')" type="submit" />
+        <TarButton
+          :disabled="isSubmitting || !hasChanges"
+          icon="fas fa-save"
+          :loading="isSubmitting"
+          :status="t('loading')"
+          :text="t('actions.save')"
+          type="submit"
+        />
       </div>
-    </AppForm>
+    </form>
   </div>
 </template>
