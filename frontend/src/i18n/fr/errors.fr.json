@@ -1,4 +1,5 @@
 {
+  "allowedCharacters": "Le champs « {name} » ne peut contenir que les caractères suivants : {allowedCharacters}",
   "email": "Veuillez entrer une adresse courriel valide.",
   "maximumLength": "Le champs « {name} » ne peut contenir plus de {maximumLength} caractères.",
   "minimumLength": "Le champs « {name} » doit contenir au moins {minimumLength} caractères.",

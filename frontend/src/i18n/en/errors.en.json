@@ -1,4 +1,5 @@
 {
+  "allowedCharacters": "The {name} may only contain the following characters: {allowedCharacters}",
   "email": "Please enter a valid email address.",
   "maximumLength": "The {name} cannot contain more than {maximumLength} characters.",
   "minimumLength": "The {name} must contain at least {minimumLength} characters.",

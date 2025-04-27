@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { TarButton } from "logitar-vue3-ui";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
+import type { Configuration } from "@/types/configuration";
 import type { Role, UpdateRolePayload } from "@/types/roles";
 import type { UniqueNameSettings } from "@/types/settings";
 import { ErrorCodes, StatusCodes } from "@/types/api";
@@ -16,6 +17,7 @@ import { updateRole } from "@/api/roles";
 const { t } = useI18n();
 
 const props = defineProps<{
+  configuration?: Configuration;
   role: Role;
 }>();
 
@@ -24,7 +26,8 @@ const displayName = ref<string>("");
 const isLoading = ref<boolean>(false);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
-const uniqueNameSettings = ref<UniqueNameSettings>({}); // TODO(fpion): get from realm or configuration
+
+const uniqueNameSettings = computed<UniqueNameSettings | undefined>(() => props.role.realm?.uniqueNameSettings ?? props.configuration?.uniqueNameSettings);
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;

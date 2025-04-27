@@ -11,24 +11,23 @@ import validator, { isValidationFailure } from "@/validation";
 const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
-const props = withDefaults(defineProps<TextareaOptions>(), {
-  floating: true,
-  id: () => nanoid(),
-});
+const props = withDefaults(
+  defineProps<
+    TextareaOptions & {
+      rules?: ValidationRuleSet;
+    }
+  >(),
+  {
+    floating: true,
+    id: () => nanoid(),
+  },
+);
 
 const errors = ref<RuleExecutionResult[]>([]);
 const isValid = ref<boolean | undefined>();
 const textareaRef = ref<InstanceType<typeof TarTextarea> | null>(null);
 
 const feedbackId = computed<string>(() => `${props.id}-feedback`);
-const rules = computed<ValidationRuleSet>(() => {
-  const rules: ValidationRuleSet = {
-    required: parseBoolean(props.required),
-    minimumLength: parseNumber(props.min),
-    maximumLength: parseNumber(props.max),
-  };
-  return rules;
-});
 const textareaDescribedBy = computed<string>(() => [feedbackId.value, props.describedBy].filter((id) => typeof id === "string").join(" "));
 const textareaRequired = computed<boolean | "label">(() => (parseBoolean(props.required) ? "label" : false));
 const textareaStatus = computed<TextareaStatus | undefined>(() => {
@@ -43,6 +42,14 @@ const textareaStatus = computed<TextareaStatus | undefined>(() => {
   }
   return undefined;
 });
+const validationRules = computed<ValidationRuleSet>(() => {
+  const rules: ValidationRuleSet = {
+    required: parseBoolean(props.required),
+    minimumLength: parseNumber(props.min),
+    maximumLength: parseNumber(props.max),
+  };
+  return { ...rules, ...props.rules };
+});
 
 const emit = defineEmits<{
   (e: "update:model-value", value: string): void;
@@ -54,7 +61,7 @@ function handleChange(e: Event, validate: boolean = true): void {
   emit("update:model-value", value);
   if (validate) {
     const name: string = props.label?.toLowerCase() ?? props.name ?? props.id;
-    const result: ValidationResult = validator.validate(name, value, rules.value);
+    const result: ValidationResult = validator.validate(name, value, validationRules.value);
     isValid.value = result.isValid;
     errors.value = Object.values(result.rules).filter(isValidationFailure);
     emit("validated", result);

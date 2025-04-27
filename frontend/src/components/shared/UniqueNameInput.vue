@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
-import AppInput from "./AppInput.vue";
+import FormInput from "@/components/forms/FormInput.vue";
 import type { UniqueNameSettings } from "@/types/settings";
 
 const { t } = useI18n();
@@ -10,6 +10,7 @@ withDefaults(
   defineProps<{
     id?: string;
     label?: string;
+    max?: number | string;
     modelValue?: string;
     required?: boolean | string;
     settings?: UniqueNameSettings;
@@ -17,11 +18,10 @@ withDefaults(
   {
     id: "unique-name",
     label: "uniqueName.label",
+    max: 255,
     required: true,
   },
 );
-
-// TODO(fpion): validation when settings, max+allowed_characters
 
 defineEmits<{
   (e: "update:model-value", value: string): void;
@@ -29,5 +29,13 @@ defineEmits<{
 </script>
 
 <template>
-  <AppInput :id="id" :label="t(label)" :model-value="modelValue" :required="required" @update:model-value="$emit('update:model-value', $event)" />
+  <FormInput
+    :id="id"
+    :label="t(label)"
+    :max="max"
+    :model-value="modelValue"
+    :required="required"
+    :rules="{ allowedCharacters: settings?.allowedCharacters }"
+    @update:model-value="$emit('update:model-value', $event)"
+  />
 </template>

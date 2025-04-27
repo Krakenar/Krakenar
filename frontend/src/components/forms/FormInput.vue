@@ -12,10 +12,17 @@ const { isDateTimeInput } = inputUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
-const props = withDefaults(defineProps<InputOptions>(), {
-  floating: true,
-  id: () => nanoid(),
-});
+const props = withDefaults(
+  defineProps<
+    InputOptions & {
+      rules?: ValidationRuleSet;
+    }
+  >(),
+  {
+    floating: true,
+    id: () => nanoid(),
+  },
+);
 
 const errors = ref<RuleExecutionResult[]>([]);
 const inputRef = ref<InstanceType<typeof TarInput> | null>(null);
@@ -38,14 +45,14 @@ const inputStatus = computed<InputStatus | undefined>(() => {
   }
   return undefined;
 });
-const rules = computed<ValidationRuleSet>(() => {
+const validationRules = computed<ValidationRuleSet>(() => {
   const rules: ValidationRuleSet = {
     required: parseBoolean(props.required),
     minimumLength: parseNumber(props.min),
     maximumLength: parseNumber(props.max),
     email: props.type === "email",
   };
-  return rules;
+  return { ...rules, ...props.rules };
 });
 
 const emit = defineEmits<{
@@ -58,7 +65,7 @@ function handleChange(e: Event, validate: boolean = true): void {
   emit("update:model-value", value);
   if (validate) {
     const name: string = props.label?.toLowerCase() ?? props.name ?? props.id;
-    const result: ValidationResult = validator.validate(name, value, rules.value);
+    const result: ValidationResult = validator.validate(name, value, validationRules.value);
     isValid.value = result.isValid;
     errors.value = Object.values(result.rules).filter(isValidationFailure);
     emit("validated", result);
