@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { RuleExecutionResult, ValidationResult, ValidationRuleSet } from "logitar-validation";
 import { TarTextarea, type TextareaOptions, type TextareaStatus } from "logitar-vue3-ui";
-import { computed, ref } from "vue";
+import { computed, inject, onMounted, onUnmounted, ref } from "vue";
 import { nanoid } from "nanoid";
 import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
 import validator, { isValidationFailure } from "@/validation";
+import { bindFieldKey, unbindFieldKey, type FieldOptions } from "@/types/forms";
 
+const bindField: ((id: string, options: FieldOptions) => void) | undefined = inject(bindFieldKey);
+const unbindField: ((id: string) => void) | undefined = inject(unbindFieldKey);
 const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
@@ -24,6 +27,7 @@ const props = withDefaults(
 );
 
 const errors = ref<RuleExecutionResult[]>([]);
+const initialValue = ref<string>(props.modelValue ?? "");
 const isValid = ref<boolean | undefined>();
 const textareaRef = ref<InstanceType<typeof TarTextarea> | null>(null);
 
@@ -56,22 +60,49 @@ const emit = defineEmits<{
   (e: "validated", value: ValidationResult): void;
 }>();
 
-function handleChange(e: Event, validate: boolean = true): void {
+function handleChange(e: Event, shouldValidate: boolean = true): void {
   const value: string = (e.target as HTMLTextAreaElement)?.value ?? "";
   emit("update:model-value", value);
-  if (validate) {
-    const name: string = props.label?.toLowerCase() ?? props.name ?? props.id;
-    const result: ValidationResult = validator.validate(name, value, validationRules.value);
-    isValid.value = result.isValid;
-    errors.value = Object.values(result.rules).filter(isValidationFailure);
-    emit("validated", result);
+  if (shouldValidate) {
+    validate(value);
   }
 }
 
 function focus(): void {
   textareaRef.value?.focus();
 }
-defineExpose({ focus });
+function reinitialize(): void {
+  errors.value = [];
+  initialValue.value = props.modelValue ?? "";
+  isValid.value = undefined;
+}
+function reset(): void {
+  errors.value = [];
+  isValid.value = undefined;
+  emit("update:model-value", initialValue.value);
+}
+function validate(value?: string): ValidationResult {
+  const name: string = props.label?.toLowerCase() ?? props.name ?? props.id;
+  value ??= props.modelValue;
+  const result: ValidationResult = validator.validate(name, value, validationRules.value);
+  isValid.value = result.isValid;
+  errors.value = Object.values(result.rules).filter(isValidationFailure);
+  emit("validated", result);
+  return result;
+}
+defineExpose({ focus, reinitialize, reset, validate });
+
+const fieldOptions: FieldOptions = { focus, reinitialize, reset, validate };
+onMounted(() => {
+  if (bindField) {
+    bindField(props.id, fieldOptions);
+  }
+});
+onUnmounted(() => {
+  if (unbindField) {
+    unbindField(props.id);
+  }
+});
 </script>
 
 <template>

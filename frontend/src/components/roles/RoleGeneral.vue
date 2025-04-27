@@ -3,6 +3,7 @@ import { TarButton } from "logitar-vue3-ui";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AppForm from "@/components/forms/AppForm.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue";
@@ -35,26 +36,21 @@ const emit = defineEmits<{
 }>();
 
 async function submit(): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    uniqueNameAlreadyUsed.value = false;
-    try {
-      const payload: UpdateRolePayload = {
-        uniqueName: props.role.uniqueName !== uniqueName.value ? uniqueName.value : undefined,
-        displayName: (props.role.displayName ?? "") !== displayName.value ? { value: displayName.value } : undefined,
-        description: (props.role.description ?? "") !== description.value ? { value: description.value } : undefined,
-        customAttributes: [],
-      };
-      const role: Role = await updateRole(props.role.id, payload);
-      emit("updated", role);
-    } catch (e: unknown) {
-      if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueNameAlreadyUsed)) {
-        uniqueNameAlreadyUsed.value = true;
-      } else {
-        emit("error", e);
-      }
-    } finally {
-      isLoading.value = false;
+  uniqueNameAlreadyUsed.value = false;
+  try {
+    const payload: UpdateRolePayload = {
+      uniqueName: props.role.uniqueName !== uniqueName.value ? uniqueName.value : undefined,
+      displayName: (props.role.displayName ?? "") !== displayName.value ? { value: displayName.value } : undefined,
+      description: (props.role.description ?? "") !== description.value ? { value: description.value } : undefined,
+      customAttributes: [],
+    };
+    const role: Role = await updateRole(props.role.id, payload);
+    emit("updated", role);
+  } catch (e: unknown) {
+    if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueNameAlreadyUsed)) {
+      uniqueNameAlreadyUsed.value = true;
+    } else {
+      emit("error", e);
     }
   }
 }
@@ -72,7 +68,7 @@ watch(
 
 <template>
   <div>
-    <form @submit.prevent="submit">
+    <AppForm :submit="submit" @loading="isLoading = $event">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <div class="row">
         <UniqueNameInput class="col" :settings="uniqueNameSettings" v-model="uniqueName" />
@@ -82,6 +78,6 @@ watch(
       <div class="mb-3">
         <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :status="t('loading')" :text="t('actions.save')" type="submit" />
       </div>
-    </form>
+    </AppForm>
   </div>
 </template>
