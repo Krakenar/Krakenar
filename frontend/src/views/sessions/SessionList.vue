@@ -12,7 +12,7 @@ import CountSelect from "@/components/shared/CountSelect.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
-import UserAvatar from "@/views/users/UserAvatar.vue";
+import UserAvatar from "@/components/users/UserAvatar.vue";
 import UserSelect from "@/components/users/UserSelect.vue";
 import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { SearchResults } from "@/types/search";
@@ -198,5 +198,3 @@ watch(
     <p v-else>{{ t("sessions.empty") }}</p>
   </main>
 </template>
-
-// isPersistent // isActive, signedOutBy, signedOutOn

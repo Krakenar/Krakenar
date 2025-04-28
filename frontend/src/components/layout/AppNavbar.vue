@@ -80,9 +80,12 @@ watchEffect(() => {
               <RouterLink :to="{ name: 'RoleList' }" class="nav-link"><font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.title") }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink :to="{ name: 'SessionList' }" class="nav-link"
-                ><font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}</RouterLink
-              >
+              <RouterLink :to="{ name: 'UserList' }" class="nav-link"><font-awesome-icon icon="fas fa-users" /> {{ t("users.title") }}</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'SessionList' }" class="nav-link">
+                <font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}
+              </RouterLink>
             </li>
             <!--<li class="nav-item">
               <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.list") }}</RouterLink>

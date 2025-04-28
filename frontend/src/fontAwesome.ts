@@ -21,9 +21,11 @@ import {
   faStar,
   faTimes,
   faUser,
+  faUsers,
   faUserClock,
   faUsersGear,
   faVial,
+  faUserCheck,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -45,7 +47,9 @@ library.add(
   faStar,
   faTimes,
   faUser,
+  faUserCheck,
   faUserClock,
+  faUsers,
   faUsersGear,
   faVial,
 );
