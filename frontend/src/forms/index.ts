@@ -1,15 +1,16 @@
 import type { RuleExecutionResult, ValidationResult, ValidationRuleSet } from "logitar-validation";
 import { computed, getCurrentInstance, inject, provide, ref, unref, type ComponentInternalInstance } from "vue";
 
-import { bindFieldKey, unbindFieldKey, type FieldActions, type FieldOptions } from "@/types/forms";
+import type { FieldActions, FieldEvents, FieldOptions, FieldValues, FormContainer, FormField } from "@/types/forms";
 import validator, { isValidationFailure } from "@/validation";
+import { bindFieldKey, unbindFieldKey } from "@/types/forms";
 
-export function useField(id: string, options?: FieldOptions) {
+export function useField(id: string, options?: FieldOptions): FormField {
   options ??= {};
 
   const vm: ComponentInternalInstance | null = getCurrentInstance();
 
-  const bindField: ((id: string, options: FieldActions) => void) | undefined = inject(bindFieldKey);
+  const bindField: ((id: string, options: FieldActions, initialValue?: string) => FieldEvents) | undefined = inject(bindFieldKey);
   const unbindField: ((id: string) => void) | undefined = inject(unbindFieldKey);
 
   const initialValue = ref<string>(options.initialValue ?? "");
@@ -20,6 +21,8 @@ export function useField(id: string, options?: FieldOptions) {
   const isValid = computed<boolean | undefined>(() => validationResult.value?.isValid);
   const name = computed<string>(() => options.name?.trim() || id);
   const rules = computed<ValidationRuleSet | undefined>(() => unref(options.rules));
+
+  let events: FieldEvents | undefined;
 
   function emit(name: string, value: unknown): void {
     if (vm) {
@@ -35,6 +38,7 @@ export function useField(id: string, options?: FieldOptions) {
 
   function handleChange(e: Event, skipValidation?: boolean): void {
     value.value = (e.target as HTMLInputElement)?.value ?? "";
+    events?.updated(id, value.value);
     emit("update:model-value", value.value);
 
     if (!skipValidation) {
@@ -58,29 +62,53 @@ export function useField(id: string, options?: FieldOptions) {
       return { isValid: true, rules: {}, context: {} };
     }
     validationResult.value = validator.validate(name.value, value.value, rules.value);
+    events?.validated(id, validationResult.value);
     emit("validated", validationResult.value);
     return validationResult.value;
   }
 
   const actions: FieldActions = { focus, reinitialize, reset, validate };
   if (bindField) {
-    bindField(id, actions);
+    events = bindField(id, actions, initialValue.value);
   }
 
   return { errors, isValid, value, bindField, focus, handleChange, reinitialize, reset, unbindField, validate };
-} // TODO(fpion): typed return
+}
 
-export function useForm() {
+export function useForm(): FormContainer {
   const fields = ref<Map<string, FieldActions>>(new Map());
   const isSubmitting = ref<boolean>(false);
   const validationResults = ref<Map<string, ValidationResult>>(new Map());
+  const values = ref<Map<string, FieldValues>>(new Map());
 
-  const hasChanges = computed<boolean>(() => false); // TODO(fpion): implement
+  const hasChanges = computed<boolean>(() => Object.values([...values.value.values()]).some(({ hasChanged }) => hasChanged));
   const isValid = computed<boolean>(() => Object.values([...validationResults.value.values()]).every((result) => result.isValid));
 
-  function bindField(id: string, actions: FieldActions): void {
+  function onFieldUpdate(id: string, value: string): void {
+    const fieldValues: FieldValues = {
+      initial: values.value.get(id)?.initial ?? "",
+      current: value,
+      hasChanged: false,
+    };
+    fieldValues.hasChanged = fieldValues.initial !== fieldValues.current;
+    values.value.set(id, fieldValues);
+  }
+  function onFieldValidation(id: string, result: ValidationResult): void {
+    validationResults.value.set(id, result);
+  }
+  const fieldEvents: FieldEvents = {
+    updated: onFieldUpdate,
+    validated: onFieldValidation,
+  };
+  function bindField(id: string, actions: FieldActions, initialValue?: string): FieldEvents {
     fields.value.set(id, actions);
     validationResults.value.delete(id);
+    values.value.set(id, {
+      initial: initialValue ?? "",
+      current: initialValue ?? "",
+      hasChanged: false,
+    } as FieldValues);
+    return fieldEvents;
   }
   provide(bindFieldKey, bindField);
 
@@ -130,4 +158,4 @@ export function useForm() {
   }
 
   return { hasChanges, isSubmitting, isValid, handleSubmit, reinitialize, reset, validate };
-} // TODO(fpion): typed return
+}
