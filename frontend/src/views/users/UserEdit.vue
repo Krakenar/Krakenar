@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import UserSummary from "@/components/users/UserSummary.vue";
 import type { Configuration } from "@/types/configuration";
 import type { User } from "@/types/users";
 import { formatUser } from "@/helpers/format";
@@ -47,6 +48,7 @@ onMounted(async () => {
     <template v-if="user">
       <h1>{{ formatUser(user) }}</h1>
       <StatusDetail :aggregate="user" />
+      <UserSummary :user="user" />
       <TarTabs>
         <TarTab active id="authentication" :title="t('users.authentication')">
           <p>TODO(fpion): implement</p>

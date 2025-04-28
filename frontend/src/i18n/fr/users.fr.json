@@ -1,4 +1,7 @@
 {
+  "address": {
+    "title": "Adresse postale"
+  },
   "authenticated": "S’est authentifié",
   "authentication": "Informations d’authentification",
   "confirmed": "Confirmé",
@@ -18,6 +21,7 @@
     "with": "Avec mot de passe"
   },
   "phone": {
+    "number": "Numéro de téléphone",
     "verified": "Vérifié"
   },
   "select": {
@@ -65,5 +69,6 @@
     }
   },
   "title": "Utilisateurs",
-  "username": "Nom d’utilisateur"
+  "username": "Nom d’utilisateur",
+  "viewSessions": "Voir les sessions"
 }
