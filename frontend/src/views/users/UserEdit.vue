@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
 import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
+import ContactInformation from "@/components/users/ContactInformation.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UserSummary from "@/components/users/UserSummary.vue";
@@ -35,6 +36,15 @@ function onAuthenticationUpdated(updated: User): void {
   if (user.value) {
     setMetadata(updated);
     user.value.uniqueName = updated.uniqueName;
+  }
+  toasts.success("users.updated");
+}
+function onContactUpdated(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.address = updated.address;
+    user.value.email = updated.email;
+    user.value.phone = updated.phone;
   }
   toasts.success("users.updated");
 }
@@ -80,10 +90,10 @@ onMounted(async () => {
         <TarTab id="authentication" :title="t('users.authentication')">
           <AuthenticationInformation :configuration="configuration" :user="user" @error="handleError" @updated="onAuthenticationUpdated" />
         </TarTab>
-        <TarTab id="contact" :title="t('users.contact')">
-          <p>TODO(fpion): implement</p>
+        <TarTab active id="contact" :title="t('users.contact')">
+          <ContactInformation :user="user" @error="handleError" @updated="onContactUpdated" />
         </TarTab>
-        <TarTab active id="personal" :title="t('users.personal')">
+        <TarTab id="personal" :title="t('users.personal')">
           <PersonalInformation :user="user" @error="handleError" @updated="onPersonalUpdated" />
         </TarTab>
       </TarTabs>

@@ -11,8 +11,7 @@
   "created": "L’utilisateur a été créé.",
   "disabled": "Désactivé",
   "email": {
-    "address": "Adresse courriel",
-    "verified": "Vérifiée"
+    "address": "Adresse courriel"
   },
   "empty": "Cette liste est vide.",
   "enabled": "Activé",
@@ -38,8 +37,7 @@
   },
   "personal": "Informations personnelles",
   "phone": {
-    "number": "Numéro de téléphone",
-    "verified": "Vérifié"
+    "number": "Numéro de téléphone"
   },
   "picture": "Photo (URL)",
   "profile": "Profil (URL)",

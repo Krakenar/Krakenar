@@ -98,9 +98,9 @@ export type UpdateUserPayload = {
   uniqueName?: string;
   password?: ChangePasswordPayload;
   isDisabled?: boolean;
-  address?: AddressPayload;
-  email?: EmailPayload;
-  phone?: PhonePayload;
+  address?: Change<AddressPayload> | null;
+  email?: Change<EmailPayload> | null;
+  phone?: Change<PhonePayload> | null;
   firstName?: Change<string> | null;
   middleName?: Change<string> | null;
   lastName?: Change<string> | null;

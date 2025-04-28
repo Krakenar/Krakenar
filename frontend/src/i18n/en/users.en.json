@@ -11,8 +11,7 @@
   "created": "The user has been created.",
   "disabled": "Disabled",
   "email": {
-    "address": "Email address",
-    "verified": "Verified"
+    "address": "Email address"
   },
   "empty": "This list is empty.",
   "enabled": "Enabled",
@@ -38,8 +37,7 @@
   },
   "personal": "Personal Information",
   "phone": {
-    "number": "Phone Number",
-    "verified": "Verified"
+    "number": "Phone Number"
   },
   "picture": "Picture (URL)",
   "profile": "Profile (URL)",

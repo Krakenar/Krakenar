@@ -25,21 +25,30 @@ defineProps<{
       <tr>
         <th scope="row">{{ t("users.address.title") }}</th>
         <td>
-          <p v-if="user.address">todo</p>
+          <template v-if="user.address">
+            {{ user.address.formatted }}
+            <!-- TODO(fpion): (un)verified -->
+          </template>
           <span class="text-muted" v-else>{{ "—" }}</span>
         </td>
       </tr>
       <tr>
         <th scope="row">{{ t("users.email.address") }}</th>
         <td>
-          <p v-if="user.email">todo</p>
+          <template v-if="user.email">
+            {{ user.email.address }}
+            <!-- TODO(fpion): (un)verified -->
+          </template>
           <span class="text-muted" v-else>{{ "—" }}</span>
         </td>
       </tr>
       <tr>
         <th scope="row">{{ t("users.phone.number") }}</th>
         <td>
-          <p v-if="user.phone">todo</p>
+          <template v-if="user.phone">
+            {{ user.phone.e164Formatted }}
+            <!-- TODO(fpion): (un)verified -->
+          </template>
           <span class="text-muted" v-else>{{ "—" }}</span>
         </td>
       </tr>
