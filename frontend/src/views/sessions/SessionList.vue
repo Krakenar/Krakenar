@@ -138,7 +138,7 @@ watch(
     <div class="my-3">
       <TarButton :disabled="isLoading" icon="fas fa-rotate" :loading="isLoading" :status="t('loading')" :text="t('actions.refresh')" @click="refresh()" />
     </div>
-    <div class="row">
+    <div class="mb-3 row">
       <UserSelect class="col" :model-value="userId" @error="handleError" @update:model-value="setQuery('user', $event)" />
       <YesNoSelect class="col" id="active" label="sessions.active" :model-value="isActive" @update:model-value="setQuery('active', $event?.toString() ?? '')" />
       <YesNoSelect

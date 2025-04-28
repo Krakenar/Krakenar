@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { SelectOption } from "logitar-vue3-ui";
+import { TarSelect, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils } from "logitar-js";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import AppSelect from "@/components/shared/AppSelect.vue";
 import type { SearchResults } from "@/types/search";
 import type { SearchUsersPayload, User } from "@/types/users";
 import { formatUser } from "@/helpers/format";
@@ -67,5 +66,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <AppSelect :id="id" :label="t(label)" :model-value="modelValue" :options="options" :placeholder="t(placeholder)" @update:model-value="onUserSelected" />
+  <TarSelect
+    floating
+    :id="id"
+    :label="t(label)"
+    :model-value="modelValue"
+    :options="options"
+    :placeholder="t(placeholder)"
+    @update:model-value="onUserSelected"
+  />
 </template>
