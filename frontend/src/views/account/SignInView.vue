@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarAlert, TarButton } from "logitar-vue3-ui";
+import { TarButton } from "logitar-vue3-ui";
 import { inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";

@@ -4,7 +4,7 @@ import { arrayUtils } from "logitar-js";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-import AppSelect from "@/components/shared/AppSelect.vue";
+import FormSelect from "@/components/forms/FormSelect.vue";
 
 const { orderBy } = arrayUtils;
 const { rt, t, tm } = useI18n();
@@ -38,7 +38,7 @@ defineEmits<{
 </script>
 
 <template>
-  <AppSelect
+  <FormSelect
     :described-by="`${id}-help`"
     :id="id"
     :label="t(label)"
@@ -51,5 +51,5 @@ defineEmits<{
     <template #after>
       <div :id="`${id}-help`" class="form-text">{{ t(`settings.logging.extent.help.${modelValue}`) }}</div>
     </template>
-  </AppSelect>
+  </FormSelect>
 </template>

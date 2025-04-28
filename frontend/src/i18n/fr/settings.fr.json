@@ -14,7 +14,10 @@
       },
       "placeholder": "Sélectionner l’étendue de la journalisation"
     },
-    "onlyErrors": "Erreurs seulement",
+    "onlyErrors": {
+      "help": "Lorsque activé, seulement les requêtes ayant échoué seront journalisées.",
+      "label": "Erreurs seulement"
+    },
     "title": "Journalisation"
   },
   "password": {

@@ -170,4 +170,4 @@ export function useForm(): FormContainer {
   }
 
   return { hasChanges, isSubmitting, isValid, handleSubmit, reinitialize, reset, validate };
-} // TODO(fpion): when modelValue is changed, for example when the form is submitted, field values do not reflect what is returned by the backend.
+}

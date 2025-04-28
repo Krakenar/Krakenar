@@ -10,11 +10,11 @@ import type { CreateOrReplaceRealmPayload, Realm } from "@/types/realms";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { createRealm } from "@/api/realms";
 import { isError } from "@/helpers/error";
+import { useForm } from "@/forms";
 
 const { t } = useI18n();
 
 const displayName = ref<string>("");
-const isLoading = ref<boolean>(false);
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const uniqueSlug = ref<string>("");
 const uniqueSlugAlreadyUsed = ref<boolean>(false);
@@ -23,58 +23,52 @@ function hide(): void {
   modalRef.value?.hide();
 }
 
-function reset(): void {
-  uniqueSlugAlreadyUsed.value = false;
-  displayName.value = "";
-  uniqueSlug.value = "";
-}
-
 const emit = defineEmits<{
   (e: "created", value: Realm): void;
   (e: "error", value: unknown): void;
 }>();
 
 function onCancel(): void {
-  reset();
+  onReset();
   hide();
 }
+function onReset(): void {
+  uniqueSlugAlreadyUsed.value = false;
+  reset();
+}
 
+const { hasChanges, isSubmitting, handleSubmit, reset } = useForm();
 async function submit(): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    uniqueSlugAlreadyUsed.value = false;
-    try {
-      const payload: CreateOrReplaceRealmPayload = {
-        uniqueSlug: uniqueSlug.value,
-        displayName: displayName.value,
-        uniqueNameSettings: {
-          allowedCharacters: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+",
-        },
-        passwordSettings: {
-          requiredLength: 8,
-          requiredUniqueChars: 8,
-          requireNonAlphanumeric: true,
-          requireLowercase: true,
-          requireUppercase: true,
-          requireDigit: true,
-          hashingStrategy: "PBKDF2",
-        },
-        requireUniqueEmail: true,
-        requireConfirmedAccount: true,
-        customAttributes: [],
-      };
-      const realm: Realm = await createRealm(payload);
-      emit("created", realm);
-      reset();
-      hide();
-    } catch (e: unknown) {
-      if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueSlugAlreadyUsed)) {
-        uniqueSlugAlreadyUsed.value = true;
-      } else {
-        emit("error", e);
-      }
-    } finally {
-      isLoading.value = false;
+  uniqueSlugAlreadyUsed.value = false;
+  try {
+    const payload: CreateOrReplaceRealmPayload = {
+      uniqueSlug: uniqueSlug.value,
+      displayName: displayName.value,
+      uniqueNameSettings: {
+        allowedCharacters: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+",
+      },
+      passwordSettings: {
+        requiredLength: 8,
+        requiredUniqueChars: 8,
+        requireNonAlphanumeric: true,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireDigit: true,
+        hashingStrategy: "PBKDF2",
+      },
+      requireUniqueEmail: true,
+      requireConfirmedAccount: true,
+      customAttributes: [],
+    };
+    const realm: Realm = await createRealm(payload);
+    emit("created", realm);
+    onReset();
+    hide();
+  } catch (e: unknown) {
+    if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueSlugAlreadyUsed)) {
+      uniqueSlugAlreadyUsed.value = true;
+    } else {
+      emit("error", e);
     }
   }
 }
@@ -85,21 +79,21 @@ async function submit(): Promise<void> {
     <TarButton icon="fas fa-plus" :text="t('actions.create')" variant="success" data-bs-toggle="modal" data-bs-target="#create-realm" />
     <TarModal :close="t('actions.close')" id="create-realm" ref="modalRef" :title="t('realms.create')">
       <UniqueSlugAlreadyUsed v-model="uniqueSlugAlreadyUsed" />
-      <form @submit.prevent="submit">
+      <form @submit.prevent="handleSubmit(submit)">
         <DisplayNameInput v-model="displayName" />
         <UniqueSlugInput :name-value="displayName" v-model="uniqueSlug" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="isLoading"
+          :disabled="isSubmitting || !hasChanges"
           icon="fas fa-plus"
-          :loading="isLoading"
+          :loading="isSubmitting"
           :status="t('loading')"
           :text="t('actions.create')"
           type="submit"
           variant="success"
-          @click="submit"
+          @click="handleSubmit(submit)"
         />
       </template>
     </TarModal>

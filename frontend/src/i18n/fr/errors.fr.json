@@ -1,7 +1,19 @@
 {
   "allowedCharacters": "Le champs « {name} » ne peut contenir que les caractères suivants : {allowedCharacters}",
+  "confirmed": "Les champs « {target} » et « {name} » ne correspondent pas.",
+  "containsDigits": "Le champs « {name} » doit contenir au moins un chiffre (0-9).",
+  "containsLowercase": "Le champs « {name} » doit contenir au moins une lettre minuscule (a-z).",
+  "containsNonAlphanumeric": "Le champs « {name} » doit contenir au moins un caractère spécial (e.g. !@/$%&*_+-).",
+  "containsUppercase": "Le champs « {name} » doit contenir au moins une lettre majuscule (A-Z).",
   "email": "Veuillez entrer une adresse courriel valide.",
+  "identifier": "Le champs « {name} » ne peut commencer par un chiffre et il ne peut contenir que des lettres, des chiffres et des tirets bas (_).",
   "maximumLength": "Le champs « {name} » ne peut contenir plus de {maximumLength} caractères.",
+  "maximumValue": "Le champs « {name} » doit être inférieur ou égal à {maximumValue}.",
   "minimumLength": "Le champs « {name} » doit contenir au moins {minimumLength} caractères.",
-  "required": "Le champs « {name} » est requis."
+  "minimumValue": "Le champs « {name} » doit être supérieur ou égal à {minimumValue}.",
+  "pattern": "Le champs « {name} » doit correspondre au modèle suivant : {pattern}",
+  "required": "Le champs « {name} » est requis.",
+  "slug": "Le champs « {name} » doit être composé de mots alphanumériques non vides séparés par un tiret (-).",
+  "uniqueCharacters": "Le champs « {name} » doit contenir au moins {uniqueCharacters} caractères uniques.",
+  "url": "Le champs « {name} » n’est pas un lien valide. Un lien valide débute par http:// ou https://."
 }

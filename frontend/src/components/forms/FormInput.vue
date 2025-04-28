@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ValidationResult, ValidationRuleSet } from "logitar-validation";
-import { TarInput, type InputOptions, type InputStatus } from "logitar-vue3-ui";
+import { TarInput, inputUtils, type InputOptions, type InputStatus } from "logitar-vue3-ui";
 import { computed, onUnmounted, ref } from "vue";
 import { nanoid } from "nanoid";
 import { parsingUtils } from "logitar-js";
@@ -8,6 +8,7 @@ import { useI18n } from "vue-i18n";
 
 import { useField } from "@/forms";
 
+const { isTextualInput } = inputUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
@@ -49,13 +50,25 @@ defineEmits<{
 const rules = computed<ValidationRuleSet>(() => {
   const rules: ValidationRuleSet = {
     required: parseBoolean(props.required),
-    minimumLength: parseNumber(props.min),
-    maximumLength: parseNumber(props.max),
-    email: props.type === "email",
   };
+  if (isTextualInput(props.type)) {
+    rules.minimumLength = parseNumber(props.min);
+    rules.maximumLength = parseNumber(props.max);
+  } else {
+    rules.minimumValue = parseNumber(props.min);
+    rules.maximumValue = parseNumber(props.max);
+  }
+  switch (props.type) {
+    case "email":
+      rules.email = true;
+      break;
+    case "url":
+      rules.url = true;
+      break;
+  }
   return { ...rules, ...props.rules };
 });
-const { errors, isValid, value, handleChange, unbindField } = useField(props.id, {
+const { errors, isValid, handleChange, unbindField } = useField(props.id, {
   focus,
   initialValue: props.modelValue,
   name: props.label?.toLowerCase() ?? props.name,

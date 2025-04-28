@@ -79,7 +79,7 @@ onMounted(async () => {
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="!configuration || !hasChanges || isSubmitting"
+          :disabled="!configuration || isSubmitting || !hasChanges"
           icon="fas fa-plus"
           :loading="isSubmitting"
           :status="t('loading')"

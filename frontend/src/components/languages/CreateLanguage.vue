@@ -27,7 +27,7 @@ const emit = defineEmits<{
 }>();
 
 function onCancel(): void {
-  reset();
+  onReset();
   hide();
 }
 function onReset(): void {
@@ -44,7 +44,7 @@ async function submit(): Promise<void> {
     };
     const language: Language = await createLanguage(payload);
     emit("created", language);
-    reset();
+    onReset();
     hide();
   } catch (e: unknown) {
     if (isError(e, StatusCodes.Conflict, ErrorCodes.LocaleAlreadyUsed)) {
@@ -67,7 +67,7 @@ async function submit(): Promise<void> {
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="!hasChanges || isSubmitting"
+          :disabled="isSubmitting || !hasChanges"
           icon="fas fa-plus"
           :loading="isSubmitting"
           :status="t('loading')"

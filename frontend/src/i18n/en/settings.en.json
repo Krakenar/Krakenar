@@ -14,7 +14,10 @@
       },
       "placeholder": "Select the extent of logging"
     },
-    "onlyErrors": "Only errors",
+    "onlyErrors": {
+      "help": "When enabled, only requests that lead to an error will be logged.",
+      "label": "Only errors"
+    },
     "title": "Logging"
   },
   "password": {

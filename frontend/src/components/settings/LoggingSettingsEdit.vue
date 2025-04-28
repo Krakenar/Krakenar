@@ -26,8 +26,6 @@ function onOnlyErrorsUpdated(onlyErrors: boolean): void {
   const modelValue: LoggingSettings = { ...props.modelValue, onlyErrors };
   emit("update:model-value", modelValue);
 }
-
-// TODO(fpion): help text for checkbox
 </script>
 
 <template>
@@ -37,10 +35,15 @@ function onOnlyErrorsUpdated(onlyErrors: boolean): void {
     <TarCheckbox
       v-if="modelValue.extent !== 'None'"
       class="mb-3"
+      described-by="only-errors-help"
       id="only-errors"
-      :label="t('settings.logging.onlyErrors')"
+      :label="t('settings.logging.onlyErrors.label')"
       :model-value="modelValue.onlyErrors"
       @update:model-value="onOnlyErrorsUpdated"
-    />
+    >
+      <template #after>
+        <div id="only-errors-help" class="form-text">{{ t("settings.logging.onlyErrors.help") }}</div>
+      </template>
+    </TarCheckbox>
   </div>
 </template>

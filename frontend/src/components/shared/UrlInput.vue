@@ -3,7 +3,7 @@ import { TarButton, type InputType } from "logitar-vue3-ui";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
-import AppInput from "./AppInput.vue";
+import FormInput from "@/components/forms/FormInput.vue";
 
 const { isNullOrWhiteSpace } = stringUtils;
 const { t } = useI18n();
@@ -30,7 +30,7 @@ defineEmits<{
 </script>
 
 <template>
-  <AppInput :max="max" :model-value="modelValue" :type="type" @update:model-value="$emit('update:model-value', $event)">
+  <FormInput :max="max" :model-value="modelValue" :type="type" @update:model-value="$emit('update:model-value', $event)">
     <template #before>
       <slot name="before"></slot>
     </template>
@@ -50,5 +50,5 @@ defineEmits<{
     <template #after>
       <slot name="after"></slot>
     </template>
-  </AppInput>
+  </FormInput>
 </template>
