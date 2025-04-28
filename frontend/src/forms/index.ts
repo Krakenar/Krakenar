@@ -49,11 +49,13 @@ export function useField(id: string, options?: FieldOptions): FormField {
   function reinitialize(): void {
     validationResult.value = undefined;
     initialValue.value = value.value;
+    events?.reinitialized(id, initialValue.value);
   }
 
   function reset(): void {
     validationResult.value = undefined;
     value.value = initialValue.value;
+    events?.reset(id, value.value);
     emit("update:model-value", value.value);
   }
 
@@ -84,6 +86,14 @@ export function useForm(): FormContainer {
   const hasChanges = computed<boolean>(() => Object.values([...values.value.values()]).some(({ hasChanged }) => hasChanged));
   const isValid = computed<boolean>(() => Object.values([...validationResults.value.values()]).every((result) => result.isValid));
 
+  function onFieldReinitialize(id: string, value: string): void {
+    validationResults.value.delete(id);
+    values.value.set(id, { initial: value, current: value, hasChanged: false } as FieldValues);
+  }
+  function onFieldReset(id: string, value: string): void {
+    validationResults.value.delete(id);
+    values.value.set(id, { initial: value, current: value, hasChanged: false } as FieldValues);
+  }
   function onFieldUpdate(id: string, value: string): void {
     const fieldValues: FieldValues = {
       initial: values.value.get(id)?.initial ?? "",
@@ -97,6 +107,8 @@ export function useForm(): FormContainer {
     validationResults.value.set(id, result);
   }
   const fieldEvents: FieldEvents = {
+    reinitialized: onFieldReinitialize,
+    reset: onFieldReset,
     updated: onFieldUpdate,
     validated: onFieldValidation,
   };

@@ -4,7 +4,7 @@ import { arrayUtils } from "logitar-js";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
-import AppSelect from "@/components/shared/AppSelect.vue";
+import FormSelect from "@/components/forms/FormSelect.vue";
 import locales from "@/resources/locales.json";
 
 const { orderBy } = arrayUtils;
@@ -38,7 +38,7 @@ defineEmits<{
 </script>
 
 <template>
-  <AppSelect
+  <FormSelect
     :id="id"
     :label="t(label)"
     :model-value="modelValue"

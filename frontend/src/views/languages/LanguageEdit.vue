@@ -16,6 +16,7 @@ import { handleErrorKey } from "@/inject/App";
 import { isError } from "@/helpers/error";
 import { readLanguage } from "@/api/languages";
 import { updateLanguage } from "@/api/languages";
+import { useForm } from "@/forms";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -23,7 +24,6 @@ const route = useRoute();
 const toasts = useToastStore();
 const { t } = useI18n();
 
-const isLoading = ref<boolean>(false);
 const language = ref<Language>();
 const locale = ref<string>("");
 const localeAlreadyUsed = ref<boolean>(false);
@@ -43,25 +43,21 @@ function onSetDefault(updated: Language): void {
   toasts.success("languages.default.set");
 }
 
+const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
-  if (!isLoading.value && language.value) {
-    isLoading.value = true;
-    localeAlreadyUsed.value = false;
-    try {
-      const payload: UpdateLanguagePayload = {
-        locale: language.value.locale.code !== locale.value ? locale.value : undefined,
-      };
-      const updatedLanguage: Language = await updateLanguage(language.value.id, payload);
-      setModel(updatedLanguage);
-      toasts.success("languages.updated");
-    } catch (e: unknown) {
-      if (isError(e, StatusCodes.Conflict, ErrorCodes.LocaleAlreadyUsed)) {
-        localeAlreadyUsed.value = true;
-      } else {
-        handleError(e);
-      }
-    } finally {
-      isLoading.value = false;
+  localeAlreadyUsed.value = false;
+  try {
+    const payload: UpdateLanguagePayload = {
+      locale: language.value.locale.code !== locale.value ? locale.value : undefined,
+    };
+    const updatedLanguage: Language = await updateLanguage(language.value.id, payload);
+    setModel(updatedLanguage);
+    toasts.success("languages.updated");
+  } catch (e: unknown) {
+    if (isError(e, StatusCodes.Conflict, ErrorCodes.LocaleAlreadyUsed)) {
+      localeAlreadyUsed.value = true;
+    } else {
+      handleError(e);
     }
   }
 }
@@ -86,10 +82,17 @@ onMounted(async () => {
         <DefaultButton :language="language" @error="handleError" @saved="onSetDefault" />
       </div>
       <LocaleAlreadyUsed v-model="localeAlreadyUsed" />
-      <form @submit.prevent="submit">
+      <form @submit.prevent="handleSubmit(submit)">
         <LocaleSelect required v-model="locale" />
         <div class="mb-3">
-          <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :status="t('loading')" :text="t('actions.save')" type="submit" />
+          <TarButton
+            :disabled="isSubmitting || !hasChanges"
+            icon="fas fa-save"
+            :loading="isSubmitting"
+            :status="t('loading')"
+            :text="t('actions.save')"
+            type="submit"
+          />
         </div>
       </form>
     </template>
