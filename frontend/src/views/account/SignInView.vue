@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarAlert, TarButton } from "logitar-vue3-ui";
+import { TarButton } from "logitar-vue3-ui";
 import { inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
@@ -12,6 +12,7 @@ import { ErrorCodes, StatusCodes, type ApiFailure, type ProblemDetails } from "@
 import { handleErrorKey } from "@/inject/App";
 import { signIn } from "@/api/account";
 import { useAccountStore } from "@/stores/account";
+import { useForm } from "@/forms";
 
 const INVALID_CREDENTIAL_CODES = [
   ErrorCodes.IncorrectUserPassword,
@@ -28,39 +29,34 @@ const router = useRouter();
 const { t } = useI18n();
 
 const invalidCredentials = ref<boolean>(false);
-const isLoading = ref<boolean>(false);
 const password = ref<string>("");
 const passwordRef = ref<InstanceType<typeof PasswordInput> | null>(null);
 const username = ref<string>("");
 
+const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    invalidCredentials.value = false;
-    try {
-      const payload: SignInAccountPayload = {
-        username: username.value,
-        password: password.value,
-      };
-      const currentUser: CurrentUser = await signIn(payload);
-      account.signIn(currentUser);
-      const redirect: string | undefined = route.query.redirect?.toString();
-      router.push(redirect ?? { name: "Home" });
-    } catch (e: unknown) {
-      const failure = e as ApiFailure;
-      if (failure.status === StatusCodes.BadRequest) {
-        const problemDetails = failure.data as ProblemDetails;
-        if (problemDetails.error && INVALID_CREDENTIAL_CODES.includes(problemDetails.error.code as ErrorCodes)) {
-          invalidCredentials.value = true;
-          password.value = "";
-          passwordRef.value?.focus();
-          return;
-        }
+  invalidCredentials.value = false;
+  try {
+    const payload: SignInAccountPayload = {
+      username: username.value,
+      password: password.value,
+    };
+    const currentUser: CurrentUser = await signIn(payload);
+    account.signIn(currentUser);
+    const redirect: string | undefined = route.query.redirect?.toString();
+    router.push(redirect ?? { name: "Home" });
+  } catch (e: unknown) {
+    const failure = e as ApiFailure;
+    if (failure.status === StatusCodes.BadRequest) {
+      const problemDetails = failure.data as ProblemDetails;
+      if (problemDetails.error && INVALID_CREDENTIAL_CODES.includes(problemDetails.error.code as ErrorCodes)) {
+        invalidCredentials.value = true;
+        password.value = "";
+        passwordRef.value?.focus();
+        return;
       }
-      handleError(e);
-    } finally {
-      isLoading.value = false;
     }
+    handleError(e);
   }
 }
 </script>
@@ -69,14 +65,14 @@ async function submit(): Promise<void> {
   <main class="container">
     <h1>{{ t("users.signIn.title") }}</h1>
     <InvalidCredentials v-model="invalidCredentials" />
-    <form @submit.prevent="submit">
+    <form @submit.prevent="handleSubmit(submit)">
       <UsernameInput v-model="username" />
       <PasswordInput ref="passwordRef" v-model="password" />
       <div class="mb-3">
         <TarButton
-          :disabled="isLoading"
+          :disabled="isSubmitting || !hasChanges"
           icon="fas fa-arrow-right-to-bracket"
-          :loading="isLoading"
+          :loading="isSubmitting"
           :status="t('loading')"
           :text="t('users.signIn.submit')"
           type="submit"

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ValidationRuleSet } from "logitar-validation";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import FormInput from "@/components/forms/FormInput.vue";
@@ -6,7 +8,7 @@ import type { UniqueNameSettings } from "@/types/settings";
 
 const { t } = useI18n();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     id?: string;
     label?: string;
@@ -23,6 +25,8 @@ withDefaults(
   },
 );
 
+const rules = computed<ValidationRuleSet>(() => ({ allowedCharacters: props.settings?.allowedCharacters }));
+
 defineEmits<{
   (e: "update:model-value", value: string): void;
 }>();
@@ -32,10 +36,10 @@ defineEmits<{
   <FormInput
     :id="id"
     :label="t(label)"
-    :max="max"
+    :max="settings ? max : undefined"
     :model-value="modelValue"
     :required="required"
-    :rules="{ allowedCharacters: settings?.allowedCharacters }"
+    :rules="rules"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

@@ -35,7 +35,7 @@ const emit = defineEmits<{
 }>();
 
 const { hasChanges, isSubmitting, handleSubmit } = useForm();
-async function onSubmit(): Promise<void> {
+async function submit(): Promise<void> {
   uniqueNameAlreadyUsed.value = false;
   try {
     const payload: UpdateRolePayload = {
@@ -68,7 +68,7 @@ watch(
 
 <template>
   <div>
-    <form @submit.prevent="handleSubmit(onSubmit)">
+    <form @submit.prevent="handleSubmit(submit)">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <div class="row">
         <UniqueNameInput class="col" :settings="uniqueNameSettings" v-model="uniqueName" />

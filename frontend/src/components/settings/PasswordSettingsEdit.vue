@@ -4,7 +4,7 @@ import { computed } from "vue";
 import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
-import AppInput from "@/components/shared/AppInput.vue";
+import FormInput from "@/components/forms/FormInput.vue";
 import type { PasswordSettings } from "@/types/settings";
 
 const { parseNumber } = parsingUtils;
@@ -65,7 +65,7 @@ function onRequireNonAlphanumericUpdated(requireNonAlphanumeric: boolean): void 
   <div>
     <h5>{{ t("settings.password.title") }}</h5>
     <div class="row">
-      <AppInput
+      <FormInput
         class="col"
         described-by="required-length-help"
         id="required-length"
@@ -78,8 +78,8 @@ function onRequireNonAlphanumericUpdated(requireNonAlphanumeric: boolean): void 
         <template #after>
           <div id="required-length-help" class="form-text">{{ t("settings.password.requiredLength.help") }}</div>
         </template>
-      </AppInput>
-      <AppInput
+      </FormInput>
+      <FormInput
         class="col"
         id="required-unique-chars"
         :label="t('settings.password.requiredUniqueChars.label')"
@@ -91,7 +91,7 @@ function onRequireNonAlphanumericUpdated(requireNonAlphanumeric: boolean): void 
         <template #after>
           <div id="required-unique-chars-help" class="form-text">{{ t("settings.password.requiredUniqueChars.help") }}</div>
         </template>
-      </AppInput>
+      </FormInput>
     </div>
     <div class="mb-3">
       <TarCheckbox

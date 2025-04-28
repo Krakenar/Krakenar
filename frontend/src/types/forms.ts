@@ -12,6 +12,8 @@ export type FieldActions = {
 };
 
 export type FieldEvents = {
+  reinitialized: (id: string, value: string) => void;
+  reset: (id: string, value: string) => void;
   updated: (id: string, value: string) => void;
   validated: (id: string, result: ValidationResult) => void;
 };

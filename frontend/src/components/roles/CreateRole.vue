@@ -39,7 +39,7 @@ function onReset(): void {
 }
 
 const { hasChanges, isSubmitting, handleSubmit, reset } = useForm();
-async function onSubmit(): Promise<void> {
+async function submit(): Promise<void> {
   uniqueNameAlreadyUsed.value = false;
   try {
     const payload: CreateOrReplaceRolePayload = {
@@ -73,20 +73,20 @@ onMounted(async () => {
     <TarButton icon="fas fa-plus" :text="t('actions.create')" variant="success" data-bs-toggle="modal" data-bs-target="#create-role" />
     <TarModal :close="t('actions.close')" id="create-role" ref="modalRef" :title="t('roles.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
-      <form @submit.prevent="handleSubmit(onSubmit)">
+      <form @submit.prevent="handleSubmit(submit)">
         <UniqueNameInput :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="!configuration || !hasChanges || isSubmitting"
+          :disabled="!configuration || isSubmitting || !hasChanges"
           icon="fas fa-plus"
           :loading="isSubmitting"
           :status="t('loading')"
           :text="t('actions.create')"
           type="submit"
           variant="success"
-          @click="handleSubmit(onSubmit)"
+          @click="handleSubmit(submit)"
         />
       </template>
     </TarModal>

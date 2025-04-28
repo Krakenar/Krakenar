@@ -2,7 +2,7 @@
 import type { UniqueNameSettings } from "@/types/settings";
 import { useI18n } from "vue-i18n";
 
-import AppInput from "@/components/shared/AppInput.vue";
+import FormInput from "@/components/forms/FormInput.vue";
 
 const { t } = useI18n();
 
@@ -23,7 +23,7 @@ function onAllowedCharactersUpdated(allowedCharacters: string): void {
 <template>
   <div>
     <h5>{{ t("settings.uniqueName.title") }}</h5>
-    <AppInput
+    <FormInput
       described-by="allowed-characters-help"
       id="allowed-characters"
       :label="t('settings.uniqueName.allowedCharacters.label')"
@@ -34,6 +34,6 @@ function onAllowedCharactersUpdated(allowedCharacters: string): void {
       <template #after>
         <div id="allowed-characters-help" class="form-text">{{ t("settings.uniqueName.allowedCharacters.help") }}</div>
       </template>
-    </AppInput>
+    </FormInput>
   </div>
 </template>

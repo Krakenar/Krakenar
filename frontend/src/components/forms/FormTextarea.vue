@@ -54,7 +54,7 @@ const rules = computed<ValidationRuleSet>(() => {
   };
   return { ...rules, ...props.rules };
 });
-const { errors, isValid, value, handleChange, unbindField } = useField(props.id, {
+const { errors, isValid, handleChange, unbindField } = useField(props.id, {
   focus,
   initialValue: props.modelValue,
   name: props.label?.toLowerCase() ?? props.name,
@@ -82,7 +82,7 @@ onUnmounted(() => {
     :floating="floating"
     :id="id"
     :label="label"
-    :model-value="value"
+    :model-value="modelValue"
     :name="name"
     :placeholder="placeholder ?? label"
     :plaintext="plaintext"

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TarButton } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
@@ -12,6 +12,7 @@ import type { Configuration, ReplaceConfigurationPayload } from "@/types/configu
 import type { LoggingSettings, PasswordSettings, UniqueNameSettings } from "@/types/settings";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration, replaceConfiguration } from "@/api/configuration";
+import { useForm } from "@/forms";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -20,7 +21,6 @@ const { isNullOrWhiteSpace } = stringUtils;
 const { t } = useI18n();
 
 const configuration = ref<Configuration>();
-const isLoading = ref<boolean>(false);
 const loggingSettings = ref<LoggingSettings>({ extent: "None", onlyErrors: false });
 const passwordSettings = ref<PasswordSettings>({
   requiredLength: 8,
@@ -33,6 +33,10 @@ const passwordSettings = ref<PasswordSettings>({
 });
 const uniqueNameSettings = ref<UniqueNameSettings>({});
 
+const canSubmit = computed<boolean>(
+  () => !isSubmitting.value && (hasChanges.value || configuration.value?.loggingSettings.onlyErrors !== loggingSettings.value.onlyErrors),
+);
+
 function setModel(model: Configuration): void {
   configuration.value = model;
   loggingSettings.value = { ...model.loggingSettings };
@@ -40,9 +44,9 @@ function setModel(model: Configuration): void {
   uniqueNameSettings.value = { allowedCharacters: model.uniqueNameSettings.allowedCharacters ?? undefined };
 }
 
+const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
-  if (!isLoading.value && configuration.value) {
-    isLoading.value = true;
+  if (configuration.value) {
     try {
       const payload: ReplaceConfigurationPayload = {
         uniqueNameSettings: {
@@ -56,8 +60,6 @@ async function submit(): Promise<void> {
       toasts.success("configuration.updated");
     } catch (e: unknown) {
       handleError(e);
-    } finally {
-      isLoading.value = false;
     }
   }
 }
@@ -77,12 +79,12 @@ onMounted(async () => {
     <template v-if="configuration">
       <h1>{{ t("configuration.title") }}</h1>
       <StatusDetail :aggregate="configuration" />
-      <form @submit.prevent="submit">
+      <form @submit.prevent="handleSubmit(submit)">
         <UniqueNameSettingsEdit v-model="uniqueNameSettings" />
         <PasswordSettingsEdit v-model="passwordSettings" />
         <LoggingSettingsEdit v-model="loggingSettings" />
         <div class="mb-3">
-          <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :status="t('loading')" :text="t('actions.save')" type="submit" />
+          <TarButton :disabled="!canSubmit" icon="fas fa-save" :loading="isSubmitting" :status="t('loading')" :text="t('actions.save')" type="submit" />
         </div>
       </form>
     </template>

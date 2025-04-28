@@ -4,7 +4,7 @@ import { ref, watch } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
-import AppInput from "@/components/shared/AppInput.vue";
+import FormInput from "@/components/forms/FormInput.vue";
 
 const { slugify } = stringUtils;
 const { t } = useI18n();
@@ -51,7 +51,7 @@ watch(
 </script>
 
 <template>
-  <AppInput
+  <FormInput
     :disabled="!isCustom"
     :id="id"
     :label="t(label)"
@@ -64,5 +64,5 @@ watch(
     <template #after>
       <TarCheckbox :id="`${id}-custom`" :label="t('realms.uniqueSlug.custom')" :model-value="isCustom" @update:model-value="onCustomUpdate" />
     </template>
-  </AppInput>
+  </FormInput>
 </template>

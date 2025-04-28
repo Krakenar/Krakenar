@@ -9,10 +9,10 @@ import type { CreateOrReplaceLanguagePayload, Language } from "@/types/languages
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { createLanguage } from "@/api/languages";
 import { isError } from "@/helpers/error";
+import { useForm } from "@/forms";
 
 const { t } = useI18n();
 
-const isLoading = ref<boolean>(false);
 const locale = ref<string>("");
 const localeAlreadyUsed = ref<boolean>(false);
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
@@ -21,41 +21,36 @@ function hide(): void {
   modalRef.value?.hide();
 }
 
-function reset(): void {
-  localeAlreadyUsed.value = false;
-  locale.value = "";
-}
-
 const emit = defineEmits<{
   (e: "created", value: Language): void;
   (e: "error", value: unknown): void;
 }>();
 
 function onCancel(): void {
-  reset();
+  onReset();
   hide();
 }
+function onReset(): void {
+  localeAlreadyUsed.value = false;
+  reset();
+}
 
+const { hasChanges, isSubmitting, handleSubmit, reset } = useForm();
 async function submit(): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    localeAlreadyUsed.value = false;
-    try {
-      const payload: CreateOrReplaceLanguagePayload = {
-        locale: locale.value,
-      };
-      const language: Language = await createLanguage(payload);
-      emit("created", language);
-      reset();
-      hide();
-    } catch (e: unknown) {
-      if (isError(e, StatusCodes.Conflict, ErrorCodes.LocaleAlreadyUsed)) {
-        localeAlreadyUsed.value = true;
-      } else {
-        emit("error", e);
-      }
-    } finally {
-      isLoading.value = false;
+  localeAlreadyUsed.value = false;
+  try {
+    const payload: CreateOrReplaceLanguagePayload = {
+      locale: locale.value,
+    };
+    const language: Language = await createLanguage(payload);
+    emit("created", language);
+    onReset();
+    hide();
+  } catch (e: unknown) {
+    if (isError(e, StatusCodes.Conflict, ErrorCodes.LocaleAlreadyUsed)) {
+      localeAlreadyUsed.value = true;
+    } else {
+      emit("error", e);
     }
   }
 }
@@ -66,20 +61,20 @@ async function submit(): Promise<void> {
     <TarButton icon="fas fa-plus" :text="t('actions.create')" variant="success" data-bs-toggle="modal" data-bs-target="#create-language" />
     <TarModal :close="t('actions.close')" id="create-language" ref="modalRef" :title="t('languages.create')">
       <LocaleAlreadyUsed v-model="localeAlreadyUsed" />
-      <form @submit.prevent="submit">
+      <form @submit.prevent="handleSubmit(submit)">
         <LocaleSelect required v-model="locale" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="isLoading"
+          :disabled="isSubmitting || !hasChanges"
           icon="fas fa-plus"
-          :loading="isLoading"
+          :loading="isSubmitting"
           :status="t('loading')"
           :text="t('actions.create')"
           type="submit"
           variant="success"
-          @click="submit"
+          @click="handleSubmit(submit)"
         />
       </template>
     </TarModal>

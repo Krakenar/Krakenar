@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TarButton, TarCheckbox } from "logitar-vue3-ui";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
@@ -10,6 +10,7 @@ import type { PasswordSettings, UniqueNameSettings } from "@/types/settings";
 import type { Realm, UpdateRealmPayload } from "@/types/realms";
 import { arePasswordEqual, areUniqueNameEqual } from "@/helpers/settings";
 import { updateRealm } from "@/api/realms";
+import { useForm } from "@/forms";
 
 const { isNullOrWhiteSpace } = stringUtils;
 const { t } = useI18n();
@@ -18,7 +19,6 @@ const props = defineProps<{
   realm: Realm;
 }>();
 
-const isLoading = ref<boolean>(false);
 const passwordSettings = ref<PasswordSettings>({
   requiredLength: 8,
   requiredUniqueChars: 8,
@@ -32,35 +32,41 @@ const requireConfirmedAccount = ref<boolean>(true);
 const requireUniqueEmail = ref<boolean>(true);
 const uniqueNameSettings = ref<UniqueNameSettings>({});
 
+const canSubmit = computed<boolean>(
+  () =>
+    !isSubmitting.value &&
+    (hasChanges.value ||
+      props.realm.passwordSettings.requireLowercase !== passwordSettings.value.requireLowercase ||
+      props.realm.passwordSettings.requireUppercase !== passwordSettings.value.requireUppercase ||
+      props.realm.passwordSettings.requireDigit !== passwordSettings.value.requireDigit ||
+      props.realm.passwordSettings.requireNonAlphanumeric !== passwordSettings.value.requireNonAlphanumeric ||
+      props.realm.requireUniqueEmail !== requireUniqueEmail.value ||
+      props.realm.requireConfirmedAccount !== requireConfirmedAccount.value),
+);
+
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
   (e: "updated", value: Realm): void;
 }>();
 
+const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    try {
-      const payload: UpdateRealmPayload = {
-        uniqueNameSettings: !areUniqueNameEqual(props.realm.uniqueNameSettings, uniqueNameSettings.value)
-          ? {
-              allowedCharacters: isNullOrWhiteSpace(uniqueNameSettings.value.allowedCharacters ?? undefined)
-                ? null
-                : uniqueNameSettings.value.allowedCharacters,
-            }
-          : undefined,
-        passwordSettings: !arePasswordEqual(props.realm.passwordSettings, passwordSettings.value) ? passwordSettings.value : undefined,
-        requireUniqueEmail: props.realm.requireUniqueEmail !== requireUniqueEmail.value ? requireUniqueEmail.value : undefined,
-        requireConfirmedAccount: props.realm.requireConfirmedAccount !== requireConfirmedAccount.value ? requireConfirmedAccount.value : undefined,
-        customAttributes: [],
-      };
-      const realm: Realm = await updateRealm(props.realm.id, payload);
-      emit("updated", realm);
-    } catch (e: unknown) {
-      emit("error", e);
-    } finally {
-      isLoading.value = false;
-    }
+  try {
+    const payload: UpdateRealmPayload = {
+      uniqueNameSettings: !areUniqueNameEqual(props.realm.uniqueNameSettings, uniqueNameSettings.value)
+        ? {
+            allowedCharacters: isNullOrWhiteSpace(uniqueNameSettings.value.allowedCharacters ?? undefined) ? null : uniqueNameSettings.value.allowedCharacters,
+          }
+        : undefined,
+      passwordSettings: !arePasswordEqual(props.realm.passwordSettings, passwordSettings.value) ? passwordSettings.value : undefined,
+      requireUniqueEmail: props.realm.requireUniqueEmail !== requireUniqueEmail.value ? requireUniqueEmail.value : undefined,
+      requireConfirmedAccount: props.realm.requireConfirmedAccount !== requireConfirmedAccount.value ? requireConfirmedAccount.value : undefined,
+      customAttributes: [],
+    };
+    const realm: Realm = await updateRealm(props.realm.id, payload);
+    emit("updated", realm);
+  } catch (e: unknown) {
+    emit("error", e);
   }
 }
 
@@ -77,7 +83,7 @@ watch(
 </script>
 
 <template>
-  <form @submit.prevent="submit">
+  <form @submit.prevent="handleSubmit(submit)">
     <UniqueNameSettingsEdit v-model="uniqueNameSettings" />
     <PasswordSettingsEdit v-model="passwordSettings" />
     <h5>{{ t("settings.users.title") }}</h5>
@@ -106,7 +112,7 @@ watch(
       </TarCheckbox>
     </div>
     <div class="mb-3">
-      <TarButton :disabled="isLoading" icon="fas fa-save" :loading="isLoading" :status="t('loading')" :text="t('actions.save')" type="submit" />
+      <TarButton :disabled="!canSubmit" icon="fas fa-save" :loading="isSubmitting" :status="t('loading')" :text="t('actions.save')" type="submit" />
     </div>
   </form>
 </template>
