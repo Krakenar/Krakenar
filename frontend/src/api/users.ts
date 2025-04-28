@@ -1,7 +1,7 @@
 import { urlUtils } from "logitar-js";
 
 import type { SearchResults } from "@/types/search";
-import type { CreateOrReplaceUserPayload, SearchUsersPayload, User } from "@/types/users";
+import type { CreateOrReplaceUserPayload, SearchUsersPayload, UpdateUserPayload, User } from "@/types/users";
 import { _delete, get, patch, post, put } from ".";
 
 function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
@@ -59,4 +59,9 @@ export async function searchUsers(payload: SearchUsersPayload): Promise<SearchRe
 export async function signOutUser(id: string): Promise<User> {
   const url: string = new urlUtils.UrlBuilder({ path: "/api/users/{id}/sign/out" }).setParameter("id", id).buildRelative();
   return (await patch<void, User>(url)).data;
+}
+
+export async function updateUser(id: string, payload: UpdateUserPayload): Promise<User> {
+  const url: string = createUrlBuilder(id).buildRelative();
+  return (await patch<UpdateUserPayload, User>(url, payload)).data;
 }

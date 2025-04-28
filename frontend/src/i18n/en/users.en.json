@@ -4,6 +4,7 @@
   },
   "authenticated": "Has authenticated",
   "authentication": "Authentication Information",
+  "birthdate": "Birthdate",
   "confirmed": "Confirmed",
   "contact": "Contact Information",
   "create": "New User",
@@ -15,15 +16,33 @@
   },
   "empty": "This list is empty.",
   "enabled": "Enabled",
+  "gender": {
+    "label": "Gender",
+    "options": {
+      "female": "Female",
+      "male": "Male",
+      "other": "Other"
+    },
+    "placeholder": "Select a gender"
+  },
+  "name": {
+    "first": "First Name",
+    "last": "Last Name",
+    "middle": "Middle Name",
+    "nick": "Nickname"
+  },
   "password": {
     "label": "Password",
     "less": "Passwordless",
     "with": "Has password"
   },
+  "personal": "Personal Information",
   "phone": {
     "number": "Phone Number",
     "verified": "Verified"
   },
+  "picture": "Picture (URL)",
+  "profile": "Profile (URL)",
   "select": {
     "label": "User",
     "placeholder": "Select a user"
@@ -70,5 +89,7 @@
   },
   "title": "Users",
   "username": "Username",
-  "viewSessions": "View sessions"
+  "updated": "The user has been updated.",
+  "viewSessions": "View sessions",
+  "website": "Website (URL)"
 }

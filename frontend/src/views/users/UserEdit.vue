@@ -4,6 +4,8 @@ import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
 
+import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
+import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UserSummary from "@/components/users/UserSummary.vue";
 import type { Configuration } from "@/types/configuration";
@@ -29,6 +31,31 @@ function setMetadata(updated: User): void {
     user.value.updatedOn = updated.updatedOn;
   }
 }
+function onAuthenticationUpdated(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.uniqueName = updated.uniqueName;
+  }
+  toasts.success("users.updated");
+}
+function onPersonalUpdated(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.firstName = updated.firstName;
+    user.value.middleName = updated.middleName;
+    user.value.lastName = updated.lastName;
+    user.value.fullName = updated.fullName;
+    user.value.nickname = updated.nickname;
+    user.value.birthdate = updated.birthdate;
+    user.value.gender = updated.gender;
+    user.value.locale = updated.locale;
+    user.value.timeZone = updated.timeZone;
+    user.value.picture = updated.picture;
+    user.value.profile = updated.profile;
+    user.value.website = updated.website;
+  }
+  toasts.success("users.updated");
+}
 
 onMounted(async () => {
   try {
@@ -50,8 +77,14 @@ onMounted(async () => {
       <StatusDetail :aggregate="user" />
       <UserSummary :user="user" />
       <TarTabs>
-        <TarTab active id="authentication" :title="t('users.authentication')">
+        <TarTab id="authentication" :title="t('users.authentication')">
+          <AuthenticationInformation :configuration="configuration" :user="user" @error="handleError" @updated="onAuthenticationUpdated" />
+        </TarTab>
+        <TarTab id="contact" :title="t('users.contact')">
           <p>TODO(fpion): implement</p>
+        </TarTab>
+        <TarTab active id="personal" :title="t('users.personal')">
+          <PersonalInformation :user="user" @error="handleError" @updated="onPersonalUpdated" />
         </TarTab>
       </TarTabs>
     </template>

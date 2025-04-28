@@ -4,6 +4,8 @@ import type { CustomAttribute } from "./custom";
 import type { Realm } from "./realms";
 import type { SearchPayload, SortOption } from "./search";
 
+export type CollectionAction = "Add" | "Remove";
+
 export type CreateOrReplaceRolePayload = {
   uniqueName: string;
   displayName?: string | null;
@@ -17,6 +19,11 @@ export type Role = Aggregate & {
   displayName?: string | null;
   description?: string | null;
   customAttributes: CustomAttribute[];
+};
+
+export type RoleChange = {
+  role: string;
+  action: CollectionAction;
 };
 
 export type RoleSort = "CreatedOn" | "DisplayName" | "UniqueName" | "UpdatedOn";

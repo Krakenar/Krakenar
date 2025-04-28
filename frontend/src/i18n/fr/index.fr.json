@@ -57,6 +57,10 @@
     "updatedOn": "Dernière modification le {date} par"
   },
   "system": "Système",
+  "timeZone": {
+    "label": "Fuseau horaire",
+    "placeholder": "Sélectionnez un fuseau horaire"
+  },
   "toasts": {
     "error": {
       "message": "Une erreur inattendue s’est produite. Veuillez réessayer plus tard ou contacter notre équipe de support.",

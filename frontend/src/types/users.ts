@@ -1,9 +1,10 @@
 import type { Actor } from "./actor";
 import type { Aggregate } from "./aggregate";
+import type { Change } from "./change";
 import type { CustomAttribute, CustomIdentifier } from "./custom";
 import type { Locale } from "./i18n";
 import type { Realm } from "./realms";
-import type { Role } from "./roles";
+import type { Role, RoleChange } from "./roles";
 import type { SearchPayload, SortOption } from "./search";
 import type { Session } from "./sessions";
 
@@ -69,6 +70,8 @@ export type EmailPayload = ContactPayload & {
   address: string;
 };
 
+export type PersonNameKind = "first" | "middle" | "last" | "nick";
+
 export type Phone = Contact & {
   countryCode?: string | null;
   number: string;
@@ -89,6 +92,28 @@ export type SearchUsersPayload = SearchPayload & {
   hasAuthenticated?: boolean | null;
   roleId?: string | null;
   sort: UserSortOption[];
+};
+
+export type UpdateUserPayload = {
+  uniqueName?: string;
+  password?: ChangePasswordPayload;
+  isDisabled?: boolean;
+  address?: AddressPayload;
+  email?: EmailPayload;
+  phone?: PhonePayload;
+  firstName?: Change<string> | null;
+  middleName?: Change<string> | null;
+  lastName?: Change<string> | null;
+  nickname?: Change<string> | null;
+  birthdate?: Change<Date> | null;
+  gender?: Change<string> | null;
+  locale?: Change<string> | null;
+  timeZone?: Change<string> | null;
+  picture?: Change<string> | null;
+  profile?: Change<string> | null;
+  website?: Change<string> | null;
+  customAttributes: CustomAttribute[];
+  roles: RoleChange[];
 };
 
 export type User = Aggregate & {

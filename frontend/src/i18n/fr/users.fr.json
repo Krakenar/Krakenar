@@ -4,6 +4,7 @@
   },
   "authenticated": "S’est authentifié",
   "authentication": "Informations d’authentification",
+  "birthdate": "Date de naissance",
   "confirmed": "Confirmé",
   "contact": "Informations de contact",
   "create": "Nouvel utilisateur",
@@ -15,15 +16,33 @@
   },
   "empty": "Cette liste est vide.",
   "enabled": "Activé",
+  "gender": {
+    "label": "Genre",
+    "options": {
+      "female": "Féminin",
+      "male": "Masculin",
+      "other": "Autre"
+    },
+    "placeholder": "Sélectionnez un genre"
+  },
+  "name": {
+    "first": "Prénom",
+    "last": "Nom de famille",
+    "middle": "Nom intermédiaire",
+    "nick": "Surnom"
+  },
   "password": {
     "label": "Mot de passe",
     "less": "Sans mot de passe",
     "with": "Avec mot de passe"
   },
+  "personal": "Informations personnelles",
   "phone": {
     "number": "Numéro de téléphone",
     "verified": "Vérifié"
   },
+  "picture": "Photo (URL)",
+  "profile": "Profil (URL)",
   "select": {
     "label": "Utilisateur",
     "placeholder": "Sélectionnez un utilisateur"
@@ -70,5 +89,7 @@
   },
   "title": "Utilisateurs",
   "username": "Nom d’utilisateur",
-  "viewSessions": "Voir les sessions"
+  "updated": "L’utilisateur a été mis à jour.",
+  "viewSessions": "Voir les sessions",
+  "website": "Site Web (URL)"
 }
