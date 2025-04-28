@@ -45,19 +45,21 @@ function onSetDefault(updated: Language): void {
 
 const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
-  localeAlreadyUsed.value = false;
-  try {
-    const payload: UpdateLanguagePayload = {
-      locale: language.value.locale.code !== locale.value ? locale.value : undefined,
-    };
-    const updatedLanguage: Language = await updateLanguage(language.value.id, payload);
-    setModel(updatedLanguage);
-    toasts.success("languages.updated");
-  } catch (e: unknown) {
-    if (isError(e, StatusCodes.Conflict, ErrorCodes.LocaleAlreadyUsed)) {
-      localeAlreadyUsed.value = true;
-    } else {
-      handleError(e);
+  if (language.value) {
+    localeAlreadyUsed.value = false;
+    try {
+      const payload: UpdateLanguagePayload = {
+        locale: language.value.locale.code !== locale.value ? locale.value : undefined,
+      };
+      const updatedLanguage: Language = await updateLanguage(language.value.id, payload);
+      setModel(updatedLanguage);
+      toasts.success("languages.updated");
+    } catch (e: unknown) {
+      if (isError(e, StatusCodes.Conflict, ErrorCodes.LocaleAlreadyUsed)) {
+        localeAlreadyUsed.value = true;
+      } else {
+        handleError(e);
+      }
     }
   }
 }
