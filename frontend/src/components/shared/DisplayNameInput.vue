@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
-import AppInput from "./AppInput.vue";
+import FormInput from "@/components/forms/FormInput.vue";
 
 const { t } = useI18n();
 
@@ -26,5 +26,5 @@ defineEmits<{
 </script>
 
 <template>
-  <AppInput :id="id" :label="t(label)" :max="max" :model-value="modelValue" :required="required" @update:model-value="$emit('update:model-value', $event)" />
+  <FormInput :id="id" :label="t(label)" :max="max" :model-value="modelValue" :required="required" @update:model-value="$emit('update:model-value', $event)" />
 </template>

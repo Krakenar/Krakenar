@@ -16,6 +16,8 @@ function focus(): void {
   inputRef.value?.focus();
 }
 defineExpose({ focus });
+
+// TODO(fpion): remove this
 </script>
 
 <template>

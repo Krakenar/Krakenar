@@ -11,11 +11,11 @@ import { ErrorCodes, StatusCodes } from "@/types/api";
 import { createRole } from "@/api/roles";
 import { isError } from "@/helpers/error";
 import { readConfiguration } from "@/api/configuration";
+import { useForm } from "@/forms";
 
 const { t } = useI18n();
 
 const configuration = ref<Configuration>(); // TODO(fpion): get unique name settings from realm (if realm)
-const isLoading = ref<boolean>(false);
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
@@ -24,42 +24,37 @@ function hide(): void {
   modalRef.value?.hide();
 }
 
-function reset(): void {
-  uniqueNameAlreadyUsed.value = false;
-  uniqueName.value = "";
-}
-
 const emit = defineEmits<{
   (e: "created", value: Role): void;
   (e: "error", value: unknown): void;
 }>();
 
 function onCancel(): void {
-  reset();
+  onReset();
   hide();
 }
+function onReset(): void {
+  uniqueNameAlreadyUsed.value = false;
+  reset();
+}
 
-async function submit(): Promise<void> {
-  if (!isLoading.value) {
-    isLoading.value = true;
-    uniqueNameAlreadyUsed.value = false;
-    try {
-      const payload: CreateOrReplaceRolePayload = {
-        uniqueName: uniqueName.value,
-        customAttributes: [],
-      };
-      const role: Role = await createRole(payload);
-      emit("created", role);
-      reset();
-      hide();
-    } catch (e: unknown) {
-      if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueNameAlreadyUsed)) {
-        uniqueNameAlreadyUsed.value = true;
-      } else {
-        emit("error", e);
-      }
-    } finally {
-      isLoading.value = false;
+const { hasChanges, isSubmitting, handleSubmit, reset } = useForm();
+async function onSubmit(): Promise<void> {
+  uniqueNameAlreadyUsed.value = false;
+  try {
+    const payload: CreateOrReplaceRolePayload = {
+      uniqueName: uniqueName.value,
+      customAttributes: [],
+    };
+    const role: Role = await createRole(payload);
+    emit("created", role);
+    onReset();
+    hide();
+  } catch (e: unknown) {
+    if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueNameAlreadyUsed)) {
+      uniqueNameAlreadyUsed.value = true;
+    } else {
+      emit("error", e);
     }
   }
 }
@@ -78,20 +73,20 @@ onMounted(async () => {
     <TarButton icon="fas fa-plus" :text="t('actions.create')" variant="success" data-bs-toggle="modal" data-bs-target="#create-role" />
     <TarModal :close="t('actions.close')" id="create-role" ref="modalRef" :title="t('roles.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
-      <form @submit.prevent="submit">
+      <form @submit.prevent="handleSubmit(onSubmit)">
         <UniqueNameInput :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="!configuration || isLoading"
+          :disabled="!configuration || !hasChanges || isSubmitting"
           icon="fas fa-plus"
-          :loading="isLoading"
+          :loading="isSubmitting"
           :status="t('loading')"
           :text="t('actions.create')"
           type="submit"
           variant="success"
-          @click="submit"
+          @click="handleSubmit(onSubmit)"
         />
       </template>
     </TarModal>

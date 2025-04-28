@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
-import AppTextarea from "./AppTextarea.vue";
+import FormTextarea from "@/components/forms/FormTextarea.vue";
 
 const { t } = useI18n();
 
@@ -25,5 +25,5 @@ defineEmits<{
 </script>
 
 <template>
-  <AppTextarea :id="id" :label="t(label)" :model-value="modelValue" :rows="rows" @update:model-value="$emit('update:model-value', $event)" />
+  <FormTextarea :id="id" :label="t(label)" :model-value="modelValue" :rows="rows" @update:model-value="$emit('update:model-value', $event)" />
 </template>

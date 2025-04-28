@@ -6,8 +6,10 @@ import { useRoute } from "vue-router";
 
 import RoleGeneral from "@/components/roles/RoleGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import type { Configuration } from "@/types/configuration";
 import type { Role } from "@/types/roles";
 import { handleErrorKey } from "@/inject/App";
+import { readConfiguration } from "@/api/configuration";
 import { readRole } from "@/api/roles";
 import { useToastStore } from "@/stores/toast";
 
@@ -16,6 +18,7 @@ const route = useRoute();
 const toasts = useToastStore();
 const { t } = useI18n();
 
+const configuration = ref<Configuration>();
 const role = ref<Role>();
 
 function setMetadata(updated: Role): void {
@@ -40,6 +43,9 @@ onMounted(async () => {
   try {
     const id = route.params.id as string;
     role.value = await readRole(id);
+    if (!role.value.realm) {
+      configuration.value = await readConfiguration();
+    }
   } catch (e: unknown) {
     handleError(e);
   }
@@ -53,7 +59,7 @@ onMounted(async () => {
       <StatusDetail :aggregate="role" />
       <TarTabs>
         <TarTab active id="general" :title="t('general')">
-          <RoleGeneral :role="role" @error="handleError" @updated="onGeneralUpdated" />
+          <RoleGeneral :configuration="configuration" :role="role" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
       </TarTabs>
     </template>
