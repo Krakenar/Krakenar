@@ -71,7 +71,7 @@ onMounted(async () => {
 <template>
   <span>
     <TarButton icon="fas fa-plus" :text="t('actions.create')" variant="success" data-bs-toggle="modal" data-bs-target="#create-role" />
-    <TarModal :close="t('actions.close')" id="create-role" ref="modalRef" :title="t('roles.create')">
+    <TarModal :close="t('actions.close')" id="create-role" ref="modalRef" size="large" :title="t('roles.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
         <UniqueNameInput :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />

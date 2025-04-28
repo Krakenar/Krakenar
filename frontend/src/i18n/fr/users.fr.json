@@ -1,15 +1,24 @@
 {
-  "active": "Actif",
-  "contact": {
-    "title": "Informations de contact",
-    "verified": "Vérifié"
-  },
+  "authenticated": "S’est authentifié",
+  "authentication": "Informations d’authentification",
+  "confirmed": "Confirmé",
+  "contact": "Informations de contact",
   "create": "Nouvel utilisateur",
   "created": "L’utilisateur a été créé.",
+  "disabled": "Désactivé",
+  "email": {
+    "address": "Adresse courriel",
+    "verified": "Vérifiée"
+  },
   "empty": "Cette liste est vide.",
+  "enabled": "Activé",
   "password": {
     "label": "Mot de passe",
-    "less": "Sans mot de passe"
+    "less": "Sans mot de passe",
+    "with": "Avec mot de passe"
+  },
+  "phone": {
+    "verified": "Vérifié"
   },
   "select": {
     "label": "Utilisateur",

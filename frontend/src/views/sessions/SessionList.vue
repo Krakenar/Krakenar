@@ -23,10 +23,10 @@ import { searchSessions } from "@/api/sessions";
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
+const { d, rt, t, tm } = useI18n();
 const { isEmpty } = objectUtils;
 const { orderBy } = arrayUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
-const { d, rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
 const sessions = ref<Session[]>([]);

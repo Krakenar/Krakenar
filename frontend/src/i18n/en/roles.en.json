@@ -2,6 +2,10 @@
   "create": "New Role",
   "created": "The role has been created.",
   "empty": "This list is empty.",
+  "select": {
+    "label": "Role",
+    "placeholder": "Select a role"
+  },
   "sort": {
     "options": {
       "CreatedOn": "Created on",

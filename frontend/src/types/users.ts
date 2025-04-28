@@ -22,12 +22,12 @@ export type AddressPayload = ContactPayload & {
   postalCode?: string;
   region?: string;
   country: string;
-}
+};
 
 export type ChangePasswordPayload = {
-  current?: string
-  new: string
-}
+  current?: string;
+  new: string;
+};
 
 export type Contact = {
   isVerified: boolean;
@@ -41,25 +41,25 @@ export type ContactPayload = {
 
 export type CreateOrReplaceUserPayload = {
   uniqueName: string;
-  password?: ChangePasswordPayload
-  isDisabled?: boolean
-  address?: AddressPayload
-  email?: EmailPayload
-  phone?: PhonePayload
-  firstName?: string
-  middleName?: string
-  lastName?: string
-  nickname?: string
-  birthdate?: Date
-  gender?: string
-  locale?: string
-  timeZone?: string
-  picture?: string
-  profile?: string
-  website?: string
+  password?: ChangePasswordPayload;
+  isDisabled?: boolean;
+  address?: AddressPayload;
+  email?: EmailPayload;
+  phone?: PhonePayload;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  nickname?: string;
+  birthdate?: Date;
+  gender?: string;
+  locale?: string;
+  timeZone?: string;
+  picture?: string;
+  profile?: string;
+  website?: string;
   customAttributes: CustomAttribute[];
   roles: string[];
-}
+};
 
 export type Email = Contact & {
   address: string;

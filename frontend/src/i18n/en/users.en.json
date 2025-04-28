@@ -1,6 +1,24 @@
 {
+  "authenticated": "Has authenticated",
+  "authentication": "Authentication Information",
+  "confirmed": "Confirmed",
+  "contact": "Contact Information",
+  "create": "New User",
+  "created": "The user has been created.",
+  "disabled": "Disabled",
+  "email": {
+    "address": "Email address",
+    "verified": "Verified"
+  },
+  "empty": "This list is empty.",
+  "enabled": "Enabled",
   "password": {
-    "label": "Password"
+    "label": "Password",
+    "less": "Passwordless",
+    "with": "Has password"
+  },
+  "phone": {
+    "verified": "Verified"
   },
   "select": {
     "label": "User",
@@ -28,5 +46,24 @@
       "page": "Sign Out"
     }
   },
+  "sort": {
+    "options": {
+      "AuthenticatedOn": "Last authenticated on",
+      "Birthdate": "Birthdate",
+      "CreatedOn": "Created on",
+      "DisabledOn": "Disabled on",
+      "EmailAddress": "Email Address",
+      "FirstName": "First Name",
+      "FullName": "Full Name",
+      "LastName": "Last Name",
+      "MiddleName": "Middle Name",
+      "Nickname": "Nickname",
+      "PasswordChangedOn": "Password changed on",
+      "PhoneNumber": "Phone Number",
+      "UniqueName": "Unique Name",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": "Users",
   "username": "Username"
 }

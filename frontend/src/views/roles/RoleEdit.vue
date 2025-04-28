@@ -8,6 +8,7 @@ import RoleGeneral from "@/components/roles/RoleGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Configuration } from "@/types/configuration";
 import type { Role } from "@/types/roles";
+import { formatRole } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
 import { readRole } from "@/api/roles";
@@ -55,7 +56,7 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="role">
-      <h1>{{ role.displayName ?? role.uniqueName }}</h1>
+      <h1>{{ formatRole(role) }}</h1>
       <StatusDetail :aggregate="role" />
       <TarTabs>
         <TarTab active id="general" :title="t('general')">

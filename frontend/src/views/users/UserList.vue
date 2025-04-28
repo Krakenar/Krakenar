@@ -6,15 +6,18 @@ import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
-import ActiveBadge from "@/components/users/ActiveBadge.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateUser from "@/components/users/CreateUser.vue";
+import EnabledBadge from "@/components/users/EnabledBadge.vue";
+import HasPasswordSelect from "@/components/users/HasPasswordSelect.vue";
+import RoleSelect from "@/components/roles/RoleSelect.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import UserAvatar from "@/components/users/UserAvatar.vue";
 import VerifiedBadge from "@/components/users/VerifiedBadge.vue";
+import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { SearchResults } from "@/types/search";
 import type { User, UserSort, SearchUsersPayload } from "@/types/users";
 import { handleErrorKey } from "@/inject/App";
@@ -25,10 +28,10 @@ const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
+const { d, rt, t, tm } = useI18n();
 const { isEmpty } = objectUtils;
 const { orderBy } = arrayUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
-const { d, rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
 const timestamp = ref<number>(0);
@@ -36,8 +39,13 @@ const total = ref<number>(0);
 const users = ref<User[]>([]);
 
 const count = computed<number>(() => parseNumber(route.query.count?.toString()) || 10);
+const hasAuthenticated = computed<boolean | undefined>(() => parseBoolean(route.query.authenticated?.toString()));
+const hasPassword = computed<boolean | undefined>(() => parseBoolean(route.query.password?.toString()));
+const isConfirmed = computed<boolean | undefined>(() => parseBoolean(route.query.confirmed?.toString()));
 const isDescending = computed<boolean>(() => parseBoolean(route.query.isDescending?.toString()) ?? false);
+const isDisabled = computed<boolean | undefined>(() => parseBoolean(route.query.disabled?.toString()));
 const page = computed<number>(() => parseNumber(route.query.page?.toString()) || 1);
+const roleId = computed<string>(() => route.query.role?.toString() ?? "");
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 
@@ -50,7 +58,12 @@ const sortOptions = computed<SelectOption[]>(() =>
 
 async function refresh(): Promise<void> {
   const payload: SearchUsersPayload = {
+    hasAuthenticated: hasAuthenticated.value,
+    hasPassword: hasPassword.value,
     ids: [],
+    isConfirmed: isConfirmed.value,
+    isDisabled: isDisabled.value,
+    roleId: roleId.value,
     search: {
       terms: search.value
         .split(" ")
@@ -83,6 +96,11 @@ async function refresh(): Promise<void> {
 function setQuery(key: string, value: string): void {
   const query = { ...route.query, [key]: value };
   switch (key) {
+    case "authenticated":
+    case "confirmed":
+    case "disabled":
+    case "password":
+    case "role":
     case "search":
     case "count":
       query.page = "1";
@@ -106,6 +124,11 @@ watch(
           ...route,
           query: isEmpty(query)
             ? {
+                authenticated: "",
+                confirmed: "",
+                disabled: "",
+                password: "",
+                role: "",
                 search: "",
                 sort: "UpdatedOn",
                 isDescending: "true",
@@ -142,19 +165,33 @@ watch(
       />
       <CreateUser class="ms-1" @created="onCreated" @error="handleError" />
     </div>
-    <!-- TODO(fpion): filters := { hasPassword, isDisabled, isConfirmed, hasAuthenticated, roleId } -->
     <div class="mb-3 row">
-      <!-- TODO(fpion): filter -->
-      <!-- TODO(fpion): filter -->
-      <!-- TODO(fpion): filter -->
-    </div>
-    <div class="mb-3 row">
-      <!-- TODO(fpion): filter -->
-      <!-- TODO(fpion): filter -->
-      <!-- TODO(fpion): filter -->
+      <HasPasswordSelect class="col" :model-value="hasPassword" @update:model-value="setQuery('password', $event?.toString() ?? '')" />
+      <YesNoSelect
+        class="col"
+        id="disabled"
+        label="users.disabled"
+        :model-value="isDisabled"
+        @update:model-value="setQuery('disabled', $event?.toString() ?? '')"
+      />
+      <YesNoSelect
+        class="col"
+        id="confirmed"
+        label="users.confirmed"
+        :model-value="isConfirmed"
+        @update:model-value="setQuery('confirmed', $event?.toString() ?? '')"
+      />
+      <YesNoSelect
+        class="col"
+        id="authenticated"
+        label="users.authenticated"
+        :model-value="hasAuthenticated"
+        @update:model-value="setQuery('authenticated', $event?.toString() ?? '')"
+      />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
+      <RoleSelect class="col" :model-value="roleId" @update:model-value="setQuery('role', $event?.toString() ?? '')" />
       <SortSelect
         class="col"
         :descending="isDescending"
@@ -172,7 +209,7 @@ watch(
             <th scope="col">{{ t("users.select.label") }}</th>
             <th scope="col">{{ t("users.sort.options.PasswordChangedOn") }}</th>
             <th scope="col">{{ t("users.sort.options.DisabledOn") }}</th>
-            <th scope="col">{{ t("users.contact.title") }}</th>
+            <th scope="col">{{ t("users.contact") }}</th>
             <th scope="col">{{ t("users.sort.options.Birthdate") }}</th>
             <th scope="col">{{ t("users.sort.options.AuthenticatedOn") }}</th>
             <th scope="col">{{ t("users.sort.options.UpdatedOn") }}</th>
@@ -183,11 +220,11 @@ watch(
             <td><UserAvatar :user="user" /></td>
             <td>
               <StatusBlock v-if="user.passwordChangedBy && user.passwordChangedOn" :actor="user.passwordChangedBy" :date="user.passwordChangedOn" />
-              <template v-else>{{ t("users.password.less") }}</template>
+              <span class="ms-1 text-muted" v-else>{{ "—" }}</span>
             </td>
             <td>
               <StatusBlock v-if="user.disabledBy && user.disabledOn" :actor="user.disabledBy" :date="user.disabledOn" />
-              <ActiveBadge v-else />
+              <EnabledBadge v-else />
             </td>
             <td>
               <font-awesome-icon icon="fas fa-at" />

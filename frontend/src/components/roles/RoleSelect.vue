@@ -4,10 +4,10 @@ import { arrayUtils, parsingUtils } from "logitar-js";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import type { Role, SearchRolesPayload } from "@/types/roles";
 import type { SearchResults } from "@/types/search";
-import type { SearchUsersPayload, User } from "@/types/users";
-import { formatUser } from "@/helpers/format";
-import { searchUsers } from "@/api/users";
+import { formatRole } from "@/helpers/format";
+import { searchRoles } from "@/api/roles";
 
 const { orderBy } = arrayUtils;
 const { parseBoolean } = parsingUtils;
@@ -22,46 +22,46 @@ const props = withDefaults(
     placeholder?: string;
   }>(),
   {
-    id: "user",
-    label: "users.select.label",
-    placeholder: "users.select.placeholder",
+    id: "role",
+    label: "roles.select.label",
+    placeholder: "roles.select.placeholder",
   },
 );
 
-const users = ref<User[]>([]);
+const roles = ref<Role[]>([]);
 
-const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || users.value.length === 0);
+const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || roles.value.length === 0);
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    users.value.map((user) => ({ text: formatUser(user), value: user.id })),
+    roles.value.map((role) => ({ text: formatRole(role), value: role.id })),
     "text",
   ),
 );
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
-  (e: "selected", value: User | undefined): void;
-  (e: "update:model-value", value: string): void;
+  (e: "selected", value: Role | undefined): void;
+  (e: "update:modelValue", value: string): void;
 }>();
 
-function onUserSelected(id: string): void {
-  emit("update:model-value", id);
+function onModelValueUpdate(id: string): void {
+  emit("update:modelValue", id);
 
-  const user: User | undefined = users.value.find((user) => user.id === id);
-  emit("selected", user);
+  const role: Role | undefined = roles.value.find((role) => role.id === id);
+  emit("selected", role);
 }
 
 onMounted(async () => {
   try {
-    const payload: SearchUsersPayload = {
+    const payload: SearchRolesPayload = {
       ids: [],
       search: { terms: [], operator: "And" },
       sort: [],
       skip: 0,
       limit: 0,
     };
-    const results: SearchResults<User> = await searchUsers(payload);
-    users.value = results.items;
+    const results: SearchResults<Role> = await searchRoles(payload);
+    roles.value = results.items;
   } catch (e: unknown) {
     emit("error", e);
   }
@@ -76,7 +76,7 @@ onMounted(async () => {
     :label="t(label)"
     :model-value="modelValue"
     :options="options"
-    :placeholder="t(placeholder)"
-    @update:model-value="onUserSelected"
+    :placeholder="t(placeholder ?? label)"
+    @update:modelValue="onModelValueUpdate"
   />
 </template>
