@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TarButton, TarCheckbox } from "logitar-vue3-ui";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
@@ -31,6 +31,18 @@ const passwordSettings = ref<PasswordSettings>({
 const requireConfirmedAccount = ref<boolean>(true);
 const requireUniqueEmail = ref<boolean>(true);
 const uniqueNameSettings = ref<UniqueNameSettings>({});
+
+const canSubmit = computed<boolean>(
+  () =>
+    !isSubmitting.value &&
+    (hasChanges.value ||
+      props.realm.passwordSettings.requireLowercase !== passwordSettings.value.requireLowercase ||
+      props.realm.passwordSettings.requireUppercase !== passwordSettings.value.requireUppercase ||
+      props.realm.passwordSettings.requireDigit !== passwordSettings.value.requireDigit ||
+      props.realm.passwordSettings.requireNonAlphanumeric !== passwordSettings.value.requireNonAlphanumeric ||
+      props.realm.requireUniqueEmail !== requireUniqueEmail.value ||
+      props.realm.requireConfirmedAccount !== requireConfirmedAccount.value),
+);
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
@@ -100,14 +112,7 @@ watch(
       </TarCheckbox>
     </div>
     <div class="mb-3">
-      <TarButton
-        :disabled="isSubmitting || !hasChanges"
-        icon="fas fa-save"
-        :loading="isSubmitting"
-        :status="t('loading')"
-        :text="t('actions.save')"
-        type="submit"
-      />
+      <TarButton :disabled="!canSubmit" icon="fas fa-save" :loading="isSubmitting" :status="t('loading')" :text="t('actions.save')" type="submit" />
     </div>
   </form>
 </template>
