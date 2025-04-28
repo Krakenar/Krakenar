@@ -183,7 +183,7 @@ watch(
               </template>
             </td>
             <td>
-              <UserAvatar :user="session.user" />
+              <UserAvatar target="_blank" :user="session.user" />
             </td>
             <td>
               <StatusBlock v-if="session.signedOutBy && session.signedOutOn" :actor="session.signedOutBy" :date="session.signedOutOn" />

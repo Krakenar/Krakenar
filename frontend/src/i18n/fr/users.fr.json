@@ -1,6 +1,15 @@
 {
+  "active": "Actif",
+  "contact": {
+    "title": "Informations de contact",
+    "verified": "Vérifié"
+  },
+  "create": "Nouvel utilisateur",
+  "created": "L’utilisateur a été créé.",
+  "empty": "Cette liste est vide.",
   "password": {
-    "label": "Mot de passe"
+    "label": "Mot de passe",
+    "less": "Sans mot de passe"
   },
   "select": {
     "label": "Utilisateur",
@@ -28,5 +37,24 @@
       "page": "Déconnexion"
     }
   },
+  "sort": {
+    "options": {
+      "AuthenticatedOn": "Dernière authentification",
+      "Birthdate": "Date de naissance",
+      "CreatedOn": "Date de création",
+      "DisabledOn": "Désactivation",
+      "EmailAddress": "Adresse courriel",
+      "FirstName": "Prénom",
+      "FullName": "Nom complet",
+      "LastName": "Nom de famille",
+      "MiddleName": "Nom intermédiaire",
+      "Nickname": "Surnom",
+      "PasswordChangedOn": "Mot de passe changé",
+      "PhoneNumber": "Numéro de téléphone",
+      "UniqueName": "Nom unique",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Utilisateurs",
   "username": "Nom d’utilisateur"
 }

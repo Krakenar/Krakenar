@@ -63,7 +63,7 @@ onMounted(async () => {
           <tr>
             <th scope="row">{{ t("users.select.label") }}</th>
             <td>
-              <UserAvatar :user="session.user" />
+              <UserAvatar target="_blank" :user="session.user" />
             </td>
           </tr>
           <tr>

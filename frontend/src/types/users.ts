@@ -16,13 +16,56 @@ export type Address = Contact & {
   formatted: string;
 };
 
+export type AddressPayload = ContactPayload & {
+  street: string;
+  locality: string;
+  postalCode?: string;
+  region?: string;
+  country: string;
+}
+
+export type ChangePasswordPayload = {
+  current?: string
+  new: string
+}
+
 export type Contact = {
   isVerified: boolean;
   verifiedBy?: Actor | null;
   verifiedOn?: string | null;
 };
 
+export type ContactPayload = {
+  isVerified: boolean;
+};
+
+export type CreateOrReplaceUserPayload = {
+  uniqueName: string;
+  password?: ChangePasswordPayload
+  isDisabled?: boolean
+  address?: AddressPayload
+  email?: EmailPayload
+  phone?: PhonePayload
+  firstName?: string
+  middleName?: string
+  lastName?: string
+  nickname?: string
+  birthdate?: Date
+  gender?: string
+  locale?: string
+  timeZone?: string
+  picture?: string
+  profile?: string
+  website?: string
+  customAttributes: CustomAttribute[];
+  roles: string[];
+}
+
 export type Email = Contact & {
+  address: string;
+};
+
+export type EmailPayload = ContactPayload & {
   address: string;
 };
 
@@ -31,6 +74,12 @@ export type Phone = Contact & {
   number: string;
   extension?: string | null;
   e164Formatted: string;
+};
+
+export type PhonePayload = ContactPayload & {
+  countryCode?: string;
+  number: string;
+  extension?: string;
 };
 
 export type SearchUsersPayload = SearchPayload & {
