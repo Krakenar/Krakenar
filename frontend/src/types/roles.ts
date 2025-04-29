@@ -8,8 +8,8 @@ export type CollectionAction = "Add" | "Remove";
 
 export type CreateOrReplaceRolePayload = {
   uniqueName: string;
-  displayName?: string | null;
-  description?: string | null;
+  displayName?: string;
+  description?: string;
   customAttributes: CustomAttribute[];
 };
 
@@ -37,8 +37,8 @@ export type SearchRolesPayload = SearchPayload & {
 };
 
 export type UpdateRolePayload = {
-  uniqueName?: string | null;
-  displayName?: Change<string> | null;
-  description?: Change<string> | null;
+  uniqueName?: string;
+  displayName?: Change<string>;
+  description?: Change<string>;
   customAttributes: CustomAttribute[];
 };

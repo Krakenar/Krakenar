@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { TarButton } from "logitar-vue3-ui";
 import { computed, ref, watch } from "vue";
+import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
+import EmailAddressInput from "./EmailAddressInput.vue";
 import type { AddressPayload, EmailPayload, PhonePayload, UpdateUserPayload, User } from "@/types/users";
 import { updateUser } from "@/api/users";
 import { useForm } from "@/forms";
 
+const { isNullOrWhiteSpace } = stringUtils;
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -43,7 +46,7 @@ async function submit(): Promise<void> {
   try {
     const payload: UpdateUserPayload = {
       // TODO(fpion): address
-      // TODO(fpion): email
+      email: hasEmailChanged.value ? { value: isNullOrWhiteSpace(email.value.address) ? null : email.value } : undefined,
       // TODO(fpion): phone
       customAttributes: [],
       roles: [],
@@ -82,7 +85,7 @@ watch(
 <template>
   <form @submit.prevent="handleSubmit(submit)">
     <div class="mb-3">
-      <!-- TODO(fpion): email -->
+      <EmailAddressInput v-model="email.address" />
       <!-- TODO(fpion): phone -->
       <!-- TODO(fpion): address -->
       <TarButton

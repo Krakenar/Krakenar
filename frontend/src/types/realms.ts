@@ -6,9 +6,9 @@ import type { SearchPayload, SortOption } from "./search";
 
 export type CreateOrReplaceRealmPayload = {
   uniqueSlug: string;
-  displayName?: string | null;
-  description?: string | null;
-  url?: string | null;
+  displayName?: string;
+  description?: string;
+  url?: string;
   uniqueNameSettings: UniqueNameSettings;
   passwordSettings: PasswordSettings;
   requireUniqueEmail: boolean;
@@ -39,13 +39,13 @@ export type SearchRealmsPayload = SearchPayload & {
 };
 
 export type UpdateRealmPayload = {
-  uniqueSlug?: string | null;
-  displayName?: Change<string> | null;
-  description?: Change<string> | null;
-  url?: Change<string> | null;
-  uniqueNameSettings?: UniqueNameSettings | null;
-  passwordSettings?: PasswordSettings | null;
-  requireUniqueEmail?: boolean | null;
-  requireConfirmedAccount?: boolean | null;
+  uniqueSlug?: string;
+  displayName?: Change<string>;
+  description?: Change<string>;
+  url?: Change<string>;
+  uniqueNameSettings?: UniqueNameSettings;
+  passwordSettings?: PasswordSettings;
+  requireUniqueEmail?: boolean;
+  requireConfirmedAccount?: boolean;
   customAttributes: CustomAttribute[];
 };

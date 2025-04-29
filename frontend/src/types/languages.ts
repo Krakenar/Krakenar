@@ -24,5 +24,5 @@ export type SearchLanguagesPayload = SearchPayload & {
 };
 
 export type UpdateLanguagePayload = {
-  locale?: string | null;
+  locale?: string;
 };
