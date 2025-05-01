@@ -1,6 +1,7 @@
 # TODO
 
 - CustomAttributeEvents
+- LanguageManager.FindAsync
 - RefreshToken
 - RoleService.FindAsync
 - UserService.FindAsync
@@ -8,7 +9,6 @@
 ## Dictionaries
 
 - Dictionary
-- DictionaryId
 - DictionaryManager
 
 ### Commands
@@ -21,7 +21,3 @@
 
 - ReadDictionary
 - SearchDictionaries
-
-## Localization
-
-- LanguageManager
