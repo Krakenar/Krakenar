@@ -22,6 +22,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.Client", "src\Krakenar.Client\Krakenar.Client.csproj", "{AF156173-6B6E-42A1-8C74-D90FCC3258B1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6EDD1CE3-C046-4FEE-BDCE-5B3CFB9968CE}"
+	ProjectSection(SolutionItems) = preProject
+		tests\TODO.md = tests\TODO.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.Tests", "tests\Krakenar.Tests\Krakenar.Tests.csproj", "{90ACFE09-4406-4B21-A1EC-02DA42F7BFDE}"
 EndProject

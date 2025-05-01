@@ -8,6 +8,7 @@ using Krakenar.Contracts.Users;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
+using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
@@ -91,6 +92,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarManagers(this IServiceCollection services)
   {
     return services
+      .AddTransient<IDictionaryManager, DictionaryManager>()
       .AddTransient<ILanguageManager, LanguageManager>()
       .AddTransient<IRealmManager, RealmManager>()
       .AddTransient<IRoleManager, RoleManager>()
@@ -117,6 +119,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddTransient<IConfigurationRepository, ConfigurationRepository>()
+      .AddTransient<IDictionaryRepository, DictionaryRepository>()
       .AddTransient<ILanguageRepository, LanguageRepository>()
       .AddTransient<IRealmRepository, RealmRepository>()
       .AddTransient<IRoleRepository, RoleRepository>()
