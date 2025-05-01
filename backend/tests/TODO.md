@@ -10,3 +10,18 @@
 - Dictionary
 - DictionaryId
 - DictionaryManager
+
+### Commands
+
+- CreateOrReplaceDictionary
+- DeleteDictionary
+- UpdateDictionary
+
+### Queries
+
+- ReadDictionary
+- SearchDictionaries
+
+## Localization
+
+- LanguageManager

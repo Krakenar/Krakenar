@@ -2,16 +2,16 @@
 
 public record CreateOrReplaceDictionaryPayload
 {
-  public Guid LanguageId { get; set; }
+  public string Language { get; set; } = string.Empty;
 
   public List<DictionaryEntry> Entries { get; set; } = [];
 
-  public CreateOrReplaceDictionaryPayload() : this(Guid.Empty)
+  public CreateOrReplaceDictionaryPayload() : this(string.Empty)
   {
   }
 
-  public CreateOrReplaceDictionaryPayload(Guid languageId)
+  public CreateOrReplaceDictionaryPayload(string language)
   {
-    LanguageId = languageId;
+    Language = language;
   }
 }
