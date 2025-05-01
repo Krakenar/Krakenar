@@ -16,8 +16,3 @@
 - CreateOrReplaceDictionary
 - DeleteDictionary
 - UpdateDictionary
-
-### Queries
-
-- ReadDictionary
-- SearchDictionaries
