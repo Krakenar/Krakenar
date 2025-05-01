@@ -8,6 +8,8 @@ import AddressLocalityInput from "./AddressLocalityInput.vue";
 import AddressStreetInput from "./AddressStreetInput.vue";
 import CountrySelect from "./CountrySelect.vue";
 import EmailAddressInput from "./EmailAddressInput.vue";
+import PhoneExtensionInput from "./PhoneExtensionInput.vue";
+import PhoneNumberInput from "./PhoneNumberInput.vue";
 import PostalCodeInput from "./PostalCodeInput.vue";
 import RegionSelect from "./RegionSelect.vue";
 import countries from "@/resources/countries.json";
@@ -26,7 +28,7 @@ const address = ref<AddressPayload>({ street: "", locality: "", postalCode: "", 
 const email = ref<EmailPayload>({ address: "", isVerified: false });
 const phone = ref<PhonePayload>({ countryCode: "", number: "", extension: "", isVerified: false });
 
-const country = computed<Country | undefined>(() => countries.find(({ code }) => code === address.value.country));
+const addressCountry = computed<Country | undefined>(() => countries.find(({ code }) => code === address.value.country));
 const hasAddressChanged = computed<boolean>(
   () =>
     (props.user.address?.street ?? "") !== address.value.street ||
@@ -47,8 +49,10 @@ const isAddressRequired = computed<boolean>(() =>
     address.value.street || address.value.locality || address.value.postalCode || address.value.region || address.value.country || address.value.isVerified,
   ),
 );
-const isPostalCodeRequired = computed<boolean>(() => Boolean(isAddressRequired.value && country.value?.postalCode));
-const isRegionRequired = computed<boolean>(() => Boolean(isAddressRequired.value && (country.value?.regions?.length ?? 0) > 0));
+const isPhoneRequired = computed<boolean>(() => Boolean(phone.value.countryCode || phone.value.number || phone.value.extension || phone.value.isVerified));
+const isPostalCodeRequired = computed<boolean>(() => Boolean(isAddressRequired.value && addressCountry.value?.postalCode));
+const isRegionRequired = computed<boolean>(() => Boolean(isAddressRequired.value && (addressCountry.value?.regions?.length ?? 0) > 0));
+const phoneCountry = computed<Country | undefined>(() => countries.find(({ code }) => code === phone.value.countryCode));
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
@@ -66,11 +70,31 @@ async function submit(): Promise<void> {
     const payload: UpdateUserPayload = {
       address: hasAddressChanged.value
         ? {
-            value: isNullOrWhiteSpace(address.value.street) ? null : address.value,
+            value: isNullOrWhiteSpace(address.value.street)
+              ? null
+              : {
+                  street: address.value.street,
+                  locality: address.value.locality,
+                  postalCode: address.value.postalCode || undefined,
+                  region: address.value.region || undefined,
+                  country: address.value.country,
+                  isVerified: address.value.isVerified,
+                },
           }
         : undefined,
       email: hasEmailChanged.value ? { value: isNullOrWhiteSpace(email.value.address) ? null : email.value } : undefined,
-      // TODO(fpion): phone
+      phone: hasPhoneChanged.value
+        ? {
+            value: isNullOrWhiteSpace(phone.value.number)
+              ? null
+              : {
+                  countryCode: phone.value.countryCode,
+                  number: phone.value.number,
+                  extension: phone.value.extension || undefined,
+                  isVerified: phone.value.isVerified,
+                },
+          }
+        : undefined,
       customAttributes: [],
       roles: [],
     };
@@ -109,16 +133,21 @@ watch(
   <form @submit.prevent="handleSubmit(submit)">
     <div class="mb-3">
       <EmailAddressInput v-model="email.address" />
-      <!-- TODO(fpion): phone -->
-      <h3>{{ t("users.address.title") }}</h3>
+      <h5>{{ t("users.phone.title") }}</h5>
+      <div class="row">
+        <CountrySelect class="col" id="phone-country" :required="isPhoneRequired" v-model="phone.countryCode" />
+        <PhoneNumberInput class="col" :country="phoneCountry" :required="isPhoneRequired" v-model="phone.number" />
+        <PhoneExtensionInput class="col" v-model="phone.extension" />
+      </div>
+      <h5>{{ t("users.address.title") }}</h5>
       <AddressStreetInput :required="isAddressRequired" v-model="address.street" />
       <div class="row">
         <AddressLocalityInput class="col" :required="isAddressRequired" v-model="address.locality" />
-        <PostalCodeInput class="col" :country="country" :required="isPostalCodeRequired" v-model="address.postalCode" />
+        <PostalCodeInput class="col" :country="addressCountry" :required="isPostalCodeRequired" v-model="address.postalCode" />
       </div>
       <div class="row">
-        <CountrySelect class="col" :model-value="address.country" :required="isAddressRequired" @update:model-value="onCountryChange" />
-        <RegionSelect class="col" :country="country" :required="isRegionRequired" v-model="address.region" />
+        <CountrySelect class="col" id="address-country" :model-value="address.country" :required="isAddressRequired" @update:model-value="onCountryChange" />
+        <RegionSelect class="col" :country="addressCountry" :required="isRegionRequired" v-model="address.region" />
       </div>
       <TarButton
         :disabled="isSubmitting || !hasChanges"

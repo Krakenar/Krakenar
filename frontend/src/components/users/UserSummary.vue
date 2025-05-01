@@ -49,7 +49,7 @@ const addressLines = computed<string[]>(() => props.user.address?.formatted.spli
         </td>
       </tr>
       <tr>
-        <th scope="row">{{ t("users.phone.number") }}</th>
+        <th scope="row">{{ t("users.phone.title") }}</th>
         <td>
           <template v-if="user.phone">
             {{ user.phone.e164Formatted }}

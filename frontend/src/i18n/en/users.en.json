@@ -49,7 +49,9 @@
   },
   "personal": "Personal Information",
   "phone": {
-    "number": "Phone Number"
+    "extension": "Extension",
+    "number": "Phone Number",
+    "title": "Phone"
   },
   "picture": "Picture (URL)",
   "profile": "Profile (URL)",

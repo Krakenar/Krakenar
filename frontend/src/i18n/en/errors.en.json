@@ -12,6 +12,7 @@
   "minimumLength": "The {name} must contain at least {minimumLength} characters.",
   "minimumValue": "The {name} must be greater than or equal to {minimumValue}.",
   "pattern": "The {name} must match the following pattern: {pattern}",
+  "phone": "Please enter a valid phone number.",
   "required": "The {name} is required.",
   "slug": "The {name} must be composed of non-empty alphanumeric words separated by hyphens (-).",
   "uniqueCharacters": "The {name} must contain at least {uniqueCharacters} different characters.",

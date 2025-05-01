@@ -12,6 +12,7 @@
   "minimumLength": "Le champs « {name} » doit contenir au moins {minimumLength} caractères.",
   "minimumValue": "Le champs « {name} » doit être supérieur ou égal à {minimumValue}.",
   "pattern": "Le champs « {name} » doit correspondre au modèle suivant : {pattern}",
+  "phone": "Veuillez entrer un numéro de téléphone valide.",
   "required": "Le champs « {name} » est requis.",
   "slug": "Le champs « {name} » doit être composé de mots alphanumériques non vides séparés par un tiret (-).",
   "uniqueCharacters": "Le champs « {name} » doit contenir au moins {uniqueCharacters} caractères uniques.",
