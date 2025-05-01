@@ -12,7 +12,10 @@
     },
     "street": "Street",
     "title": "Postal Address",
-    "verified": "Verified"
+    "verified": {
+      "format": "Verified on {date} by",
+      "label": "Verified"
+    }
   },
   "authenticated": "Has authenticated",
   "authentication": "Authentication Information",
@@ -23,7 +26,12 @@
   "created": "The user has been created.",
   "disabled": "Disabled",
   "email": {
-    "address": "Email address"
+    "address": "Email Address",
+    "title": "Email",
+    "verified": {
+      "format": "Verified on {date} by",
+      "label": "Verified"
+    }
   },
   "empty": "This list is empty.",
   "enabled": "Enabled",
@@ -51,7 +59,11 @@
   "phone": {
     "extension": "Extension",
     "number": "Phone Number",
-    "title": "Phone"
+    "title": "Phone",
+    "verified": {
+      "format": "Verified on {date} by",
+      "label": "Verified"
+    }
   },
   "picture": "Picture (URL)",
   "profile": "Profile (URL)",

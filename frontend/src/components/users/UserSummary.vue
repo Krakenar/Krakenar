@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 
 import EnabledBadge from "./EnabledBadge.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
+import StatusInfo from "@/components/shared/StatusInfo.vue";
 import type { User } from "@/types/users";
 
 const { d, t } = useI18n();
@@ -33,7 +34,11 @@ const addressLines = computed<string[]>(() => props.user.address?.formatted.spli
               {{ line }}
               <br v-if="index < addressLines.length - 1" />
             </template>
-            <!-- TODO(fpion): (un)verified -->
+            <template v-if="user.address && user.address.verifiedBy && user.address.verifiedOn">
+              <br />
+              <font-awesome-icon class="me-1" icon="fas fa-certificate" />
+              <StatusInfo :actor="user.address.verifiedBy" :date="user.address.verifiedOn" format="users.address.verified.format" />
+            </template>
           </template>
           <span class="text-muted" v-else>{{ "—" }}</span>
         </td>
@@ -43,7 +48,11 @@ const addressLines = computed<string[]>(() => props.user.address?.formatted.spli
         <td>
           <template v-if="user.email">
             {{ user.email.address }}
-            <!-- TODO(fpion): (un)verified -->
+            <template v-if="user.email.verifiedBy && user.email.verifiedOn">
+              <br />
+              <font-awesome-icon class="me-1" icon="fas fa-certificate" />
+              <StatusInfo :actor="user.email.verifiedBy" :date="user.email.verifiedOn" format="users.email.verified.format" />
+            </template>
           </template>
           <span class="text-muted" v-else>{{ "—" }}</span>
         </td>
@@ -53,7 +62,11 @@ const addressLines = computed<string[]>(() => props.user.address?.formatted.spli
         <td>
           <template v-if="user.phone">
             {{ user.phone.e164Formatted }}
-            <!-- TODO(fpion): (un)verified -->
+            <template v-if="user.phone.verifiedBy && user.phone.verifiedOn">
+              <br />
+              <font-awesome-icon class="me-1" icon="fas fa-certificate" />
+              <StatusInfo :actor="user.phone.verifiedBy" :date="user.phone.verifiedOn" format="users.phone.verified.format" />
+            </template>
           </template>
           <span class="text-muted" v-else>{{ "—" }}</span>
         </td>

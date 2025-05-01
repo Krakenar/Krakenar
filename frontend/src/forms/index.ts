@@ -37,7 +37,11 @@ export function useField(id: string, options?: FieldOptions): FormField {
   }
 
   function handleChange(e: Event, skipValidation?: boolean): void {
-    value.value = (e.target as HTMLInputElement)?.value ?? "";
+    const element = e.target as HTMLInputElement;
+    if (element?.id !== id) {
+      return;
+    }
+    value.value = element.value ?? "";
     events?.updated(id, value.value);
     emit("update:model-value", value.value);
 

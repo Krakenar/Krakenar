@@ -35,14 +35,19 @@ const hasAddressChanged = computed<boolean>(
     (props.user.address?.locality ?? "") !== address.value.locality ||
     (props.user.address?.postalCode ?? "") !== address.value.postalCode ||
     (props.user.address?.region ?? "") !== address.value.region ||
-    (props.user.address?.country ?? "") !== address.value.country,
+    (props.user.address?.country ?? "") !== address.value.country ||
+    (props.user.address?.isVerified ?? false) !== address.value.isVerified,
 );
-const hasEmailChanged = computed<boolean>(() => (props.user.email?.address ?? "") !== email.value.address);
+const hasChanges = computed<boolean>(() => hasAddressChanged.value || hasEmailChanged.value || hasPhoneChanged.value);
+const hasEmailChanged = computed<boolean>(
+  () => (props.user.email?.address ?? "") !== email.value.address || (props.user.email?.isVerified ?? false) !== email.value.isVerified,
+);
 const hasPhoneChanged = computed<boolean>(
   () =>
     (props.user.phone?.countryCode ?? "") !== phone.value.countryCode ||
     (props.user.phone?.number ?? "") !== phone.value.number ||
-    (props.user.phone?.extension ?? "") !== phone.value.extension,
+    (props.user.phone?.extension ?? "") !== phone.value.extension ||
+    (props.user.phone?.isVerified ?? false) !== phone.value.isVerified,
 );
 const isAddressRequired = computed<boolean>(() =>
   Boolean(
@@ -59,12 +64,34 @@ const emit = defineEmits<{
   (e: "updated", value: User): void;
 }>();
 
-function onCountryChange(country: string): void {
+function onAddressCountryChange(country: string): void {
   address.value.country = country;
   address.value.region = "";
+  address.value.isVerified = false;
+}
+function onLocalityChange(locality: string): void {
+  address.value.locality = locality;
+  address.value.isVerified = false;
+}
+function onPostalCodeChange(postalCode: string): void {
+  address.value.postalCode = postalCode;
+  address.value.isVerified = false;
+}
+function onRegionChange(region: string): void {
+  address.value.region = region;
+  address.value.isVerified = false;
 }
 
-const { hasChanges, isSubmitting, handleSubmit } = useForm();
+function onPhoneCountryChange(country: string): void {
+  phone.value.countryCode = country;
+  phone.value.isVerified = false;
+}
+function onPhoneExtensionChange(extension: string): void {
+  phone.value.extension = extension;
+  phone.value.isVerified = false;
+}
+
+const { isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   try {
     const payload: UpdateUserPayload = {
@@ -123,31 +150,47 @@ watch(
   },
   { deep: true, immediate: true },
 );
-
-// TODO(fpion): unverify address when changed
-// TODO(fpion): unverify email when changed
-// TODO(fpion): unverify phone when changed
 </script>
 
 <template>
   <form @submit.prevent="handleSubmit(submit)">
     <div class="mb-3">
-      <EmailAddressInput v-model="email.address" />
+      <h5>{{ t("users.email.title") }}</h5>
+      <EmailAddressInput :required="email.isVerified" :verified="email.isVerified" v-model="email.address" @verified="email.isVerified = $event" />
       <h5>{{ t("users.phone.title") }}</h5>
       <div class="row">
-        <CountrySelect class="col" id="phone-country" :required="isPhoneRequired" v-model="phone.countryCode" />
-        <PhoneNumberInput class="col" :country="phoneCountry" :required="isPhoneRequired" v-model="phone.number" />
-        <PhoneExtensionInput class="col" v-model="phone.extension" />
+        <CountrySelect class="col" id="phone-country" :model-value="phone.countryCode" :required="isPhoneRequired" @update:model-value="onPhoneCountryChange" />
+        <PhoneNumberInput
+          class="col"
+          :country="phoneCountry"
+          :required="isPhoneRequired"
+          :verified="phone.isVerified"
+          v-model="phone.number"
+          @verified="phone.isVerified = $event"
+        />
+        <PhoneExtensionInput class="col" :model-value="phone.extension" @update:model-value="onPhoneExtensionChange" />
       </div>
       <h5>{{ t("users.address.title") }}</h5>
-      <AddressStreetInput :required="isAddressRequired" v-model="address.street" />
+      <AddressStreetInput :required="isAddressRequired" :verified="address.isVerified" v-model="address.street" @verified="address.isVerified = $event" />
       <div class="row">
-        <AddressLocalityInput class="col" :required="isAddressRequired" v-model="address.locality" />
-        <PostalCodeInput class="col" :country="addressCountry" :required="isPostalCodeRequired" v-model="address.postalCode" />
+        <AddressLocalityInput class="col" :model-value="address.locality" :required="isAddressRequired" @update:model-value="onLocalityChange" />
+        <PostalCodeInput
+          class="col"
+          :country="addressCountry"
+          :model-value="address.postalCode"
+          :required="isPostalCodeRequired"
+          @update:model-value="onPostalCodeChange"
+        />
       </div>
       <div class="row">
-        <CountrySelect class="col" id="address-country" :model-value="address.country" :required="isAddressRequired" @update:model-value="onCountryChange" />
-        <RegionSelect class="col" :country="addressCountry" :required="isRegionRequired" v-model="address.region" />
+        <CountrySelect
+          class="col"
+          id="address-country"
+          :model-value="address.country"
+          :required="isAddressRequired"
+          @update:model-value="onAddressCountryChange"
+        />
+        <RegionSelect class="col" :country="addressCountry" :model-value="address.region" :required="isRegionRequired" @update:model-value="onRegionChange" />
       </div>
       <TarButton
         :disabled="isSubmitting || !hasChanges"

@@ -12,7 +12,10 @@
     },
     "street": "Rue",
     "title": "Adresse postale",
-    "verified": "Vérifiée"
+    "verified": {
+      "format": "Vérifiée le {date} par",
+      "label": "Vérifiée"
+    }
   },
   "authenticated": "S’est authentifié",
   "authentication": "Informations d’authentification",
@@ -23,7 +26,12 @@
   "created": "L’utilisateur a été créé.",
   "disabled": "Désactivé",
   "email": {
-    "address": "Adresse courriel"
+    "address": "Adresse courriel",
+    "title": "Courriel",
+    "verified": {
+      "format": "Vérifiée le {date} par",
+      "label": "Vérifiée"
+    }
   },
   "empty": "Cette liste est vide.",
   "enabled": "Activé",
@@ -51,7 +59,11 @@
   "phone": {
     "extension": "Extension",
     "number": "Numéro de téléphone",
-    "title": "Téléphone"
+    "title": "Téléphone",
+    "verified": {
+      "format": "Vérifié le {date} par",
+      "label": "Vérifié"
+    }
   },
   "picture": "Photo (URL)",
   "profile": "Profil (URL)",
