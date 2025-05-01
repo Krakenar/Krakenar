@@ -31,6 +31,8 @@ public class DeleteLanguageHandler : ICommandHandler<DeleteLanguage, LanguageDto
     }
     LanguageDto dto = await LanguageQuerier.ReadAsync(language, cancellationToken);
 
+    // TODO(fpion): delete Dictionary if it exists
+
     language.Delete(ApplicationContext.ActorId);
     await LanguageRepository.SaveAsync(language, cancellationToken);
 
