@@ -1,6 +1,6 @@
 {
   "allowedCharacters": "Le champs « {name} » ne peut contenir que les caractères suivants : {allowedCharacters}",
-  "confirmed": "Les champs « {target} » et « {name} » ne correspondent pas.",
+  "confirm": "Les champs « {target} » et « {name} » ne correspondent pas.",
   "containsDigits": "Le champs « {name} » doit contenir au moins un chiffre (0-9).",
   "containsLowercase": "Le champs « {name} » doit contenir au moins une lettre minuscule (a-z).",
   "containsNonAlphanumeric": "Le champs « {name} » doit contenir au moins un caractère spécial (e.g. !@/$%&*_+-).",

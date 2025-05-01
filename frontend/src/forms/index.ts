@@ -1,4 +1,4 @@
-import type { RuleExecutionResult, ValidationResult, ValidationRuleSet } from "logitar-validation";
+import type { RuleExecutionResult, ValidationOptions, ValidationResult, ValidationRuleSet } from "logitar-validation";
 import { computed, getCurrentInstance, inject, provide, ref, unref, type ComponentInternalInstance } from "vue";
 
 import type { FieldActions, FieldEvents, FieldOptions, FieldValues, FormContainer, FormField } from "@/types/forms";
@@ -67,7 +67,8 @@ export function useField(id: string, options?: FieldOptions): FormField {
     if (!rules.value) {
       return { isValid: true, rules: {}, context: {} };
     }
-    validationResult.value = validator.validate(name.value, value.value, rules.value);
+    const validationOptions: ValidationOptions = { placeholders: options?.placeholders };
+    validationResult.value = validator.validate(name.value, value.value, rules.value, validationOptions);
     events?.validated(id, validationResult.value);
     emit("validated", validationResult.value);
     return validationResult.value;

@@ -71,7 +71,7 @@ watch(
       <UniqueSlugAlreadyUsed v-model="uniqueSlugAlreadyUsed" />
       <div class="row">
         <DisplayNameInput class="col" v-model="displayName" />
-        <UniqueSlugInput class="col" :name-value="displayName" v-model="uniqueSlug" />
+        <UniqueSlugInput class="col" :name-value="displayName" required v-model="uniqueSlug" />
       </div>
       <UrlInput described-by="url-help" id="url" :label="t('realms.url.label')" v-model="url">
         <template #after>

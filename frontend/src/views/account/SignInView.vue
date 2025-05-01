@@ -66,8 +66,8 @@ async function submit(): Promise<void> {
     <h1>{{ t("users.signIn.title") }}</h1>
     <InvalidCredentials v-model="invalidCredentials" />
     <form @submit.prevent="handleSubmit(submit)">
-      <UsernameInput v-model="username" />
-      <PasswordInput ref="passwordRef" v-model="password" />
+      <UsernameInput required v-model="username" />
+      <PasswordInput ref="passwordRef" required v-model="password" />
       <div class="mb-3">
         <TarButton
           :disabled="isSubmitting || !hasChanges"

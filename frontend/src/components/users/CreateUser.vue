@@ -75,7 +75,7 @@ onMounted(async () => {
     <TarModal :close="t('actions.close')" id="create-user" ref="modalRef" size="large" :title="t('users.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <UniqueNameInput :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />
+        <UniqueNameInput required :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />

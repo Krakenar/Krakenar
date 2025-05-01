@@ -71,7 +71,7 @@ watch(
     <form @submit.prevent="handleSubmit(submit)">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <div class="row">
-        <UniqueNameInput class="col" :settings="uniqueNameSettings" v-model="uniqueName" />
+        <UniqueNameInput class="col" required :settings="uniqueNameSettings" v-model="uniqueName" />
         <DisplayNameInput class="col" v-model="displayName" />
       </div>
       <DescriptionTextarea v-model="description" />

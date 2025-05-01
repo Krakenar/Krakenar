@@ -31,7 +31,7 @@ function onOnlyErrorsUpdated(onlyErrors: boolean): void {
 <template>
   <div>
     <h5>{{ t("settings.logging.title") }}</h5>
-    <LoggingExtentSelect :model-value="modelValue.extent" @update:model-value="onExtentUpdated($event as LoggingExtent)" />
+    <LoggingExtentSelect :model-value="modelValue.extent" required @update:model-value="onExtentUpdated($event as LoggingExtent)" />
     <TarCheckbox
       v-if="modelValue.extent !== 'None'"
       class="mb-3"

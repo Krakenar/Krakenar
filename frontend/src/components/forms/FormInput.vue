@@ -6,6 +6,7 @@ import { nanoid } from "nanoid";
 import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
+import type { Placeholders } from "@/types/forms";
 import { useField } from "@/forms";
 
 const { isDateTimeInput, isNumericInput, isTextualInput } = inputUtils;
@@ -15,6 +16,7 @@ const { t } = useI18n();
 const props = withDefaults(
   defineProps<
     InputOptions & {
+      placeholders?: Placeholders;
       rules?: ValidationRuleSet;
     }
   >(),
@@ -75,6 +77,7 @@ const { errors, isValid, handleChange, unbindField } = useField(props.id, {
   focus,
   initialValue: props.modelValue,
   name: props.label?.toLowerCase() ?? props.name,
+  placeholders: props.placeholders,
   rules,
 });
 
