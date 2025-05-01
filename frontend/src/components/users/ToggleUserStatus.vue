@@ -5,16 +5,14 @@ import { useI18n } from "vue-i18n";
 
 import type { UpdateUserPayload, User } from "@/types/users";
 import { updateUser } from "@/api/users";
-import { useAccountStore } from "@/stores/account";
 
-const account = useAccountStore();
 const { t } = useI18n();
 
 const props = defineProps<{
+  disabled?: boolean | string;
   user: User;
 }>();
 
-const isCurrentUser = computed<boolean>(() => props.user.id === account.currentUser?.id);
 const isLoading = ref<boolean>(false);
 
 const icon = computed<string>(() => `fas fa-${props.user.isDisabled ? "lock-open" : "lock"}`);
@@ -51,13 +49,5 @@ async function onClick(): Promise<void> {
 </script>
 
 <template>
-  <TarButton
-    :disabled="isLoading || isCurrentUser"
-    :icon="icon"
-    :loading="isLoading"
-    :status="t('loading')"
-    :text="t(text)"
-    variant="warning"
-    @click="onClick"
-  />
+  <TarButton :disabled="isLoading || disabled" :icon="icon" :loading="isLoading" :status="t('loading')" :text="t(text)" variant="warning" @click="onClick" />
 </template>

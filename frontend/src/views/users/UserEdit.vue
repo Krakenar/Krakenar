@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
@@ -21,8 +21,10 @@ import { formatUser } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
 import { readUser, updateUser } from "@/api/users";
+import { useAccountStore } from "@/stores/account";
 import { useToastStore } from "@/stores/toast";
 
+const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
@@ -31,6 +33,8 @@ const { t } = useI18n();
 
 const configuration = ref<Configuration>();
 const user = ref<User>();
+
+const isCurrentUser = computed<boolean>(() => Boolean(user.value && user.value.id === account.currentUser?.id));
 
 function onDeleted(): void {
   toasts.success("users.deleted");
@@ -149,8 +153,15 @@ onMounted(async () => {
       <h1>{{ formatUser(user) }}</h1>
       <StatusDetail :aggregate="user" />
       <div class="mb-3">
-        <DeleteUser class="me-1" :user="user" @deleted="onDeleted" @error="handleError" />
-        <ToggleUserStatus class="ms-1" :user="user" @disabled="onActivationToggled" @enabled="onActivationToggled" @error="handleError" />
+        <DeleteUser class="me-1" :disabled="isCurrentUser" :user="user" @deleted="onDeleted" @error="handleError" />
+        <ToggleUserStatus
+          class="ms-1"
+          :disabled="isCurrentUser"
+          :user="user"
+          @disabled="onActivationToggled"
+          @enabled="onActivationToggled"
+          @error="handleError"
+        />
       </div>
       <UserSummary :user="user" />
       <TarTabs>
