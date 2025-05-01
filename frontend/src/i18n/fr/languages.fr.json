@@ -1,6 +1,11 @@
 {
   "create": "Nouvelle langue",
   "created": "La langue a été créée.",
+  "delete": {
+    "confirm": "Afin de supprimer la langue, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer la langue"
+  },
+  "deleted": "La langue a été supprimée.",
   "empty": "Cette liste est vide.",
   "default": {
     "label": "Par défaut",

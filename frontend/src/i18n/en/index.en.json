@@ -4,6 +4,7 @@
     "cancel": "Cancel",
     "close": "Close",
     "create": "Create",
+    "delete": "Delete",
     "edit": "Edit",
     "go": "Go",
     "refresh": "Refresh",
@@ -33,6 +34,7 @@
     "label": "Locale",
     "placeholder": "Select a locale"
   },
+  "name": "Name",
   "notFound": {
     "help": "The requested page could not be found.",
     "lead": "Page Not Found",

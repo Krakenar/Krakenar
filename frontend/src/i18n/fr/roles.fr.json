@@ -1,6 +1,11 @@
 {
   "create": "Nouveau rôle",
   "created": "Le rôle a été créé.",
+  "delete": {
+    "confirm": "Afin de supprimer le rôle, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer le rôle"
+  },
+  "deleted": "Le rôle a été supprimé.",
   "empty": "Cette liste est vide.",
   "select": {
     "label": "Rôle",

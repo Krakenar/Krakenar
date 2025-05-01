@@ -2,9 +2,10 @@
 import { TarButton } from "logitar-vue3-ui";
 import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import DefaultButton from "@/components/languages/DefaultButton.vue";
+import DeleteLanguage from "@/components/languages/DeleteLanguage.vue";
 import LocaleAlreadyUsed from "@/components/languages/LocaleAlreadyUsed.vue";
 import LocaleSelect from "@/components/shared/LocaleSelect.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
@@ -21,12 +22,18 @@ import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
+const router = useRouter();
 const toasts = useToastStore();
 const { t } = useI18n();
 
 const language = ref<Language>();
 const locale = ref<string>("");
 const localeAlreadyUsed = ref<boolean>(false);
+
+function onDeleted(): void {
+  toasts.success("languages.deleted");
+  router.push({ name: "LanguageList" });
+}
 
 function setModel(model: Language): void {
   language.value = model;
@@ -81,7 +88,8 @@ onMounted(async () => {
       <h1>{{ formatLocale(language.locale) }}</h1>
       <StatusDetail :aggregate="language" />
       <div class="mb-3">
-        <DefaultButton :language="language" @error="handleError" @saved="onSetDefault" />
+        <DeleteLanguage class="me-1" :disabled="language.isDefault" :language="language" @deleted="onDeleted" @error="handleError" />
+        <DefaultButton class="ms-1" :language="language" @error="handleError" @saved="onSetDefault" />
       </div>
       <LocaleAlreadyUsed v-model="localeAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
