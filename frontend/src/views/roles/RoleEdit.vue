@@ -2,8 +2,9 @@
 import { TarTab, TarTabs } from "logitar-vue3-ui";
 import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
+import DeleteRole from "@/components/roles/DeleteRole.vue";
 import RoleGeneral from "@/components/roles/RoleGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Configuration } from "@/types/configuration";
@@ -16,6 +17,7 @@ import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
+const router = useRouter();
 const toasts = useToastStore();
 const { t } = useI18n();
 
@@ -28,6 +30,11 @@ function setMetadata(updated: Role): void {
     role.value.updatedBy = updated.updatedBy;
     role.value.updatedOn = updated.updatedOn;
   }
+}
+
+function onDeleted(): void {
+  toasts.success("roles.deleted");
+  router.push({ name: "RoleList" });
 }
 
 function onGeneralUpdated(updated: Role): void {
@@ -58,6 +65,9 @@ onMounted(async () => {
     <template v-if="role">
       <h1>{{ formatRole(role) }}</h1>
       <StatusDetail :aggregate="role" />
+      <div class="mb-3">
+        <DeleteRole :role="role" @deleted="onDeleted" @error="handleError" />
+      </div>
       <TarTabs>
         <TarTab active id="general" :title="t('general')">
           <RoleGeneral :configuration="configuration" :role="role" @error="handleError" @updated="onGeneralUpdated" />

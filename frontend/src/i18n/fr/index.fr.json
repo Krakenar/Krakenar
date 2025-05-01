@@ -4,6 +4,7 @@
     "cancel": "Annuler",
     "close": "Fermer",
     "create": "Créer",
+    "delete": "Supprimer",
     "edit": "Éditer",
     "go": "Aller",
     "refresh": "Rafraîchir",
@@ -33,6 +34,7 @@
     "label": "Langue",
     "placeholder": "Sélectionnez une langue"
   },
+  "name": "Nom",
   "no": "Non",
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",

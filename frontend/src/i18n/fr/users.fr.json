@@ -24,6 +24,11 @@
   "contact": "Informations de contact",
   "create": "Nouvel utilisateur",
   "created": "L’utilisateur a été créé.",
+  "delete": {
+    "confirm": "Afin de supprimer l’utilisateur, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer l’utilisateur"
+  },
+  "deleted": "L’utilisateur a été supprimé.",
   "disabled": "Désactivé",
   "email": {
     "address": "Adresse courriel",

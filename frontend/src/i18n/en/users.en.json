@@ -24,6 +24,11 @@
   "contact": "Contact Information",
   "create": "New User",
   "created": "The user has been created.",
+  "delete": {
+    "confirm": "To delete the user, enter its name in the field below.",
+    "title": "Delete User"
+  },
+  "deleted": "The user has been deleted.",
   "disabled": "Disabled",
   "email": {
     "address": "Email Address",

@@ -2,12 +2,13 @@
 import { TarTab, TarTabs } from "logitar-vue3-ui";
 import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
 import ContactInformation from "@/components/users/ContactInformation.vue";
 import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import CustomIdentifierList from "@/components/users/CustomIdentifierList.vue";
+import DeleteUser from "@/components/users/DeleteUser.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UserRoles from "@/components/users/UserRoles.vue";
@@ -23,11 +24,17 @@ import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
+const router = useRouter();
 const toasts = useToastStore();
 const { t } = useI18n();
 
 const configuration = ref<Configuration>();
 const user = ref<User>();
+
+function onDeleted(): void {
+  toasts.success("users.deleted");
+  router.push({ name: "UserList" });
+}
 
 function setMetadata(updated: User): void {
   if (user.value) {
@@ -130,9 +137,12 @@ onMounted(async () => {
     <template v-if="user">
       <h1>{{ formatUser(user) }}</h1>
       <StatusDetail :aggregate="user" />
+      <div class="mb-3">
+        <DeleteUser :user="user" @deleted="onDeleted" @error="handleError" />
+      </div>
       <UserSummary :user="user" />
       <TarTabs>
-        <TarTab id="authentication" :title="t('users.authentication')">
+        <TarTab active id="authentication" :title="t('users.authentication')">
           <AuthenticationInformation :configuration="configuration" :user="user" @error="handleError" @updated="onAuthenticationUpdated" />
         </TarTab>
         <TarTab id="contact" :title="t('users.contact')">
@@ -141,7 +151,7 @@ onMounted(async () => {
         <TarTab id="personal" :title="t('users.personal')">
           <PersonalInformation :user="user" @error="handleError" @updated="onPersonalUpdated" />
         </TarTab>
-        <TarTab active id="attributes" :title="t('customAttributes.label')">
+        <TarTab id="attributes" :title="t('customAttributes.label')">
           <CustomAttributeList :attributes="user.customAttributes" :save="saveCustomAttributes" @error="handleError" />
         </TarTab>
         <TarTab id="identifiers" :title="t('users.identifiers.title')">
