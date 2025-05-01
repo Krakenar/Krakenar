@@ -29,7 +29,10 @@
     "title": "Supprimer l’utilisateur"
   },
   "deleted": "L’utilisateur a été supprimé.",
-  "disabled": "Désactivé",
+  "disabled": {
+    "label": "Désactivé",
+    "success": "L’utilisateur a été désactivé."
+  },
   "email": {
     "address": "Adresse courriel",
     "title": "Courriel",
@@ -39,7 +42,10 @@
     }
   },
   "empty": "Cette liste est vide.",
-  "enabled": "Activé",
+  "enabled": {
+    "label": "Activé",
+    "success": "L’utilisateur a été activé."
+  },
   "gender": {
     "label": "Genre",
     "options": {

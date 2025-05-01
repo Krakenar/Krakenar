@@ -169,7 +169,7 @@ watch(
       <YesNoSelect
         class="col"
         id="disabled"
-        label="users.disabled"
+        label="users.disabled.label"
         :model-value="isDisabled"
         @update:model-value="setQuery('disabled', $event?.toString() ?? '')"
       />

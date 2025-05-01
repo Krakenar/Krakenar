@@ -29,7 +29,10 @@
     "title": "Delete User"
   },
   "deleted": "The user has been deleted.",
-  "disabled": "Disabled",
+  "disabled": {
+    "label": "Disabled",
+    "success": "The user has been disabled."
+  },
   "email": {
     "address": "Email Address",
     "title": "Email",
@@ -39,7 +42,10 @@
     }
   },
   "empty": "This list is empty.",
-  "enabled": "Enabled",
+  "enabled": {
+    "label": "Enabled",
+    "success": "The user has been enabled."
+  },
   "gender": {
     "label": "Gender",
     "options": {
