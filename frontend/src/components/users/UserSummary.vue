@@ -13,7 +13,10 @@ const props = defineProps<{
   user: User;
 }>();
 
-const addressLines = computed<string[]>(() => props.user.address?.formatted.split("\n") ?? []);
+const addressLines = computed<string[]>(() => {
+  const lines: string[] = props.user.address?.formatted.split("\n") ?? [];
+  return [lines[0], lines.slice(1).join(" ")];
+});
 </script>
 
 <template>

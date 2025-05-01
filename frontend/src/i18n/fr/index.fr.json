@@ -1,10 +1,12 @@
 {
   "actions": {
+    "add": "Ajouter",
     "cancel": "Annuler",
     "close": "Fermer",
     "create": "Créer",
     "go": "Aller",
     "refresh": "Rafraîchir",
+    "remove": "Retirer",
     "save": "Enregistrer"
   },
   "brand": "Krakenar",

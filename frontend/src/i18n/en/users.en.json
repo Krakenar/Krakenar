@@ -67,6 +67,11 @@
   },
   "picture": "Picture (URL)",
   "profile": "Profile (URL)",
+  "roles": {
+    "added": "The role has been added.",
+    "empty": "This list is empty.",
+    "removed": "The role has been removed."
+  },
   "select": {
     "label": "User",
     "placeholder": "Select a user"
