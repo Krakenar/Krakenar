@@ -15,7 +15,6 @@ public static class Dictionaries
   public static readonly ColumnId Version = new(nameof(Dictionary.Version), Table);
 
   public static readonly ColumnId DictionaryId = new(nameof(Dictionary.DictionaryId), Table);
-  public static readonly ColumnId Entries = new(nameof(Dictionary.Entries), Table);
   public static readonly ColumnId EntryCount = new(nameof(Dictionary.EntryCount), Table);
   public static readonly ColumnId Id = new(nameof(Dictionary.Id), Table);
   public static readonly ColumnId LanguageId = new(nameof(Dictionary.LanguageId), Table);

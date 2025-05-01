@@ -19,7 +19,7 @@ public sealed class Dictionary : Aggregate, ISegregatedEntity
   public int LanguageId { get; private set; }
 
   public int EntryCount { get; private set; }
-  public string? Entries { get; private set; }
+  public List<DictionaryEntry> Entries { get; private set; } = [];
 
   public Dictionary(Language language, DictionaryCreated @event) : base(@event)
   {
@@ -63,28 +63,6 @@ public sealed class Dictionary : Aggregate, ISegregatedEntity
   {
     base.Update(@event);
 
-    Dictionary<string, string> entries = GetEntries();
-    foreach (KeyValuePair<Core.Identifier, string?> entry in @event.Entries)
-    {
-      if (entry.Value is null)
-      {
-        entries.Remove(entry.Key.Value);
-      }
-      else
-      {
-        entries[entry.Key.Value] = entry.Value;
-      }
-    }
-    SetEntries(entries);
-  }
-
-  public Dictionary<string, string> GetEntries()
-  {
-    return (Entries is null ? null : JsonSerializer.Deserialize<Dictionary<string, string>>(Entries)) ?? [];
-  }
-  private void SetEntries(Dictionary<string, string> entries)
-  {
-    EntryCount = entries.Count;
-    Entries = entries.Count < 1 ? null : JsonSerializer.Serialize(entries);
+    EntryCount = Entries.Count;
   }
 }
