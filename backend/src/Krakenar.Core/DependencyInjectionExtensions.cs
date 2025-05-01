@@ -89,6 +89,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddTransient<IConfigurationService, ConfigurationService>()
+      .AddTransient<IDictionaryService, DictionaryService>()
       .AddTransient<ILanguageService, LanguageService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
