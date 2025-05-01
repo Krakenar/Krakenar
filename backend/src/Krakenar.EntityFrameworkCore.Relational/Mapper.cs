@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Actors;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Logging;
 using Krakenar.Contracts.Realms;
@@ -13,6 +14,7 @@ using Logitar.EventSourcing;
 using ActorEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Actor;
 using AggregateEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Aggregate;
 using ConfigurationAggregate = Krakenar.Core.Configurations.Configuration;
+using DictionaryEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary;
 using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 using RoleEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Role;
@@ -54,6 +56,26 @@ public sealed class Mapper
       PasswordSettings = new PasswordSettings(source.PasswordSettings),
       LoggingSettings = new LoggingSettings(source.LoggingSettings)
     };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Dictionary ToDictionary(DictionaryEntity source, Realm? realm)
+  {
+    if (source.Language is null)
+    {
+      throw new ArgumentException($"The {nameof(source.Language)} is required.", nameof(source));
+    }
+
+    Dictionary destination = new()
+    {
+      Id = source.Id,
+      Language = ToLanguage(source.Language, realm),
+      EntryCount = source.EntryCount
+    };
+    destination.Entries.AddRange(source.Entries.Select(entry => new DictionaryEntry(entry.Key, entry.Value)));
 
     MapAggregate(source, destination);
 

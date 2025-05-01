@@ -3,6 +3,7 @@
 public enum DictionarySort
 {
   CreatedOn,
+  EntryCount,
   Language,
   UpdatedOn
 }

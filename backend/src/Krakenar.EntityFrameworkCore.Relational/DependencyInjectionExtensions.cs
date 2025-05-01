@@ -2,6 +2,7 @@
 using Krakenar.Core.Actors;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Events;
+using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Events;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
@@ -93,6 +94,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
+      .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
       .AddScoped<ILanguageQuerier, LanguageQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()
