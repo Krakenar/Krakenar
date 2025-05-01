@@ -8,12 +8,14 @@ const { t } = useI18n();
 withDefaults(
   defineProps<{
     disabled?: boolean | string;
+    id?: string;
     label?: string;
     max?: number | string;
     modelValue?: string;
     required?: boolean | string;
   }>(),
   {
+    id: "key",
     label: "users.identifiers.key",
     max: 255,
   },
@@ -27,6 +29,7 @@ defineEmits<{
 <template>
   <FormInput
     :disabled="disabled"
+    :id="id"
     :label="t(label)"
     :max="max"
     :model-value="modelValue"
