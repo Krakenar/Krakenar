@@ -4,8 +4,14 @@ import { computed, ref, watch } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
+import AddressLocalityInput from "./AddressLocalityInput.vue";
+import AddressStreetInput from "./AddressStreetInput.vue";
+import CountrySelect from "./CountrySelect.vue";
 import EmailAddressInput from "./EmailAddressInput.vue";
-import type { AddressPayload, EmailPayload, PhonePayload, UpdateUserPayload, User } from "@/types/users";
+import PostalCodeInput from "./PostalCodeInput.vue";
+import RegionSelect from "./RegionSelect.vue";
+import countries from "@/resources/countries.json";
+import type { AddressPayload, Country, EmailPayload, PhonePayload, UpdateUserPayload, User } from "@/types/users";
 import { updateUser } from "@/api/users";
 import { useForm } from "@/forms";
 
@@ -20,6 +26,7 @@ const address = ref<AddressPayload>({ street: "", locality: "", postalCode: "", 
 const email = ref<EmailPayload>({ address: "", isVerified: false });
 const phone = ref<PhonePayload>({ countryCode: "", number: "", extension: "", isVerified: false });
 
+const country = computed<Country | undefined>(() => countries.find(({ code }) => code === address.value.country));
 const hasAddressChanged = computed<boolean>(
   () =>
     (props.user.address?.street ?? "") !== address.value.street ||
@@ -35,17 +42,33 @@ const hasPhoneChanged = computed<boolean>(
     (props.user.phone?.number ?? "") !== phone.value.number ||
     (props.user.phone?.extension ?? "") !== phone.value.extension,
 );
+const isAddressRequired = computed<boolean>(() =>
+  Boolean(
+    address.value.street || address.value.locality || address.value.postalCode || address.value.region || address.value.country || address.value.isVerified,
+  ),
+);
+const isPostalCodeRequired = computed<boolean>(() => Boolean(isAddressRequired.value && country.value?.postalCode));
+const isRegionRequired = computed<boolean>(() => Boolean(isAddressRequired.value && (country.value?.regions?.length ?? 0) > 0));
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
   (e: "updated", value: User): void;
 }>();
 
+function onCountryChange(country: string): void {
+  address.value.country = country;
+  address.value.region = "";
+}
+
 const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   try {
     const payload: UpdateUserPayload = {
-      // TODO(fpion): address
+      address: hasAddressChanged.value
+        ? {
+            value: isNullOrWhiteSpace(address.value.street) ? null : address.value,
+          }
+        : undefined,
       email: hasEmailChanged.value ? { value: isNullOrWhiteSpace(email.value.address) ? null : email.value } : undefined,
       // TODO(fpion): phone
       customAttributes: [],
@@ -87,7 +110,16 @@ watch(
     <div class="mb-3">
       <EmailAddressInput v-model="email.address" />
       <!-- TODO(fpion): phone -->
-      <!-- TODO(fpion): address -->
+      <h3>{{ t("users.address.title") }}</h3>
+      <AddressStreetInput :required="isAddressRequired" v-model="address.street" />
+      <div class="row">
+        <AddressLocalityInput class="col" :required="isAddressRequired" v-model="address.locality" />
+        <PostalCodeInput class="col" :country="country" :required="isPostalCodeRequired" v-model="address.postalCode" />
+      </div>
+      <div class="row">
+        <CountrySelect class="col" :model-value="address.country" :required="isAddressRequired" @update:model-value="onCountryChange" />
+        <RegionSelect class="col" :country="country" :required="isRegionRequired" v-model="address.region" />
+      </div>
       <TarButton
         :disabled="isSubmitting || !hasChanges"
         icon="fas fa-save"

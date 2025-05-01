@@ -56,6 +56,7 @@ const rules = computed<ValidationRuleSet>(() => {
   if (isTextualInput(props.type)) {
     rules.minimumLength = parseNumber(props.min);
     rules.maximumLength = parseNumber(props.max);
+    rules.pattern = props.pattern || undefined;
   } else if (isNumericInput(props.type)) {
     rules.minimumValue = parseNumber(props.min);
     rules.maximumValue = parseNumber(props.max);

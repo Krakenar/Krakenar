@@ -1,6 +1,18 @@
 {
   "address": {
-    "title": "Adresse postale"
+    "country": {
+      "label": "Pays",
+      "placeholder": "Sélectionnez un pays"
+    },
+    "locality": "Ville",
+    "postalCode": "Code postal",
+    "region": {
+      "label": "Région",
+      "placeholder": "Sélectionnez une région"
+    },
+    "street": "Rue",
+    "title": "Adresse postale",
+    "verified": "Vérifiée"
   },
   "authenticated": "S’est authentifié",
   "authentication": "Informations d’authentification",

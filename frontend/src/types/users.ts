@@ -40,6 +40,20 @@ export type ContactPayload = {
   isVerified: boolean;
 };
 
+export type Country = {
+  code: string;
+  name: string;
+  postalCode?: string;
+  regions?: string[];
+  flags: CountryFlags;
+};
+
+export type CountryFlags = {
+  png: string;
+  svg: string;
+  alt: string;
+};
+
 export type CreateOrReplaceUserPayload = {
   uniqueName: string;
   password?: ChangePasswordPayload;

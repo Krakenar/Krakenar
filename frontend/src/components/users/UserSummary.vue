@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import EnabledBadge from "./EnabledBadge.vue";
@@ -7,9 +8,11 @@ import type { User } from "@/types/users";
 
 const { d, t } = useI18n();
 
-defineProps<{
+const props = defineProps<{
   user: User;
 }>();
+
+const addressLines = computed<string[]>(() => props.user.address?.formatted.split("\n") ?? []);
 </script>
 
 <template>
@@ -25,8 +28,11 @@ defineProps<{
       <tr>
         <th scope="row">{{ t("users.address.title") }}</th>
         <td>
-          <template v-if="user.address">
-            {{ user.address.formatted }}
+          <template v-if="addressLines.length > 0">
+            <template v-for="(line, index) in addressLines" :key="index">
+              {{ line }}
+              <br v-if="index < addressLines.length - 1" />
+            </template>
             <!-- TODO(fpion): (un)verified -->
           </template>
           <span class="text-muted" v-else>{{ "—" }}</span>

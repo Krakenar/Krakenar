@@ -12,6 +12,7 @@ validator.setRule("maximumLength", rules.maximumLength);
 validator.setRule("maximumValue", rules.maximumValue);
 validator.setRule("minimumLength", rules.minimumLength);
 validator.setRule("minimumValue", rules.minimumValue);
+validator.setRule("pattern", rules.pattern);
 validator.setRule("required", rules.required);
 validator.setRule("slug", rules.slug);
 validator.setRule("uniqueCharacters", rules.uniqueCharacters);
