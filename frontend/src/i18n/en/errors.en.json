@@ -1,6 +1,6 @@
 {
   "allowedCharacters": "The {name} may only contain the following characters: {allowedCharacters}",
-  "confirmed": "The {target} and the {name} do not match.",
+  "confirm": "The {target} and the {name} do not match.",
   "containsDigits": "The {name} must contain at least one digit (0-9).",
   "containsLowercase": "The {name} must contain at least one lowercase letter (a-z).",
   "containsNonAlphanumeric": "The {name} must contain at least one special character (e.g. !@/$%&*_+-).",

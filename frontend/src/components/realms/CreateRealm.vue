@@ -81,7 +81,7 @@ async function submit(): Promise<void> {
       <UniqueSlugAlreadyUsed v-model="uniqueSlugAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
         <DisplayNameInput v-model="displayName" />
-        <UniqueSlugInput :name-value="displayName" v-model="uniqueSlug" />
+        <UniqueSlugInput :name-value="displayName" required v-model="uniqueSlug" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />

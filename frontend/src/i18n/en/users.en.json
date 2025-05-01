@@ -51,6 +51,8 @@
     "nick": "Nickname"
   },
   "password": {
+    "changed": "Last changed on {date} by",
+    "confirm": "Password Confirmation",
     "label": "Password",
     "less": "Passwordless",
     "with": "Has password"

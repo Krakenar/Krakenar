@@ -21,7 +21,6 @@ withDefaults(
     id: "extent",
     label: "settings.logging.extent.label",
     placeholder: "settings.logging.extent.placeholder",
-    required: true,
   },
 );
 

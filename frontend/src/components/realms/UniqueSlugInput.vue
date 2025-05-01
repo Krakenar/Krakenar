@@ -22,7 +22,6 @@ const props = withDefaults(
     id: "unique-slug",
     label: "realms.uniqueSlug.label",
     max: 255,
-    required: true,
   },
 );
 

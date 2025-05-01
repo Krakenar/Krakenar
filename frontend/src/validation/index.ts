@@ -5,6 +5,7 @@ import phone from "./phone";
 const validator = new Validator({ treatWarningsAsErrors: true });
 
 validator.setRule("allowedCharacters", rules.allowedCharacters);
+validator.setRule("confirm", rules.confirm);
 validator.setRule("containsDigits", rules.containsDigits);
 validator.setRule("containsLowercase", rules.containsLowercase);
 validator.setRule("containsNonAlphanumeric", rules.containsNonAlphanumeric);

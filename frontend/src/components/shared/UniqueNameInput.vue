@@ -21,7 +21,6 @@ const props = withDefaults(
     id: "unique-name",
     label: "uniqueName.label",
     max: 255,
-    required: true,
   },
 );
 

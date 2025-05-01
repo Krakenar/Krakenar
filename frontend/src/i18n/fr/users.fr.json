@@ -51,6 +51,8 @@
     "nick": "Surnom"
   },
   "password": {
+    "changed": "Dernière modification le {date} par",
+    "confirm": "Confirmation du mot de passe",
     "label": "Mot de passe",
     "less": "Sans mot de passe",
     "with": "Avec mot de passe"

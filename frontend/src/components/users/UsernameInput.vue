@@ -6,6 +6,7 @@ withDefaults(
     id?: string;
     label?: string;
     modelValue?: string;
+    required?: boolean | string;
   }>(),
   {
     id: "username",
@@ -19,5 +20,5 @@ defineEmits<{
 </script>
 
 <template>
-  <UniqueNameInput :id="id" :label="label" :model-value="modelValue" @update:model-value="$emit('update:model-value', $event)" />
+  <UniqueNameInput :id="id" :label="label" :model-value="modelValue" :required="required" @update:model-value="$emit('update:model-value', $event)" />
 </template>

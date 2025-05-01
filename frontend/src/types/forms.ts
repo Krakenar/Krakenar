@@ -22,6 +22,7 @@ export type FieldOptions = {
   focus?: () => void | null;
   initialValue?: string | null;
   name?: string | null;
+  placeholders?: Placeholders;
   rules?: MaybeRef<ValidationRuleSet>;
 };
 
@@ -53,3 +54,5 @@ export type FormField = {
   unbindField: ((id: string) => void) | undefined;
   validate: () => ValidationResult;
 };
+
+export type Placeholders = Record<string, unknown>;
