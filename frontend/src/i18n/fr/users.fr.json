@@ -44,6 +44,20 @@
     },
     "placeholder": "Sélectionnez un genre"
   },
+  "identifiers": {
+    "add": "Nouvel identifiant",
+    "alreadyUsed": {
+      "help": "Veuillez entrer un autre identifiant.",
+      "lead": "L’identifiant est déjà utilisé."
+    },
+    "edit": "Éditer l’identifiant",
+    "empty": "Cette liste est vide.",
+    "key": "Clé",
+    "removed": "L’identifiant a été retiré.",
+    "saved": "L’identifiant a été mis à jour.",
+    "title": "Identifiants",
+    "value": "Valeur"
+  },
   "name": {
     "first": "Prénom",
     "last": "Nom de famille",

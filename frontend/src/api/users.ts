@@ -1,7 +1,7 @@
 import { urlUtils } from "logitar-js";
 
 import type { SearchResults } from "@/types/search";
-import type { CreateOrReplaceUserPayload, SearchUsersPayload, UpdateUserPayload, User } from "@/types/users";
+import type { CreateOrReplaceUserPayload, SaveUserIdentifierPayload, SearchUsersPayload, UpdateUserPayload, User } from "@/types/users";
 import { _delete, get, patch, post, put } from ".";
 
 function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
@@ -26,11 +26,27 @@ export async function readUser(id: string): Promise<User> {
   return (await get<User>(url)).data;
 }
 
+export async function removeUserIdentifier(id: string, key: string): Promise<User> {
+  const url: string = new urlUtils.UrlBuilder({ path: "/api/users/{id}/identifiers/key:{key}" })
+    .setParameter("id", id)
+    .setParameter("key", key)
+    .buildRelative();
+  return (await _delete<User>(url)).data;
+}
+
 export async function replaceUser(id: string, payload: CreateOrReplaceUserPayload, version?: number): Promise<User> {
   const url: string = createUrlBuilder(id)
     .setQuery("version", version?.toString() ?? "")
     .buildRelative();
   return (await put<CreateOrReplaceUserPayload, User>(url, payload)).data;
+}
+
+export async function saveUserIdentifier(id: string, key: string, payload: SaveUserIdentifierPayload): Promise<User> {
+  const url: string = new urlUtils.UrlBuilder({ path: "/api/users/{id}/identifiers/key:{key}" })
+    .setParameter("id", id)
+    .setParameter("key", key)
+    .buildRelative();
+  return (await put<SaveUserIdentifierPayload, User>(url, payload)).data;
 }
 
 export async function searchUsers(payload: SearchUsersPayload): Promise<SearchResults<User>> {

@@ -44,6 +44,20 @@
     },
     "placeholder": "Select a gender"
   },
+  "identifiers": {
+    "add": "New Identifier",
+    "alreadyUsed": {
+      "help": "Please enter a different identifier.",
+      "lead": "The identifier is already used."
+    },
+    "edit": "Edit Identifier",
+    "empty": "This list is empty.",
+    "key": "Key",
+    "removed": "The identifier has been removed.",
+    "saved": "The identifier has been updated.",
+    "title": "Identifiers",
+    "value": "Value"
+  },
   "name": {
     "first": "First Name",
     "last": "Last Name",

@@ -6,6 +6,7 @@ import { useRoute } from "vue-router";
 
 import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
 import ContactInformation from "@/components/users/ContactInformation.vue";
+import CustomIdentifierList from "@/components/users/CustomIdentifierList.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UserRoles from "@/components/users/UserRoles.vue";
@@ -33,6 +34,7 @@ function setMetadata(updated: User): void {
     user.value.updatedOn = updated.updatedOn;
   }
 }
+
 function onAuthenticationUpdated(updated: User): void {
   if (user.value) {
     setMetadata(updated);
@@ -67,6 +69,22 @@ function onPersonalUpdated(updated: User): void {
   }
   toasts.success("users.updated");
 }
+
+function onIdentifierRemoved(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.customIdentifiers = [...updated.customIdentifiers];
+  }
+  toasts.success("users.identifiers.removed");
+}
+function onIdentifierSaved(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.customIdentifiers = [...updated.customIdentifiers];
+  }
+  toasts.success("users.identifiers.saved");
+}
+
 function onRoleAdded(updated: User): void {
   if (user.value) {
     setMetadata(updated);
@@ -110,6 +128,9 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="personal" :title="t('users.personal')">
           <PersonalInformation :user="user" @error="handleError" @updated="onPersonalUpdated" />
+        </TarTab>
+        <TarTab id="identifiers" :title="t('users.identifiers.title')">
+          <CustomIdentifierList :user="user" @error="handleError" @removed="onIdentifierRemoved" @saved="onIdentifierSaved" />
         </TarTab>
         <TarTab id="roles" :title="t('roles.title')">
           <UserRoles :user="user" @added="onRoleAdded" @error="handleError" @removed="onRoleRemoved" />
