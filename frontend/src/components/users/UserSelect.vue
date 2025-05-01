@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TarSelect, type SelectOption } from "logitar-vue3-ui";
-import { arrayUtils } from "logitar-js";
+import { arrayUtils, parsingUtils } from "logitar-js";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -10,10 +10,12 @@ import { formatUser } from "@/helpers/format";
 import { searchUsers } from "@/api/users";
 
 const { orderBy } = arrayUtils;
+const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    disabled?: boolean | string;
     id?: string;
     label?: string;
     modelValue?: string;
@@ -28,6 +30,7 @@ withDefaults(
 
 const users = ref<User[]>([]);
 
+const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || users.value.length === 0);
 const options = computed<SelectOption[]>(() =>
   orderBy(
     users.value.map((user) => ({ text: formatUser(user), value: user.id })),
@@ -67,6 +70,7 @@ onMounted(async () => {
 
 <template>
   <TarSelect
+    :disabled="isDisabled"
     floating
     :id="id"
     :label="t(label)"

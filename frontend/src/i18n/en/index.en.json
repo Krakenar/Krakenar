@@ -57,6 +57,10 @@
     "updatedOn": "Last updated on {date} by"
   },
   "system": "System",
+  "timeZone": {
+    "label": "Time Zone",
+    "placeholder": "Select a time zone"
+  },
   "toasts": {
     "error": {
       "message": "An unexpected error occurred. Please try again later or contact our support team.",

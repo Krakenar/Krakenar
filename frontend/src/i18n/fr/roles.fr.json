@@ -2,6 +2,10 @@
   "create": "Nouveau rôle",
   "created": "Le rôle a été créé.",
   "empty": "Cette liste est vide.",
+  "select": {
+    "label": "Rôle",
+    "placeholder": "Sélectionnez un rôle"
+  },
   "sort": {
     "options": {
       "CreatedOn": "Date de création",
@@ -11,5 +15,5 @@
     }
   },
   "title": "Rôles",
-  "updated": "Le rôle a été enregistré."
+  "updated": "Le rôle a été mis à jour."
 }

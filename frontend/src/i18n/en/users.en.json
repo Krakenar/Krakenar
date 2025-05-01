@@ -1,7 +1,72 @@
 {
-  "password": {
-    "label": "Password"
+  "address": {
+    "country": {
+      "label": "Country",
+      "placeholder": "Select a country"
+    },
+    "locality": "City",
+    "postalCode": "Postal Code",
+    "region": {
+      "label": "Region",
+      "placeholder": "Select a region"
+    },
+    "street": "Street",
+    "title": "Postal Address",
+    "verified": {
+      "format": "Verified on {date} by",
+      "label": "Verified"
+    }
   },
+  "authenticated": "Has authenticated",
+  "authentication": "Authentication Information",
+  "birthdate": "Birthdate",
+  "confirmed": "Confirmed",
+  "contact": "Contact Information",
+  "create": "New User",
+  "created": "The user has been created.",
+  "disabled": "Disabled",
+  "email": {
+    "address": "Email Address",
+    "title": "Email",
+    "verified": {
+      "format": "Verified on {date} by",
+      "label": "Verified"
+    }
+  },
+  "empty": "This list is empty.",
+  "enabled": "Enabled",
+  "gender": {
+    "label": "Gender",
+    "options": {
+      "female": "Female",
+      "male": "Male",
+      "other": "Other"
+    },
+    "placeholder": "Select a gender"
+  },
+  "name": {
+    "first": "First Name",
+    "last": "Last Name",
+    "middle": "Middle Name",
+    "nick": "Nickname"
+  },
+  "password": {
+    "label": "Password",
+    "less": "Passwordless",
+    "with": "Has password"
+  },
+  "personal": "Personal Information",
+  "phone": {
+    "extension": "Extension",
+    "number": "Phone Number",
+    "title": "Phone",
+    "verified": {
+      "format": "Verified on {date} by",
+      "label": "Verified"
+    }
+  },
+  "picture": "Picture (URL)",
+  "profile": "Profile (URL)",
   "select": {
     "label": "User",
     "placeholder": "Select a user"
@@ -28,5 +93,27 @@
       "page": "Sign Out"
     }
   },
-  "username": "Username"
+  "sort": {
+    "options": {
+      "AuthenticatedOn": "Last authenticated on",
+      "Birthdate": "Birthdate",
+      "CreatedOn": "Created on",
+      "DisabledOn": "Disabled on",
+      "EmailAddress": "Email Address",
+      "FirstName": "First Name",
+      "FullName": "Full Name",
+      "LastName": "Last Name",
+      "MiddleName": "Middle Name",
+      "Nickname": "Nickname",
+      "PasswordChangedOn": "Password changed on",
+      "PhoneNumber": "Phone Number",
+      "UniqueName": "Unique Name",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": "Users",
+  "username": "Username",
+  "updated": "The user has been updated.",
+  "viewSessions": "View sessions",
+  "website": "Website (URL)"
 }

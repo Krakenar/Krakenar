@@ -19,7 +19,7 @@
     "custom": "Personnalisé",
     "label": "Alias unique"
   },
-  "updated": "Le royaume a été enregistré.",
+  "updated": "Le royaume a été mis à jour.",
   "url": {
     "help": "L’URL de l’application cliente du royaume. Elle est utilisée comme audience des jetons (JWT) générés dans ce royaume. L’alias unique est utilisé lorsque aucune URL n’est spécifiée.",
     "label": "URL"

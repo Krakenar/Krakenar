@@ -4,7 +4,8 @@ import { nanoid } from "nanoid";
 import type { Actor } from "@/types/actor";
 import type { Locale } from "@/types/i18n";
 import type { User } from "@/types/users";
-import { formatLocale, formatUser } from "../format";
+import { formatLocale, formatRole, formatUser } from "../format";
+import type { Role } from "@/types/roles";
 
 describe("formatLocale", () => {
   it.concurrent("should format the locale (with region) correctly", () => {
@@ -37,6 +38,37 @@ const actor: Actor = {
   displayName: "Administrator",
 };
 const now: string = new Date().toISOString();
+
+describe("formatRole", () => {
+  it.concurrent("should format the role with display name correctly", () => {
+    const role: Role = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "admin",
+      displayName: "Administrator",
+      customAttributes: [],
+    };
+    expect(formatRole(role)).toBe("Administrator (admin)");
+  });
+
+  it.concurrent("should format the role without display name correctly", () => {
+    const role: Role = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "admin",
+      customAttributes: [],
+    };
+    expect(formatRole(role)).toBe("admin");
+  });
+});
 
 describe("formatUser", () => {
   it.concurrent("should format the user with full name correctly", () => {

@@ -1,7 +1,72 @@
 {
-  "password": {
-    "label": "Mot de passe"
+  "address": {
+    "country": {
+      "label": "Pays",
+      "placeholder": "Sélectionnez un pays"
+    },
+    "locality": "Ville",
+    "postalCode": "Code postal",
+    "region": {
+      "label": "Région",
+      "placeholder": "Sélectionnez une région"
+    },
+    "street": "Rue",
+    "title": "Adresse postale",
+    "verified": {
+      "format": "Vérifiée le {date} par",
+      "label": "Vérifiée"
+    }
   },
+  "authenticated": "S’est authentifié",
+  "authentication": "Informations d’authentification",
+  "birthdate": "Date de naissance",
+  "confirmed": "Confirmé",
+  "contact": "Informations de contact",
+  "create": "Nouvel utilisateur",
+  "created": "L’utilisateur a été créé.",
+  "disabled": "Désactivé",
+  "email": {
+    "address": "Adresse courriel",
+    "title": "Courriel",
+    "verified": {
+      "format": "Vérifiée le {date} par",
+      "label": "Vérifiée"
+    }
+  },
+  "empty": "Cette liste est vide.",
+  "enabled": "Activé",
+  "gender": {
+    "label": "Genre",
+    "options": {
+      "female": "Féminin",
+      "male": "Masculin",
+      "other": "Autre"
+    },
+    "placeholder": "Sélectionnez un genre"
+  },
+  "name": {
+    "first": "Prénom",
+    "last": "Nom de famille",
+    "middle": "Nom intermédiaire",
+    "nick": "Surnom"
+  },
+  "password": {
+    "label": "Mot de passe",
+    "less": "Sans mot de passe",
+    "with": "Avec mot de passe"
+  },
+  "personal": "Informations personnelles",
+  "phone": {
+    "extension": "Extension",
+    "number": "Numéro de téléphone",
+    "title": "Téléphone",
+    "verified": {
+      "format": "Vérifié le {date} par",
+      "label": "Vérifié"
+    }
+  },
+  "picture": "Photo (URL)",
+  "profile": "Profil (URL)",
   "select": {
     "label": "Utilisateur",
     "placeholder": "Sélectionnez un utilisateur"
@@ -28,5 +93,27 @@
       "page": "Déconnexion"
     }
   },
-  "username": "Nom d’utilisateur"
+  "sort": {
+    "options": {
+      "AuthenticatedOn": "Dernière authentification",
+      "Birthdate": "Date de naissance",
+      "CreatedOn": "Date de création",
+      "DisabledOn": "Désactivation",
+      "EmailAddress": "Adresse courriel",
+      "FirstName": "Prénom",
+      "FullName": "Nom complet",
+      "LastName": "Nom de famille",
+      "MiddleName": "Nom intermédiaire",
+      "Nickname": "Surnom",
+      "PasswordChangedOn": "Mot de passe changé",
+      "PhoneNumber": "Numéro de téléphone",
+      "UniqueName": "Nom unique",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Utilisateurs",
+  "username": "Nom d’utilisateur",
+  "updated": "L’utilisateur a été mis à jour.",
+  "viewSessions": "Voir les sessions",
+  "website": "Site Web (URL)"
 }

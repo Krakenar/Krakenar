@@ -8,7 +8,7 @@ import { useI18n } from "vue-i18n";
 
 import { useField } from "@/forms";
 
-const { isTextualInput } = inputUtils;
+const { isDateTimeInput, isNumericInput, isTextualInput } = inputUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
 const { t } = useI18n();
 
@@ -28,6 +28,8 @@ const inputRef = ref<InstanceType<typeof TarInput> | null>(null);
 
 const feedbackId = computed<string>(() => `${props.id}-feedback`);
 const inputDescribedBy = computed<string>(() => [feedbackId.value, props.describedBy].filter((id) => typeof id === "string").join(" "));
+const inputMax = computed<number | string | undefined>(() => (isDateTimeInput(props.type) ? props.max : undefined));
+const inputMin = computed<number | string | undefined>(() => (isDateTimeInput(props.type) ? props.min : undefined));
 const inputRequired = computed<boolean | "label">(() => (parseBoolean(props.required) ? "label" : false));
 const inputStatus = computed<InputStatus | undefined>(() => {
   if (props.status) {
@@ -54,7 +56,8 @@ const rules = computed<ValidationRuleSet>(() => {
   if (isTextualInput(props.type)) {
     rules.minimumLength = parseNumber(props.min);
     rules.maximumLength = parseNumber(props.max);
-  } else {
+    rules.pattern = props.pattern || undefined;
+  } else if (isNumericInput(props.type)) {
     rules.minimumValue = parseNumber(props.min);
     rules.maximumValue = parseNumber(props.max);
   }
@@ -95,6 +98,8 @@ onUnmounted(() => {
     :floating="floating"
     :id="id"
     :label="label"
+    :max="inputMax"
+    :min="inputMin"
     :model-value="modelValue"
     :name="name"
     :placeholder="placeholder ?? label"

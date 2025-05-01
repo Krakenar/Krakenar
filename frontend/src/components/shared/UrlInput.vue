@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, type InputType } from "logitar-vue3-ui";
+import { TarButton, type InputOptions } from "logitar-vue3-ui";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
@@ -8,17 +8,11 @@ import FormInput from "@/components/forms/FormInput.vue";
 const { isNullOrWhiteSpace } = stringUtils;
 const { t } = useI18n();
 
-const props = withDefaults(
-  defineProps<{
-    max?: number | string;
-    modelValue?: string;
-    type?: InputType;
-  }>(),
-  {
-    max: 2048,
-    type: "url",
-  },
-);
+const props = withDefaults(defineProps<InputOptions>(), {
+  floating: true,
+  max: 2048,
+  type: "url",
+});
 
 function go(): void {
   window.open(props.modelValue?.trim(), "_blank");
@@ -30,7 +24,7 @@ defineEmits<{
 </script>
 
 <template>
-  <FormInput :max="max" :model-value="modelValue" :type="type" @update:model-value="$emit('update:model-value', $event)">
+  <FormInput v-bind="props" @update:model-value="$emit('update:model-value', $event)">
     <template #before>
       <slot name="before"></slot>
     </template>

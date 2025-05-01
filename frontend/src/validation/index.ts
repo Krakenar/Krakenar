@@ -1,5 +1,7 @@
 import { Validator, rules, type RuleExecutionResult } from "logitar-validation";
 
+import phone from "./phone";
+
 const validator = new Validator({ treatWarningsAsErrors: true });
 
 validator.setRule("allowedCharacters", rules.allowedCharacters);
@@ -12,6 +14,8 @@ validator.setRule("maximumLength", rules.maximumLength);
 validator.setRule("maximumValue", rules.maximumValue);
 validator.setRule("minimumLength", rules.minimumLength);
 validator.setRule("minimumValue", rules.minimumValue);
+validator.setRule("pattern", rules.pattern);
+validator.setRule("phone", phone);
 validator.setRule("required", rules.required);
 validator.setRule("slug", rules.slug);
 validator.setRule("uniqueCharacters", rules.uniqueCharacters);

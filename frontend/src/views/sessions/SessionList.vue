@@ -12,7 +12,7 @@ import CountSelect from "@/components/shared/CountSelect.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
-import UserAvatar from "@/views/users/UserAvatar.vue";
+import UserAvatar from "@/components/users/UserAvatar.vue";
 import UserSelect from "@/components/users/UserSelect.vue";
 import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { SearchResults } from "@/types/search";
@@ -23,10 +23,10 @@ import { searchSessions } from "@/api/sessions";
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
 const router = useRouter();
+const { d, rt, t, tm } = useI18n();
 const { isEmpty } = objectUtils;
 const { orderBy } = arrayUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
-const { d, rt, t, tm } = useI18n();
 
 const isLoading = ref<boolean>(false);
 const sessions = ref<Session[]>([]);
@@ -183,7 +183,7 @@ watch(
               </template>
             </td>
             <td>
-              <UserAvatar :user="session.user" />
+              <UserAvatar target="_blank" :user="session.user" />
             </td>
             <td>
               <StatusBlock v-if="session.signedOutBy && session.signedOutOn" :actor="session.signedOutBy" :date="session.signedOutOn" />
@@ -198,5 +198,3 @@ watch(
     <p v-else>{{ t("sessions.empty") }}</p>
   </main>
 </template>
-
-// isPersistent // isActive, signedOutBy, signedOutOn

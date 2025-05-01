@@ -5,9 +5,9 @@ import type { SearchPayload, SortOption } from "./search";
 import type { User } from "./users";
 
 export type SearchSessionsPayload = SearchPayload & {
-  userId?: string | null;
-  isActive?: boolean | null;
-  isPersistent?: boolean | null;
+  userId?: string;
+  isActive?: boolean;
+  isPersistent?: boolean;
   sort: SessionSortOption[];
 };
 

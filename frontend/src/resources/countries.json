@@ -1,0 +1,13 @@
+[
+  {
+    "code": "CA",
+    "name": "Canada",
+    "postalCode": "[ABCEGHJ-NPRSTVXY]\\d[ABCEGHJ-NPRSTV-Z][ \\-]?\\d[ABCEGHJ-NPRSTV-Z]\\d$",
+    "regions": ["AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT"],
+    "flags": {
+      "png": "https://flagcdn.com/w320/ca.png",
+      "svg": "https://flagcdn.com/ca.svg",
+      "alt": "The flag of Canada is composed of a red vertical band on the hoist and fly sides and a central white square that is twice the width of the vertical bands. A large eleven-pointed red maple leaf is centered in the white square."
+    }
+  }
+]

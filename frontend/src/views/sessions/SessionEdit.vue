@@ -9,7 +9,7 @@ import SignOutSession from "@/components/sessions/SignOutSession.vue";
 import SignOutUser from "@/components/users/SignOutUser.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
-import UserAvatar from "@/views/users/UserAvatar.vue";
+import UserAvatar from "@/components/users/UserAvatar.vue";
 import type { CustomAttribute } from "@/types/custom";
 import type { Session } from "@/types/sessions";
 import type { User } from "@/types/users";
@@ -63,7 +63,7 @@ onMounted(async () => {
           <tr>
             <th scope="row">{{ t("users.select.label") }}</th>
             <td>
-              <UserAvatar :user="session.user" />
+              <UserAvatar target="_blank" :user="session.user" />
             </td>
           </tr>
           <tr>
