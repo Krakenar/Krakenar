@@ -16,12 +16,14 @@ const { t } = useI18n();
 const props = withDefaults(
   defineProps<{
     disabled?: boolean | string;
+    exclude?: string[];
     id?: string;
     label?: string;
     modelValue?: string;
     placeholder?: string;
   }>(),
   {
+    exclude: () => [],
     id: "role",
     label: "roles.select.label",
     placeholder: "roles.select.placeholder",
@@ -30,10 +32,10 @@ const props = withDefaults(
 
 const roles = ref<Role[]>([]);
 
-const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || roles.value.length === 0);
+const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || options.value.length === 0);
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    roles.value.map((role) => ({ text: formatRole(role), value: role.id })),
+    roles.value.filter(({ id }) => !props.exclude.includes(id)).map((role) => ({ text: formatRole(role), value: role.id })),
     "text",
   ),
 );
@@ -78,5 +80,9 @@ onMounted(async () => {
     :options="options"
     :placeholder="t(placeholder ?? label)"
     @update:modelValue="onModelValueUpdate"
-  />
+  >
+    <template #append>
+      <slot name="append"></slot>
+    </template>
+  </TarSelect>
 </template>

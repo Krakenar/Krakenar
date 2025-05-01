@@ -30,7 +30,7 @@ const props = withDefaults(
 
 const users = ref<User[]>([]);
 
-const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || users.value.length === 0);
+const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || options.value.length === 0);
 const options = computed<SelectOption[]>(() =>
   orderBy(
     users.value.map((user) => ({ text: formatUser(user), value: user.id })),

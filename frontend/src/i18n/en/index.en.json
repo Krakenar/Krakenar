@@ -1,10 +1,12 @@
 {
   "actions": {
+    "add": "Add",
     "cancel": "Cancel",
     "close": "Close",
     "create": "Create",
     "go": "Go",
     "refresh": "Refresh",
+    "remove": "Remove",
     "save": "Save"
   },
   "brand": "Krakenar",

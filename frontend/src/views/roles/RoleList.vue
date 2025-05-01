@@ -163,7 +163,7 @@ watch(
         <tbody>
           <tr v-for="role in roles" :key="role.id">
             <td>
-              <RouterLink :to="{ name: 'RoleEdit', params: { id: role.id } }"> <font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }} </RouterLink>
+              <RouterLink :to="{ name: 'RoleEdit', params: { id: role.id } }"><font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }}</RouterLink>
             </td>
             <td>{{ role.displayName ?? "—" }}</td>
             <td><StatusBlock :actor="role.updatedBy" :date="role.updatedOn" /></td>

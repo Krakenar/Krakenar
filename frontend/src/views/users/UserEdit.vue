@@ -8,6 +8,7 @@ import AuthenticationInformation from "@/components/users/AuthenticationInformat
 import ContactInformation from "@/components/users/ContactInformation.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import UserRoles from "@/components/users/UserRoles.vue";
 import UserSummary from "@/components/users/UserSummary.vue";
 import type { Configuration } from "@/types/configuration";
 import type { User } from "@/types/users";
@@ -66,6 +67,20 @@ function onPersonalUpdated(updated: User): void {
   }
   toasts.success("users.updated");
 }
+function onRoleAdded(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.roles = [...updated.roles];
+  }
+  toasts.success("users.roles.added");
+}
+function onRoleRemoved(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.roles = [...updated.roles];
+  }
+  toasts.success("users.roles.removed");
+}
 
 onMounted(async () => {
   try {
@@ -87,14 +102,17 @@ onMounted(async () => {
       <StatusDetail :aggregate="user" />
       <UserSummary :user="user" />
       <TarTabs>
-        <TarTab id="authentication" :title="t('users.authentication')">
+        <TarTab active id="authentication" :title="t('users.authentication')">
           <AuthenticationInformation :configuration="configuration" :user="user" @error="handleError" @updated="onAuthenticationUpdated" />
         </TarTab>
-        <TarTab active id="contact" :title="t('users.contact')">
+        <TarTab id="contact" :title="t('users.contact')">
           <ContactInformation :user="user" @error="handleError" @updated="onContactUpdated" />
         </TarTab>
         <TarTab id="personal" :title="t('users.personal')">
           <PersonalInformation :user="user" @error="handleError" @updated="onPersonalUpdated" />
+        </TarTab>
+        <TarTab id="roles" :title="t('roles.title')">
+          <UserRoles :user="user" @added="onRoleAdded" @error="handleError" @removed="onRoleRemoved" />
         </TarTab>
       </TarTabs>
     </template>
