@@ -6,17 +6,19 @@ import { useRoute } from "vue-router";
 
 import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
 import ContactInformation from "@/components/users/ContactInformation.vue";
+import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import CustomIdentifierList from "@/components/users/CustomIdentifierList.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UserRoles from "@/components/users/UserRoles.vue";
 import UserSummary from "@/components/users/UserSummary.vue";
 import type { Configuration } from "@/types/configuration";
-import type { User } from "@/types/users";
+import type { CustomAttribute } from "@/types/custom";
+import type { UpdateUserPayload, User } from "@/types/users";
 import { formatUser } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
-import { readUser } from "@/api/users";
+import { readUser, updateUser } from "@/api/users";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -100,6 +102,16 @@ function onRoleRemoved(updated: User): void {
   toasts.success("users.roles.removed");
 }
 
+async function saveCustomAttributes(customAttributes: CustomAttribute[]): Promise<void> {
+  if (user.value) {
+    const payload: UpdateUserPayload = { customAttributes, roles: [] };
+    const updated: User = await updateUser(user.value.id, payload);
+    setMetadata(updated);
+    toasts.success("users.updated");
+    user.value.customAttributes = [...updated.customAttributes];
+  }
+}
+
 onMounted(async () => {
   try {
     const id = route.params.id as string;
@@ -120,7 +132,7 @@ onMounted(async () => {
       <StatusDetail :aggregate="user" />
       <UserSummary :user="user" />
       <TarTabs>
-        <TarTab active id="authentication" :title="t('users.authentication')">
+        <TarTab id="authentication" :title="t('users.authentication')">
           <AuthenticationInformation :configuration="configuration" :user="user" @error="handleError" @updated="onAuthenticationUpdated" />
         </TarTab>
         <TarTab id="contact" :title="t('users.contact')">
@@ -128,6 +140,9 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="personal" :title="t('users.personal')">
           <PersonalInformation :user="user" @error="handleError" @updated="onPersonalUpdated" />
+        </TarTab>
+        <TarTab active id="attributes" :title="t('customAttributes.label')">
+          <CustomAttributeList :attributes="user.customAttributes" :save="saveCustomAttributes" @error="handleError" />
         </TarTab>
         <TarTab id="identifiers" :title="t('users.identifiers.title')">
           <CustomIdentifierList :user="user" @error="handleError" @removed="onIdentifierRemoved" @saved="onIdentifierSaved" />
