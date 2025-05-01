@@ -11,6 +11,7 @@ import CustomIdentifierList from "@/components/users/CustomIdentifierList.vue";
 import DeleteUser from "@/components/users/DeleteUser.vue";
 import PersonalInformation from "@/components/users/PersonalInformation.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import ToggleUserStatus from "@/components/users/ToggleUserStatus.vue";
 import UserRoles from "@/components/users/UserRoles.vue";
 import UserSummary from "@/components/users/UserSummary.vue";
 import type { Configuration } from "@/types/configuration";
@@ -42,6 +43,16 @@ function setMetadata(updated: User): void {
     user.value.updatedBy = updated.updatedBy;
     user.value.updatedOn = updated.updatedOn;
   }
+}
+
+function onActivationToggled(updated: User): void {
+  if (user.value) {
+    setMetadata(updated);
+    user.value.disabledBy = updated.disabledBy;
+    user.value.disabledOn = updated.disabledOn;
+    user.value.isDisabled = updated.isDisabled;
+  }
+  toasts.success(`users.${updated.isDisabled ? "disabled" : "enabled"}.success`);
 }
 
 function onAuthenticationUpdated(updated: User): void {
@@ -138,7 +149,8 @@ onMounted(async () => {
       <h1>{{ formatUser(user) }}</h1>
       <StatusDetail :aggregate="user" />
       <div class="mb-3">
-        <DeleteUser :user="user" @deleted="onDeleted" @error="handleError" />
+        <DeleteUser class="me-1" :user="user" @deleted="onDeleted" @error="handleError" />
+        <ToggleUserStatus class="ms-1" :user="user" @disabled="onActivationToggled" @enabled="onActivationToggled" @error="handleError" />
       </div>
       <UserSummary :user="user" />
       <TarTabs>
