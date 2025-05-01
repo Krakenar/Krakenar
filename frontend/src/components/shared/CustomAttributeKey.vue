@@ -7,7 +7,6 @@ const { t } = useI18n();
 
 withDefaults(
   defineProps<{
-    disabled?: boolean | string;
     id?: string;
     label?: string;
     max?: number | string;
@@ -16,7 +15,7 @@ withDefaults(
   }>(),
   {
     id: "key",
-    label: "users.identifiers.key",
+    label: "customAttributes.key",
     max: 255,
   },
 );
@@ -28,7 +27,6 @@ defineEmits<{
 
 <template>
   <FormInput
-    :disabled="disabled"
     :id="id"
     :label="t(label)"
     :max="max"
@@ -36,5 +34,9 @@ defineEmits<{
     :required="required"
     :rules="{ identifier: true }"
     @update:model-value="$emit('update:model-value', $event)"
-  />
+  >
+    <template #append>
+      <slot name="append"></slot>
+    </template>
+  </FormInput>
 </template>

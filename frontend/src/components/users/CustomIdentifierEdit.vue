@@ -93,8 +93,8 @@ watch(() => props.identifier, setModel, { deep: true, immediate: true });
     <TarModal :close="t('actions.close')" :id="id" ref="modalRef" :title="title">
       <CustomIdentifierAlreadyUsed v-model="customIdentifierAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <CustomIdentifierKey :disabled="Boolean(identifier)" :required="!identifier" v-model="key" />
-        <CustomIdentifierValue required v-model="value" />
+        <CustomIdentifierKey :disabled="Boolean(identifier)" :id="`${id}-key`" :required="!identifier" v-model="key" />
+        <CustomIdentifierValue :id="`${id}-value`" required v-model="value" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
