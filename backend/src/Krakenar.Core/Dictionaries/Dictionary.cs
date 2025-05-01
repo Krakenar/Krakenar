@@ -5,7 +5,7 @@ using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Dictionaries;
 
-public class Dictionary : AggregateRoot, ICustomizable
+public class Dictionary : AggregateRoot
 {
   private DictionaryUpdated _updated = new();
   private bool HasUpdates => _updated.Entries.Count > 0;
@@ -26,7 +26,10 @@ public class Dictionary : AggregateRoot, ICustomizable
   public Dictionary(Language language, ActorId? actorId = null, DictionaryId? dictionaryId = null)
     : base((dictionaryId ?? DictionaryId.NewId()).StreamId)
   {
-    // TODO(fpion): ensure language is in the same realm
+    if (RealmId != language.RealmId)
+    {
+      throw new RealmMismatchException(RealmId, language.RealmId, nameof(language));
+    }
 
     Raise(new DictionaryCreated(language.Id), actorId);
   }

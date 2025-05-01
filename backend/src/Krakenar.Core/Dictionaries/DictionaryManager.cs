@@ -28,7 +28,7 @@ public class DictionaryManager : IDictionaryManager
       DictionaryId? conflictId = await DictionaryQuerier.FindIdAsync(dictionary.LanguageId, cancellationToken);
       if (conflictId.HasValue && !conflictId.Value.Equals(dictionary.Id))
       {
-        throw new NotImplementedException(); // TODO(fpion): implement
+        throw new LanguageAlreadyUsedException(dictionary, conflictId.Value);
       }
     }
 
