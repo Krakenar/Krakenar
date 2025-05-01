@@ -29,6 +29,8 @@ public sealed class Language : Aggregate, ISegregatedEntity
   public string EnglishName { get; private set; } = string.Empty;
   public string NativeName { get; private set; } = string.Empty;
 
+  public Dictionary? Dictionary { get; private set; }
+
   public Language(Realm? realm, LanguageCreated @event) : base(@event)
   {
     Realm = realm;
@@ -52,6 +54,10 @@ public sealed class Language : Aggregate, ISegregatedEntity
     if (Realm is not null)
     {
       actorIds.AddRange(Realm.GetActorIds());
+    }
+    if (Dictionary is not null)
+    {
+      actorIds.AddRange(Dictionary.GetActorIds());
     }
     return actorIds.ToList().AsReadOnly();
   }
