@@ -11,6 +11,7 @@ validator.setRule("containsLowercase", rules.containsLowercase);
 validator.setRule("containsNonAlphanumeric", rules.containsNonAlphanumeric);
 validator.setRule("containsUppercase", rules.containsUppercase);
 validator.setRule("email", rules.email);
+validator.setRule("identifier", rules.identifier);
 validator.setRule("maximumLength", rules.maximumLength);
 validator.setRule("maximumValue", rules.maximumValue);
 validator.setRule("minimumLength", rules.minimumLength);

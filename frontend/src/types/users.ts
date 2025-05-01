@@ -99,6 +99,8 @@ export type PhonePayload = ContactPayload & {
   extension?: string;
 };
 
+export type SaveUserIdentifierPayload = { value: string };
+
 export type SearchUsersPayload = SearchPayload & {
   hasPassword?: boolean | null;
   isDisabled?: boolean | null;
