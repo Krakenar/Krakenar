@@ -99,7 +99,7 @@ public class TokenHelperTests
       UniqueSlug = "new-world",
       Url = _baseUrl
     };
-    string issuer = $"{_baseUrl}/kraken/realms/{realm.UniqueSlug}";
+    string issuer = $"{_baseUrl}/app/realms/{realm.UniqueSlug}";
     Assert.Equal(issuer, TokenHelper.ResolveIssuer(issuer: null, realm, _baseUrl));
   }
 }

@@ -28,7 +28,8 @@ public static class DependencyInjectionExtensions
       .AddSingleton<IPasswordManager, PasswordManager>()
       .AddSingleton<ISecretManager, SecretManager>()
       .AddSingleton<PasswordConverter>()
-      .AddScoped<IEventBus, EventBus>();
+      .AddScoped<IEventBus, EventBus>()
+      .AddScoped<ITokenManager, JsonWebTokenManager>();
   }
 
   public static IServiceCollection AddKrakenarPasswordStrategies(this IServiceCollection services)

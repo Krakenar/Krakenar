@@ -12,11 +12,13 @@ using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Events;
+using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Events;
 using Krakenar.EntityFrameworkCore.Relational.Actors;
 using Krakenar.EntityFrameworkCore.Relational.Handlers;
 using Krakenar.EntityFrameworkCore.Relational.Queriers;
+using Krakenar.EntityFrameworkCore.Relational.Tokens;
 using Krakenar.Infrastructure.Commands;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +34,7 @@ public static class DependencyInjectionExtensions
       .AddKrakenarQueriers()
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
       .AddScoped<IActorService, ActorService>()
+      .AddScoped<ITokenBlacklist, TokenBlacklist>()
       .AddScoped<ICommandHandler<MigrateDatabase>, MigrateDatabaseCommandHandler>();
   }
 
