@@ -3,6 +3,7 @@
     "add": "Add",
     "cancel": "Cancel",
     "close": "Close",
+    "clipboard": "Copy to clipboard",
     "create": "Create",
     "delete": "Delete",
     "disable": "Disable",
@@ -12,7 +13,8 @@
     "refresh": "Refresh",
     "remove": "Remove",
     "restore": "Restore",
-    "save": "Save"
+    "save": "Save",
+    "validate": "Validate"
   },
   "brand": "Krakenar",
   "by": "By",

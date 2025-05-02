@@ -16,8 +16,8 @@ const emit = defineEmits<{
 }>();
 
 function onAdd(): void {
-  const entries: DictionaryEntry[] = [...props.modelValue];
-  entries.push({ key: "", value: "", isAdded: true });
+  const entry: DictionaryEntry = { key: "", value: "", isAdded: true };
+  const entries: DictionaryEntry[] = [...props.modelValue, entry];
   emit("update:model-value", entries);
 }
 function onRemove(index: number): void {
@@ -55,7 +55,7 @@ function onUpdate(index: number, entry: DictionaryEntry): void {
     <div class="mb-3">
       <TarButton icon="fas fa-plus" :text="t('actions.add')" variant="success" @click="onAdd" />
     </div>
-    <template v-if="modelValue.length > 0" @submit.prevent="handleSubmit(submit)">
+    <template v-if="modelValue.length > 0">
       <DictionaryEntryEdit
         v-for="(entry, index) in modelValue"
         :key="index"

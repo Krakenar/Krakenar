@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { TarInput, type InputType } from "logitar-vue3-ui";
 import { useI18n } from "vue-i18n";
+
+import FormInput from "@/components/forms/FormInput.vue";
 
 const { t } = useI18n();
 
@@ -9,12 +10,11 @@ withDefaults(
     id?: string;
     label?: string;
     modelValue?: string;
-    type?: InputType;
+    required?: boolean | string;
   }>(),
   {
-    id: "search",
-    label: "search",
-    type: "search",
+    id: "token",
+    label: "tokens.token",
   },
 );
 
@@ -24,13 +24,12 @@ defineEmits<{
 </script>
 
 <template>
-  <TarInput
-    floating
+  <FormInput
     :id="id"
     :label="t(label)"
     :model-value="modelValue"
     :placeholder="t(label)"
-    :type="type"
+    :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

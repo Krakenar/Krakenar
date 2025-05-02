@@ -1,0 +1,31 @@
+{
+  "audience": "Audience",
+  "claims": {
+    "name": "Name",
+    "other": "Other Claims",
+    "title": "Claims",
+    "type": {
+      "label": "Type",
+      "placeholder": "Select a claim type"
+    },
+    "validated": "Validated Claims",
+    "value": "Value"
+  },
+  "consumable": "Consumable",
+  "consume": "Consume",
+  "created": {
+    "decoder": "Go to decoder",
+    "label": "Your new token",
+    "title": "Token"
+  },
+  "issuer": "Issuer",
+  "lifetime": {
+    "label": "Lifetime",
+    "unit": "second | second | seconds"
+  },
+  "secret": "Secret",
+  "subject": "Subject",
+  "title": "Tokens",
+  "token": "Token",
+  "type": "Type"
+}

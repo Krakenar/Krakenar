@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import UniqueNameInput from "../shared/UniqueNameInput.vue";
+import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 
 withDefaults(
   defineProps<{

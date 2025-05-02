@@ -3,6 +3,7 @@
     "add": "Ajouter",
     "cancel": "Annuler",
     "close": "Fermer",
+    "clipboard": "Copier dans le presse-papiers",
     "create": "Créer",
     "delete": "Supprimer",
     "disable": "Désactiver",
@@ -12,7 +13,8 @@
     "refresh": "Rafraîchir",
     "remove": "Retirer",
     "restore": "Restaurer",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "validate": "Valider"
   },
   "brand": "Krakenar",
   "by": "Par",
