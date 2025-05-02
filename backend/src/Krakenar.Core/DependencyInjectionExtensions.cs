@@ -25,6 +25,7 @@ using Krakenar.Core.Roles.Queries;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
+using Krakenar.Core.Tokens;
 using Krakenar.Core.Tokens.Commands;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
@@ -98,6 +99,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
       .AddTransient<ISessionService, SessionService>()
+      .AddTransient<ITokenService, TokenService>()
       .AddTransient<IUserService, UserService>();
   }
 

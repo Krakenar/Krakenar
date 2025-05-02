@@ -4,6 +4,7 @@ using Krakenar.Client.Localization;
 using Krakenar.Client.Realms;
 using Krakenar.Client.Roles;
 using Krakenar.Client.Sessions;
+using Krakenar.Client.Tokens;
 using Krakenar.Client.Users;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
@@ -11,6 +12,7 @@ using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Sessions;
+using Krakenar.Contracts.Tokens;
 using Krakenar.Contracts.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +37,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<IRealmService, RealmClient>()
       .AddSingleton<IRoleService, RoleClient>()
       .AddSingleton<ISessionService, SessionClient>()
+      .AddSingleton<ITokenService, TokenClient>()
       .AddSingleton<IUserService, UserClient>();
   }
 }
