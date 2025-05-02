@@ -1,5 +1,6 @@
 import configuration from "./configuration.fr.json";
 import countries from "./countries.fr.json";
+import dictionaries from "./dictionaries.fr.json";
 import errors from "./errors.fr.json";
 import index from "./index.fr.json";
 import languages from "./languages.fr.json";
@@ -13,6 +14,7 @@ export default {
   ...index,
   configuration,
   countries,
+  dictionaries,
   errors,
   languages,
   realms,

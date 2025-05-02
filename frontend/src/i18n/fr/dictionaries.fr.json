@@ -1,0 +1,26 @@
+{
+  "create": "Nouveau dictionnaire",
+  "created": "Le dictionnaire a été créé.",
+  "delete": {
+    "confirm": "Afin de supprimer le dictionnaire, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer le dictionnaire"
+  },
+  "deleted": "Le dictionnaire a été supprimé.",
+  "empty": "Cette liste est vide.",
+  "entries": {
+    "empty": "Cette liste est vide.",
+    "key": "Clé",
+    "title": "Entrées",
+    "value": "Valeur"
+  },
+  "sort": {
+    "options": {
+      "CreatedOn": "Date de création",
+      "EntryCount": "Nombre d’entrées",
+      "Language": "Langue",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Dictionnaires",
+  "updated": "Le dictionnaire a été mis à jour."
+}

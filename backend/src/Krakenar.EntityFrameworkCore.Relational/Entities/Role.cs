@@ -56,7 +56,7 @@ public sealed class Role : Aggregate, ISegregatedEntity
 
   public void SetUniqueName(RoleUniqueNameChanged @event)
   {
-    base.Update(@event);
+    Update(@event);
 
     UniqueName = @event.UniqueName.Value;
   }

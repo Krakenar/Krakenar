@@ -12,6 +12,8 @@ public sealed class KrakenarContext : DbContext
   public DbSet<Actor> Actors => Set<Actor>();
   public DbSet<Configuration> Configuration => Set<Configuration>();
   public DbSet<CustomAttribute> CustomAttributes => Set<CustomAttribute>();
+  public DbSet<Dictionary> Dictionaries => Set<Dictionary>();
+  public DbSet<DictionaryEntry> DictionaryEntries => Set<DictionaryEntry>();
   public DbSet<Language> Languages => Set<Language>();
   public DbSet<Realm> Realms => Set<Realm>();
   public DbSet<Role> Roles => Set<Role>();

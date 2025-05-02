@@ -9,6 +9,7 @@ import { deleteUser } from "@/api/users";
 const { t } = useI18n();
 
 const props = defineProps<{
+  disabled?: boolean | string;
   user: User;
 }>();
 
@@ -56,7 +57,7 @@ async function doDelete(): Promise<void> {
 
 <template>
   <span>
-    <TarButton icon="fas fa-trash" :text="t('actions.delete')" variant="danger" data-bs-toggle="modal" data-bs-target="#delete-user" />
+    <TarButton :disabled="disabled" icon="fas fa-trash" :text="t('actions.delete')" variant="danger" data-bs-toggle="modal" data-bs-target="#delete-user" />
     <TarModal :close="t('actions.close')" id="delete-user" ref="modalRef" :title="t('users.delete.title')">
       <p>
         {{ t("users.delete.confirm") }}

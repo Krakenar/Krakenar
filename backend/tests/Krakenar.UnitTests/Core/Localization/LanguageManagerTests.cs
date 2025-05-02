@@ -7,6 +7,7 @@ public class LanguageManagerTests
 {
   private readonly CancellationToken _cancellationToken = default;
 
+  private readonly Mock<IApplicationContext> _applicationContext = new();
   private readonly Mock<ILanguageQuerier> _languageQuerier = new();
   private readonly Mock<ILanguageRepository> _languageRepository = new();
 
@@ -14,7 +15,7 @@ public class LanguageManagerTests
 
   public LanguageManagerTests()
   {
-    _manager = new(_languageQuerier.Object, _languageRepository.Object);
+    _manager = new(_applicationContext.Object, _languageQuerier.Object, _languageRepository.Object);
   }
 
   [Fact(DisplayName = "SaveAsync: it should save the language when the locale has not changed.")]

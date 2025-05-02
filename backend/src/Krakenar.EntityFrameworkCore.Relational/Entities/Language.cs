@@ -29,6 +29,8 @@ public sealed class Language : Aggregate, ISegregatedEntity
   public string EnglishName { get; private set; } = string.Empty;
   public string NativeName { get; private set; } = string.Empty;
 
+  public Dictionary? Dictionary { get; private set; }
+
   public Language(Realm? realm, LanguageCreated @event) : base(@event)
   {
     Realm = realm;
@@ -46,12 +48,17 @@ public sealed class Language : Aggregate, ISegregatedEntity
   {
   }
 
-  public override IReadOnlyCollection<ActorId> GetActorIds()
+  public override IReadOnlyCollection<ActorId> GetActorIds() => GetActorIds(skipDictionary: false);
+  public IReadOnlyCollection<ActorId> GetActorIds(bool skipDictionary)
   {
     HashSet<ActorId> actorIds = new(base.GetActorIds());
     if (Realm is not null)
     {
       actorIds.AddRange(Realm.GetActorIds());
+    }
+    if (!skipDictionary && Dictionary is not null)
+    {
+      actorIds.AddRange(Dictionary.GetActorIds(skipLanguage: true));
     }
     return actorIds.ToList().AsReadOnly();
   }

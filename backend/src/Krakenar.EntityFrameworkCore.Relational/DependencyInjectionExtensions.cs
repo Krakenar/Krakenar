@@ -2,6 +2,8 @@
 using Krakenar.Core.Actors;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Events;
+using Krakenar.Core.Dictionaries;
+using Krakenar.Core.Dictionaries.Events;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
 using Krakenar.Core.Realms;
@@ -38,6 +40,10 @@ public static class DependencyInjectionExtensions
     return services
       .AddScoped<IEventHandler<ConfigurationInitialized>, ConfigurationEvents>()
       .AddScoped<IEventHandler<ConfigurationUpdated>, ConfigurationEvents>()
+      .AddScoped<IEventHandler<DictionaryCreated>, DictionaryEvents>()
+      .AddScoped<IEventHandler<DictionaryDeleted>, DictionaryEvents>()
+      .AddScoped<IEventHandler<DictionaryLanguageChanged>, DictionaryEvents>()
+      .AddScoped<IEventHandler<DictionaryUpdated>, DictionaryEvents>()
       .AddScoped<IEventHandler<LanguageCreated>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageDeleted>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageLocaleChanged>, LanguageEvents>()
@@ -88,6 +94,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
+      .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
       .AddScoped<ILanguageQuerier, LanguageQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()

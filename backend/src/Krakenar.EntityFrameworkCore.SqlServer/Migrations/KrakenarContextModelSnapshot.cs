@@ -173,6 +173,121 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("CustomAttributes", "Identity");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary", b =>
+                {
+                    b.Property<int>("DictionaryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DictionaryId"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EntryCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RealmId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("StreamId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("DictionaryId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("EntryCount");
+
+                    b.HasIndex("LanguageId")
+                        .IsUnique();
+
+                    b.HasIndex("RealmUid");
+
+                    b.HasIndex("StreamId")
+                        .IsUnique();
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("Version");
+
+                    b.HasIndex("RealmId", "Id")
+                        .IsUnique()
+                        .HasFilter("[RealmId] IS NOT NULL");
+
+                    b.HasIndex("RealmId", "LanguageId")
+                        .IsUnique()
+                        .HasFilter("[RealmId] IS NOT NULL");
+
+                    b.ToTable("Dictionaries", "Localization");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.DictionaryEntry", b =>
+                {
+                    b.Property<int>("DictionaryEntryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DictionaryEntryId"));
+
+                    b.Property<int>("DictionaryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValueShortened")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("DictionaryEntryId");
+
+                    b.HasIndex("Key");
+
+                    b.HasIndex("ValueShortened");
+
+                    b.HasIndex("DictionaryId", "Key")
+                        .IsUnique();
+
+                    b.ToTable("DictionaryEntries", "Localization");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Language", b =>
                 {
                     b.Property<int>("LanguageId")
@@ -975,6 +1090,35 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Realm");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Language", "Language")
+                        .WithOne("Dictionary")
+                        .HasForeignKey("Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary", "LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
+                        .WithMany("Dictionaries")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Language");
+
+                    b.Navigation("Realm");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.DictionaryEntry", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary", "Dictionary")
+                        .WithMany("Entries")
+                        .HasForeignKey("DictionaryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dictionary");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Language", b =>
                 {
                     b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
@@ -1056,9 +1200,21 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary", b =>
+                {
+                    b.Navigation("Entries");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Language", b =>
+                {
+                    b.Navigation("Dictionary");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", b =>
                 {
                     b.Navigation("Actors");
+
+                    b.Navigation("Dictionaries");
 
                     b.Navigation("Languages");
 

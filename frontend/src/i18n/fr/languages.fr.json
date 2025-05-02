@@ -12,6 +12,14 @@
     "set": "La langue a été définie par défaut."
   },
   "otherNames": "Autres noms",
+  "select": {
+    "alreadyUsed": {
+      "help": "Veuillez sélectionner une autre langue.",
+      "lead": "La langue est déjà utilisée."
+    },
+    "label": "Langue",
+    "placeholder": "Sélectionnez une langue"
+  },
   "sort": {
     "options": {
       "Code": "Code",
