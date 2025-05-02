@@ -5,6 +5,7 @@ using Logitar;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Krakenar.Web;
 
@@ -64,6 +65,8 @@ public class ExceptionHandler : IExceptionHandler
 
   private static bool IsBadRequest(Exception exception) => exception is BadRequestException
     || exception is InvalidCredentialsException
+    || exception is SecurityTokenArgumentException
+    || exception is SecurityTokenException
     || exception is TooManyResultsException
     || exception is ValidationException;
 
