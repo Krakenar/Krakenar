@@ -1,10 +1,12 @@
 ﻿using Krakenar.Client.Configurations;
+using Krakenar.Client.Dictionaries;
 using Krakenar.Client.Localization;
 using Krakenar.Client.Realms;
 using Krakenar.Client.Roles;
 using Krakenar.Client.Sessions;
 using Krakenar.Client.Users;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
@@ -28,6 +30,7 @@ public static class DependencyInjectionExtensions
       .AddHttpClient()
       .AddSingleton(settings)
       .AddSingleton<IConfigurationService, ConfigurationClient>()
+      .AddSingleton<IDictionaryService, DictionaryClient>()
       .AddSingleton<ILanguageService, LanguageClient>()
       .AddSingleton<IRealmService, RealmClient>()
       .AddSingleton<IRoleService, RoleClient>()
