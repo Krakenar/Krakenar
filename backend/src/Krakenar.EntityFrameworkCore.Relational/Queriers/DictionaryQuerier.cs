@@ -77,11 +77,13 @@ public class DictionaryQuerier : IDictionaryQuerier
   public virtual async Task<SearchResults<DictionaryDto>> SearchAsync(SearchDictionariesPayload payload, CancellationToken cancellationToken)
   {
     IQueryBuilder builder = SqlHelper.Query(KrakenarDb.Dictionaries.Table).SelectAll(KrakenarDb.Dictionaries.Table)
+      .Join(KrakenarDb.Languages.LanguageId, KrakenarDb.Dictionaries.LanguageId)
       .WhereRealm(ApplicationContext.RealmId, KrakenarDb.Dictionaries.RealmUid)
       .ApplyIdFilter(KrakenarDb.Dictionaries.Id, payload.Ids);
-    SqlHelper.ApplyTextSearch(builder, payload.Search); // TODO(fpion): search into Language
+    SqlHelper.ApplyTextSearch(builder, payload.Search, KrakenarDb.Languages.Code, KrakenarDb.Languages.DisplayName, KrakenarDb.Languages.EnglishName, KrakenarDb.Languages.NativeName);
 
-    IQueryable<Entities.Dictionary> query = Dictionaries.FromQuery(builder).AsNoTracking();
+    IQueryable<Entities.Dictionary> query = Dictionaries.FromQuery(builder).AsNoTracking()
+      .Include(x => x.Language);
 
     long total = await query.LongCountAsync(cancellationToken);
 
@@ -101,9 +103,9 @@ public class DictionaryQuerier : IDictionaryQuerier
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.EntryCount) : ordered.ThenBy(x => x.EntryCount));
           break;
         case DictionarySort.Language:
-          //ordered = (ordered is null)
-          //  ? (sort.IsDescending ? query.OrderByDescending(x => x.UniqueName) : query.OrderBy(x => x.UniqueName))
-          //  : (sort.IsDescending ? ordered.ThenByDescending(x => x.UniqueName) : ordered.ThenBy(x => x.UniqueName)); // TODO(fpion): implement
+          ordered = (ordered is null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.Language!.DisplayName) : query.OrderBy(x => x.Language!.DisplayName))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.Language!.DisplayName) : ordered.ThenBy(x => x.Language!.DisplayName));
           break;
         case DictionarySort.UpdatedOn:
           ordered = (ordered is null)
