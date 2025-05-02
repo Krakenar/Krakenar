@@ -6,11 +6,11 @@ using Logitar.Security.Cryptography;
 
 namespace Krakenar.Infrastructure.Tokens;
 
-public class SecretService : ISecretService
+public class SecretManager : ISecretManager
 {
   protected virtual EncryptionSettings Settings { get; }
 
-  public SecretService(EncryptionSettings settings)
+  public SecretManager(EncryptionSettings settings)
   {
     Settings = settings;
   }

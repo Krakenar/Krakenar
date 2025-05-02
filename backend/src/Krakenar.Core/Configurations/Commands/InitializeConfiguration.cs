@@ -20,7 +20,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
   protected virtual IConfigurationRepository ConfigurationRepository { get; }
   protected virtual ILanguageManager LanguageManager { get; }
   protected virtual IPasswordService PasswordService { get; }
-  protected virtual ISecretService SecretService { get; }
+  protected virtual ISecretManager SecretManager { get; }
   protected virtual IUserManager UserManager { get; }
 
   public InitializeConfigurationHandler(
@@ -29,7 +29,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     IConfigurationRepository configurationRepository,
     ILanguageManager languageManager,
     IPasswordService passwordService,
-    ISecretService secretService,
+    ISecretManager secretManager,
     IUserManager userManager)
   {
     CacheService = cacheService;
@@ -37,7 +37,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     ConfigurationRepository = configurationRepository;
     LanguageManager = languageManager;
     PasswordService = passwordService;
-    SecretService = secretService;
+    SecretManager = secretManager;
     UserManager = userManager;
   }
 
@@ -49,7 +49,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
       UserId userId = UserId.NewId();
       ActorId actorId = new(userId.Value);
 
-      Secret secret = SecretService.Generate();
+      Secret secret = SecretManager.Generate();
       configuration = Configuration.Initialize(secret, actorId);
 
       Locale locale = new(command.DefaultLocale);

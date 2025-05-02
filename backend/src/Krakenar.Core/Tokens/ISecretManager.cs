@@ -2,7 +2,7 @@
 
 namespace Krakenar.Core.Tokens;
 
-public interface ISecretService
+public interface ISecretManager
 {
   Secret Encrypt(string secret, RealmId? realmId = null);
   Secret Generate(RealmId? realmId = null);

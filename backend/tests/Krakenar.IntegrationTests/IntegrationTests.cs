@@ -75,8 +75,8 @@ public abstract class IntegrationTests : IAsyncLifetime
     KrakenarContext = ServiceProvider.GetRequiredService<KrakenarContext>();
 
     RealmId realmId = RealmId.NewId();
-    ISecretService secretService = ServiceProvider.GetRequiredService<ISecretService>();
-    Secret secret = secretService.Generate(realmId);
+    ISecretManager secretManager = ServiceProvider.GetRequiredService<ISecretManager>();
+    Secret secret = secretManager.Generate(realmId);
     Realm = new Realm(new Slug("kraken"), secret, actorId: null, realmId)
     {
       DisplayName = new DisplayName("Kraken"),

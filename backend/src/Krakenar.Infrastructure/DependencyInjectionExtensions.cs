@@ -26,7 +26,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<ICacheService, CacheService>()
       .AddSingleton<IEventSerializer, EventSerializer>()
       .AddSingleton<IPasswordService, PasswordService>()
-      .AddSingleton<ISecretService, SecretService>()
+      .AddSingleton<ISecretManager, SecretManager>()
       .AddSingleton<PasswordConverter>()
       .AddScoped<IEventBus, EventBus>();
   }
