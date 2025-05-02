@@ -4,15 +4,18 @@ import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import DeleteRole from "@/components/roles/DeleteRole.vue";
 import RoleGeneral from "@/components/roles/RoleGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Configuration } from "@/types/configuration";
-import type { Role } from "@/types/roles";
+import type { CustomAttribute } from "@/types/custom";
+import type { Role, UpdateRolePayload } from "@/types/roles";
+import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatRole } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
-import { readRole } from "@/api/roles";
+import { readRole, updateRole } from "@/api/roles";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -47,6 +50,16 @@ function onGeneralUpdated(updated: Role): void {
   toasts.success("roles.updated");
 }
 
+async function saveCustomAttributes(customAttributes: CustomAttribute[]): Promise<void> {
+  if (role.value) {
+    const payload: UpdateRolePayload = { customAttributes };
+    const updated: Role = await updateRole(role.value.id, payload);
+    setMetadata(updated);
+    role.value.customAttributes = [...updated.customAttributes];
+    toasts.success("users.updated");
+  }
+}
+
 onMounted(async () => {
   try {
     const id = route.params.id as string;
@@ -55,7 +68,12 @@ onMounted(async () => {
       configuration.value = await readConfiguration();
     }
   } catch (e: unknown) {
-    handleError(e);
+    const { status } = e as ApiFailure;
+    if (status === StatusCodes.NotFound) {
+      router.push("/not-found");
+    } else {
+      handleError(e);
+    }
   }
 });
 </script>
@@ -71,6 +89,9 @@ onMounted(async () => {
       <TarTabs>
         <TarTab active id="general" :title="t('general')">
           <RoleGeneral :configuration="configuration" :role="role" @error="handleError" @updated="onGeneralUpdated" />
+        </TarTab>
+        <TarTab id="attributes" :title="t('customAttributes.label')">
+          <CustomAttributeList :attributes="role.customAttributes" :save="saveCustomAttributes" @error="handleError" />
         </TarTab>
       </TarTabs>
     </template>

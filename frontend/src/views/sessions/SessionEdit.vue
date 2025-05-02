@@ -2,7 +2,7 @@
 import { TarTab, TarTabs } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 import ActiveBadge from "@/components/sessions/ActiveBadge.vue";
 import SignOutSession from "@/components/sessions/SignOutSession.vue";
@@ -13,11 +13,13 @@ import UserAvatar from "@/components/users/UserAvatar.vue";
 import type { CustomAttribute } from "@/types/custom";
 import type { Session } from "@/types/sessions";
 import type { User } from "@/types/users";
+import { StatusCodes, type ApiFailure } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
 import { readSession } from "@/api/sessions";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
+const router = useRouter();
 const { t } = useI18n();
 
 const session = ref<Session>();
@@ -44,7 +46,12 @@ onMounted(async () => {
     const id = route.params.id as string;
     session.value = await readSession(id);
   } catch (e: unknown) {
-    handleError(e);
+    const { status } = e as ApiFailure;
+    if (status === StatusCodes.NotFound) {
+      router.push("/not-found");
+    } else {
+      handleError(e);
+    }
   }
 });
 </script>

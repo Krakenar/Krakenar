@@ -11,7 +11,7 @@ import LanguageSelect from "@/components/languages/LanguageSelect.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { CreateOrReplaceDictionaryPayload, Dictionary, DictionaryEntry } from "@/types/dictionaries";
 import type { Language } from "@/types/languages";
-import { ErrorCodes, StatusCodes } from "@/types/api";
+import { ErrorCodes, StatusCodes, type ApiFailure } from "@/types/api";
 import { formatLocale } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { isError } from "@/helpers/error";
@@ -72,7 +72,12 @@ onMounted(async () => {
     const dictionary: Dictionary = await readDictionary(id);
     setModel(dictionary);
   } catch (e: unknown) {
-    handleError(e);
+    const { status } = e as ApiFailure;
+    if (status === StatusCodes.NotFound) {
+      router.push("/not-found");
+    } else {
+      handleError(e);
+    }
   }
 });
 </script>

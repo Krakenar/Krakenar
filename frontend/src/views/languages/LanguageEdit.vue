@@ -11,7 +11,7 @@ import LocaleSelect from "@/components/shared/LocaleSelect.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Language } from "@/types/languages";
 import type { UpdateLanguagePayload } from "@/types/languages";
-import { ErrorCodes, StatusCodes } from "@/types/api";
+import { ErrorCodes, StatusCodes, type ApiFailure } from "@/types/api";
 import { formatLocale } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { isError } from "@/helpers/error";
@@ -77,7 +77,12 @@ onMounted(async () => {
     const language: Language = await readLanguage(id);
     setModel(language);
   } catch (e: unknown) {
-    handleError(e);
+    const { status } = e as ApiFailure;
+    if (status === StatusCodes.NotFound) {
+      router.push("/not-found");
+    } else {
+      handleError(e);
+    }
   }
 });
 </script>
