@@ -24,8 +24,8 @@ public sealed class Dictionary : Aggregate, ISegregatedEntity
   public Dictionary(Language language, DictionaryCreated @event) : base(@event)
   {
     Realm = language.Realm;
-    RealmId = language.Realm?.RealmId;
-    RealmUid = language.Realm?.Id;
+    RealmId = language.RealmId;
+    RealmUid = language.RealmUid;
 
     Id = new DictionaryId(@event.StreamId).EntityId;
 

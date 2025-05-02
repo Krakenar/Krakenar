@@ -25,6 +25,7 @@ public class DictionaryEvents : IEventHandler<DictionaryCreated>, IEventHandler<
     if (dictionary is null)
     {
       LanguageEntity language = await Context.Languages
+        .Include(x => x.Realm)
         .SingleOrDefaultAsync(x => x.StreamId == @event.LanguageId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The language entity 'StreamId={@event.LanguageId}' could not be found.");
 
