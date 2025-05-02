@@ -42,7 +42,7 @@ public class SecretManagerTests
   [Theory(DisplayName = "Encrypt: it should encrypt a token secret.")]
   [InlineData(null)]
   [InlineData("fcc15961-2b98-4385-b9ed-381b24850455")]
-  public void Given_Secret_When_Encrypt_Then_Encrypted(string? realmIdValue) // TODO(fpion): not equal because IV differs!
+  public void Given_Secret_When_Encrypt_Then_Encrypted(string? realmIdValue)
   {
     RealmId? realmId = realmIdValue == null ? null : new(Guid.Parse(realmIdValue));
 
