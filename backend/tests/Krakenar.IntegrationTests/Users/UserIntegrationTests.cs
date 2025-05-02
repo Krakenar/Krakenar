@@ -635,6 +635,23 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(isDisabled ? disabled.EntityId : _user.EntityId, user.Id);
   }
 
+  [Fact(DisplayName = "It should return the correct search results (Phone Number Search).")]
+  public async Task Given_PhoneNumberSearch_When_Search_Then_CorrectResults()
+  {
+    Phone phone = new("(514) 845-4636", "CA");
+    _user.SetPhone(phone, ActorId);
+    await _userRepository.SaveAsync(_user);
+
+    SearchUsersPayload payload = new();
+    payload.Search.Terms.Add(new SearchTerm("%5148454636%"));
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(1, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(_user.EntityId, user.Id);
+  }
+
   [Fact(DisplayName = "It should return the correct search results (RoleId).")]
   public async Task Given_RoleId_When_Search_Then_CorrectResults()
   {
