@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using CustomIdentifier = Krakenar.Core.CustomIdentifier;
 using Session = Krakenar.Core.Sessions.Session;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
+using TimeZone = Krakenar.Core.Localization.TimeZone;
 
 namespace Krakenar.Sessions;
 
@@ -32,7 +33,11 @@ public class SessionIntegrationTests : IntegrationTests
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
 
     Password password = _passwordService.ValidateAndHash(PasswordString, Realm.PasswordSettings);
-    _user = new(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password, actorId: null, UserId.NewId(Realm.Id));
+    _user = new(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password, actorId: null, UserId.NewId(Realm.Id))
+    {
+      TimeZone = new TimeZone("America/Montreal")
+    };
+    _user.Update();
   }
 
   public override async Task InitializeAsync()
@@ -146,7 +151,11 @@ public class SessionIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should return the correct search results.")]
   public async Task Given_Sessions_When_Search_Then_CorrectResults()
   {
-    User other = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id));
+    User other = new(new UniqueName(Realm.UniqueNameSettings, Faker.Internet.UserName()), password: null, ActorId, UserId.NewId(Realm.Id))
+    {
+      Gender = new Gender("other")
+    };
+    other.Update(ActorId);
     await _userRepository.SaveAsync(other);
 
     Session session1 = new(_user);
@@ -159,7 +168,7 @@ public class SessionIntegrationTests : IntegrationTests
     {
       UserId = _user.EntityId,
       Ids = [session1.EntityId, session2.EntityId, session4.EntityId, Guid.Empty],
-      Search = new TextSearch([new SearchTerm("test")]),
+      Search = new TextSearch([new SearchTerm("%Montreal"), new SearchTerm("other")], SearchOperator.Or),
       Sort = [new SessionSortOption(SessionSort.UpdatedOn, isDescending: true)],
       Skip = 1,
       Limit = 1

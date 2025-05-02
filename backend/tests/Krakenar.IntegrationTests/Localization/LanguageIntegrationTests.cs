@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Search;
+using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Localization;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace Krakenar.Localization;
 [Trait(Traits.Category, Categories.Integration)]
 public class LanguageIntegrationTests : IntegrationTests
 {
+  private readonly IDictionaryRepository _dictionaryRepository;
   private readonly ILanguageRepository _languageRepository;
   private readonly ILanguageService _languageService;
 
@@ -21,6 +23,7 @@ public class LanguageIntegrationTests : IntegrationTests
 
   public LanguageIntegrationTests() : base()
   {
+    _dictionaryRepository = ServiceProvider.GetRequiredService<IDictionaryRepository>();
     _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
     _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
 
@@ -62,11 +65,15 @@ public class LanguageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should delete the language.")]
   public async Task Given_Language_When_Delete_Then_Deleted()
   {
+    Dictionary dictionary = new(_language, ActorId, DictionaryId.NewId(Realm.Id));
+    await _dictionaryRepository.SaveAsync(dictionary);
+
     LanguageDto? language = await _languageService.DeleteAsync(_language.EntityId);
     Assert.NotNull(language);
     Assert.Equal(_language.EntityId, language.Id);
 
     Assert.Empty(await KrakenarContext.Languages.AsNoTracking().Where(x => x.StreamId == _language.Id.Value).ToArrayAsync());
+    Assert.Empty(await KrakenarContext.Dictionaries.AsNoTracking().Include(x => x.Language).Where(x => x.Language!.StreamId == _language.Id.Value).ToArrayAsync());
   }
 
   [Fact(DisplayName = "It should read the language by ID.")]
