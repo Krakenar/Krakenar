@@ -30,6 +30,17 @@ const router = createRouter({
       path: "/configuration",
       component: () => import("./views/ConfigurationEdit.vue"),
     },
+    // Dictionaries
+    {
+      name: "DictionaryList",
+      path: "/dictionaries",
+      component: () => import("./views/dictionaries/DictionaryList.vue"),
+    },
+    {
+      name: "DictionaryEdit",
+      path: "/dictionaries/:id",
+      component: () => import("./views/dictionaries/DictionaryEdit.vue"),
+    },
     // Languages
     {
       name: "LanguageList",

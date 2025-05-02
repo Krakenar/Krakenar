@@ -12,6 +12,14 @@
   },
   "empty": "This list is empty.",
   "otherNames": "Other Names",
+  "select": {
+    "alreadyUsed": {
+      "help": "Please select another language.",
+      "lead": "The language is already used."
+    },
+    "label": "Language",
+    "placeholder": "Select a language"
+  },
   "sort": {
     "options": {
       "Code": "Code",

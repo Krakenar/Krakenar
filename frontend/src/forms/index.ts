@@ -132,6 +132,7 @@ export function useForm(): FormContainer {
   function unbindField(id: string): void {
     fields.value.delete(id);
     validationResults.value.delete(id);
+    values.value.delete(id);
   }
   provide(unbindFieldKey, unbindField);
 

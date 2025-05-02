@@ -14,7 +14,8 @@ withDefaults(
   }>(),
   {
     id: "value",
-    label: "customAttributes.value",
+    label: "dictionaries.entries.value",
+    max: 255,
   },
 );
 

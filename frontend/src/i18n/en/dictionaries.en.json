@@ -1,0 +1,26 @@
+{
+  "create": "New Dictionary",
+  "created": "The dictionary has been created.",
+  "delete": {
+    "confirm": "To delete the dictionary, enter its name in the field below.",
+    "title": "Delete Dictionary"
+  },
+  "deleted": "The dictionary has been deleted.",
+  "empty": "This list is empty.",
+  "entries": {
+    "empty": "This list is empty.",
+    "key": "Key",
+    "title": "Entries",
+    "value": "Value"
+  },
+  "sort": {
+    "options": {
+      "CreatedOn": "Created on",
+      "EntryCount": "Entry Count",
+      "Language": "Language",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": "Dictionaries",
+  "updated": "The dictionary has been updated."
+}

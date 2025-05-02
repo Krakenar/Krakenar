@@ -23,6 +23,7 @@ export enum ErrorCodes {
   CustomIdentifierAlreadyUsed = "CustomIdentifierAlreadyUsed",
   IncorrectUserPassword = "IncorrectUserPassword",
   InvalidCredentials = "InvalidCredentials",
+  LanguageAlreadyUsed = "LanguageAlreadyUsed",
   LocaleAlreadyUsed = "LocaleAlreadyUsed",
   UniqueNameAlreadyUsed = "UniqueNameAlreadyUsed",
   UniqueSlugAlreadyUsed = "UniqueSlugAlreadyUsed",
