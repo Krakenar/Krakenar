@@ -78,7 +78,9 @@ public class SessionQuerier : ISessionQuerier
       .Join(KrakenarDb.Users.UserId, KrakenarDb.Sessions.UserId)
       .WhereRealm(ApplicationContext.RealmId, KrakenarDb.Sessions.RealmUid)
       .ApplyIdFilter(KrakenarDb.Sessions.Id, payload.Ids);
-    SqlHelper.ApplyTextSearch(builder, payload.Search); // TODO(fpion): search into User
+    SqlHelper.ApplyTextSearch(builder, payload.Search, KrakenarDb.Users.UniqueName, KrakenarDb.Users.AddressFormatted, KrakenarDb.Users.EmailAddress,
+      KrakenarDb.Users.PhoneE164Formatted, KrakenarDb.Users.FirstName, KrakenarDb.Users.MiddleName, KrakenarDb.Users.LastName, KrakenarDb.Users.Nickname,
+      KrakenarDb.Users.Gender, KrakenarDb.Users.Locale, KrakenarDb.Users.TimeZone);
 
     if (payload.UserId.HasValue)
     {
