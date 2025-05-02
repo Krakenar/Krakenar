@@ -23,7 +23,7 @@ public class CreateOrReplaceUserHandlerTests
 
   private readonly AddressHelper _addressHelper = new();
   private readonly Mock<IApplicationContext> _applicationContext = new();
-  private readonly Mock<IPasswordService> _passwordService = new();
+  private readonly Mock<IPasswordManager> _passwordManager = new();
   private readonly Mock<IRoleManager> _roleManager = new();
   private readonly Mock<IUserManager> _userManager = new();
   private readonly Mock<IUserQuerier> _userQuerier = new();
@@ -36,7 +36,7 @@ public class CreateOrReplaceUserHandlerTests
 
   public CreateOrReplaceUserHandlerTests()
   {
-    _handler = new(_addressHelper, _applicationContext.Object, _passwordService.Object, _roleManager.Object, _userManager.Object, _userQuerier.Object, _userRepository.Object);
+    _handler = new(_addressHelper, _applicationContext.Object, _passwordManager.Object, _roleManager.Object, _userManager.Object, _userQuerier.Object, _userRepository.Object);
 
     _applicationContext.SetupGet(x => x.UniqueNameSettings).Returns(_uniqueNameSettings);
     _applicationContext.SetupGet(x => x.PasswordSettings).Returns(_passwordSettings);
@@ -56,7 +56,7 @@ public class CreateOrReplaceUserHandlerTests
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
     Base64Password password = new(PasswordString);
-    _passwordService.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
+    _passwordManager.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
 
     Role admin = new(new UniqueName(_uniqueNameSettings, "admin"), actorId, RoleId.NewId(realmId));
     Dictionary<string, Role> roles = new()
@@ -155,7 +155,7 @@ public class CreateOrReplaceUserHandlerTests
     _userRepository.Setup(x => x.LoadAsync(user.Id, _cancellationToken)).ReturnsAsync(user);
 
     Base64Password password = new(PasswordString);
-    _passwordService.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
+    _passwordManager.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
 
     Role admin = new(new UniqueName(_uniqueNameSettings, "admin"), actorId);
     Dictionary<string, Role> roles = new()
@@ -368,7 +368,7 @@ public class CreateOrReplaceUserHandlerTests
     user.RemoveRole(guest, actorId);
 
     Base64Password password = new(PasswordString);
-    _passwordService.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
+    _passwordManager.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
 
     CreateOrReplaceUserPayload payload = new()
     {

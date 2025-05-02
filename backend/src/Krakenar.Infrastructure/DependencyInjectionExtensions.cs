@@ -25,7 +25,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton(serviceProvider => Pbkdf2Settings.Initialize(serviceProvider.GetRequiredService<IConfiguration>()))
       .AddSingleton<ICacheService, CacheService>()
       .AddSingleton<IEventSerializer, EventSerializer>()
-      .AddSingleton<IPasswordService, PasswordService>()
+      .AddSingleton<IPasswordManager, PasswordManager>()
       .AddSingleton<ISecretManager, SecretManager>()
       .AddSingleton<PasswordConverter>()
       .AddScoped<IEventBus, EventBus>();

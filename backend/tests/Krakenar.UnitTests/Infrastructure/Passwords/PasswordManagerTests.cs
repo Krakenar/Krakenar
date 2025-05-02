@@ -8,17 +8,17 @@ using Moq;
 
 namespace Krakenar.Infrastructure.Passwords;
 
-public class PasswordServiceTests
+public class PasswordManagerTests
 {
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
 
-  private readonly PasswordService _manager;
+  private readonly PasswordManager _manager;
 
   private readonly PasswordSettings _passwordSettings = new();
 
-  public PasswordServiceTests()
+  public PasswordManagerTests()
   {
     IPasswordStrategy[] strategies =
     [

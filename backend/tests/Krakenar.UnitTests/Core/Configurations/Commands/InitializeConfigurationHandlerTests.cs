@@ -20,7 +20,7 @@ public class InitializeConfigurationHandlerTests
   private readonly Mock<IConfigurationQuerier> _configurationQuerier = new();
   private readonly Mock<IConfigurationRepository> _configurationRepository = new();
   private readonly Mock<ILanguageManager> _languageManager = new();
-  private readonly Mock<IPasswordService> _passwordService = new();
+  private readonly Mock<IPasswordManager> _passwordManager = new();
   private readonly Mock<ISecretManager> _secretManager = new();
   private readonly Mock<IUserManager> _userManager = new();
 
@@ -28,7 +28,7 @@ public class InitializeConfigurationHandlerTests
 
   public InitializeConfigurationHandlerTests()
   {
-    _handler = new(_cacheService.Object, _configurationQuerier.Object, _configurationRepository.Object, _languageManager.Object, _passwordService.Object, _secretManager.Object, _userManager.Object);
+    _handler = new(_cacheService.Object, _configurationQuerier.Object, _configurationRepository.Object, _languageManager.Object, _passwordManager.Object, _secretManager.Object, _userManager.Object);
   }
 
   [Fact(DisplayName = "It should cache an initialized configuration.")]
@@ -57,7 +57,7 @@ public class InitializeConfigurationHandlerTests
     _secretManager.Setup(x => x.Generate(null)).Returns(secret);
 
     Base64Password password = new(command.Password);
-    _passwordService.Setup(x => x.ValidateAndHash(command.Password, It.Is<PasswordSettings>(s => s.Equals(new PasswordSettings())))).Returns(password);
+    _passwordManager.Setup(x => x.ValidateAndHash(command.Password, It.Is<PasswordSettings>(s => s.Equals(new PasswordSettings())))).Returns(password);
 
     Configuration? configuration = null;
     _configurationRepository.Setup(x => x.SaveAsync(It.IsAny<Configuration>(), _cancellationToken)).Callback<Configuration, CancellationToken>((c, _) => configuration = c);

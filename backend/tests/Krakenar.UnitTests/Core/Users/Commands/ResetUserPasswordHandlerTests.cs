@@ -19,7 +19,7 @@ public class ResetUserPasswordHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
-  private readonly Mock<IPasswordService> _passwordService = new();
+  private readonly Mock<IPasswordManager> _passwordManager = new();
   private readonly Mock<IUserQuerier> _userQuerier = new();
   private readonly Mock<IUserRepository> _userRepository = new();
 
@@ -27,7 +27,7 @@ public class ResetUserPasswordHandlerTests
 
   public ResetUserPasswordHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _passwordService.Object, _userQuerier.Object, _userRepository.Object);
+    _handler = new(_applicationContext.Object, _passwordManager.Object, _userQuerier.Object, _userRepository.Object);
 
     _applicationContext.SetupGet(x => x.PasswordSettings).Returns(new PasswordSettings());
   }
@@ -47,7 +47,7 @@ public class ResetUserPasswordHandlerTests
     _userRepository.Setup(x => x.LoadAsync(user.Id, _cancellationToken)).ReturnsAsync(user);
 
     Base64Password password = new(PasswordString);
-    _passwordService.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
+    _passwordManager.Setup(x => x.ValidateAndHash(PasswordString, null)).Returns(password);
 
     UserDto dto = new();
     _userQuerier.Setup(x => x.ReadAsync(user, _cancellationToken)).ReturnsAsync(dto);

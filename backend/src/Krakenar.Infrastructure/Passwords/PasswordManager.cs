@@ -5,12 +5,12 @@ using Logitar.Security.Cryptography;
 
 namespace Krakenar.Infrastructure.Passwords;
 
-public class PasswordService : IPasswordService
+public class PasswordManager : IPasswordManager
 {
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual Dictionary<string, IPasswordStrategy> Strategies { get; } = [];
 
-  public PasswordService(IApplicationContext applicationContext, IEnumerable<IPasswordStrategy> strategies)
+  public PasswordManager(IApplicationContext applicationContext, IEnumerable<IPasswordStrategy> strategies)
   {
     ApplicationContext = applicationContext;
 
@@ -20,7 +20,7 @@ public class PasswordService : IPasswordService
     }
   }
 
-  public PasswordService(IApplicationContext applicationContext)
+  public PasswordManager(IApplicationContext applicationContext)
   {
     ApplicationContext = applicationContext;
   }

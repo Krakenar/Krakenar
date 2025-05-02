@@ -19,7 +19,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
   protected virtual IConfigurationQuerier ConfigurationQuerier { get; }
   protected virtual IConfigurationRepository ConfigurationRepository { get; }
   protected virtual ILanguageManager LanguageManager { get; }
-  protected virtual IPasswordService PasswordService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
   protected virtual ISecretManager SecretManager { get; }
   protected virtual IUserManager UserManager { get; }
 
@@ -28,7 +28,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     IConfigurationQuerier configurationQuerier,
     IConfigurationRepository configurationRepository,
     ILanguageManager languageManager,
-    IPasswordService passwordService,
+    IPasswordManager passwordManager,
     ISecretManager secretManager,
     IUserManager userManager)
   {
@@ -36,7 +36,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     ConfigurationQuerier = configurationQuerier;
     ConfigurationRepository = configurationRepository;
     LanguageManager = languageManager;
-    PasswordService = passwordService;
+    PasswordManager = passwordManager;
     SecretManager = secretManager;
     UserManager = userManager;
   }
@@ -56,7 +56,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
       Language language = new(locale, isDefault: true, actorId);
 
       UniqueName uniqueName = new(configuration.UniqueNameSettings, command.UniqueName);
-      Password password = PasswordService.ValidateAndHash(command.Password, configuration.PasswordSettings);
+      Password password = PasswordManager.ValidateAndHash(command.Password, configuration.PasswordSettings);
       User user = new(uniqueName, password, actorId, userId);
 
       await ConfigurationRepository.SaveAsync(configuration, cancellationToken); // NOTE(fpion): this should cache the configuration.

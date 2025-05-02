@@ -10,6 +10,7 @@ namespace Krakenar;
 internal class TestApplicationContext : IApplicationContext
 {
   public ActorId? ActorId { get; set; }
+  public string BaseUrl { get; set; } = "http://localhost:80";
   public ConfigurationDto? Configuration { get; set; }
   public RealmDto? Realm { get; set; }
   public RealmId? RealmId { get; set; }

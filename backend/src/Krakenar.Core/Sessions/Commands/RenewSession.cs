@@ -16,18 +16,18 @@ public record RenewSession(RenewSessionPayload Payload) : ICommand<SessionDto>;
 public class RenewSessionHandler : ICommandHandler<RenewSession, SessionDto>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual IPasswordService PasswordService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
   protected virtual ISessionQuerier SessionQuerier { get; }
   protected virtual ISessionRepository SessionRepository { get; }
 
   public RenewSessionHandler(
     IApplicationContext applicationContext,
-    IPasswordService passwordService,
+    IPasswordManager passwordManager,
     ISessionQuerier sessionQuerier,
     ISessionRepository sessionRepository)
   {
     ApplicationContext = applicationContext;
-    PasswordService = passwordService;
+    PasswordManager = passwordManager;
     SessionQuerier = sessionQuerier;
     SessionRepository = sessionRepository;
   }
@@ -51,7 +51,7 @@ public class RenewSessionHandler : ICommandHandler<RenewSession, SessionDto>
       ?? throw new SessionNotFoundException(refreshToken.SessionId, nameof(payload.RefreshToken));
 
     ActorId actorId = ApplicationContext.ActorId ?? new(session.UserId.Value);
-    Password newSecret = PasswordService.GenerateBase64(RefreshToken.SecretLength, out string secretString);
+    Password newSecret = PasswordManager.GenerateBase64(RefreshToken.SecretLength, out string secretString);
     session.Renew(refreshToken.Secret, newSecret, actorId);
     foreach (CustomAttribute customAttribute in payload.CustomAttributes)
     {

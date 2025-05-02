@@ -46,7 +46,7 @@ public class UserIntegrationTests : IntegrationTests
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userService = ServiceProvider.GetRequiredService<IUserService>();
 
-    Password password = ServiceProvider.GetRequiredService<IPasswordService>().ValidateAndHash(PasswordString, Realm.PasswordSettings);
+    Password password = ServiceProvider.GetRequiredService<IPasswordManager>().ValidateAndHash(PasswordString, Realm.PasswordSettings);
     _user = new User(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password, actorId: null, UserId.NewId(Realm.Id));
   }
 

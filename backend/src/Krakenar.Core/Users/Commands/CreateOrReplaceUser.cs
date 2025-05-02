@@ -24,7 +24,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
 {
   protected virtual IAddressHelper AddressHelper { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual IPasswordService PasswordService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
   protected virtual IRoleManager RoleManager { get; }
   protected virtual IUserManager UserManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
@@ -33,7 +33,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
   public CreateOrReplaceUserHandler(
     IAddressHelper addressHelper,
     IApplicationContext applicationContext,
-    IPasswordService passwordService,
+    IPasswordManager passwordManager,
     IRoleManager roleManager,
     IUserManager userManager,
     IUserQuerier userQuerier,
@@ -41,7 +41,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
   {
     AddressHelper = addressHelper;
     ApplicationContext = applicationContext;
-    PasswordService = passwordService;
+    PasswordManager = passwordManager;
     RoleManager = roleManager;
     UserManager = userManager;
     UserQuerier = userQuerier;
@@ -64,7 +64,7 @@ public class CreateOrReplaceUserHandler : ICommandHandler<CreateOrReplaceUser, C
     }
 
     UniqueName uniqueName = new(uniqueNameSettings, payload.UniqueName);
-    Password? password = payload.Password is null ? null : PasswordService.ValidateAndHash(payload.Password.New);
+    Password? password = payload.Password is null ? null : PasswordManager.ValidateAndHash(payload.Password.New);
     ActorId? actorId = ApplicationContext.ActorId;
 
     bool created = false;

@@ -22,7 +22,7 @@ public class SignInSessionHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
-  private readonly Mock<IPasswordService> _passwordService = new();
+  private readonly Mock<IPasswordManager> _passwordManager = new();
   private readonly Mock<ISessionQuerier> _sessionQuerier = new();
   private readonly Mock<ISessionRepository> _sessionRepository = new();
   private readonly Mock<IUserManager> _userManager = new();
@@ -33,7 +33,7 @@ public class SignInSessionHandlerTests
 
   public SignInSessionHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _passwordService.Object, _sessionQuerier.Object, _sessionRepository.Object, _userManager.Object);
+    _handler = new(_applicationContext.Object, _passwordManager.Object, _sessionQuerier.Object, _sessionRepository.Object, _userManager.Object);
 
     UniqueName uniqueName = new(new UniqueNameSettings(), _faker.Person.UserName);
     _user = new User(uniqueName, new Base64Password(Password));
@@ -90,7 +90,7 @@ public class SignInSessionHandlerTests
 
     string secretString = RandomStringGenerator.GetBase64String(RefreshToken.SecretLength, out _);
     Base64Password secret = new(secretString);
-    _passwordService.Setup(x => x.GenerateBase64(RefreshToken.SecretLength, out secretString)).Returns(secret);
+    _passwordManager.Setup(x => x.GenerateBase64(RefreshToken.SecretLength, out secretString)).Returns(secret);
 
     Session? session = null;
     _sessionRepository.Setup(x => x.SaveAsync(It.IsAny<Session>(), _cancellationToken)).Callback<Session, CancellationToken>((s, _) => session = s);
