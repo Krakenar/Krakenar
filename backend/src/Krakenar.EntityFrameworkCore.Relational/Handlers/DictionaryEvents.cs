@@ -97,6 +97,7 @@ public class DictionaryEvents : IEventHandler<DictionaryCreated>, IEventHandler<
       {
         if (entry.Value is null)
         {
+          dictionary.Entries.Remove(entity);
           Context.DictionaryEntries.Remove(entity);
         }
         else

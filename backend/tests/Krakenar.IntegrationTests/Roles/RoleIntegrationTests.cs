@@ -104,7 +104,7 @@ public class RoleIntegrationTests : IntegrationTests
   }
 
   [Fact(DisplayName = "It should replace an existing role.")]
-  public async Task Given_Version_When_CreateOrReplace_Then_Replaced()
+  public async Task Given_NoVersion_When_CreateOrReplace_Then_Replaced()
   {
     CreateOrReplaceRolePayload payload = new()
     {
@@ -131,7 +131,7 @@ public class RoleIntegrationTests : IntegrationTests
   }
 
   [Fact(DisplayName = "It should replace an existing role from reference.")]
-  public async Task Given_NoVersion_When_CreateOrReplace_Then_Replaced()
+  public async Task Given_Version_When_CreateOrReplace_Then_Replaced()
   {
     long version = _role.Version;
 

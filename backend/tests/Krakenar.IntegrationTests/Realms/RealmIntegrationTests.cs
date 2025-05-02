@@ -83,7 +83,7 @@ public class RealmIntegrationTests : IntegrationTests
   }
 
   [Fact(DisplayName = "It should replace an existing realm.")]
-  public async Task Given_Version_When_CreateOrReplace_Then_Replaced()
+  public async Task Given_NoVersion_When_CreateOrReplace_Then_Replaced()
   {
     CreateOrReplaceRealmPayload payload = new()
     {
@@ -121,7 +121,7 @@ public class RealmIntegrationTests : IntegrationTests
   }
 
   [Fact(DisplayName = "It should replace an existing realm from reference.")]
-  public async Task Given_NoVersion_When_CreateOrReplace_Then_Replaced()
+  public async Task Given_Version_When_CreateOrReplace_Then_Replaced()
   {
     long version = Realm.Version;
 

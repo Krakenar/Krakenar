@@ -37,16 +37,17 @@ public sealed class Dictionary : Aggregate, ISegregatedEntity
   {
   }
 
-  public override IReadOnlyCollection<ActorId> GetActorIds()
+  public override IReadOnlyCollection<ActorId> GetActorIds() => GetActorIds(skipLanguage: false);
+  public IReadOnlyCollection<ActorId> GetActorIds(bool skipLanguage)
   {
     HashSet<ActorId> actorIds = new(base.GetActorIds());
     if (Realm is not null)
     {
       actorIds.AddRange(Realm.GetActorIds());
     }
-    if (Language is not null)
+    if (!skipLanguage && Language is not null)
     {
-      actorIds.AddRange(Language.GetActorIds());
+      actorIds.AddRange(Language.GetActorIds(skipDictionary: true));
     }
     return actorIds.ToList().AsReadOnly();
   }
