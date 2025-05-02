@@ -8,11 +8,13 @@
 
 ## Dictionaries
 
-- Dictionary
-- DictionaryManager
-
-### Commands
-
 - CreateOrReplaceDictionary
 - DeleteDictionary
+- Dictionary
+- DictionaryManager
 - UpdateDictionary
+
+## Tokens
+
+- CreateToken
+- ValidateToken

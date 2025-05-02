@@ -5,6 +5,7 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Sessions;
+using Krakenar.Contracts.Tokens;
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
@@ -24,6 +25,7 @@ using Krakenar.Core.Roles.Queries;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
+using Krakenar.Core.Tokens.Commands;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
 using Krakenar.Core.Users.Queries;
@@ -63,6 +65,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult>, CreateOrReplaceUserHandler>()
       .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
+      .AddTransient<ICommandHandler<CreateToken, CreatedToken>, CreateTokenCommandHandler>()
       .AddTransient<ICommandHandler<DeleteDictionary, DictionaryDto?>, DeleteDictionaryHandler>()
       .AddTransient<ICommandHandler<DeleteLanguage, LanguageDto?>, DeleteLanguageHandler>()
       .AddTransient<ICommandHandler<DeleteRole, RoleDto?>, DeleteRoleHandler>()
@@ -82,7 +85,8 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
       .AddTransient<ICommandHandler<UpdateRealm, RealmDto?>, UpdateRealmHandler>()
       .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>()
-      .AddTransient<ICommandHandler<UpdateUser, UserDto?>, UpdateUserHandler>();
+      .AddTransient<ICommandHandler<UpdateUser, UserDto?>, UpdateUserHandler>()
+      .AddTransient<ICommandHandler<ValidateToken, ValidatedToken>, ValidateTokenCommandHandler>();
   }
 
   public static IServiceCollection AddKrakenarCoreServices(this IServiceCollection services)

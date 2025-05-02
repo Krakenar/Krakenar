@@ -1,4 +1,5 @@
-﻿using Krakenar.Core.Realms;
+﻿using Krakenar.Core;
+using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
 using Krakenar.Infrastructure.Settings;
 using Logitar;
@@ -8,11 +9,30 @@ namespace Krakenar.Infrastructure.Tokens;
 
 public class SecretManager : ISecretManager
 {
+  protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual EncryptionSettings Settings { get; }
 
-  public SecretManager(EncryptionSettings settings)
+  public SecretManager(IApplicationContext applicationContext, EncryptionSettings settings)
   {
+    ApplicationContext = applicationContext;
     Settings = settings;
+  }
+
+  public string Decrypt(Secret secret, RealmId? realmId)
+  {
+    byte[] bytes = Convert.FromBase64String(secret.Value);
+    byte length = bytes.First();
+    byte[] iv = bytes.Skip(1).Take(length).ToArray();
+    byte[] encryptedBytes = bytes.Skip(1 + length).ToArray();
+
+    using Aes aes = Aes.Create();
+    using ICryptoTransform decryptor = aes.CreateDecryptor(GetEncryptionKey(realmId), iv);
+    using MemoryStream encryptedStream = new(encryptedBytes);
+    using CryptoStream cryptoStream = new(encryptedStream, decryptor, CryptoStreamMode.Read);
+
+    using MemoryStream decryptedStream = new();
+    cryptoStream.CopyTo(decryptedStream);
+    return Encoding.UTF8.GetString(decryptedStream.ToArray());
   }
 
   public virtual Secret Encrypt(string secret, RealmId? realmId)
@@ -41,6 +61,16 @@ public class SecretManager : ISecretManager
   {
     string secret = RandomStringGenerator.GetString(Secret.MinimumLength);
     return Encrypt(secret, realmId);
+  }
+
+  public virtual string Resolve(string? value = null)
+  {
+    if (string.IsNullOrWhiteSpace(value))
+    {
+      return Decrypt(ApplicationContext.Secret, ApplicationContext.RealmId);
+    }
+
+    return value.Trim();
   }
 
   protected virtual byte[] GetEncryptionKey(RealmId? realmId)
