@@ -57,13 +57,13 @@ public class SecretManager : ISecretManager
     return new Secret(encrypted);
   }
 
-  public virtual Secret Generate(RealmId? realmId = null)
+  public virtual Secret Generate(RealmId? realmId)
   {
     string secret = RandomStringGenerator.GetString(Secret.MinimumLength);
     return Encrypt(secret, realmId);
   }
 
-  public virtual string Resolve(string? value = null)
+  public virtual string Resolve(string? value)
   {
     if (string.IsNullOrWhiteSpace(value))
     {
