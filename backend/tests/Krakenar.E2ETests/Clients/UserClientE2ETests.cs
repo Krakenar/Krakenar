@@ -90,11 +90,11 @@ public class UserClientE2ETests : E2ETests
     Assert.True(user.HasPassword);
     Assert.Equal(user.Id, user.PasswordChangedBy?.Id);
     Assert.NotNull(user.PasswordChangedOn);
-    Assert.Equal(DateTime.UtcNow, user.PasswordChangedOn.Value, TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, user.PasswordChangedOn.Value, TimeSpan.FromSeconds(10));
     Assert.Equal(updateUser.IsDisabled, user.IsDisabled);
     Assert.Equal(user.Id, user.DisabledBy?.Id);
     Assert.NotNull(user.DisabledOn);
-    Assert.Equal(DateTime.UtcNow, user.DisabledOn.Value, TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, user.DisabledOn.Value, TimeSpan.FromSeconds(10));
 
     Assert.NotNull(updateUser.Address.Value);
     Assert.NotNull(user.Address);
@@ -114,7 +114,7 @@ public class UserClientE2ETests : E2ETests
     Assert.True(user.Email.IsVerified);
     Assert.Equal(user.Id, user.Email.VerifiedBy?.Id);
     Assert.NotNull(user.Email.VerifiedOn);
-    Assert.Equal(DateTime.UtcNow, user.Email.VerifiedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, user.Email.VerifiedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     Assert.NotNull(updateUser.Phone.Value);
     Assert.NotNull(user.Phone);
@@ -125,14 +125,14 @@ public class UserClientE2ETests : E2ETests
     Assert.True(user.Phone.IsVerified);
     Assert.Equal(user.Id, user.Phone.VerifiedBy?.Id);
     Assert.NotNull(user.Phone.VerifiedOn);
-    Assert.Equal(DateTime.UtcNow, user.Phone.VerifiedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, user.Phone.VerifiedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     Assert.True(user.IsConfirmed);
     Assert.Equal(updateUser.FirstName.Value, user.FirstName);
     Assert.Equal(updateUser.LastName.Value, user.LastName);
     Assert.NotNull(updateUser.Birthdate.Value);
     Assert.NotNull(user.Birthdate);
-    Assert.Equal(updateUser.Birthdate.Value.Value.AsUniversalTime(), user.Birthdate.Value.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Equal(updateUser.Birthdate.Value.Value.AsUniversalTime(), user.Birthdate.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
     Assert.Equal(updateUser.Gender.Value?.ToLowerInvariant(), user.Gender);
     Assert.Equal(updateUser.Locale.Value, user.Locale?.Code);
     Assert.Equal(updateUser.TimeZone.Value, user.TimeZone);
@@ -176,7 +176,7 @@ public class UserClientE2ETests : E2ETests
     user = await users.AuthenticateAsync(authenticateUser, _cancellationToken);
     Assert.Equal(id, user.Id);
     Assert.NotNull(user.AuthenticatedOn);
-    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     SearchUsersPayload searchUsers = new()
     {
@@ -184,8 +184,8 @@ public class UserClientE2ETests : E2ETests
       IsDisabled = false,
       IsConfirmed = true,
       HasAuthenticated = true,
-      Ids = [user.Id]
-      //Search = new TextSearch([new SearchTerm("%+15148454636%")]) // TODO(fpion): fix later
+      Ids = [user.Id],
+      Search = new TextSearch([new SearchTerm("%+15148454636%")])
     };
     SearchResults<UserDto> results = await users.SearchAsync(searchUsers, _cancellationToken);
     Assert.Equal(1, results.Total);

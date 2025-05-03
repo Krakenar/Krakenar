@@ -9,7 +9,7 @@ public static class SearchExtensions
     Dictionary<string, List<object?>> parameters = [];
 
     parameters["ids"] = payload.Ids.Select(id => (object?)id).ToList();
-    parameters["search"] = payload.Search.Terms.Select(term => (object?)term).ToList();
+    parameters["search"] = payload.Search.Terms.Select(term => (object?)WebUtility.UrlEncode(term.Value)).ToList();
     parameters["search_operator"] = [payload.Search.Operator];
     parameters["sort"] = payload.Sort.Select(sort => (object?)(sort.IsDescending ? $"DESC.{sort.Field}" : sort.Field)).ToList();
     parameters["skip"] = [payload.Skip];

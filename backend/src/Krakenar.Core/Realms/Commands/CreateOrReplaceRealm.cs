@@ -21,7 +21,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
   protected virtual IRealmManager RealmManager { get; }
   protected virtual IRealmQuerier RealmQuerier { get; }
   protected virtual IRealmRepository RealmRepository { get; }
-  protected virtual ISecretService SecretService { get; }
+  protected virtual ISecretManager SecretManager { get; }
 
   public CreateOrReplaceRealmHandler(
     IApplicationContext applicationContext,
@@ -30,7 +30,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     IRealmManager realmManager,
     IRealmQuerier realmQuerier,
     IRealmRepository realmRepository,
-    ISecretService secretService)
+    ISecretManager secretManager)
   {
     ApplicationContext = applicationContext;
     LanguageQuerier = languageQuerier;
@@ -38,7 +38,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
     RealmManager = realmManager;
     RealmQuerier = realmQuerier;
     RealmRepository = realmRepository;
-    SecretService = secretService;
+    SecretManager = secretManager;
   }
 
   public virtual async Task<CreateOrReplaceRealmResult> HandleAsync(CreateOrReplaceRealm command, CancellationToken cancellationToken)
@@ -66,7 +66,7 @@ public class CreateOrReplaceRealmHandler : ICommandHandler<CreateOrReplaceRealm,
         return new CreateOrReplaceRealmResult();
       }
 
-      Secret secret = SecretService.Generate(realmId);
+      Secret secret = SecretManager.Generate(realmId);
       realm = new(uniqueSlug, secret, actorId, realmId);
       created = true;
 

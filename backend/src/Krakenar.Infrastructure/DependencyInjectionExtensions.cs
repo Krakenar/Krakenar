@@ -25,10 +25,11 @@ public static class DependencyInjectionExtensions
       .AddSingleton(serviceProvider => Pbkdf2Settings.Initialize(serviceProvider.GetRequiredService<IConfiguration>()))
       .AddSingleton<ICacheService, CacheService>()
       .AddSingleton<IEventSerializer, EventSerializer>()
-      .AddSingleton<IPasswordService, PasswordService>()
-      .AddSingleton<ISecretService, SecretService>()
+      .AddSingleton<IPasswordManager, PasswordManager>()
+      .AddSingleton<ISecretManager, SecretManager>()
       .AddSingleton<PasswordConverter>()
-      .AddScoped<IEventBus, EventBus>();
+      .AddScoped<IEventBus, EventBus>()
+      .AddScoped<ITokenManager, JsonWebTokenManager>();
   }
 
   public static IServiceCollection AddKrakenarPasswordStrategies(this IServiceCollection services)

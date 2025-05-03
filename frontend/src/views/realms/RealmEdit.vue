@@ -2,18 +2,22 @@
 import { TarTab, TarTabs } from "logitar-vue3-ui";
 import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
+import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import RealmGeneral from "@/components/realms/RealmGeneral.vue";
 import RealmSettings from "@/components/realms/RealmSettings.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
-import type { Realm } from "@/types/realms";
+import type { CustomAttribute } from "@/types/custom";
+import type { Realm, UpdateRealmPayload } from "@/types/realms";
+import { StatusCodes, type ApiFailure } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
-import { readRealm } from "@/api/realms";
+import { readRealm, updateRealm } from "@/api/realms";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const route = useRoute();
+const router = useRouter();
 const toasts = useToastStore();
 const { t } = useI18n();
 
@@ -48,12 +52,27 @@ function onSettingsUpdated(updated: Realm): void {
   toasts.success("realms.updated");
 }
 
+async function saveCustomAttributes(customAttributes: CustomAttribute[]): Promise<void> {
+  if (realm.value) {
+    const payload: UpdateRealmPayload = { customAttributes };
+    const updated: Realm = await updateRealm(realm.value.id, payload);
+    setMetadata(updated);
+    realm.value.customAttributes = [...updated.customAttributes];
+    toasts.success("realms.updated");
+  }
+}
+
 onMounted(async () => {
   try {
     const id = route.params.id as string;
     realm.value = await readRealm(id);
   } catch (e: unknown) {
-    handleError(e);
+    const { status } = e as ApiFailure;
+    if (status === StatusCodes.NotFound) {
+      router.push("/not-found");
+    } else {
+      handleError(e);
+    }
   }
 });
 </script>
@@ -69,6 +88,9 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="settings" :title="t('settings.title')">
           <RealmSettings :realm="realm" @error="handleError" @updated="onSettingsUpdated" />
+        </TarTab>
+        <TarTab id="attributes" :title="t('customAttributes.label')">
+          <CustomAttributeList :attributes="realm.customAttributes" :save="saveCustomAttributes" @error="handleError" />
         </TarTab>
       </TarTabs>
     </template>

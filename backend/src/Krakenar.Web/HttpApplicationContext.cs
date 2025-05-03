@@ -6,6 +6,7 @@ using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.Caching;
 using Krakenar.Core.Realms;
+using Krakenar.Core.Tokens;
 using Logitar.EventSourcing;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
@@ -39,9 +40,20 @@ public class HttpApplicationContext : IApplicationContext
       return null;
     }
   }
+
+  public string BaseUrl
+  {
+    get
+    {
+      HttpContext context = HttpContextAccessor.HttpContext ?? throw new InvalidOperationException($"The {nameof(HttpContextAccessor.HttpContext)} is required.");
+      return new Uri($"{context.Request.Scheme}://{context.Request.Host}", UriKind.Absolute).ToString().Trim('/');
+    }
+  }
+
   public RealmDto? Realm => HttpContextAccessor.HttpContext?.GetRealm();
   public RealmId? RealmId => Realm is null ? null : new RealmId(Realm.Id);
 
+  public Secret Secret => new(Realm?.Secret ?? Configuration.Secret ?? string.Empty);
   public IUniqueNameSettings UniqueNameSettings => Realm?.UniqueNameSettings ?? Configuration.UniqueNameSettings;
   public IPasswordSettings PasswordSettings => Realm?.PasswordSettings ?? Configuration.PasswordSettings;
   public bool RequireUniqueEmail => Realm?.RequireUniqueEmail ?? false;

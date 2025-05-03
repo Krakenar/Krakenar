@@ -17,6 +17,7 @@ import UserSummary from "@/components/users/UserSummary.vue";
 import type { Configuration } from "@/types/configuration";
 import type { CustomAttribute } from "@/types/custom";
 import type { UpdateUserPayload, User } from "@/types/users";
+import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatUser } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
@@ -129,8 +130,8 @@ async function saveCustomAttributes(customAttributes: CustomAttribute[]): Promis
     const payload: UpdateUserPayload = { customAttributes, roles: [] };
     const updated: User = await updateUser(user.value.id, payload);
     setMetadata(updated);
-    toasts.success("users.updated");
     user.value.customAttributes = [...updated.customAttributes];
+    toasts.success("users.updated");
   }
 }
 
@@ -142,7 +143,12 @@ onMounted(async () => {
       configuration.value = await readConfiguration();
     }
   } catch (e: unknown) {
-    handleError(e);
+    const { status } = e as ApiFailure;
+    if (status === StatusCodes.NotFound) {
+      router.push("/not-found");
+    } else {
+      handleError(e);
+    }
   }
 });
 </script>

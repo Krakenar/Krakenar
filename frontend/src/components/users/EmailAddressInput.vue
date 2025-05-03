@@ -11,6 +11,7 @@ const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
+    disabled?: boolean | string;
     id?: string;
     label?: string;
     max?: number | string;
@@ -41,10 +42,20 @@ function onAddressChange(value: string) {
 </script>
 
 <template>
-  <FormInput :id="id" :label="t(label)" :max="max" :model-value="modelValue" :required="required" :type="type" @update:model-value="onAddressChange">
+  <FormInput
+    :disabled="disabled"
+    :id="id"
+    :label="t(label)"
+    :max="max"
+    :model-value="modelValue"
+    :required="required"
+    :type="type"
+    @update:model-value="onAddressChange"
+  >
     <template #append>
       <div class="input-group-text">
         <TarCheckbox
+          :disabled="disabled"
           :id="`${id}-verified`"
           :label="t('users.email.verified.label')"
           :model-value="isVerified"

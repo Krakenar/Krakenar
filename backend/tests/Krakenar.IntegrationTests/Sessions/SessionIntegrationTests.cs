@@ -18,7 +18,7 @@ public class SessionIntegrationTests : IntegrationTests
 {
   private const string PasswordString = "P@s$W0rD";
 
-  private readonly IPasswordService _passwordService;
+  private readonly IPasswordManager _passwordManager;
   private readonly ISessionRepository _sessionRepository;
   private readonly ISessionService _sessionService;
   private readonly IUserRepository _userRepository;
@@ -27,12 +27,12 @@ public class SessionIntegrationTests : IntegrationTests
 
   public SessionIntegrationTests() : base()
   {
-    _passwordService = ServiceProvider.GetRequiredService<IPasswordService>();
+    _passwordManager = ServiceProvider.GetRequiredService<IPasswordManager>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
     _sessionService = ServiceProvider.GetRequiredService<ISessionService>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
 
-    Password password = _passwordService.ValidateAndHash(PasswordString, Realm.PasswordSettings);
+    Password password = _passwordManager.ValidateAndHash(PasswordString, Realm.PasswordSettings);
     _user = new(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password, actorId: null, UserId.NewId(Realm.Id))
     {
       TimeZone = new TimeZone("America/Montreal")
@@ -105,7 +105,7 @@ public class SessionIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should renew a session.")]
   public async Task Given_Session_When_Renew_Then_Renewed()
   {
-    Password secret = _passwordService.GenerateBase64(RefreshToken.SecretLength, out string secretString);
+    Password secret = _passwordManager.GenerateBase64(RefreshToken.SecretLength, out string secretString);
     Session session = new(_user, secret);
     session.SetCustomAttribute(new Identifier("IpAddress"), Faker.Internet.Ip());
     session.Update(ActorId);
@@ -209,7 +209,7 @@ public class SessionIntegrationTests : IntegrationTests
   public async Task Given_IsPersistent_When_Search_Then_CorrectResults(bool isPersistent)
   {
     Session ephemereal = new(_user);
-    Session persistent = new(_user, _passwordService.GenerateBase64(RefreshToken.SecretLength, out _));
+    Session persistent = new(_user, _passwordManager.GenerateBase64(RefreshToken.SecretLength, out _));
     await _sessionRepository.SaveAsync([ephemereal, persistent]);
 
     SearchSessionsPayload payload = new()
@@ -313,7 +313,7 @@ public class SessionIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should throw SessionNotFoundException when the session was not found.")]
   public async Task Given_SessionNotFound_When_Renew_Then_SessionNotFoundException()
   {
-    Password secret = _passwordService.GenerateBase64(RefreshToken.SecretLength, out string secretString);
+    Password secret = _passwordManager.GenerateBase64(RefreshToken.SecretLength, out string secretString);
     Session session = new(_user, secret);
 
     RenewSessionPayload payload = new()

@@ -27,7 +27,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
 {
   protected virtual IAddressHelper AddressHelper { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual IPasswordService PasswordService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
   protected virtual IRoleManager RoleManager { get; }
   protected virtual IUserManager UserManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
@@ -36,7 +36,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
   public UpdateUserHandler(
     IAddressHelper addressHelper,
     IApplicationContext applicationContext,
-    IPasswordService passwordService,
+    IPasswordManager passwordManager,
     IRoleManager roleManager,
     IUserManager userManager,
     IUserQuerier userQuerier,
@@ -44,7 +44,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
   {
     AddressHelper = addressHelper;
     ApplicationContext = applicationContext;
-    PasswordService = passwordService;
+    PasswordManager = passwordManager;
     RoleManager = roleManager;
     UserQuerier = userQuerier;
     UserManager = userManager;
@@ -74,7 +74,7 @@ public class UpdateUserHandler : ICommandHandler<UpdateUser, UserDto?>
     }
     if (payload.Password is not null)
     {
-      Password password = PasswordService.ValidateAndHash(payload.Password.New);
+      Password password = PasswordManager.ValidateAndHash(payload.Password.New);
       if (payload.Password.Current is null)
       {
         user.SetPassword(password, actorId);

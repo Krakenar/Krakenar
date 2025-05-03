@@ -11,18 +11,18 @@ public record ResetUserPassword(Guid Id, ResetUserPasswordPayload Payload) : ICo
 public class ResetUserPasswordHandler : ICommandHandler<ResetUserPassword, UserDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual IPasswordService PasswordService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
   protected virtual IUserRepository UserRepository { get; }
 
   public ResetUserPasswordHandler(
     IApplicationContext applicationContext,
-    IPasswordService passwordService,
+    IPasswordManager passwordManager,
     IUserQuerier userQuerier,
     IUserRepository userRepository)
   {
     ApplicationContext = applicationContext;
-    PasswordService = passwordService;
+    PasswordManager = passwordManager;
     UserQuerier = userQuerier;
     UserRepository = userRepository;
   }
@@ -39,7 +39,7 @@ public class ResetUserPasswordHandler : ICommandHandler<ResetUserPassword, UserD
       return null;
     }
 
-    Password password = PasswordService.ValidateAndHash(payload.Password);
+    Password password = PasswordManager.ValidateAndHash(payload.Password);
     user.ResetPassword(password, ApplicationContext.ActorId);
 
     await UserRepository.SaveAsync(user, cancellationToken);

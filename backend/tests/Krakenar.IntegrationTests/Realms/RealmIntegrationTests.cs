@@ -18,13 +18,13 @@ public class RealmIntegrationTests : IntegrationTests
 {
   private readonly IRealmRepository _realmRepository;
   private readonly IRealmService _realmService;
-  private readonly ISecretService _secretService;
+  private readonly ISecretManager _secretManager;
 
   public RealmIntegrationTests() : base()
   {
     _realmRepository = ServiceProvider.GetRequiredService<IRealmRepository>();
     _realmService = ServiceProvider.GetRequiredService<IRealmService>();
-    _secretService = ServiceProvider.GetRequiredService<ISecretService>();
+    _secretManager = ServiceProvider.GetRequiredService<ISecretManager>();
   }
 
   [Fact(DisplayName = "It should create a new realm.")]
@@ -198,7 +198,7 @@ public class RealmIntegrationTests : IntegrationTests
   public async Task Given_MultipleResults_When_Read_Then_TooManyResultsException()
   {
     RealmId realmId = RealmId.NewId();
-    Secret secret = _secretService.Generate(realmId);
+    Secret secret = _secretManager.Generate(realmId);
     Realm realm = new(new Slug("old-world"), secret, ActorId, realmId);
     await _realmRepository.SaveAsync(realm);
 

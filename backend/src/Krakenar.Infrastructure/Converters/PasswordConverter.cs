@@ -4,17 +4,17 @@ namespace Krakenar.Infrastructure.Converters;
 
 public class PasswordConverter : JsonConverter<Password>
 {
-  protected virtual IPasswordService PasswordService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
 
-  public PasswordConverter(IPasswordService passwordService)
+  public PasswordConverter(IPasswordManager passwordManager)
   {
-    PasswordService = passwordService;
+    PasswordManager = passwordManager;
   }
 
   public override Password? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
   {
     string? value = reader.GetString();
-    return string.IsNullOrWhiteSpace(value) ? null : PasswordService.Decode(value);
+    return string.IsNullOrWhiteSpace(value) ? null : PasswordManager.Decode(value);
   }
 
   public override void Write(Utf8JsonWriter writer, Password password, JsonSerializerOptions options)

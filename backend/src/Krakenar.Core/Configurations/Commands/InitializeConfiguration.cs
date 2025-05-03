@@ -19,8 +19,8 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
   protected virtual IConfigurationQuerier ConfigurationQuerier { get; }
   protected virtual IConfigurationRepository ConfigurationRepository { get; }
   protected virtual ILanguageManager LanguageManager { get; }
-  protected virtual IPasswordService PasswordService { get; }
-  protected virtual ISecretService SecretService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
+  protected virtual ISecretManager SecretManager { get; }
   protected virtual IUserManager UserManager { get; }
 
   public InitializeConfigurationHandler(
@@ -28,16 +28,16 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     IConfigurationQuerier configurationQuerier,
     IConfigurationRepository configurationRepository,
     ILanguageManager languageManager,
-    IPasswordService passwordService,
-    ISecretService secretService,
+    IPasswordManager passwordManager,
+    ISecretManager secretManager,
     IUserManager userManager)
   {
     CacheService = cacheService;
     ConfigurationQuerier = configurationQuerier;
     ConfigurationRepository = configurationRepository;
     LanguageManager = languageManager;
-    PasswordService = passwordService;
-    SecretService = secretService;
+    PasswordManager = passwordManager;
+    SecretManager = secretManager;
     UserManager = userManager;
   }
 
@@ -49,14 +49,14 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
       UserId userId = UserId.NewId();
       ActorId actorId = new(userId.Value);
 
-      Secret secret = SecretService.Generate();
+      Secret secret = SecretManager.Generate();
       configuration = Configuration.Initialize(secret, actorId);
 
       Locale locale = new(command.DefaultLocale);
       Language language = new(locale, isDefault: true, actorId);
 
       UniqueName uniqueName = new(configuration.UniqueNameSettings, command.UniqueName);
-      Password password = PasswordService.ValidateAndHash(command.Password, configuration.PasswordSettings);
+      Password password = PasswordManager.ValidateAndHash(command.Password, configuration.PasswordSettings);
       User user = new(uniqueName, password, actorId, userId);
 
       await ConfigurationRepository.SaveAsync(configuration, cancellationToken); // NOTE(fpion): this should cache the configuration.

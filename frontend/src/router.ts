@@ -96,6 +96,12 @@ const router = createRouter({
       path: "/users/:id",
       component: () => import("./views/users/UserEdit.vue"),
     },
+    // Tokens
+    {
+      name: "Tokens",
+      path: "/tokens",
+      component: () => import("./views/TokenView.vue"),
+    },
     // NotFound
     {
       name: "NotFound",

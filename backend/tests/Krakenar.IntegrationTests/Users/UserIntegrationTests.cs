@@ -46,7 +46,7 @@ public class UserIntegrationTests : IntegrationTests
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
     _userService = ServiceProvider.GetRequiredService<IUserService>();
 
-    Password password = ServiceProvider.GetRequiredService<IPasswordService>().ValidateAndHash(PasswordString, Realm.PasswordSettings);
+    Password password = ServiceProvider.GetRequiredService<IPasswordManager>().ValidateAndHash(PasswordString, Realm.PasswordSettings);
     _user = new User(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password, actorId: null, UserId.NewId(Realm.Id));
   }
 
@@ -633,6 +633,23 @@ public class UserIntegrationTests : IntegrationTests
 
     UserDto user = Assert.Single(users.Items);
     Assert.Equal(isDisabled ? disabled.EntityId : _user.EntityId, user.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (Phone Number Search).")]
+  public async Task Given_PhoneNumberSearch_When_Search_Then_CorrectResults()
+  {
+    Phone phone = new("(514) 845-4636", "CA");
+    _user.SetPhone(phone, ActorId);
+    await _userRepository.SaveAsync(_user);
+
+    SearchUsersPayload payload = new();
+    payload.Search.Terms.Add(new SearchTerm("%5148454636%"));
+
+    SearchResults<UserDto> users = await _userService.SearchAsync(payload);
+    Assert.Equal(1, users.Total);
+
+    UserDto user = Assert.Single(users.Items);
+    Assert.Equal(_user.EntityId, user.Id);
   }
 
   [Fact(DisplayName = "It should return the correct search results (RoleId).")]

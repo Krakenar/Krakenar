@@ -24,13 +24,13 @@ public class CreateOrReplaceRealmHandlerTests
   private readonly Mock<IRealmManager> _realmManager = new();
   private readonly Mock<IRealmQuerier> _realmQuerier = new();
   private readonly Mock<IRealmRepository> _realmRepository = new();
-  private readonly Mock<ISecretService> _secretService = new();
+  private readonly Mock<ISecretManager> _secretManager = new();
 
   private readonly CreateOrReplaceRealmHandler _handler;
 
   public CreateOrReplaceRealmHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _languageQuerier.Object, _languageRepository.Object, _realmManager.Object, _realmQuerier.Object, _realmRepository.Object, _secretService.Object);
+    _handler = new(_applicationContext.Object, _languageQuerier.Object, _languageRepository.Object, _realmManager.Object, _realmQuerier.Object, _realmRepository.Object, _secretManager.Object);
   }
 
   [Theory(DisplayName = "It should create a new realm.")]
@@ -57,7 +57,7 @@ public class CreateOrReplaceRealmHandlerTests
     payload.CustomAttributes.Add(new CustomAttribute("Key", "Value"));
 
     Secret secret = new(RandomStringGenerator.GetString(Secret.MinimumLength));
-    _secretService.Setup(x => x.Generate(It.Is<RealmId?>(r => r.HasValue))).Returns(secret);
+    _secretManager.Setup(x => x.Generate(It.Is<RealmId?>(r => r.HasValue))).Returns(secret);
 
     Locale locale = new("en");
     _languageQuerier.Setup(x => x.FindPlatformDefaultLocaleAsync(_cancellationToken)).ReturnsAsync(locale);

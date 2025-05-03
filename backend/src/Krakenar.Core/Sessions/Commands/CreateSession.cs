@@ -19,20 +19,20 @@ public record CreateSession(CreateSessionPayload Payload) : ICommand<SessionDto>
 public class CreateSessionHandler : ICommandHandler<CreateSession, SessionDto>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual IPasswordService PasswordService { get; }
+  protected virtual IPasswordManager PasswordManager { get; }
   protected virtual ISessionQuerier SessionQuerier { get; }
   protected virtual ISessionRepository SessionRepository { get; }
   protected virtual IUserManager UserManager { get; }
 
   public CreateSessionHandler(
     IApplicationContext applicationContext,
-    IPasswordService passwordService,
+    IPasswordManager passwordManager,
     ISessionQuerier sessionQuerier,
     ISessionRepository sessionRepository,
     IUserManager userManager)
   {
     ApplicationContext = applicationContext;
-    PasswordService = passwordService;
+    PasswordManager = passwordManager;
     SessionQuerier = sessionQuerier;
     SessionRepository = sessionRepository;
     UserManager = userManager;
@@ -65,7 +65,7 @@ public class CreateSessionHandler : ICommandHandler<CreateSession, SessionDto>
     string? secretString = null;
     if (payload.IsPersistent)
     {
-      secret = PasswordService.GenerateBase64(RefreshToken.SecretLength, out secretString);
+      secret = PasswordManager.GenerateBase64(RefreshToken.SecretLength, out secretString);
     }
 
     session = user.SignIn(secret, actorId, payload.Id);

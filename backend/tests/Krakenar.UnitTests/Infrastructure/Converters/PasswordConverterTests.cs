@@ -6,19 +6,19 @@ namespace Krakenar.Infrastructure.Converters;
 [Trait(Traits.Category, Categories.Unit)]
 public class PasswordConverterTests
 {
-  private readonly Mock<IPasswordService> _passwordService = new();
+  private readonly Mock<IPasswordManager> _passwordManager = new();
   private readonly JsonSerializerOptions _serializerOptions = new();
 
   public PasswordConverterTests()
   {
-    _serializerOptions.Converters.Add(new PasswordConverter(_passwordService.Object));
+    _serializerOptions.Converters.Add(new PasswordConverter(_passwordManager.Object));
   }
 
   [Fact(DisplayName = "It should deserialize the correct value from a non-null value.")]
   public void Given_Value_When_Deserialize_Then_CorrectValue()
   {
     Base64Password password = new("P@s$W0rD");
-    _passwordService.Setup(x => x.Decode(password.Encode())).Returns(password);
+    _passwordManager.Setup(x => x.Decode(password.Encode())).Returns(password);
 
     Password? deserialized = JsonSerializer.Deserialize<Password>(string.Concat('"', password.Encode(), '"'), _serializerOptions);
     Assert.NotNull(deserialized);

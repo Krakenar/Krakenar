@@ -2,7 +2,7 @@
 
 namespace Krakenar.Core.Passwords;
 
-public interface IPasswordService
+public interface IPasswordManager
 {
   Password Decode(string password);
 

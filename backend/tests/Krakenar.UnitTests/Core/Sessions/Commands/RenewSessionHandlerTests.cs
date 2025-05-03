@@ -20,7 +20,7 @@ public class RenewSessionHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
-  private readonly Mock<IPasswordService> _passwordService = new();
+  private readonly Mock<IPasswordManager> _passwordManager = new();
   private readonly Mock<ISessionQuerier> _sessionQuerier = new();
   private readonly Mock<ISessionRepository> _sessionRepository = new();
 
@@ -28,7 +28,7 @@ public class RenewSessionHandlerTests
 
   public RenewSessionHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _passwordService.Object, _sessionQuerier.Object, _sessionRepository.Object);
+    _handler = new(_applicationContext.Object, _passwordManager.Object, _sessionQuerier.Object, _sessionRepository.Object);
   }
 
   [Theory(DisplayName = "It should renew the session.")]
@@ -52,7 +52,7 @@ public class RenewSessionHandlerTests
 
     string newSecretString = RandomStringGenerator.GetBase64String(RefreshToken.SecretLength, out _);
     Base64Password newSecret = new(newSecretString);
-    _passwordService.Setup(x => x.GenerateBase64(RefreshToken.SecretLength, out newSecretString)).Returns(newSecret);
+    _passwordManager.Setup(x => x.GenerateBase64(RefreshToken.SecretLength, out newSecretString)).Returns(newSecret);
 
     SessionDto dto = new();
     _sessionQuerier.Setup(x => x.ReadAsync(session, _cancellationToken)).ReturnsAsync(dto);

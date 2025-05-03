@@ -9,7 +9,6 @@ withDefaults(
     id?: string;
     label?: string;
     modelValue?: string;
-    placeholder?: string;
     type?: InputType;
   }>(),
   {
@@ -30,7 +29,7 @@ defineEmits<{
     :id="id"
     :label="t(label)"
     :model-value="modelValue"
-    :placeholder="t(placeholder ?? label)"
+    :placeholder="t(label)"
     :type="type"
     @update:model-value="$emit('update:model-value', $event)"
   />

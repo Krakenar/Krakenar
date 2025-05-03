@@ -79,6 +79,32 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("Actors", "Identity");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.BlacklistedToken", b =>
+                {
+                    b.Property<int>("BlacklistedTokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BlacklistedTokenId"));
+
+                    b.Property<DateTime?>("ExpiresOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TokenId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("BlacklistedTokenId");
+
+                    b.HasIndex("ExpiresOn");
+
+                    b.HasIndex("TokenId")
+                        .IsUnique();
+
+                    b.ToTable("TokenBlacklist", "Identity");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Configuration", b =>
                 {
                     b.Property<int>("ConfigurationId")
