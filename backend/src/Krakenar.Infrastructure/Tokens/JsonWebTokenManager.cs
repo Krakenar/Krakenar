@@ -84,7 +84,7 @@ public class JsonWebTokenManager : ITokenManager
       if (options.Consume)
       {
         Claim? expiresClaim = claimsPrincipal.FindAll(Rfc7519ClaimNames.ExpirationTime).OrderBy(x => x.Value).FirstOrDefault();
-        DateTime? expiresOn = expiresClaim == null ? null : ClaimHelper.ExtractDateTime(expiresClaim).Add(validationParameters.ClockSkew);
+        DateTime? expiresOn = expiresClaim is null ? null : ClaimHelper.ExtractDateTime(expiresClaim).Add(validationParameters.ClockSkew);
 
         await TokenBlacklist.BlacklistAsync(tokenIds, expiresOn, cancellationToken);
       }

@@ -10,7 +10,7 @@ public static class TokenHelper
     {
       return FormatAudienceOrIssuer(audience.Trim(), realm, baseUrl);
     }
-    else if (realm != null)
+    else if (realm is not null)
     {
       return realm.Url ?? realm.UniqueSlug;
     }
@@ -24,7 +24,7 @@ public static class TokenHelper
     {
       return FormatAudienceOrIssuer(issuer.Trim(), realm, baseUrl);
     }
-    else if (realm != null)
+    else if (realm is not null)
     {
       return FormatAudienceOrIssuer("{BaseUrl}/app/realms/{UniqueSlug}", realm, baseUrl);
     }
@@ -34,7 +34,7 @@ public static class TokenHelper
 
   private static string FormatAudienceOrIssuer(string format, Realm? realm, string baseUrl)
   {
-    if (realm != null)
+    if (realm is not null)
     {
       format = format.Replace("{Id}", realm.Id.ToString())
         .Replace("{UniqueSlug}", realm.UniqueSlug)
