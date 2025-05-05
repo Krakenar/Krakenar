@@ -247,9 +247,86 @@ public class ApiKeyIntegrationTests : IntegrationTests
     Assert.Equal(_apiKey.EntityId, apiKey.Id);
   }
 
-  // TODO(fpion): Search.HasAuthenticated
-  // TODO(fpion): Search.RoleId
-  // TODO(fpion): Search.Status
+  [Fact(DisplayName = "It should return the correct search results (Expired).")]
+  public async Task Given_Expired_When_Search_Then_CorrectResults()
+  {
+    ApiKey apiKey = new(_secret, new DisplayName("Default"), ActorId, ApiKeyId.NewId(Realm.Id))
+    {
+      ExpiresOn = DateTime.Now.AddDays(90)
+    };
+    apiKey.Update(ActorId);
+    await _apiKeyRepository.SaveAsync(apiKey);
+
+    SearchApiKeysPayload payload = new()
+    {
+      Status = new ApiKeyStatus(isExpired: true, DateTime.Now.AddYears(1))
+    };
+    SearchResults<ApiKeyDto> results = await _apiKeyService.SearchAsync(payload);
+
+    Assert.Equal(1, results.Total);
+    ApiKeyDto result = Assert.Single(results.Items);
+    Assert.Equal(apiKey.EntityId, result.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (HasAuthenticated).")]
+  public async Task Given_HasAuthenticated_When_Search_Then_CorrectResults()
+  {
+    ApiKey apiKey = new(_secret, new DisplayName("Authenticated"), ActorId, ApiKeyId.NewId(Realm.Id));
+    apiKey.Authenticate(_secretString, ActorId);
+    await _apiKeyRepository.SaveAsync(apiKey);
+
+    SearchApiKeysPayload payload = new()
+    {
+      HasAuthenticated = true
+    };
+    SearchResults<ApiKeyDto> results = await _apiKeyService.SearchAsync(payload);
+
+    Assert.Equal(1, results.Total);
+    ApiKeyDto result = Assert.Single(results.Items);
+    Assert.Equal(apiKey.EntityId, result.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (RoleId).")]
+  public async Task Given_RoleId_When_Search_Then_CorrectResults()
+  {
+    Role admin = new(new UniqueName(base.Realm.UniqueNameSettings, "admin"), ActorId, RoleId.NewId(Realm.Id));
+    await _roleRepository.SaveAsync(admin);
+
+    ApiKey apiKey = new(_secret, new DisplayName("Default"), ActorId, ApiKeyId.NewId(Realm.Id));
+    apiKey.AddRole(admin, ActorId);
+    await _apiKeyRepository.SaveAsync(apiKey);
+
+    SearchApiKeysPayload payload = new()
+    {
+      RoleId = admin.EntityId
+    };
+    SearchResults<ApiKeyDto> results = await _apiKeyService.SearchAsync(payload);
+
+    Assert.Equal(1, results.Total);
+    ApiKeyDto result = Assert.Single(results.Items);
+    Assert.Equal(apiKey.EntityId, result.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (NotExpired).")]
+  public async Task Given_NotExpired_When_Search_Then_CorrectResults()
+  {
+    ApiKey apiKey = new(_secret, new DisplayName("Default"), ActorId, ApiKeyId.NewId(Realm.Id))
+    {
+      ExpiresOn = DateTime.Now.AddDays(90)
+    };
+    apiKey.Update(ActorId);
+    await _apiKeyRepository.SaveAsync(apiKey);
+
+    SearchApiKeysPayload payload = new()
+    {
+      Status = new ApiKeyStatus(isExpired: false)
+    };
+    SearchResults<ApiKeyDto> results = await _apiKeyService.SearchAsync(payload);
+
+    Assert.Equal(1, results.Total);
+    ApiKeyDto result = Assert.Single(results.Items);
+    Assert.Equal(apiKey.EntityId, result.Id);
+  }
 
   [Fact(DisplayName = "It should update an existing API key.")]
   public async Task Given_Exists_When_Update_Then_Updated()
