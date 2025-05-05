@@ -101,7 +101,7 @@ public sealed class ApiKey : Aggregate, ISegregatedEntity
     }
     if (@event.ExpiresOn.HasValue)
     {
-      ExpiresOn = @event.ExpiresOn.Value;
+      ExpiresOn = @event.ExpiresOn.Value.AsUniversalTime();
     }
 
     Dictionary<string, string> customAttributes = GetCustomAttributes();
