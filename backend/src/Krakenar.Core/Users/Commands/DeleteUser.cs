@@ -40,6 +40,8 @@ public class DeleteUserHandler : ICommandHandler<DeleteUser, UserDto?>
 
     ActorId? actorId = ApplicationContext.ActorId;
 
+    // TODO(fpion): delete OTPs
+
     IReadOnlyCollection<SessionId> sessionIds = await SessionQuerier.FindIdsAsync(user.Id, cancellationToken);
     if (sessionIds.Count > 0)
     {

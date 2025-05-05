@@ -40,6 +40,8 @@ public class DeleteRoleHandler : ICommandHandler<DeleteRole, RoleDto?>
 
     ActorId? actorId = ApplicationContext.ActorId;
 
+    // TODO(fpion): remove API keys' role
+
     IReadOnlyCollection<UserId> userIds = await UserQuerier.FindIdsAsync(role.Id, cancellationToken);
     if (userIds.Count > 0)
     {
