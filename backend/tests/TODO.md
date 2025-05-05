@@ -22,6 +22,18 @@
 - DictionaryManager
 - UpdateDictionary
 
+## One-Time Passwords (OTP)
+
+- OneTimePassword
+
+## Senders
+
+- Sender
+
+## Templates
+
+- Template
+
 ## Tokens
 
 - CreateToken
