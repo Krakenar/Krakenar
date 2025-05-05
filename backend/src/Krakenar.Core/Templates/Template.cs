@@ -7,7 +7,8 @@ namespace Krakenar.Core.Templates;
 public class Template : AggregateRoot
 {
   private TemplateUpdated _updated = new();
-  private bool HasUpdates => _updated.DisplayName is not null || _updated.Description is not null;
+  private bool HasUpdates => _updated.DisplayName is not null || _updated.Description is not null
+    || _updated.Subject is not null || _updated.Content is not null;
 
   public new TemplateId Id => new(base.Id);
   public RealmId? RealmId => Id.RealmId;
@@ -42,21 +43,48 @@ public class Template : AggregateRoot
     }
   }
 
-  // TODO(fpion): Subject
-  // TODO(fpion): Content
+  private Subject? _subject = null;
+  public Subject Subject
+  {
+    get => _subject ?? throw new InvalidOperationException("The template has not been initialized.");
+    set
+    {
+      if (_subject != value)
+      {
+        _subject = value;
+        _updated.Subject = value;
+      }
+    }
+  }
+  private Content? _content = null;
+  public Content Content
+  {
+    get => _content ?? throw new InvalidOperationException("The template has not been initialized.");
+    set
+    {
+      if (_content != value)
+      {
+        _content = value;
+        _updated.Content = value;
+      }
+    }
+  }
 
   public Template() : base()
   {
   }
 
-  public Template(UniqueName uniqueName, ActorId? actorId = null, TemplateId? templateId = null)
+  public Template(UniqueName uniqueName, Subject subject, Content content, ActorId? actorId = null, TemplateId? templateId = null)
     : base((templateId ?? TemplateId.NewId()).StreamId)
   {
-    Raise(new TemplateCreated(uniqueName), actorId);
+    Raise(new TemplateCreated(uniqueName, subject, content), actorId);
   }
   protected virtual void Handle(TemplateCreated @event)
   {
     _uniqueName = @event.UniqueName;
+
+    _subject = @event.Subject;
+    _content = @event.Content;
   }
 
   public void Delete(ActorId? actorId = null)
@@ -96,6 +124,15 @@ public class Template : AggregateRoot
     if (@event.Description is not null)
     {
       _description = @event.Description.Value;
+    }
+
+    if (@event.Subject is not null)
+    {
+      _subject = @event.Subject;
+    }
+    if (@event.Content is not null)
+    {
+      _content = @event.Content;
     }
   }
 

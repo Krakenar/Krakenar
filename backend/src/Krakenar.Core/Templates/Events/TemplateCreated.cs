@@ -2,4 +2,4 @@
 
 namespace Krakenar.Core.Templates.Events;
 
-public record TemplateCreated(UniqueName UniqueName) : DomainEvent;
+public record TemplateCreated(UniqueName UniqueName, Subject Subject, Content Content) : DomainEvent;
