@@ -1,14 +1,13 @@
-﻿using Krakenar.Core.Roles;
-using Krakenar.Core.Roles.Events;
-using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
+﻿using Krakenar.Core.ApiKeys;
+using Krakenar.Core.ApiKeys.Events;
 using Logitar;
 using Logitar.EventSourcing;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public sealed class Role : Aggregate, ISegregatedEntity
+public sealed class ApiKey : Aggregate, ISegregatedEntity
 {
-  public int RoleId { get; private set; }
+  public int ApiKeyId { get; private set; }
 
   public Realm? Realm { get; private set; }
   public int? RealmId { get; private set; }
@@ -16,63 +15,93 @@ public sealed class Role : Aggregate, ISegregatedEntity
 
   public Guid Id { get; private set; }
 
-  public string UniqueName { get; private set; } = string.Empty;
-  public string UniqueNameNormalized
-  {
-    get => Helper.Normalize(UniqueName);
-    private set { }
-  }
-  public string? DisplayName { get; private set; }
+  public string SecretHash { get; private set; } = string.Empty;
+
+  public string Name { get; private set; } = string.Empty;
   public string? Description { get; private set; }
+  public DateTime? ExpiresOn { get; private set; }
+
+  public DateTime? AuthenticatedOn { get; private set; }
 
   public string? CustomAttributes { get; private set; }
 
-  public List<ApiKey> ApiKeys { get; private set; } = [];
-  public List<User> Users { get; private set; } = [];
+  public List<Role> Roles { get; private set; } = [];
 
-  public Role(Realm? realm, RoleCreated @event) : base(@event)
+  public ApiKey(Realm? realm, ApiKeyCreated @event) : base(@event)
   {
     Realm = realm;
     RealmId = realm?.RealmId;
     RealmUid = realm?.Id;
 
-    Id = new RoleId(@event.StreamId).EntityId;
+    Id = new ApiKeyId(@event.StreamId).EntityId;
 
-    UniqueName = @event.UniqueName.Value;
+    SecretHash = @event.Secret.Encode();
+
+    Name = @event.Name.Value;
   }
 
-  private Role() : base()
+  private ApiKey() : base()
   {
   }
 
-  public override IReadOnlyCollection<ActorId> GetActorIds()
+  public void AddRole(Role role, ApiKeyRoleAdded @event)
+  {
+    Update(@event);
+
+    Roles.Add(role);
+  }
+
+  public void Authenticate(ApiKeyAuthenticated @event)
+  {
+    Update(@event);
+
+    AuthenticatedOn = @event.OccurredOn.AsUniversalTime();
+  }
+
+  public override IReadOnlyCollection<ActorId> GetActorIds() => GetActorIds(skipRoles: false);
+  public IReadOnlyCollection<ActorId> GetActorIds(bool skipRoles)
   {
     HashSet<ActorId> actorIds = new(base.GetActorIds());
     if (Realm is not null)
     {
       actorIds.AddRange(Realm.GetActorIds());
     }
+    if (!skipRoles)
+    {
+      foreach (Role role in Roles)
+      {
+        actorIds.AddRange(role.GetActorIds());
+      }
+    }
     return actorIds.ToList().AsReadOnly();
   }
 
-  public void SetUniqueName(RoleUniqueNameChanged @event)
+  public void RemoveRole(ApiKeyRoleRemoved @event)
   {
     Update(@event);
 
-    UniqueName = @event.UniqueName.Value;
+    Role? role = Roles.SingleOrDefault(x => x.StreamId == @event.RoleId.StreamId.Value);
+    if (role is not null)
+    {
+      Roles.Remove(role);
+    }
   }
 
-  public void Update(RoleUpdated @event)
+  public void Update(ApiKeyUpdated @event)
   {
     base.Update(@event);
 
-    if (@event.DisplayName is not null)
+    if (@event.Name is not null)
     {
-      DisplayName = @event.DisplayName.Value?.Value;
+      Name = @event.Name.Value;
     }
     if (@event.Description is not null)
     {
       Description = @event.Description.Value?.Value;
+    }
+    if (@event.ExpiresOn.HasValue)
+    {
+      ExpiresOn = @event.ExpiresOn.Value;
     }
 
     Dictionary<string, string> customAttributes = GetCustomAttributes();
@@ -99,5 +128,5 @@ public sealed class Role : Aggregate, ISegregatedEntity
     CustomAttributes = customAttributes.Count < 1 ? null : JsonSerializer.Serialize(customAttributes);
   }
 
-  public override string ToString() => $"{DisplayName ?? UniqueName} | {base.ToString()}";
+  public override string ToString() => $"{Name} | {base.ToString()}";
 }

@@ -18,6 +18,18 @@ public sealed class Actor
   public string? EmailAddress { get; private set; }
   public string? PictureUrl { get; private set; }
 
+  public Actor(ApiKey apiKey)
+  {
+    Key = apiKey.StreamId;
+
+    RealmId = apiKey.RealmId;
+    Realm = apiKey.Realm;
+
+    Type = ActorType.ApiKey;
+    Id = apiKey.Id;
+
+    Update(apiKey);
+  }
   public Actor(User user)
   {
     Key = user.StreamId;
@@ -35,6 +47,15 @@ public sealed class Actor
   {
   }
 
+  public void Update(ApiKey apiKey)
+  {
+    if (Type != ActorType.ApiKey)
+    {
+      throw new ArgumentException($"The actor ({this}) has the type '{Type}'. It cannot be updated from the API key '{apiKey}'.", nameof(apiKey));
+    }
+
+    DisplayName = apiKey.Name;
+  }
   public void Update(User user)
   {
     if (Type != ActorType.User)

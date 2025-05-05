@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Actors;
+using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
@@ -46,6 +47,31 @@ public sealed class Mapper
     EmailAddress = source.EmailAddress,
     PictureUrl = source.PictureUrl
   };
+
+  public ApiKey ToApiKey(Entities.ApiKey source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    ApiKey destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      Name = source.Name,
+      Description = source.Description,
+      ExpiresOn = source.ExpiresOn?.AsUniversalTime(),
+      AuthenticatedOn = source.AuthenticatedOn?.AsUniversalTime()
+    };
+
+    destination.CustomAttributes.AddRange(source.GetCustomAttributes().Select(customAttribute => new CustomAttribute(customAttribute)));
+    destination.Roles.AddRange(source.Roles.Select(role => ToRole(role, realm)));
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
 
   public Configuration ToConfiguration(ConfigurationAggregate source)
   {
