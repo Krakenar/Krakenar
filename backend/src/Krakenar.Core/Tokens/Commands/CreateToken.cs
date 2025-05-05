@@ -69,7 +69,7 @@ internal class CreateTokenCommandHandler : ICommandHandler<CreateToken, CreatedT
       subject.AddClaim(new(Rfc7519ClaimNames.Subject, payload.Subject.Trim()));
     }
 
-    if (payload.Email != null)
+    if (payload.Email is not null)
     {
       Email email = new(payload.Email);
       subject.AddClaim(new(Rfc7519ClaimNames.EmailAddress, email.Address));

@@ -10,6 +10,8 @@ public sealed class KrakenarContext : DbContext
   }
 
   public DbSet<Actor> Actors => Set<Actor>();
+  public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
+  public DbSet<ApiKeyRole> ApiKeyRoles => Set<ApiKeyRole>();
   public DbSet<BlacklistedToken> TokenBlacklist => Set<BlacklistedToken>();
   public DbSet<Configuration> Configuration => Set<Configuration>();
   public DbSet<CustomAttribute> CustomAttributes => Set<CustomAttribute>();

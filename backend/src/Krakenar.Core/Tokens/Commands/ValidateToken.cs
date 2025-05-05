@@ -73,7 +73,7 @@ internal class ValidateTokenCommandHandler : ICommandHandler<ValidateToken, Vali
           break;
       }
     }
-    if (emailAddress != null)
+    if (emailAddress is not null)
     {
       result.Email = new Email(emailAddress)
       {

@@ -13,6 +13,7 @@ public class EventSerializer : Logitar.EventSourcing.Infrastructure.EventSeriali
   {
     base.RegisterConverters();
 
+    SerializerOptions.Converters.Add(new ApiKeyIdConverter());
     SerializerOptions.Converters.Add(new ConfigurationIdConverter());
     SerializerOptions.Converters.Add(new CustomIdentifierConverter());
     SerializerOptions.Converters.Add(new DescriptionConverter());

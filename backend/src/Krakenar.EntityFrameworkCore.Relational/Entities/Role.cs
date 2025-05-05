@@ -27,6 +27,7 @@ public sealed class Role : Aggregate, ISegregatedEntity
 
   public string? CustomAttributes { get; private set; }
 
+  public List<ApiKey> ApiKeys { get; private set; } = [];
   public List<User> Users { get; private set; } = [];
 
   public Role(Realm? realm, RoleCreated @event) : base(@event)

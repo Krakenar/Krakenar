@@ -1,4 +1,5 @@
 ﻿using Krakenar.Core;
+using Krakenar.Core.ApiKeys.Events;
 using Krakenar.Core.Realms.Events;
 using Krakenar.Core.Roles.Events;
 using Krakenar.Core.Sessions.Events;
@@ -10,7 +11,9 @@ using CustomAttributeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.C
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 
-public class CustomAttributeEvents : IEventHandler<RealmDeleted>,
+public class CustomAttributeEvents : IEventHandler<ApiKeyDeleted>,
+  IEventHandler<ApiKeyUpdated>,
+  IEventHandler<RealmDeleted>,
   IEventHandler<RealmUpdated>,
   IEventHandler<RoleDeleted>,
   IEventHandler<RoleUpdated>,
@@ -26,6 +29,16 @@ public class CustomAttributeEvents : IEventHandler<RealmDeleted>,
   {
     Context = context;
     Logger = logger;
+  }
+
+  public virtual async Task HandleAsync(ApiKeyDeleted @event, CancellationToken cancellationToken)
+  {
+    await DeleteAsync(@event, cancellationToken);
+  }
+
+  public virtual async Task HandleAsync(ApiKeyUpdated @event, CancellationToken cancellationToken)
+  {
+    await SynchronizeAsync(@event, @event.CustomAttributes, cancellationToken);
   }
 
   public virtual async Task HandleAsync(RealmDeleted @event, CancellationToken cancellationToken)

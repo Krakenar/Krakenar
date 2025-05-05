@@ -28,7 +28,7 @@ public class SecretManagerTests
   [InlineData("00b999e6-9f62-40d4-9804-b90813a81a73")]
   public void Given_Encrypted_When_Decrypt_Then_Decrypted(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(Guid.Parse(realmIdValue));
+    RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
     string secret = RandomStringGenerator.GetString(Secret.MinimumLength);
@@ -44,7 +44,7 @@ public class SecretManagerTests
   [InlineData("fcc15961-2b98-4385-b9ed-381b24850455")]
   public void Given_Secret_When_Encrypt_Then_Encrypted(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(Guid.Parse(realmIdValue));
+    RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
 
     string secret = RandomStringGenerator.GetString(Secret.MinimumLength);
     Secret encrypted = _helper.Encrypt(secret, realmId);
@@ -59,7 +59,7 @@ public class SecretManagerTests
   [InlineData("a5e97f1f-620f-46bb-ad86-1415232d0d97")]
   public void Given_RealmId_When_Generate_Then_Generated(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(Guid.Parse(realmIdValue));
+    RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
 
     Secret encrypted = _helper.Generate(realmId);
 
@@ -72,7 +72,7 @@ public class SecretManagerTests
   [InlineData("fba7555a-f0dc-44b9-8bf6-b8396bfaf9b8")]
   public void Given_Secret_When_Helper_Then_CorrectResult(string? realmIdValue)
   {
-    RealmId? realmId = realmIdValue == null ? null : new(Guid.Parse(realmIdValue));
+    RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
     Secret encrypted = _helper.Generate(realmId);
