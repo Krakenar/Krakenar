@@ -28,7 +28,13 @@
 
 ## Templates
 
+- CreateOrReplaceTemplate
+- DeleteTemplate
+- ReadTemplate
+- SearchTemplates
 - Template
+- TemplateManager
+- UpdateTemplate
 
 ## Tokens
 
