@@ -52,7 +52,7 @@ public class ApiKeyTests
   [InlineData("SYSTEM")]
   public void Given_CorrectSecret_When_Authenticate_Then_Authenticated(string? actorIdValue)
   {
-    ActorId? actorId = actorIdValue == null ? null : new(actorIdValue);
+    ActorId? actorId = actorIdValue is null ? null : new(actorIdValue);
 
     _apiKey.Authenticate(SecretString, actorId);
 
@@ -88,7 +88,7 @@ public class ApiKeyTests
   [InlineData("SYSTEM", false)]
   public void Given_Parameters_When_ctor_Then_CorrectApiKeyConstructed(string? actorIdValue, bool generateId)
   {
-    ActorId? actorId = actorIdValue == null ? null : new(actorIdValue);
+    ActorId? actorId = actorIdValue is null ? null : new(actorIdValue);
     ApiKeyId? id = generateId ? ApiKeyId.NewId(realmId: null) : null;
 
     ApiKey apiKey = new(_secret, _apiKey.Name, actorId, id);
@@ -228,7 +228,7 @@ public class ApiKeyTests
     _apiKey.RemoveCustomAttribute(key);
     _apiKey.Update();
     Assert.False(_apiKey.CustomAttributes.ContainsKey(key));
-    Assert.Contains(_apiKey.Changes, change => change is ApiKeyUpdated updated && updated.CustomAttributes[key] == null);
+    Assert.Contains(_apiKey.Changes, change => change is ApiKeyUpdated updated && updated.CustomAttributes[key] is null);
 
     _apiKey.ClearChanges();
     _apiKey.RemoveCustomAttribute(key);
@@ -266,7 +266,7 @@ public class ApiKeyTests
     _apiKey.SetCustomAttribute(key, value!);
     _apiKey.Update();
     Assert.False(_apiKey.CustomAttributes.ContainsKey(key));
-    Assert.Contains(_apiKey.Changes, change => change is ApiKeyUpdated updated && updated.CustomAttributes[key] == null);
+    Assert.Contains(_apiKey.Changes, change => change is ApiKeyUpdated updated && updated.CustomAttributes[key] is null);
   }
 
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute.")]
@@ -298,7 +298,7 @@ public class ApiKeyTests
   [InlineData("SYSTEM")]
   public void Given_Updates_When_Update_Then_ApiKeyUpdated(string? actorIdValue)
   {
-    ActorId? actorId = actorIdValue == null ? null : new(actorIdValue);
+    ActorId? actorId = actorIdValue is null ? null : new(actorIdValue);
 
     _apiKey.ClearChanges();
     _apiKey.Update();
