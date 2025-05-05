@@ -9,6 +9,7 @@
 
 ## API Keys
 
+- AuthenticateApiKey
 - CreateOrReplaceApiKeyHandler
 - UpdateApiKeyHandler
 
