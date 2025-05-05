@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
+using Krakenar.Contracts.Passwords;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
@@ -20,6 +21,9 @@ using Krakenar.Core.Dictionaries.Queries;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
+using Krakenar.Core.Passwords;
+using Krakenar.Core.Passwords.Commands;
+using Krakenar.Core.Passwords.Queries;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Commands;
 using Krakenar.Core.Realms.Queries;
@@ -40,6 +44,7 @@ using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
+using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 using RoleDto = Krakenar.Contracts.Roles.Role;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
@@ -66,6 +71,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<ICommandHandler<AuthenticateApiKey, ApiKeyDto>, AuthenticateApiKeyHandler>()
       .AddTransient<ICommandHandler<AuthenticateUser, UserDto>, AuthenticateUserHandler>()
+      .AddTransient<ICommandHandler<CreateOneTimePassword, OneTimePasswordDto>, CreateOneTimePasswordHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceApiKey, CreateOrReplaceApiKeyResult>, CreateOrReplaceApiKeyHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceDictionary, CreateOrReplaceDictionaryResult>, CreateOrReplaceDictionaryHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>, CreateOrReplaceLanguageHandler>()
@@ -89,13 +95,14 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
       .AddTransient<ICommandHandler<SignOutSession, SessionDto?>, SignOutSessionHandler>()
       .AddTransient<ICommandHandler<SignOutUser, UserDto?>, SignOutUserHandler>()
-      .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
       .AddTransient<ICommandHandler<UpdateApiKey, ApiKeyDto?>, UpdateApiKeyHandler>()
+      .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
       .AddTransient<ICommandHandler<UpdateDictionary, DictionaryDto?>, UpdateDictionaryHandler>()
       .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
       .AddTransient<ICommandHandler<UpdateRealm, RealmDto?>, UpdateRealmHandler>()
       .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>()
       .AddTransient<ICommandHandler<UpdateUser, UserDto?>, UpdateUserHandler>()
+      .AddTransient<ICommandHandler<ValidateOneTimePassword, OneTimePasswordDto?>, ValidateOneTimePasswordHandler>()
       .AddTransient<ICommandHandler<ValidateToken, ValidatedToken>, ValidateTokenCommandHandler>();
   }
 
@@ -106,6 +113,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IConfigurationService, ConfigurationService>()
       .AddTransient<IDictionaryService, DictionaryService>()
       .AddTransient<ILanguageService, LanguageService>()
+      .AddTransient<IOneTimePasswordService, OneTimePasswordService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
       .AddTransient<ISessionService, SessionService>()
@@ -130,6 +138,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
       .AddTransient<IQueryHandler<ReadDictionary, DictionaryDto?>, ReadDictionaryHandler>()
       .AddTransient<IQueryHandler<ReadLanguage, LanguageDto?>, ReadLanguageHandler>()
+      .AddTransient<IQueryHandler<ReadOneTimePassword, OneTimePasswordDto?>, ReadOneTimePasswordHandler>()
       .AddTransient<IQueryHandler<ReadRealm, RealmDto?>, ReadRealmHandler>()
       .AddTransient<IQueryHandler<ReadRole, RoleDto?>, ReadRoleHandler>()
       .AddTransient<IQueryHandler<ReadSession, SessionDto?>, ReadSessionHandler>()
@@ -150,6 +159,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IConfigurationRepository, ConfigurationRepository>()
       .AddTransient<IDictionaryRepository, DictionaryRepository>()
       .AddTransient<ILanguageRepository, LanguageRepository>()
+      .AddTransient<IOneTimePasswordRepository, OneTimePasswordRepository>()
       .AddTransient<IRealmRepository, RealmRepository>()
       .AddTransient<IRoleRepository, RoleRepository>()
       .AddTransient<ISessionRepository, SessionRepository>()
