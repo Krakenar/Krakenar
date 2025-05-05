@@ -7,8 +7,6 @@ using Logitar.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using Claim = System.Security.Claims.Claim;
 using ClaimDto = Krakenar.Contracts.Tokens.Claim;
 

@@ -14,7 +14,7 @@ public class OneTimePassword : Aggregate
   public int? MaximumAttempts { get; set; }
 
   public int AttemptCount { get; set; }
-  public bool HasValidationSucceeded { get; set; }
+  public DateTime? ValidationSucceededOn { get; set; }
 
   public List<CustomAttribute> CustomAttributes { get; set; } = [];
 }

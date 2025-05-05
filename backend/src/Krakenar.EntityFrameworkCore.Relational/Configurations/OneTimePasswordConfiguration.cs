@@ -19,7 +19,7 @@ public sealed class OneTimePasswordConfiguration : AggregateConfiguration<OneTim
     builder.HasIndex(x => x.ExpiresOn);
     builder.HasIndex(x => x.MaximumAttempts);
     builder.HasIndex(x => x.AttemptCount);
-    builder.HasIndex(x => x.HasValidationSucceeded);
+    builder.HasIndex(x => x.ValidationSucceededOn);
 
     builder.Property(x => x.PasswordHash).HasMaxLength(byte.MaxValue);
 

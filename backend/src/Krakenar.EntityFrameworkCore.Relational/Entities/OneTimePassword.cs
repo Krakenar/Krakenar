@@ -23,7 +23,7 @@ public sealed class OneTimePassword : Aggregate, ISegregatedEntity
   public int? MaximumAttempts { get; private set; }
 
   public int AttemptCount { get; private set; }
-  public bool HasValidationSucceeded { get; private set; }
+  public DateTime? ValidationSucceededOn { get; private set; }
 
   public string? CustomAttributes { get; private set; }
 
@@ -33,12 +33,8 @@ public sealed class OneTimePassword : Aggregate, ISegregatedEntity
     RealmId = realm?.RealmId;
     RealmUid = realm?.Id;
   }
-  public OneTimePassword(User user, OneTimePasswordCreated @event) : this(@event)
+  public OneTimePassword(User user, OneTimePasswordCreated @event) : this(user.Realm, @event)
   {
-    Realm = user.Realm;
-    RealmId = user.RealmId;
-    RealmUid = user.RealmUid;
-
     User = user;
     UserId = user.UserId;
   }
@@ -68,7 +64,7 @@ public sealed class OneTimePassword : Aggregate, ISegregatedEntity
     Update(@event);
 
     AttemptCount++;
-    HasValidationSucceeded = true;
+    ValidationSucceededOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public void Update(OneTimePasswordUpdated @event)

@@ -17,7 +17,6 @@ public static class OneTimePasswords
   public static readonly ColumnId AttemptCount = new(nameof(OneTimePassword.AttemptCount), Table);
   public static readonly ColumnId CustomAttributes = new(nameof(OneTimePassword.CustomAttributes), Table);
   public static readonly ColumnId ExpiresOn = new(nameof(OneTimePassword.ExpiresOn), Table);
-  public static readonly ColumnId HasValidationSucceeded = new(nameof(OneTimePassword.HasValidationSucceeded), Table);
   public static readonly ColumnId Id = new(nameof(OneTimePassword.Id), Table);
   public static readonly ColumnId MaximumAttempts = new(nameof(OneTimePassword.MaximumAttempts), Table);
   public static readonly ColumnId OneTimePasswordId = new(nameof(OneTimePassword.OneTimePasswordId), Table);
@@ -25,4 +24,5 @@ public static class OneTimePasswords
   public static readonly ColumnId RealmId = new(nameof(OneTimePassword.RealmId), Table);
   public static readonly ColumnId RealmUid = new(nameof(OneTimePassword.RealmUid), Table);
   public static readonly ColumnId UserId = new(nameof(OneTimePassword.UserId), Table);
+  public static readonly ColumnId ValidationSucceededOn = new(nameof(OneTimePassword.ValidationSucceededOn), Table);
 }

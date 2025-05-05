@@ -144,7 +144,7 @@ public sealed class Mapper
       ExpiresOn = source.ExpiresOn?.AsUniversalTime(),
       MaximumAttempts = source.MaximumAttempts,
       AttemptCount = source.AttemptCount,
-      HasValidationSucceeded = source.HasValidationSucceeded
+      ValidationSucceededOn = source.ValidationSucceededOn?.AsUniversalTime()
     };
 
     if (source.User is not null)

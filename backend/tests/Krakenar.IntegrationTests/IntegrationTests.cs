@@ -97,6 +97,7 @@ public abstract class IntegrationTests : IAsyncLifetime
       KrakenarDb.Dictionaries.Table,
       KrakenarDb.Languages.Table,
       KrakenarDb.Sessions.Table,
+      KrakenarDb.OneTimePasswords.Table,
       KrakenarDb.Users.Table,
       KrakenarDb.ApiKeys.Table,
       KrakenarDb.Roles.Table,
