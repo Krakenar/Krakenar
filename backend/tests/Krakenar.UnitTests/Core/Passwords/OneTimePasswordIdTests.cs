@@ -13,7 +13,7 @@ public class OneTimePasswordIdTests
   {
     RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
-    StreamId streamId = IdHelper.Construct("Role", entityId, realmId);
+    StreamId streamId = IdHelper.Construct("OneTimePassword", entityId, realmId);
 
     OneTimePasswordId id = new(streamId);
 
@@ -28,7 +28,7 @@ public class OneTimePasswordIdTests
   {
     RealmId? realmId = realmIdValue is null ? null : new(realmIdValue);
     Guid entityId = Guid.NewGuid();
-    string value = IdHelper.Construct("Role", entityId, realmId).Value;
+    string value = IdHelper.Construct("OneTimePassword", entityId, realmId).Value;
 
     OneTimePasswordId id = new(value);
 
