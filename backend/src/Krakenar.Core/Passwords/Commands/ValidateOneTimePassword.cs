@@ -37,7 +37,7 @@ public class ValidateOneTimePasswordHandler : ICommandHandler<ValidateOneTimePas
 
     OneTimePasswordId oneTimePasswordId = new(command.Id, ApplicationContext.RealmId);
     OneTimePassword? oneTimePassword = await OneTimePasswordRepository.LoadAsync(oneTimePasswordId, cancellationToken);
-    if (oneTimePassword == null)
+    if (oneTimePassword is null)
     {
       return null;
     }

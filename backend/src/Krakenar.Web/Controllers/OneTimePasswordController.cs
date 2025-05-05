@@ -30,13 +30,13 @@ public class OneTimePasswordController : ControllerBase
   public async Task<ActionResult<OneTimePasswordDto>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
     OneTimePasswordDto? oneTimePassword = await OneTimePasswordService.ReadAsync(id, cancellationToken);
-    return oneTimePassword == null ? NotFound() : Ok(oneTimePassword);
+    return oneTimePassword is null ? NotFound() : Ok(oneTimePassword);
   }
 
   [HttpPut("{id}")]
   public async Task<ActionResult<OneTimePasswordDto>> ValidateAsync(Guid id, [FromBody] ValidateOneTimePasswordPayload payload, CancellationToken cancellationToken)
   {
     OneTimePasswordDto? oneTimePassword = await OneTimePasswordService.ValidateAsync(id, payload, cancellationToken);
-    return oneTimePassword == null ? NotFound() : Ok(oneTimePassword);
+    return oneTimePassword is null ? NotFound() : Ok(oneTimePassword);
   }
 }

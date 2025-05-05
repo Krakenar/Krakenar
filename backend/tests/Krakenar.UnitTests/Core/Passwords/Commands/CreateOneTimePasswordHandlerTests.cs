@@ -34,7 +34,7 @@ public class CreateOneTimePasswordHandlerTests
   [InlineData("076595ab-6b12-4ffa-bd8d-845e7d513a63", true)]
   public async Task Given_Valid_When_HandleAsync_Then_OneTimePasswordCreated(string? idValue, bool withUser)
   {
-    Guid? id = idValue == null ? null : Guid.Parse(idValue);
+    Guid? id = idValue is null ? null : Guid.Parse(idValue);
 
     ActorId actorId = ActorId.NewId();
     _applicationContext.SetupGet(x => x.ActorId).Returns(actorId);

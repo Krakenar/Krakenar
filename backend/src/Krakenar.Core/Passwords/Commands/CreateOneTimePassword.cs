@@ -49,7 +49,7 @@ public class CreateOneTimePasswordHandler : ICommandHandler<CreateOneTimePasswor
     {
       oneTimePasswordId = new(payload.Id.Value, realmId);
       oneTimePassword = await OneTimePasswordRepository.LoadAsync(oneTimePasswordId, cancellationToken);
-      if (oneTimePassword != null)
+      if (oneTimePassword is not null)
       {
         throw new IdAlreadyUsedException<OneTimePassword>(realmId, payload.Id.Value, nameof(payload.Id));
       }

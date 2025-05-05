@@ -5,6 +5,7 @@ using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Logging;
+using Krakenar.Contracts.Passwords;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Sessions;
@@ -17,6 +18,7 @@ using AggregateEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Aggrega
 using ConfigurationAggregate = Krakenar.Core.Configurations.Configuration;
 using DictionaryEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary;
 using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
+using OneTimePasswordEntity = Krakenar.EntityFrameworkCore.Relational.Entities.OneTimePassword;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 using RoleEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Role;
 
@@ -122,6 +124,42 @@ public sealed class Mapper
       IsDefault = source.IsDefault,
       Locale = new Locale(source.Code)
     };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public OneTimePassword ToOneTimePassword(OneTimePasswordEntity source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    OneTimePassword destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      ExpiresOn = source.ExpiresOn?.AsUniversalTime(),
+      MaximumAttempts = source.MaximumAttempts,
+      AttemptCount = source.AttemptCount,
+      HasValidationSucceeded = source.HasValidationSucceeded
+    };
+
+    if (source.User is not null)
+    {
+      destination.User = ToUser(source.User, realm);
+    }
+    else if (source.UserId.HasValue)
+    {
+      throw new ArgumentException("The user is required.", nameof(source));
+    }
+
+    foreach (KeyValuePair<string, string> customAttribute in source.GetCustomAttributes())
+    {
+      destination.CustomAttributes.Add(new CustomAttribute(customAttribute));
+    }
 
     MapAggregate(source, destination);
 

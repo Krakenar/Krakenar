@@ -159,7 +159,7 @@ public class OneTimePasswordTests
     _oneTimePassword.RemoveCustomAttribute(purpose);
     _oneTimePassword.Update();
 
-    Assert.Contains(_oneTimePassword.Changes, change => change is OneTimePasswordUpdated updated && updated.CustomAttributes[purpose] == null);
+    Assert.Contains(_oneTimePassword.Changes, change => change is OneTimePasswordUpdated updated && updated.CustomAttributes[purpose] is null);
     Assert.NotEqual(purpose, Assert.Single(_oneTimePassword.CustomAttributes).Key);
   }
 
@@ -176,7 +176,7 @@ public class OneTimePasswordTests
     _oneTimePassword.SetCustomAttribute(key, value!);
     _oneTimePassword.Update();
     Assert.False(_oneTimePassword.CustomAttributes.ContainsKey(key));
-    Assert.Contains(_oneTimePassword.Changes, change => change is OneTimePasswordUpdated updated && updated.CustomAttributes[key] == null);
+    Assert.Contains(_oneTimePassword.Changes, change => change is OneTimePasswordUpdated updated && updated.CustomAttributes[key] is null);
   }
 
   [Fact(DisplayName = "SetCustomAttribute: it should set a custom attribute.")]
