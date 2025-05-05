@@ -22,6 +22,14 @@
 - DictionaryManager
 - UpdateDictionary
 
+## Senders
+
+- Sender
+
+## Templates
+
+- Template
+
 ## Tokens
 
 - CreateToken

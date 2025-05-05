@@ -70,7 +70,7 @@ public class ApiKeyQuerier : IApiKeyQuerier
         .Join(Roles.RoleId, ApiKeyRoles.RoleId)
         .Where(Roles.Id, Operators.IsEqualTo(payload.RoleId.Value));
     }
-    if (payload.Status != null)
+    if (payload.Status is not null)
     {
       DateTime moment = payload.Status.Moment?.ToUniversalTime() ?? DateTime.UtcNow;
       builder.Where(KrakenarDb.ApiKeys.ExpiresOn, payload.Status.IsExpired ? Operators.IsLessThanOrEqualTo(moment) : Operators.IsGreaterThan(moment));

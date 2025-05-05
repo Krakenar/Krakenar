@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core;
 using Krakenar.Core.ApiKeys.Events;
+using Krakenar.Core.Passwords.Events;
 using Krakenar.Core.Realms.Events;
 using Krakenar.Core.Roles.Events;
 using Krakenar.Core.Sessions.Events;
@@ -13,6 +14,8 @@ namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 
 public class CustomAttributeEvents : IEventHandler<ApiKeyDeleted>,
   IEventHandler<ApiKeyUpdated>,
+  IEventHandler<OneTimePasswordDeleted>,
+  IEventHandler<OneTimePasswordUpdated>,
   IEventHandler<RealmDeleted>,
   IEventHandler<RealmUpdated>,
   IEventHandler<RoleDeleted>,
@@ -37,6 +40,16 @@ public class CustomAttributeEvents : IEventHandler<ApiKeyDeleted>,
   }
 
   public virtual async Task HandleAsync(ApiKeyUpdated @event, CancellationToken cancellationToken)
+  {
+    await SynchronizeAsync(@event, @event.CustomAttributes, cancellationToken);
+  }
+
+  public virtual async Task HandleAsync(OneTimePasswordDeleted @event, CancellationToken cancellationToken)
+  {
+    await DeleteAsync(@event, cancellationToken);
+  }
+
+  public virtual async Task HandleAsync(OneTimePasswordUpdated @event, CancellationToken cancellationToken)
   {
     await SynchronizeAsync(@event, @event.CustomAttributes, cancellationToken);
   }

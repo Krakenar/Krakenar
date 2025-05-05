@@ -532,6 +532,104 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("Languages", "Localization");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.OneTimePassword", b =>
+                {
+                    b.Property<int>("OneTimePasswordId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OneTimePasswordId"));
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomAttributes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ExpiresOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("MaximumAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("RealmId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("StreamId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ValidationSucceededOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("OneTimePasswordId");
+
+                    b.HasIndex("AttemptCount");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("ExpiresOn");
+
+                    b.HasIndex("Id");
+
+                    b.HasIndex("MaximumAttempts");
+
+                    b.HasIndex("RealmUid");
+
+                    b.HasIndex("StreamId")
+                        .IsUnique();
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("ValidationSucceededOn");
+
+                    b.HasIndex("Version");
+
+                    b.HasIndex("RealmId", "Id")
+                        .IsUnique()
+                        .HasFilter("[RealmId] IS NOT NULL");
+
+                    b.ToTable("OneTimePasswords", "Identity");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", b =>
                 {
                     b.Property<int>("RealmId")
@@ -1286,6 +1384,23 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Realm");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.OneTimePassword", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
+                        .WithMany("OneTimePasswords")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.User", "User")
+                        .WithMany("OneTimePasswords")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Realm");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Role", b =>
                 {
                     b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
@@ -1377,6 +1492,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.Navigation("Languages");
 
+                    b.Navigation("OneTimePasswords");
+
                     b.Navigation("Roles");
 
                     b.Navigation("Sessions");
@@ -1389,6 +1506,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.User", b =>
                 {
                     b.Navigation("Identifiers");
+
+                    b.Navigation("OneTimePasswords");
 
                     b.Navigation("Sessions");
                 });

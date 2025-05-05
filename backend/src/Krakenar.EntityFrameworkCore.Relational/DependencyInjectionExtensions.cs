@@ -8,6 +8,8 @@ using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Events;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
+using Krakenar.Core.Passwords;
+using Krakenar.Core.Passwords.Events;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Events;
 using Krakenar.Core.Roles;
@@ -61,6 +63,13 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<LanguageDeleted>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageLocaleChanged>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageSetDefault>, LanguageEvents>()
+      .AddScoped<IEventHandler<OneTimePasswordCreated>, OneTimePasswordEvents>()
+      .AddScoped<IEventHandler<OneTimePasswordDeleted>, CustomAttributeEvents>()
+      .AddScoped<IEventHandler<OneTimePasswordDeleted>, OneTimePasswordEvents>()
+      .AddScoped<IEventHandler<OneTimePasswordUpdated>, CustomAttributeEvents>()
+      .AddScoped<IEventHandler<OneTimePasswordUpdated>, OneTimePasswordEvents>()
+      .AddScoped<IEventHandler<OneTimePasswordValidationFailed>, OneTimePasswordEvents>()
+      .AddScoped<IEventHandler<OneTimePasswordValidationSucceeded>, OneTimePasswordEvents>()
       .AddScoped<IEventHandler<RealmCreated>, RealmEvents>()
       .AddScoped<IEventHandler<RealmDeleted>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<RealmDeleted>, RealmEvents>()
@@ -110,6 +119,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
       .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
       .AddScoped<ILanguageQuerier, LanguageQuerier>()
+      .AddScoped<IOneTimePasswordQuerier, OneTimePasswordQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()
       .AddScoped<ISessionQuerier, SessionQuerier>()
