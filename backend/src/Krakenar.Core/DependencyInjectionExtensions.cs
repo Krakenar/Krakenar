@@ -7,6 +7,7 @@ using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Tokens;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.ApiKeys;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
@@ -134,6 +135,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarRepositories(this IServiceCollection services)
   {
     return services
+      .AddTransient<IApiKeyRepository, ApiKeyRepository>()
       .AddTransient<IConfigurationRepository, ConfigurationRepository>()
       .AddTransient<IDictionaryRepository, DictionaryRepository>()
       .AddTransient<ILanguageRepository, LanguageRepository>()

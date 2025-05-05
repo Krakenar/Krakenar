@@ -5,6 +5,12 @@
 - RefreshToken
 - RoleService.FindAsync
 - UserService.FindAsync
+- XApiKey
+
+## API Keys
+
+- CreateOrReplaceApiKeyHandler
+- UpdateApiKeyHandler
 
 ## Dictionaries
 
