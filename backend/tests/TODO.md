@@ -25,6 +25,8 @@
 ## Senders
 
 - Sender
+- SendGridSettings
+- TwilioSettings
 
 ## Tokens
 
