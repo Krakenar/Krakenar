@@ -26,19 +26,6 @@
 
 - Sender
 
-## Templates
-
-- Content
-- ContentTypeValidator
-- CreateOrReplaceTemplate
-- DeleteTemplate
-- ReadTemplate
-- SearchTemplates
-- Subject
-- Template
-- TemplateManager
-- UpdateTemplate
-
 ## Tokens
 
 - CreateToken

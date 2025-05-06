@@ -37,7 +37,7 @@ public class SessionTests
 
   [Theory(DisplayName = "It should construct a new session from arguments.")]
   [InlineData(null, null, null, false)]
-  [InlineData("c24fd223-5df7-4cb8-be57-1ae44bf3b5e7", "2bb42d55-c9fc-4013-98b1-a1fd699ca53d", "d8e67f9f-0d8d-45e2-9838-bc8cea33e9c3", true)]
+  [InlineData("57ae2e92-6a65-4e2c-af13-621e444e46c3", "95ae663c-43eb-4839-a15c-02818df66974", "a9b6e319-b994-4c1d-9de7-c68ee7ecf199", true)]
   public void Given_Arguments_When_ctor_Then_Session(string? actorIdValue, string? realmIdValue, string? sessionIdValue, bool isPersistent)
   {
     ActorId? actorId = actorIdValue is null ? null : new(Guid.Parse(actorIdValue));

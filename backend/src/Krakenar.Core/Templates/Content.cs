@@ -13,7 +13,7 @@ public record Content : IContent
   [JsonConstructor]
   public Content(string type, string text)
   {
-    Type = type.Trim();
+    Type = type.Trim().ToLowerInvariant();
     Text = text.Trim();
     new ContentValidator().ValidateAndThrow(this);
   }

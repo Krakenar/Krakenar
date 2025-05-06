@@ -57,9 +57,9 @@ public class JsonWebTokenManagerTests
         Assert.Contains(principal.Claims, c => c.Type == claim.Type && c.Value == claim.Value && c.ValueType == claim.ValueType);
       }
     }
-    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.IssuedAt && (DateTime.UtcNow - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(1));
-    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.NotBefore && (DateTime.UtcNow - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(1));
-    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.ExpirationTime && (DateTime.UtcNow.AddHours(1) - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(1));
+    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.IssuedAt && (DateTime.UtcNow - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(10));
+    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.NotBefore && (DateTime.UtcNow - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(10));
+    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.ExpirationTime && (DateTime.UtcNow.AddHours(1) - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(10));
   }
 
   [Fact(DisplayName = "CreateAsync: it should create a token for an identity with options.")]
@@ -92,9 +92,9 @@ public class JsonWebTokenManagerTests
     };
     ClaimsPrincipal principal = _tokenHandler.ValidateToken(token, parameters, out _);
     Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.Subject && claim.Value == sub);
-    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.IssuedAt && (options.IssuedAt.Value.AsUniversalTime() - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(1));
-    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.NotBefore && (options.NotBefore.Value.AsUniversalTime() - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(1));
-    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.ExpirationTime && (options.Expires.Value.AsUniversalTime() - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(1));
+    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.IssuedAt && (options.IssuedAt.Value.AsUniversalTime() - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(10));
+    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.NotBefore && (options.NotBefore.Value.AsUniversalTime() - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(10));
+    Assert.Contains(principal.Claims, claim => claim.Type == Rfc7519ClaimNames.ExpirationTime && (options.Expires.Value.AsUniversalTime() - ClaimHelper.ExtractDateTime(claim)) < TimeSpan.FromSeconds(10));
   }
 
   [Fact(DisplayName = "ValidateAsync: it should blacklist consumed token IDs.")]

@@ -18,7 +18,7 @@ public class ContentTypeValidator<T> : IPropertyValidator<T, string>
       _contentTypes.Clear();
       foreach (string contentType in contentTypes)
       {
-        _contentTypes.Add(contentType.ToLowerInvariant());
+        _contentTypes.Add(contentType.Trim().ToLowerInvariant());
       }
     }
   }
