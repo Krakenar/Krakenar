@@ -28,6 +28,8 @@ public class DeleteSenderHandler : ICommandHandler<DeleteSender, SenderDto?>
     }
     SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
 
+    // TODO(fpion): you should not be able to delete a default sender unless its the only sender.
+
     sender.Delete(ApplicationContext.ActorId);
     await SenderRepository.SaveAsync(sender, cancellationToken);
 

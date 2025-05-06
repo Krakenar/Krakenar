@@ -9,7 +9,7 @@ public class SenderProviderMismatchException : Exception
 
   public Guid? RealmId
   {
-    get => (Guid)Data[nameof(RealmId)]!;
+    get => (Guid?)Data[nameof(RealmId)];
     private set => Data[nameof(RealmId)] = value;
   }
   public Guid SenderId

@@ -26,15 +26,15 @@ public class UpdateSenderHandler : ICommandHandler<UpdateSender, SenderDto?>
 
   public virtual async Task<SenderDto?> HandleAsync(UpdateSender command, CancellationToken cancellationToken)
   {
-    UpdateSenderPayload payload = command.Payload;
-    new UpdateSenderValidator().ValidateAndThrow(payload);
-
     SenderId senderId = new(command.Id, ApplicationContext.RealmId);
     Sender? sender = await SenderRepository.LoadAsync(senderId, cancellationToken);
     if (sender is null)
     {
       return null;
     }
+
+    UpdateSenderPayload payload = command.Payload;
+    new UpdateSenderValidator(sender.Provider).ValidateAndThrow(payload);
 
     ActorId? actorId = ApplicationContext.ActorId;
 

@@ -36,9 +36,11 @@ public class Sender : AggregateRoot
       {
         throw new InvalidOperationException($"The email of a '{Kind}' sender cannot be changed.");
       }
-
-      _email = value;
-      _updated.Email = value;
+      else if (_email != value)
+      {
+        _email = value;
+        _updated.Email = value;
+      }
     }
   }
   private Phone? _phone = null;
@@ -58,9 +60,11 @@ public class Sender : AggregateRoot
       {
         throw new InvalidOperationException($"The phone of a '{Kind}' sender cannot be changed.");
       }
-
-      _phone = value;
-      _updated.Phone = value;
+      else if (_phone != value)
+      {
+        _phone = value;
+        _updated.Phone = value;
+      }
     }
   }
   private DisplayName? _displayName = null;
@@ -109,17 +113,19 @@ public class Sender : AggregateRoot
   private Sender(Email? email, Phone? phone, SenderSettings settings, bool isDefault = false, ActorId? actorId = null, SenderId? senderId = null)
     : base((senderId ?? SenderId.NewId()).StreamId)
   {
-    if (email is not null)
+    SenderKind kind = settings.GetSenderKind();
+    switch (kind)
     {
-      Raise(new EmailSenderCreated(email, isDefault, settings.Provider), actorId);
-    }
-    else if (phone is not null)
-    {
-      Raise(new PhoneSenderCreated(phone, isDefault, settings.Provider), actorId);
-    }
-    else
-    {
-      throw new InvalidOperationException($"Either the '{nameof(email)}' or the '{nameof(phone)}' parameter must be provided.");
+      case SenderKind.Email:
+        ArgumentNullException.ThrowIfNull(email, nameof(email));
+        Raise(new EmailSenderCreated(email, isDefault, settings.Provider), actorId);
+        break;
+      case SenderKind.Phone:
+        ArgumentNullException.ThrowIfNull(phone, nameof(phone));
+        Raise(new PhoneSenderCreated(phone, isDefault, settings.Provider), actorId);
+        break;
+      default:
+        throw new ArgumentException($"The sender kind '{kind}' is not supported.", nameof(settings));
     }
 
     switch (settings.Provider)

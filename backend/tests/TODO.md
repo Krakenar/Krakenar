@@ -24,14 +24,9 @@
 
 ## Senders
 
+### Commands
+
 - CreateOrReplaceSender
-- DeleteSender
-- ReadSender
-- SearchSenders
-- Sender
-- SendGridSettings
-- SetDefaultSender
-- TwilioSettings
 - UpdateSender
 
 ## Tokens
