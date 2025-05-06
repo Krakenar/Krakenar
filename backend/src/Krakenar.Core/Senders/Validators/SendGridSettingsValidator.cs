@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using Krakenar.Contracts.Senders;
+using Krakenar.Contracts.Senders.Settings;
 
 namespace Krakenar.Core.Senders.Validators;
 
