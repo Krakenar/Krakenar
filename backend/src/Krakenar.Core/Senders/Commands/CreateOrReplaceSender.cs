@@ -52,17 +52,17 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
 
       if (email is not null)
       {
-        int count = await SenderQuerier.CountAsync(SenderKind.Email, cancellationToken);
-        sender = new(email, settings, isDefault: count == 0, actorId, senderId);
+        SenderId? defaultId = await SenderQuerier.FindDefaultIdAsync(SenderKind.Email, cancellationToken);
+        sender = new(email, settings, isDefault: defaultId is null, actorId, senderId);
       }
       else if (phone is not null)
       {
-        int count = await SenderQuerier.CountAsync(SenderKind.Phone, cancellationToken);
-        sender = new(phone, settings, isDefault: count == 0, actorId, senderId);
+        SenderId? defaultId = await SenderQuerier.FindDefaultIdAsync(SenderKind.Phone, cancellationToken);
+        sender = new(phone, settings, isDefault: defaultId is null, actorId, senderId);
       }
       else
       {
-        throw new NotImplementedException(); // TODO(fpion): implement
+        throw new ArgumentException($"Exactly one of the following payload properties must be set: {nameof(payload.Email)}, {nameof(payload.Phone)}.", nameof(command));
       }
       created = true;
     }
@@ -127,11 +127,11 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
 
     if (settings.Count > 1)
     {
-      // TODO(fpion): implement
+      throw new ArgumentException($"Exactly one setting property must be set; {settings.Count} were set.", nameof(payload));
     }
     else if (settings.Count < 1)
     {
-      // TODO(fpion): implement
+      throw new ArgumentException("Exactly one setting property must be set; none were set.", nameof(payload));
     }
 
     return settings.Single();

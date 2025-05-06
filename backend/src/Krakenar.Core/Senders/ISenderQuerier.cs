@@ -6,11 +6,12 @@ namespace Krakenar.Core.Senders;
 
 public interface ISenderQuerier
 {
-  Task<int> CountAsync(SenderKind kind, CancellationToken cancellationToken = default);
+  Task<SenderId?> FindDefaultIdAsync(SenderKind kind, CancellationToken cancellationToken = default);
 
   Task<SenderDto> ReadAsync(Sender sender, CancellationToken cancellationToken = default);
   Task<SenderDto?> ReadAsync(SenderId id, CancellationToken cancellationToken = default);
   Task<SenderDto?> ReadAsync(Guid id, CancellationToken cancellationToken = default);
+  Task<SenderDto?> ReadDefaultAsync(SenderKind kind, CancellationToken cancellationToken = default);
 
   Task<SearchResults<SenderDto>> SearchAsync(SearchSendersPayload payload, CancellationToken cancellationToken = default);
 }

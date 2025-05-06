@@ -34,6 +34,7 @@ using Krakenar.Core.Roles.Commands;
 using Krakenar.Core.Roles.Queries;
 using Krakenar.Core.Senders;
 using Krakenar.Core.Senders.Commands;
+using Krakenar.Core.Senders.Queries;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
@@ -54,6 +55,7 @@ using LanguageDto = Krakenar.Contracts.Localization.Language;
 using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 using RoleDto = Krakenar.Contracts.Roles.Role;
+using SenderDto = Krakenar.Contracts.Senders.Sender;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
 using TemplateDto = Krakenar.Contracts.Templates.Template;
 using UserDto = Krakenar.Contracts.Users.User;
@@ -94,6 +96,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<DeleteDictionary, DictionaryDto?>, DeleteDictionaryHandler>()
       .AddTransient<ICommandHandler<DeleteLanguage, LanguageDto?>, DeleteLanguageHandler>()
       .AddTransient<ICommandHandler<DeleteRole, RoleDto?>, DeleteRoleHandler>()
+      .AddTransient<ICommandHandler<DeleteSender, SenderDto?>, DeleteSenderHandler>()
       .AddTransient<ICommandHandler<DeleteTemplate, TemplateDto?>, DeleteTemplateHandler>()
       .AddTransient<ICommandHandler<DeleteUser, UserDto?>, DeleteUserHandler>()
       .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
@@ -103,6 +106,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<ResetUserPassword, UserDto?>, ResetUserPasswordHandler>()
       .AddTransient<ICommandHandler<SaveUserIdentifier, UserDto?>, SaveUserIdentifierHandler>()
       .AddTransient<ICommandHandler<SetDefaultLanguage, LanguageDto?>, SetDefaultLanguageHandler>()
+      .AddTransient<ICommandHandler<SetDefaultSender, SenderDto?>, SetDefaultSenderHandler>()
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
       .AddTransient<ICommandHandler<SignOutSession, SessionDto?>, SignOutSessionHandler>()
       .AddTransient<ICommandHandler<SignOutUser, UserDto?>, SignOutUserHandler>()
@@ -112,6 +116,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
       .AddTransient<ICommandHandler<UpdateRealm, RealmDto?>, UpdateRealmHandler>()
       .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>()
+      .AddTransient<ICommandHandler<UpdateSender, SenderDto?>, UpdateSenderHandler>()
       .AddTransient<ICommandHandler<UpdateTemplate, TemplateDto?>, UpdateTemplateHandler>()
       .AddTransient<ICommandHandler<UpdateUser, UserDto?>, UpdateUserHandler>()
       .AddTransient<ICommandHandler<ValidateOneTimePassword, OneTimePasswordDto?>, ValidateOneTimePasswordHandler>()
@@ -128,7 +133,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IOneTimePasswordService, OneTimePasswordService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
-      //.AddTransient<ISenderService, SenderService>() // TODO(fpion): implement
+      .AddTransient<ISenderService, SenderService>()
       .AddTransient<ISessionService, SessionService>()
       .AddTransient<ITemplateService, TemplateService>()
       .AddTransient<ITokenService, TokenService>()
@@ -156,6 +161,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadOneTimePassword, OneTimePasswordDto?>, ReadOneTimePasswordHandler>()
       .AddTransient<IQueryHandler<ReadRealm, RealmDto?>, ReadRealmHandler>()
       .AddTransient<IQueryHandler<ReadRole, RoleDto?>, ReadRoleHandler>()
+      .AddTransient<IQueryHandler<ReadSender, SenderDto?>, ReadSenderHandler>()
       .AddTransient<IQueryHandler<ReadSession, SessionDto?>, ReadSessionHandler>()
       .AddTransient<IQueryHandler<ReadTemplate, TemplateDto?>, ReadTemplateHandler>()
       .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
@@ -164,6 +170,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<SearchLanguages, SearchResults<LanguageDto>>, SearchLanguagesHandler>()
       .AddTransient<IQueryHandler<SearchRealms, SearchResults<RealmDto>>, SearchRealmsHandler>()
       .AddTransient<IQueryHandler<SearchRoles, SearchResults<RoleDto>>, SearchRolesHandler>()
+      .AddTransient<IQueryHandler<SearchSenders, SearchResults<SenderDto>>, SearchSendersHandler>()
       .AddTransient<IQueryHandler<SearchSessions, SearchResults<SessionDto>>, SearchSessionsHandler>()
       .AddTransient<IQueryHandler<SearchTemplates, SearchResults<TemplateDto>>, SearchTemplatesHandler>()
       .AddTransient<IQueryHandler<SearchUsers, SearchResults<UserDto>>, SearchUsersHandler>();
