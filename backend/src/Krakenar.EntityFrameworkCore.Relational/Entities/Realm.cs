@@ -42,6 +42,7 @@ public sealed class Realm : Aggregate
   public List<OneTimePassword> OneTimePasswords { get; private set; } = [];
   public List<Role> Roles { get; private set; } = [];
   public List<Session> Sessions { get; private set; } = [];
+  public List<Template> Templates { get; private set; } = [];
   public List<User> Users { get; private set; } = [];
   public List<UserIdentifier> UserIdentifiers { get; private set; } = [];
 
