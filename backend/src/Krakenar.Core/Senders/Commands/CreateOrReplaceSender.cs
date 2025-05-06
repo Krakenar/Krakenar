@@ -53,12 +53,12 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
       if (email is not null)
       {
         SenderId? defaultId = await SenderQuerier.FindDefaultIdAsync(SenderKind.Email, cancellationToken);
-        sender = new(email, settings, isDefault: defaultId is null, actorId, senderId);
+        sender = new(email, settings, isDefault: !defaultId.HasValue, actorId, senderId);
       }
       else if (phone is not null)
       {
         SenderId? defaultId = await SenderQuerier.FindDefaultIdAsync(SenderKind.Phone, cancellationToken);
-        sender = new(phone, settings, isDefault: defaultId is null, actorId, senderId);
+        sender = new(phone, settings, isDefault: !defaultId.HasValue, actorId, senderId);
       }
       else
       {
