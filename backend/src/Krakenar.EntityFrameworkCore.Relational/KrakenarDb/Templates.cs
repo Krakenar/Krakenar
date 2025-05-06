@@ -5,7 +5,7 @@ namespace Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 
 public static class Templates
 {
-  public static readonly TableId Table = new(Schemas.Identity, nameof(KrakenarContext.Templates), alias: null);
+  public static readonly TableId Table = new(Schemas.Messaging, nameof(KrakenarContext.Templates), alias: null);
 
   public static readonly ColumnId CreatedBy = new(nameof(Template.CreatedBy), Table);
   public static readonly ColumnId CreatedOn = new(nameof(Template.CreatedOn), Table);
