@@ -1,4 +1,4 @@
-﻿namespace Krakenar.Contracts.Senders;
+﻿namespace Krakenar.Contracts.Senders.Settings;
 
 public interface ISendGridSettings
 {
