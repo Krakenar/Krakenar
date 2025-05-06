@@ -14,6 +14,7 @@ using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Events;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
+using Krakenar.Core.Senders.Events;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Events;
 using Krakenar.Core.Templates;
@@ -61,6 +62,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<DictionaryDeleted>, DictionaryEvents>()
       .AddScoped<IEventHandler<DictionaryLanguageChanged>, DictionaryEvents>()
       .AddScoped<IEventHandler<DictionaryUpdated>, DictionaryEvents>()
+      .AddScoped<IEventHandler<EmailSenderCreated>, SenderEvents>()
       .AddScoped<IEventHandler<LanguageCreated>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageDeleted>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageLocaleChanged>, LanguageEvents>()
@@ -72,6 +74,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<OneTimePasswordUpdated>, OneTimePasswordEvents>()
       .AddScoped<IEventHandler<OneTimePasswordValidationFailed>, OneTimePasswordEvents>()
       .AddScoped<IEventHandler<OneTimePasswordValidationSucceeded>, OneTimePasswordEvents>()
+      .AddScoped<IEventHandler<PhoneSenderCreated>, SenderEvents>()
       .AddScoped<IEventHandler<RealmCreated>, RealmEvents>()
       .AddScoped<IEventHandler<RealmDeleted>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<RealmDeleted>, RealmEvents>()
@@ -84,6 +87,10 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<RoleUniqueNameChanged>, RoleEvents>()
       .AddScoped<IEventHandler<RoleUpdated>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<RoleUpdated>, RoleEvents>()
+      .AddScoped<IEventHandler<SenderDeleted>, SenderEvents>()
+      .AddScoped<IEventHandler<SenderSetDefault>, SenderEvents>()
+      .AddScoped<IEventHandler<SenderUpdated>, SenderEvents>()
+      .AddScoped<IEventHandler<SendGridSettingsChanged>, SenderEvents>()
       .AddScoped<IEventHandler<SessionCreated>, SessionEvents>()
       .AddScoped<IEventHandler<SessionDeleted>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<SessionDeleted>, SessionEvents>()
@@ -95,6 +102,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<TemplateDeleted>, TemplateEvents>()
       .AddScoped<IEventHandler<TemplateUniqueNameChanged>, TemplateEvents>()
       .AddScoped<IEventHandler<TemplateUpdated>, TemplateEvents>()
+      .AddScoped<IEventHandler<TwilioSettingsChanged>, SenderEvents>()
       .AddScoped<IEventHandler<UserAddressChanged>, UserEvents>()
       .AddScoped<IEventHandler<UserAuthenticated>, UserEvents>()
       .AddScoped<IEventHandler<UserCreated>, UserEvents>()

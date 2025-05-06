@@ -119,6 +119,18 @@ public class Sender : AggregateRoot
     }
   }
 
+  public void SetDefault(bool isDefault = true, ActorId? actorId = null)
+  {
+    if (IsDefault != isDefault)
+    {
+      Raise(new SenderSetDefault(isDefault), actorId);
+    }
+  }
+  protected virtual void Handle(SenderSetDefault @event)
+  {
+    IsDefault = @event.IsDefault;
+  }
+
   public void SetSettings(SendGridSettings settings, ActorId? actorId = null)
   {
     if (Provider != SenderProvider.SendGrid)
