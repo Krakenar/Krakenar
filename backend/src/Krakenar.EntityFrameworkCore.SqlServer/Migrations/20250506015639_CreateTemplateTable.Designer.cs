@@ -3,6 +3,7 @@ using Krakenar.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(KrakenarContext))]
-    partial class KrakenarContextModelSnapshot : ModelSnapshot
+    [Migration("20250506015639_CreateTemplateTable")]
+    partial class CreateTemplateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1045,7 +1048,7 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .IsUnique()
                         .HasFilter("[RealmId] IS NOT NULL");
 
-                    b.ToTable("Templates", "Messaging");
+                    b.ToTable("Templates", "Identity");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.User", b =>

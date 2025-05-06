@@ -22,6 +22,7 @@ public sealed class KrakenarContext : DbContext
   public DbSet<Realm> Realms => Set<Realm>();
   public DbSet<Role> Roles => Set<Role>();
   public DbSet<Session> Sessions => Set<Session>();
+  public DbSet<Template> Templates => Set<Template>();
   public DbSet<User> Users => Set<User>();
   public DbSet<UserIdentifier> UserIdentifiers => Set<UserIdentifier>();
   public DbSet<UserRole> UserRoles => Set<UserRole>();

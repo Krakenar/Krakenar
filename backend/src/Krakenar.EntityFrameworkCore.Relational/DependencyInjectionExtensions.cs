@@ -16,6 +16,8 @@ using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Events;
+using Krakenar.Core.Templates;
+using Krakenar.Core.Templates.Events;
 using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Events;
@@ -89,6 +91,10 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<SessionSignedOut>, SessionEvents>()
       .AddScoped<IEventHandler<SessionUpdated>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<SessionUpdated>, SessionEvents>()
+      .AddScoped<IEventHandler<TemplateCreated>, TemplateEvents>()
+      .AddScoped<IEventHandler<TemplateDeleted>, TemplateEvents>()
+      .AddScoped<IEventHandler<TemplateUniqueNameChanged>, TemplateEvents>()
+      .AddScoped<IEventHandler<TemplateUpdated>, TemplateEvents>()
       .AddScoped<IEventHandler<UserAddressChanged>, UserEvents>()
       .AddScoped<IEventHandler<UserAuthenticated>, UserEvents>()
       .AddScoped<IEventHandler<UserCreated>, UserEvents>()
@@ -123,6 +129,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()
       .AddScoped<ISessionQuerier, SessionQuerier>()
+      .AddScoped<ITemplateQuerier, TemplateQuerier>()
       .AddScoped<IUserQuerier, UserQuerier>();
   }
 }

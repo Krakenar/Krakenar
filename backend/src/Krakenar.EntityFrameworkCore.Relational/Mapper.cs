@@ -10,17 +10,10 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Settings;
+using Krakenar.Contracts.Templates;
 using Krakenar.Contracts.Users;
 using Logitar;
 using Logitar.EventSourcing;
-using ActorEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Actor;
-using AggregateEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Aggregate;
-using ConfigurationAggregate = Krakenar.Core.Configurations.Configuration;
-using DictionaryEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary;
-using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
-using OneTimePasswordEntity = Krakenar.EntityFrameworkCore.Relational.Entities.OneTimePassword;
-using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
-using RoleEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Role;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
@@ -41,7 +34,7 @@ public sealed class Mapper
     }
   }
 
-  public static Actor ToActor(ActorEntity source) => new(source.DisplayName)
+  public static Actor ToActor(Entities.Actor source) => new(source.DisplayName)
   {
     Type = source.Type,
     Id = source.Id,
@@ -75,7 +68,7 @@ public sealed class Mapper
     return destination;
   }
 
-  public Configuration ToConfiguration(ConfigurationAggregate source)
+  public Configuration ToConfiguration(Core.Configurations.Configuration source)
   {
     Configuration destination = new()
     {
@@ -90,7 +83,7 @@ public sealed class Mapper
     return destination;
   }
 
-  public Dictionary ToDictionary(DictionaryEntity source, Realm? realm)
+  public Dictionary ToDictionary(Entities.Dictionary source, Realm? realm)
   {
     if (source.Language is null)
     {
@@ -110,7 +103,7 @@ public sealed class Mapper
     return destination;
   }
 
-  public Language ToLanguage(LanguageEntity source, Realm? realm)
+  public Language ToLanguage(Entities.Language source, Realm? realm)
   {
     if (source.RealmId is not null && realm is null)
     {
@@ -130,7 +123,7 @@ public sealed class Mapper
     return destination;
   }
 
-  public OneTimePassword ToOneTimePassword(OneTimePasswordEntity source, Realm? realm)
+  public OneTimePassword ToOneTimePassword(Entities.OneTimePassword source, Realm? realm)
   {
     if (source.RealmId is not null && realm is null)
     {
@@ -166,7 +159,7 @@ public sealed class Mapper
     return destination;
   }
 
-  public Realm ToRealm(RealmEntity source)
+  public Realm ToRealm(Entities.Realm source)
   {
     Realm destination = new()
     {
@@ -188,7 +181,7 @@ public sealed class Mapper
     return destination;
   }
 
-  public Role ToRole(RoleEntity source, Realm? realm)
+  public Role ToRole(Entities.Role source, Realm? realm)
   {
     if (source.RealmId is not null && realm is null)
     {
@@ -227,6 +220,29 @@ public sealed class Mapper
       SignedOutOn = source.SignedOutOn?.AsUniversalTime()
     };
     destination.CustomAttributes.AddRange(source.GetCustomAttributes().Select(customAttribute => new CustomAttribute(customAttribute)));
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Template ToTemplate(Entities.Template source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    Template destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      Subject = source.Subject,
+      Content = new Content(source.ContentType, source.ContentText)
+    };
 
     MapAggregate(source, destination);
 
@@ -318,7 +334,7 @@ public sealed class Mapper
     destination.UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system;
     destination.UpdatedOn = source.UpdatedOn.AsUniversalTime();
   }
-  private void MapAggregate(AggregateEntity source, Aggregate destination)
+  private void MapAggregate(Entities.Aggregate source, Aggregate destination)
   {
     destination.Version = source.Version;
 

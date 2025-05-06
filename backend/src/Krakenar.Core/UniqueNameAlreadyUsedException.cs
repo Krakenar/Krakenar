@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Roles;
+using Krakenar.Core.Templates;
 using Krakenar.Core.Users;
 using Logitar;
 
@@ -58,6 +59,10 @@ public class UniqueNameAlreadyUsedException : ConflictException
 
   public UniqueNameAlreadyUsedException(Role role, RoleId conflictId)
     : this(role.RealmId, "Role", role.EntityId, conflictId.EntityId, role.UniqueName, nameof(role.UniqueName))
+  {
+  }
+  public UniqueNameAlreadyUsedException(Template template, TemplateId conflictId)
+    : this(template.RealmId, "Template", template.EntityId, conflictId.EntityId, template.UniqueName, nameof(template.UniqueName))
   {
   }
   public UniqueNameAlreadyUsedException(User user, UserId conflictId)

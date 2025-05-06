@@ -11,6 +11,11 @@ public static class ValidationExtensions
     return ruleBuilder.SetValidator(new AllowedCharactersValidator<T>(allowedCharacters));
   }
 
+  public static IRuleBuilderOptions<T, string> ContentType<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(byte.MaxValue).SetValidator(new ContentTypeValidator<T>());
+  }
+
   public static IRuleBuilderOptions<T, string> CustomIdentifier<T>(this IRuleBuilder<T, string> ruleBuilder)
   {
     return ruleBuilder.NotEmpty().MaximumLength(Core.CustomIdentifier.MaximumLength);
@@ -106,6 +111,11 @@ public static class ValidationExtensions
   public static IRuleBuilderOptions<T, string> Slug<T>(this IRuleBuilder<T, string> ruleBuilder)
   {
     return ruleBuilder.NotEmpty().MaximumLength(Core.Slug.MaximumLength).SetValidator(new SlugValidator<T>());
+  }
+
+  public static IRuleBuilderOptions<T, string> Subject<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Templates.Subject.MaximumLength);
   }
 
   public static IRuleBuilderOptions<T, string> TimeZone<T>(this IRuleBuilder<T, string> ruleBuilder)

@@ -26,10 +26,6 @@
 
 - Sender
 
-## Templates
-
-- Template
-
 ## Tokens
 
 - CreateToken
