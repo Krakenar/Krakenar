@@ -33,13 +33,13 @@ public sealed class Sender : Aggregate, ISegregatedEntity
   {
     Kind = SenderKind.Email;
 
-    EmailAddress = @event.Email.Address;
+    SetEmail(@event.Email);
   }
   public Sender(Realm? realm, PhoneSenderCreated @event) : this(realm, (SenderCreated)@event)
   {
     Kind = SenderKind.Phone;
 
-    PhoneNumber = @event.Phone.FormatToE164();
+    SetPhone(@event.Phone);
   }
   private Sender(Realm? realm, SenderCreated @event) : base(@event)
   {
@@ -94,6 +94,14 @@ public sealed class Sender : Aggregate, ISegregatedEntity
   {
     base.Update(@event);
 
+    if (@event.Email is not null)
+    {
+      SetEmail(@event.Email);
+    }
+    if (@event.Phone is not null)
+    {
+      SetPhone(@event.Phone);
+    }
     if (@event.DisplayName is not null)
     {
       DisplayName = @event.DisplayName.Value?.Value;
@@ -102,6 +110,15 @@ public sealed class Sender : Aggregate, ISegregatedEntity
     {
       Description = @event.Description.Value?.Value;
     }
+  }
+
+  private void SetEmail(Email email)
+  {
+    EmailAddress = email.Address;
+  }
+  private void SetPhone(Phone phone)
+  {
+    PhoneNumber = phone.FormatToE164();
   }
 
   public override string ToString()

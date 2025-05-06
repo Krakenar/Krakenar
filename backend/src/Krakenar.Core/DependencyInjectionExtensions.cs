@@ -6,6 +6,7 @@ using Krakenar.Contracts.Passwords;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
+using Krakenar.Contracts.Senders;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Templates;
 using Krakenar.Contracts.Tokens;
@@ -31,6 +32,8 @@ using Krakenar.Core.Realms.Queries;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Commands;
 using Krakenar.Core.Roles.Queries;
+using Krakenar.Core.Senders;
+using Krakenar.Core.Senders.Commands;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
@@ -82,6 +85,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>, CreateOrReplaceLanguageHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>, CreateOrReplaceRealmHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
+      .AddTransient<ICommandHandler<CreateOrReplaceSender, CreateOrReplaceSenderResult>, CreateOrReplaceSenderHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceTemplate, CreateOrReplaceTemplateResult>, CreateOrReplaceTemplateHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceUser, CreateOrReplaceUserResult>, CreateOrReplaceUserHandler>()
       .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
@@ -124,6 +128,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IOneTimePasswordService, OneTimePasswordService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
+      //.AddTransient<ISenderService, SenderService>() // TODO(fpion): implement
       .AddTransient<ISessionService, SessionService>()
       .AddTransient<ITemplateService, TemplateService>()
       .AddTransient<ITokenService, TokenService>()
@@ -174,6 +179,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IOneTimePasswordRepository, OneTimePasswordRepository>()
       .AddTransient<IRealmRepository, RealmRepository>()
       .AddTransient<IRoleRepository, RoleRepository>()
+      .AddTransient<ISenderRepository, SenderRepository>()
       .AddTransient<ISessionRepository, SessionRepository>()
       .AddTransient<ITemplateRepository, TemplateRepository>()
       .AddTransient<IUserRepository, UserRepository>();

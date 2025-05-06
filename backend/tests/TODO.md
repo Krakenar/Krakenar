@@ -24,6 +24,7 @@
 
 ## Senders
 
+- CreateOrReplaceSender
 - Sender
 - SendGridSettings
 - TwilioSettings

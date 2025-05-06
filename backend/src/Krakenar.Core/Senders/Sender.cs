@@ -10,7 +10,7 @@ namespace Krakenar.Core.Senders;
 public class Sender : AggregateRoot
 {
   private SenderUpdated _updated = new();
-  private bool HasUpdates => _updated.DisplayName is not null || _updated.Description is not null;
+  private bool HasUpdates => _updated.Email is not null || _updated.Phone is not null || _updated.DisplayName is not null || _updated.Description is not null;
 
   public new SenderId Id => new(base.Id);
   public RealmId? RealmId => Id.RealmId;
@@ -19,8 +19,50 @@ public class Sender : AggregateRoot
   public SenderKind Kind { get; private set; }
   public bool IsDefault { get; private set; }
 
-  public Email? Email { get; private set; }
-  public Phone? Phone { get; private set; }
+  private Email? _email = null;
+  public Email? Email
+  {
+    get
+    {
+      if (Kind == SenderKind.Email && _email is null)
+      {
+        throw new InvalidOperationException("The Email should not be null.");
+      }
+      return _email;
+    }
+    set
+    {
+      if (Kind != SenderKind.Email)
+      {
+        throw new InvalidOperationException($"The email of a '{Kind}' sender cannot be changed.");
+      }
+
+      _email = value;
+      _updated.Email = value;
+    }
+  }
+  private Phone? _phone = null;
+  public Phone? Phone
+  {
+    get
+    {
+      if (Kind == SenderKind.Phone && _phone is null)
+      {
+        throw new InvalidOperationException("The Phone should not be null.");
+      }
+      return _phone;
+    }
+    set
+    {
+      if (Kind != SenderKind.Phone)
+      {
+        throw new InvalidOperationException($"The phone of a '{Kind}' sender cannot be changed.");
+      }
+
+      _phone = value;
+      _updated.Phone = value;
+    }
+  }
   private DisplayName? _displayName = null;
   public DisplayName? DisplayName
   {
@@ -175,6 +217,14 @@ public class Sender : AggregateRoot
   }
   protected virtual void Handle(SenderUpdated @event)
   {
+    if (@event.Email is not null)
+    {
+      _email = @event.Email;
+    }
+    if (@event.Phone is not null)
+    {
+      _phone = @event.Phone;
+    }
     if (@event.DisplayName is not null)
     {
       _displayName = @event.DisplayName.Value;
