@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Validators;
-using System.Net.Mime;
+using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 
 namespace Krakenar.Core.Validators;
 
