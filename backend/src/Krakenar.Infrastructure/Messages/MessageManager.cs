@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Senders;
+﻿using Krakenar.Contracts;
+using Krakenar.Contracts.Senders;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Senders;
@@ -79,21 +80,8 @@ public class MessageManager : IMessageManager
     return resultData;
   }
 
-  private static SendMailResult ToResult(Exception exception)
+  private static SendMailResult ToResult(Exception exception) => new(succeeded: false, new Dictionary<string, object?>
   {
-    //ExceptionDetail detail = new(exception);
-    //return SendMailResult.Failure(new Dictionary<string, object?>
-    //{
-    //  [nameof(ExceptionDetail.Type)] = detail.Type,
-    //  [nameof(ExceptionDetail.Message)] = detail.Message,
-    //  [nameof(ExceptionDetail.InnerException)] = detail.InnerException,
-    //  [nameof(ExceptionDetail.HResult)] = detail.HResult,
-    //  [nameof(ExceptionDetail.HelpLink)] = detail.HelpLink,
-    //  [nameof(ExceptionDetail.Source)] = detail.Source,
-    //  [nameof(ExceptionDetail.StackTrace)] = detail.StackTrace,
-    //  [nameof(ExceptionDetail.TargetSite)] = detail.TargetSite,
-    //  [nameof(ExceptionDetail.Data)] = detail.Data
-    //});
-    throw new NotImplementedException(); // TODO(fpion): implement
-  }
+    ["Error"] = new Error(exception)
+  });
 }

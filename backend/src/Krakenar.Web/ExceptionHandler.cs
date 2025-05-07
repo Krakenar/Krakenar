@@ -84,36 +84,8 @@ public class ExceptionHandler : IExceptionHandler
     }
     else
     {
-      error = new(exception.GetErrorCode(), exception.Message);
-      error.Data[nameof(exception.HelpLink)] = exception.HelpLink;
-      error.Data[nameof(exception.HResult)] = exception.HResult;
-      error.Data[nameof(exception.InnerException)] = exception.InnerException is null ? null : ToError(exception.InnerException);
-      error.Data[nameof(exception.Source)] = exception.Source;
-      error.Data[nameof(exception.StackTrace)] = exception.StackTrace;
-      error.Data[nameof(exception.TargetSite)] = exception.TargetSite?.ToString();
-
-      Dictionary<string, object?> data = new(capacity: exception.Data.Count);
-      foreach (DictionaryEntry entry in exception.Data)
-      {
-        try
-        {
-          string key = Serialize(entry.Key);
-          _ = Serialize(entry.Value);
-          data[key] = entry.Value;
-        }
-        catch (Exception)
-        {
-        }
-      }
-      error.Data[nameof(exception.Data)] = data;
+      error = new(exception);
     }
     return error;
   }
-
-  private static readonly JsonSerializerOptions _serializerOptions = new();
-  static ExceptionHandler()
-  {
-    _serializerOptions.Converters.Add(new JsonStringEnumConverter());
-  }
-  private static string Serialize(object? value) => JsonSerializer.Serialize(value, _serializerOptions);
 }
