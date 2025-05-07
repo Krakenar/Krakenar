@@ -116,7 +116,7 @@ public class CreateOrReplaceSenderValidator : AbstractValidator<CreateOrReplaceS
           .Otherwise(() => RuleFor(x => x.Twilio).NotNull());
         break;
       default:
-        throw new SenderProviderNotSupported(provider);
+        throw new SenderProviderNotSupportedException(provider);
     }
   }
 

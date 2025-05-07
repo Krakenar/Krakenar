@@ -16,8 +16,8 @@ namespace Krakenar.EntityFrameworkCore.Relational.Queriers;
 
 public class ApiKeyQuerier : IApiKeyQuerier
 {
-  protected virtual DbSet<Entities.ApiKey> ApiKeys { get; }
   protected virtual IActorService ActorService { get; }
+  protected virtual DbSet<Entities.ApiKey> ApiKeys { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual ISqlHelper SqlHelper { get; }
 

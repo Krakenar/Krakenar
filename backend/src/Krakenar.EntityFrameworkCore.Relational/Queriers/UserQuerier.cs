@@ -20,15 +20,15 @@ public class UserQuerier : IUserQuerier
 {
   protected virtual IActorService ActorService { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual DbSet<Entities.User> Users { get; }
   protected virtual ISqlHelper SqlHelper { get; }
+  protected virtual DbSet<Entities.User> Users { get; }
 
   public UserQuerier(IActorService actorService, IApplicationContext applicationContext, KrakenarContext context, ISqlHelper sqlHelper)
   {
     ActorService = actorService;
     ApplicationContext = applicationContext;
-    Users = context.Users;
     SqlHelper = sqlHelper;
+    Users = context.Users;
   }
 
   public virtual async Task<UserId?> FindIdAsync(UniqueName uniqueName, CancellationToken cancellationToken)
