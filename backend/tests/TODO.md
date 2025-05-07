@@ -24,7 +24,10 @@
 
 ## Senders
 
-- Sender
+### Commands
+
+- CreateOrReplaceSender
+- UpdateSender
 
 ## Tokens
 

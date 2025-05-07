@@ -18,15 +18,15 @@ public class TemplateQuerier : ITemplateQuerier
 {
   protected virtual IActorService ActorService { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual DbSet<Entities.Template> Templates { get; }
   protected virtual ISqlHelper SqlHelper { get; }
+  protected virtual DbSet<Entities.Template> Templates { get; }
 
   public TemplateQuerier(IActorService actorService, IApplicationContext applicationContext, KrakenarContext context, ISqlHelper sqlHelper)
   {
     ActorService = actorService;
     ApplicationContext = applicationContext;
-    Templates = context.Templates;
     SqlHelper = sqlHelper;
+    Templates = context.Templates;
   }
 
   public virtual async Task<TemplateId?> FindIdAsync(UniqueName uniqueName, CancellationToken cancellationToken)

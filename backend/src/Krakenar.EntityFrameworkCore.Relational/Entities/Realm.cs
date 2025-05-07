@@ -41,6 +41,7 @@ public sealed class Realm : Aggregate
   public List<Language> Languages { get; private set; } = [];
   public List<OneTimePassword> OneTimePasswords { get; private set; } = [];
   public List<Role> Roles { get; private set; } = [];
+  public List<Sender> Senders { get; private set; } = [];
   public List<Session> Sessions { get; private set; } = [];
   public List<Template> Templates { get; private set; } = [];
   public List<User> Users { get; private set; } = [];
