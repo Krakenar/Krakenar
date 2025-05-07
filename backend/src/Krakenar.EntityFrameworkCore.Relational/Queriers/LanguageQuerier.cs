@@ -34,7 +34,7 @@ public class LanguageQuerier : ILanguageQuerier
   public virtual async Task<Locale> FindPlatformDefaultLocaleAsync(CancellationToken cancellationToken)
   {
     string code = await Languages.AsNoTracking()
-      .Where(x => x.RealmId == null)
+      .Where(x => x.RealmId == null && x.IsDefault)
       .Select(x => x.Code)
       .SingleOrDefaultAsync(cancellationToken)
       ?? throw new InvalidOperationException("The platform default locale could not be found.");
@@ -54,6 +54,18 @@ public class LanguageQuerier : ILanguageQuerier
       ?? throw new InvalidOperationException($"The default language for realm 'Id={realmId?.Value ?? "<null>"}' could not be found.");
 
     return new LanguageId(streamId);
+  }
+
+  public virtual async Task<Locale> FindDefaultLocaleAsync(CancellationToken cancellationToken)
+  {
+    string code = await Languages.AsNoTracking()
+      .WhereRealm(ApplicationContext.RealmId)
+      .Where(x => x.IsDefault)
+      .Select(x => x.Code)
+      .SingleOrDefaultAsync(cancellationToken)
+      ?? throw new InvalidOperationException("The platform default locale could not be found.");
+
+    return new Locale(code);
   }
 
   public virtual async Task<LanguageId?> FindIdAsync(Locale locale, CancellationToken cancellationToken)
