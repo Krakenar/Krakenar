@@ -26,9 +26,6 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
 
   public virtual async Task<CreateOrReplaceSenderResult> HandleAsync(CreateOrReplaceSender command, CancellationToken cancellationToken)
   {
-    CreateOrReplaceSenderPayload payload = command.Payload;
-    new CreateOrReplaceSenderValidator().ValidateAndThrow(payload);
-
     SenderId senderId = SenderId.NewId(ApplicationContext.RealmId);
     Sender? sender = null;
     if (command.Id.HasValue)
@@ -36,6 +33,9 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
       senderId = new(command.Id.Value, senderId.RealmId);
       sender = await SenderRepository.LoadAsync(senderId, cancellationToken);
     }
+
+    CreateOrReplaceSenderPayload payload = command.Payload;
+    new CreateOrReplaceSenderValidator(sender?.Provider).ValidateAndThrow(payload);
 
     Email? email = payload.Email is null ? null : new(payload.Email);
     Phone? phone = payload.Phone is null ? null : new(payload.Phone);
