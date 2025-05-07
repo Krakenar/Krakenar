@@ -5,7 +5,7 @@ public record SendMessagePayload
   public string Sender { get; set; }
   public string Template { get; set; }
 
-  // TODO(fpion): Recipients
+  public List<RecipientPayload> Recipients { get; set; } = [];
 
   public bool IgnoreUserLocale { get; set; }
   public string? Locale { get; set; }

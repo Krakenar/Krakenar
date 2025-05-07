@@ -9,4 +9,10 @@ public record Dictionaries
   {
     // TODO(fpion): implement
   }
+
+  public void Translate(Identifier key) => Translate(key.Value);
+  public string Translate(string key)
+  {
+    // TODO(fpion): implement
+  }
 }
