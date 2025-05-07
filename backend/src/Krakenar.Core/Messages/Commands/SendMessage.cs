@@ -189,7 +189,10 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
       }
       else
       {
-        recipients.Add(new Recipient(recipient.Type, recipient.Address, recipient.DisplayName, recipient.PhoneNumber));
+        Email? email = recipient.Email is null ? null : new(recipient.Email);
+        Phone? phone = recipient.Phone is null ? null : new(recipient.Phone);
+        DisplayName? displayName = DisplayName.TryCreate(recipient.DisplayName);
+        recipients.Add(new Recipient(recipient.Type, email, phone, displayName));
       }
     }
     if (missingUsers.Count > 0)

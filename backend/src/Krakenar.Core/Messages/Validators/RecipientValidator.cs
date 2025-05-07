@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Users.Validators;
 
 namespace Krakenar.Core.Messages.Validators;
 
@@ -10,21 +11,23 @@ public class RecipientValidator : AbstractValidator<RecipientPayload>
   {
     RuleFor(x => x.Type).IsInEnum();
 
-    When(x => !string.IsNullOrWhiteSpace(x.Address), () => RuleFor(x => x.Address).EmailAddress());
+    When(x => x.Email is not null, () => RuleFor(x => x.Email!).SetValidator(new EmailValidator()));
+    When(x => x.Phone is not null, () => RuleFor(x => x.Phone!).SetValidator(new PhoneValidator()));
+    When(x => !string.IsNullOrWhiteSpace(x.DisplayName), () => RuleFor(x => x.DisplayName!).DisplayName());
 
     switch (senderKind)
     {
       case SenderKind.Email:
-        RuleFor(x => x.PhoneNumber).Empty();
-        RuleFor(x => x).Must(x => !string.IsNullOrWhiteSpace(x.Address) || x.UserId.HasValue)
+        RuleFor(x => x.Phone).Null();
+        RuleFor(x => x).Must(x => x.Email is not null || x.UserId.HasValue)
           .WithErrorCode(nameof(RecipientValidator))
-          .WithMessage($"At least one of the following must be specified: {nameof(RecipientPayload.Address)}, {nameof(RecipientPayload.UserId)}.");
+          .WithMessage($"At least one of the following must be specified: {nameof(RecipientPayload.Email)}, {nameof(RecipientPayload.UserId)}.");
         break;
       case SenderKind.Phone:
-        RuleFor(x => x.Address).Empty();
-        RuleFor(x => x).Must(x => !string.IsNullOrWhiteSpace(x.PhoneNumber) || x.UserId.HasValue)
+        RuleFor(x => x.Email).Null();
+        RuleFor(x => x).Must(x => x.Phone is not null || x.UserId.HasValue)
           .WithErrorCode(nameof(RecipientValidator))
-          .WithMessage($"At least one of the following must be specified: {nameof(RecipientPayload.PhoneNumber)}, {nameof(RecipientPayload.UserId)}.");
+          .WithMessage($"At least one of the following must be specified: {nameof(RecipientPayload.Phone)}, {nameof(RecipientPayload.UserId)}.");
         break;
       default:
         throw new ArgumentException($"The sender kind '{senderKind}' is not supported.", nameof(senderKind));
