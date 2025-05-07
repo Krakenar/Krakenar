@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="7.0.1" />
+    <PackageReference Include="Logitar.Net.Mail.SendGrid" Version="7.0.0" />
+    <PackageReference Include="Logitar.Net.Sms.Twilio" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.4" />
     <PackageReference Include="RazorEngine.NetCore" Version="3.1.0" />
@@ -29,6 +31,7 @@
   <ItemGroup>
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.IdentityModel.Tokens.Jwt" />
+    <Using Include="System.Net.Mail" />
     <Using Include="System.Reflection" />
     <Using Include="System.Security.Claims" />
     <Using Include="System.Security.Cryptography" />

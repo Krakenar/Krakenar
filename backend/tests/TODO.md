@@ -36,6 +36,11 @@
 
 - SendMessage
 
+### Infrastructure
+
+- SendGridExtensions
+- TwilioExtensions
+
 ## Roles
 
 - RoleService.FindAsync
