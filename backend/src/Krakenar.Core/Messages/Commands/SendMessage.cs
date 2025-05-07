@@ -20,8 +20,10 @@ namespace Krakenar.Core.Messages.Commands;
 public record SendMessage(SendMessagePayload Payload) : ICommand<SentMessages>;
 
 /// <exception cref="InvalidSmsMessageContentTypeException"></exception>
+/// <exception cref="MissingRecipientContactsException"></exception>
 /// <exception cref="SenderNotFoundException"></exception>
 /// <exception cref="TemplateNotFoundException"></exception>
+/// <exception cref="UsersNotFoundException"></exception>
 /// <exception cref="ValidationException"></exception>
 public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
 {

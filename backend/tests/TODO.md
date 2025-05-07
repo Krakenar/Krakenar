@@ -1,19 +1,15 @@
 # TODO
 
-- ActorEvents
 - CustomAttributeEvents
-- LanguageManager.FindAsync
-- RefreshToken
-- RoleService.FindAsync
-- UserService.FindAsync
-- XApiKey
 
 ## API Keys
 
+- ActorEvents
 - AuthenticateApiKey
 - CreateOrReplaceApiKeyHandler
 - UpdateApiKeyHandler
-
+- XApiKey
+ 
 ## Dictionaries
 
 - CreateOrReplaceDictionary
@@ -22,13 +18,27 @@
 - DictionaryManager
 - UpdateDictionary
 
+## Languages
+
+- LanguageManager.FindAsync
+
 ## Messages
 
+- Dictionaries
+- E2E Tests
+- Integration Tests
+- Message
+- Recipient
+- Recipients
 - Variables
 
 ### Commands
 
 - SendMessage
+
+## Roles
+
+- RoleService.FindAsync
 
 ## Senders
 
@@ -39,6 +49,10 @@
 - CreateOrReplaceSender
 - UpdateSender
 
+## Sessions
+
+- RefreshToken
+
 ## Templates
 
 - TemplateManager.FindAsync
@@ -47,3 +61,8 @@
 
 - CreateToken
 - ValidateToken
+
+## Users
+
+- ActorEvents
+- UserService.FindAsync
