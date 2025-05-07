@@ -75,7 +75,7 @@ public class SenderQuerier : ISenderQuerier
     IQueryBuilder builder = SqlHelper.Query(KrakenarDb.Senders.Table).SelectAll(KrakenarDb.Senders.Table)
       .WhereRealm(ApplicationContext.RealmId, KrakenarDb.Senders.RealmUid)
       .ApplyIdFilter(KrakenarDb.Senders.Id, payload.Ids);
-    SqlHelper.ApplyTextSearch(builder, payload.Search, KrakenarDb.Senders.EmailAddress, KrakenarDb.Senders.PhoneNumber, KrakenarDb.Senders.DisplayName);
+    SqlHelper.ApplyTextSearch(builder, payload.Search, KrakenarDb.Senders.EmailAddress, KrakenarDb.Senders.PhoneE164Formatted, KrakenarDb.Senders.DisplayName);
 
     if (payload.Kind.HasValue)
     {

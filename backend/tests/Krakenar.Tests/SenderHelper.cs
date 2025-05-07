@@ -1,6 +1,5 @@
 ﻿using Krakenar.Core.Senders.Settings;
 using Logitar;
-using System.Security.Cryptography;
 
 namespace Krakenar;
 

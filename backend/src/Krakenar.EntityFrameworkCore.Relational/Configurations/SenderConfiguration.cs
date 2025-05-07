@@ -23,13 +23,15 @@ public sealed class SenderConfiguration : AggregateConfiguration<Entities.Sender
     builder.HasIndex(x => x.Kind);
     builder.HasIndex(x => new { x.RealmId, x.Kind, x.IsDefault });
     builder.HasIndex(x => x.EmailAddress);
-    builder.HasIndex(x => x.PhoneNumber);
+    builder.HasIndex(x => x.PhoneE164Formatted);
     builder.HasIndex(x => x.DisplayName);
     builder.HasIndex(x => x.Provider);
 
     builder.Property(x => x.Kind).HasMaxLength(byte.MaxValue).HasConversion(new EnumToStringConverter<SenderKind>());
     builder.Property(x => x.EmailAddress).HasMaxLength(Email.MaximumLength);
-    builder.Property(x => x.PhoneNumber).HasMaxLength(PhoneE164FormattedMaximumLength);
+    builder.Property(x => x.PhoneCountryCode).HasMaxLength(Phone.CountryCodeMaximumLength);
+    builder.Property(x => x.PhoneNumber).HasMaxLength(Phone.NumberMaximumLength);
+    builder.Property(x => x.PhoneE164Formatted).HasMaxLength(PhoneE164FormattedMaximumLength);
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayName.MaximumLength);
     builder.Property(x => x.Provider).HasMaxLength(byte.MaxValue).HasConversion(new EnumToStringConverter<SenderProvider>());
 

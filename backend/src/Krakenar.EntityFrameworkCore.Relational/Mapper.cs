@@ -14,10 +14,9 @@ using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Settings;
 using Krakenar.Contracts.Templates;
 using Krakenar.Contracts.Users;
-using Krakenar.Core.Senders;
 using Logitar;
 using Logitar.EventSourcing;
-using Sender = Krakenar.Contracts.Senders.Sender;
+using SenderProviderNotSupportedException = Krakenar.Core.Senders.SenderProviderNotSupportedException;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
@@ -228,9 +227,9 @@ public sealed class Mapper
     {
       destination.Email = new Email(source.EmailAddress);
     }
-    if (source.PhoneNumber is not null)
+    if (source.PhoneNumber is not null && source.PhoneE164Formatted is not null)
     {
-      destination.Phone = new Phone(countryCode: string.Empty, source.PhoneNumber, extension: null, source.PhoneNumber);
+      destination.Phone = new Phone(source.PhoneCountryCode, source.PhoneNumber, extension: null, source.PhoneE164Formatted);
     }
 
     if (source.Settings is not null)

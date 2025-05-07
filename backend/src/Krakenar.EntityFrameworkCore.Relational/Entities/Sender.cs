@@ -22,7 +22,9 @@ public sealed class Sender : Aggregate, ISegregatedEntity
   public bool IsDefault { get; private set; }
 
   public string? EmailAddress { get; private set; }
+  public string? PhoneCountryCode { get; private set; }
   public string? PhoneNumber { get; private set; }
+  public string? PhoneE164Formatted { get; private set; }
   public string? DisplayName { get; private set; }
   public string? Description { get; private set; }
 
@@ -118,7 +120,9 @@ public sealed class Sender : Aggregate, ISegregatedEntity
   }
   private void SetPhone(Phone phone)
   {
-    PhoneNumber = phone.FormatToE164();
+    PhoneCountryCode = phone.CountryCode;
+    PhoneNumber = phone.Number;
+    PhoneE164Formatted = phone.FormatToE164();
   }
 
   public override string ToString()

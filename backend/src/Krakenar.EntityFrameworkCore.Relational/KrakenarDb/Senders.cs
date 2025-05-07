@@ -20,6 +20,8 @@ public static class Senders
   public static readonly ColumnId Id = new(nameof(Sender.Id), Table);
   public static readonly ColumnId IsDefault = new(nameof(Sender.IsDefault), Table);
   public static readonly ColumnId Kind = new(nameof(Sender.Kind), Table);
+  public static readonly ColumnId PhoneCountryCode = new(nameof(Sender.PhoneCountryCode), Table);
+  public static readonly ColumnId PhoneE164Formatted = new(nameof(Sender.PhoneE164Formatted), Table);
   public static readonly ColumnId PhoneNumber = new(nameof(Sender.PhoneNumber), Table);
   public static readonly ColumnId Provider = new(nameof(Sender.Provider), Table);
   public static readonly ColumnId RealmId = new(nameof(Sender.RealmId), Table);

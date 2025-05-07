@@ -273,7 +273,7 @@ public class SenderTests
     Assert.NotNull(_twilio.Phone);
     if (withDisplayName)
     {
-      Assert.StartsWith($"{displayName} <{_twilio.Phone.FormatToE164()}>", _twilio.ToString());
+      Assert.StartsWith($"{displayName} <{_twilio.Phone}>", _twilio.ToString());
     }
     else
     {
