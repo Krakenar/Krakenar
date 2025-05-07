@@ -1,8 +1,10 @@
 ﻿using Krakenar.Core.Caching;
+using Krakenar.Core.Messages;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Tokens;
 using Krakenar.Infrastructure.Caching;
 using Krakenar.Infrastructure.Converters;
+using Krakenar.Infrastructure.Messages;
 using Krakenar.Infrastructure.Passwords;
 using Krakenar.Infrastructure.Passwords.Pbkdf2;
 using Krakenar.Infrastructure.Settings;
@@ -25,6 +27,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton(serviceProvider => Pbkdf2Settings.Initialize(serviceProvider.GetRequiredService<IConfiguration>()))
       .AddSingleton<ICacheService, CacheService>()
       .AddSingleton<IEventSerializer, EventSerializer>()
+      .AddSingleton<IMessageManager, MessageManager>()
       .AddSingleton<IPasswordManager, PasswordManager>()
       .AddSingleton<ISecretManager, SecretManager>()
       .AddSingleton<PasswordConverter>()

@@ -8,6 +8,10 @@ public record Dictionaries
 {
   private readonly Dictionary<string, string> _entries = [];
 
+  public Dictionaries()
+  {
+  }
+
   public Dictionaries(IReadOnlyDictionary<Locale, Dictionary> dictionaries, Locale defaultLocale, Locale? targetLocale = null)
   {
     if (dictionaries.TryGetValue(defaultLocale, out Dictionary? defaultDictionary))
