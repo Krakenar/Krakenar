@@ -10,6 +10,6 @@ public static class SenderExtensions
   {
     SenderProvider.SendGrid => SenderKind.Email,
     SenderProvider.Twilio => SenderKind.Phone,
-    _ => throw new SenderProviderNotSupported(provider),
+    _ => throw new SenderProviderNotSupportedException(provider),
   };
 }

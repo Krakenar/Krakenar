@@ -101,7 +101,7 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
           sender.SetSettings((TwilioSettings)settings);
           break;
         default:
-          throw new SenderProviderNotSupported(settings.Provider);
+          throw new SenderProviderNotSupportedException(settings.Provider);
       }
     }
 

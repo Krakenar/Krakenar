@@ -137,7 +137,7 @@ public class Sender : AggregateRoot
         SetSettings((TwilioSettings)settings, actorId);
         break;
       default:
-        throw new SenderProviderNotSupported(settings.Provider);
+        throw new SenderProviderNotSupportedException(settings.Provider);
     }
   }
   protected virtual void Handle(EmailSenderCreated @event)

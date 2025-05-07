@@ -3,7 +3,7 @@ using Logitar;
 
 namespace Krakenar.Core.Senders;
 
-public class SenderProviderNotSupported : NotSupportedException
+public class SenderProviderNotSupportedException : NotSupportedException
 {
   private const string ErrorMessage = "The specified sender provider is not supported.";
 
@@ -13,7 +13,7 @@ public class SenderProviderNotSupported : NotSupportedException
     private set => Data[nameof(SenderProvider)] = value;
   }
 
-  public SenderProviderNotSupported(SenderProvider senderProvider) : base(BuildMessage(senderProvider))
+  public SenderProviderNotSupportedException(SenderProvider senderProvider) : base(BuildMessage(senderProvider))
   {
     SenderProvider = senderProvider;
   }

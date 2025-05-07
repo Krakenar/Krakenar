@@ -173,7 +173,7 @@ public class SenderTests
   public void Given_InvalidProvider_When_ctor_Then_SenderProviderNotSupported()
   {
     InvalidSettings settings = new();
-    var exception = Assert.Throws<SenderProviderNotSupported>(() => new Sender(new Email(_faker.Person.Email), settings));
+    var exception = Assert.Throws<SenderProviderNotSupportedException>(() => new Sender(new Email(_faker.Person.Email), settings));
     Assert.Equal(settings.Provider, exception.SenderProvider);
   }
 

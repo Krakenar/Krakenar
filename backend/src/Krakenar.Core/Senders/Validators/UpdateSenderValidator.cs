@@ -35,7 +35,7 @@ public class UpdateSenderValidator : AbstractValidator<UpdateSenderPayload>
         When(x => x.Twilio is not null, () => RuleFor(x => x.Twilio!).SetValidator(new TwilioSettingsValidator()));
         break;
       default:
-        throw new SenderProviderNotSupported(provider);
+        throw new SenderProviderNotSupportedException(provider);
     }
   }
 }
