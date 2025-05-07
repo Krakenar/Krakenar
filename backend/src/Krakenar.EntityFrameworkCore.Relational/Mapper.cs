@@ -8,12 +8,16 @@ using Krakenar.Contracts.Logging;
 using Krakenar.Contracts.Passwords;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
+using Krakenar.Contracts.Senders;
+using Krakenar.Contracts.Senders.Settings;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Settings;
 using Krakenar.Contracts.Templates;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Senders;
 using Logitar;
 using Logitar.EventSourcing;
+using Sender = Krakenar.Contracts.Senders.Sender;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
@@ -197,6 +201,52 @@ public sealed class Mapper
       Description = source.Description
     };
     destination.CustomAttributes.AddRange(source.GetCustomAttributes().Select(customAttribute => new CustomAttribute(customAttribute)));
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Sender ToSender(Entities.Sender source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    Sender destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      Kind = source.Kind,
+      IsDefault = source.IsDefault,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      Provider = source.Provider
+    };
+    if (source.EmailAddress is not null)
+    {
+      destination.Email = new Email(source.EmailAddress);
+    }
+    if (source.PhoneNumber is not null)
+    {
+      destination.Phone = new Phone(countryCode: string.Empty, source.PhoneNumber, extension: null, source.PhoneNumber);
+    }
+
+    if (source.Settings is not null)
+    {
+      switch (source.Provider)
+      {
+        case SenderProvider.SendGrid:
+          destination.SendGrid = JsonSerializer.Deserialize<SendGridSettings>(source.Settings);
+          break;
+        case SenderProvider.Twilio:
+          destination.Twilio = JsonSerializer.Deserialize<TwilioSettings>(source.Settings);
+          break;
+        default:
+          throw new SenderProviderNotSupportedException(source.Provider);
+      }
+    }
 
     MapAggregate(source, destination);
 

@@ -14,6 +14,7 @@ using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Events;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
+using Krakenar.Core.Senders;
 using Krakenar.Core.Senders.Events;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Events;
@@ -136,6 +137,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IOneTimePasswordQuerier, OneTimePasswordQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()
+      .AddScoped<ISenderQuerier, SenderQuerier>()
       .AddScoped<ISessionQuerier, SessionQuerier>()
       .AddScoped<ITemplateQuerier, TemplateQuerier>()
       .AddScoped<IUserQuerier, UserQuerier>();
