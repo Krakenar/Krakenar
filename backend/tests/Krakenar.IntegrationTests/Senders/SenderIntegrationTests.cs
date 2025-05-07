@@ -242,6 +242,34 @@ public class SenderIntegrationTests : IntegrationTests
     Assert.Equal(twilio.EntityId, sender.Id);
   }
 
+  [Fact(DisplayName = "It should return the correct search results (Kind).")]
+  public async Task Given_Kind_When_Search_Then_CorrectResults()
+  {
+    SearchSendersPayload payload = new()
+    {
+      Kind = SenderKind.Email
+    };
+    SearchResults<SenderDto> results = await _senderService.SearchAsync(payload);
+    Assert.Equal(1, results.Total);
+
+    SenderDto sender = Assert.Single(results.Items);
+    Assert.Equal(_sendGrid.EntityId, sender.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (Provider).")]
+  public async Task Given_Provider_When_Search_Then_CorrectResults()
+  {
+    SearchSendersPayload payload = new()
+    {
+      Provider = SenderProvider.Twilio
+    };
+    SearchResults<SenderDto> results = await _senderService.SearchAsync(payload);
+    Assert.Equal(1, results.Total);
+
+    SenderDto sender = Assert.Single(results.Items);
+    Assert.Equal(_twilio.EntityId, sender.Id);
+  }
+
   [Fact(DisplayName = "It should throw TooManyResultsException when multiple senders were read.")]
   public async Task Given_MultipleResults_When_Read_Then_TooManyResultsException()
   {
