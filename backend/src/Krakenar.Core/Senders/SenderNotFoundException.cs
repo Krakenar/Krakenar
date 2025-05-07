@@ -2,21 +2,21 @@
 using Krakenar.Core.Realms;
 using Logitar;
 
-namespace Krakenar.Core.Localization;
+namespace Krakenar.Core.Senders;
 
-public class LanguageNotFoundException : NotFoundException
+public class SenderNotFoundException : NotFoundException
 {
-  private const string ErrorMessage = "The specified language could not be found.";
+  private const string ErrorMessage = "The specified sender could not be found.";
 
   public Guid? RealmId
   {
     get => (Guid?)Data[nameof(RealmId)];
     private set => Data[nameof(RealmId)] = value;
   }
-  public string Language
+  public string Sender
   {
-    get => (string)Data[nameof(Language)]!;
-    private set => Data[nameof(Language)] = value;
+    get => (string)Data[nameof(Sender)]!;
+    private set => Data[nameof(Sender)] = value;
   }
   public string PropertyName
   {
@@ -30,22 +30,22 @@ public class LanguageNotFoundException : NotFoundException
     {
       Error error = new(this.GetErrorCode(), ErrorMessage);
       error.Data[nameof(RealmId)] = RealmId;
-      error.Data[nameof(Language)] = Language;
+      error.Data[nameof(Sender)] = Sender;
       error.Data[nameof(PropertyName)] = PropertyName;
       return error;
     }
   }
 
-  public LanguageNotFoundException(RealmId? realmId, string language, string propertyName) : base(BuildMessage(realmId, language, propertyName))
+  public SenderNotFoundException(RealmId? realmId, string sender, string propertyName) : base(BuildMessage(realmId, sender, propertyName))
   {
     RealmId = realmId?.ToGuid();
-    Language = language;
+    Sender = sender;
     PropertyName = propertyName;
   }
 
-  private static string BuildMessage(RealmId? realmId, string language, string? propertyName) => new ErrorMessageBuilder(ErrorMessage)
+  private static string BuildMessage(RealmId? realmId, string sender, string? propertyName) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(RealmId), realmId?.ToGuid(), "<null>")
-    .AddData(nameof(Language), language)
+    .AddData(nameof(Sender), sender)
     .AddData(nameof(PropertyName), propertyName)
     .Build();
 }

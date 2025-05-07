@@ -2,21 +2,21 @@
 using Krakenar.Core.Realms;
 using Logitar;
 
-namespace Krakenar.Core.Localization;
+namespace Krakenar.Core.Templates;
 
-public class LanguageNotFoundException : NotFoundException
+public class TemplateNotFoundException : NotFoundException
 {
-  private const string ErrorMessage = "The specified language could not be found.";
+  private const string ErrorMessage = "The specified template could not be found.";
 
   public Guid? RealmId
   {
     get => (Guid?)Data[nameof(RealmId)];
     private set => Data[nameof(RealmId)] = value;
   }
-  public string Language
+  public string Template
   {
-    get => (string)Data[nameof(Language)]!;
-    private set => Data[nameof(Language)] = value;
+    get => (string)Data[nameof(Template)]!;
+    private set => Data[nameof(Template)] = value;
   }
   public string PropertyName
   {
@@ -30,22 +30,22 @@ public class LanguageNotFoundException : NotFoundException
     {
       Error error = new(this.GetErrorCode(), ErrorMessage);
       error.Data[nameof(RealmId)] = RealmId;
-      error.Data[nameof(Language)] = Language;
+      error.Data[nameof(Template)] = Template;
       error.Data[nameof(PropertyName)] = PropertyName;
       return error;
     }
   }
 
-  public LanguageNotFoundException(RealmId? realmId, string language, string propertyName) : base(BuildMessage(realmId, language, propertyName))
+  public TemplateNotFoundException(RealmId? realmId, string template, string propertyName) : base(BuildMessage(realmId, template, propertyName))
   {
     RealmId = realmId?.ToGuid();
-    Language = language;
+    Template = template;
     PropertyName = propertyName;
   }
 
-  private static string BuildMessage(RealmId? realmId, string language, string? propertyName) => new ErrorMessageBuilder(ErrorMessage)
+  private static string BuildMessage(RealmId? realmId, string template, string? propertyName) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(RealmId), realmId?.ToGuid(), "<null>")
-    .AddData(nameof(Language), language)
+    .AddData(nameof(Template), template)
     .AddData(nameof(PropertyName), propertyName)
     .Build();
 }

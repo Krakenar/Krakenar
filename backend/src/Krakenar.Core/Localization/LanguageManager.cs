@@ -28,18 +28,17 @@ public class LanguageManager : ILanguageManager
     Language? language = null;
     RealmId? realmId = ApplicationContext.RealmId;
 
-    if (Guid.TryParse(idOrLocaleCode, out Guid id))
+    if (Guid.TryParse(idOrLocaleCode, out Guid entityId))
     {
-      LanguageId languageId = new(id, realmId);
+      LanguageId languageId = new(entityId, realmId);
       language = await LanguageRepository.LoadAsync(languageId, cancellationToken);
     }
 
     if (language is null)
     {
-      Locale locale;
       try
       {
-        locale = new(idOrLocaleCode.Trim());
+        Locale locale = new(idOrLocaleCode.Trim());
         LanguageId? languageId = await LanguageQuerier.FindIdAsync(locale, cancellationToken);
         if (languageId.HasValue)
         {

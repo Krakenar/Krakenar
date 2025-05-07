@@ -7,12 +7,12 @@ public record SendMessagePayload
 
   // TODO(fpion): Recipients
 
-  // TODO(fpion): IgnoreUserLocale
-  // TODO(fpion): Locale
+  public bool IgnoreUserLocale { get; set; }
+  public string? Locale { get; set; }
 
-  // TODO(fpion): Variables
+  public List<Variable> Variables { get; set; } = [];
 
-  // TODO(fpion): IsDemo
+  public bool IsDemo { get; set; }
 
   public SendMessagePayload() : this(string.Empty, string.Empty)
   {

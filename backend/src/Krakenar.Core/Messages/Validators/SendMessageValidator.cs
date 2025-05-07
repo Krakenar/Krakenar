@@ -9,5 +9,9 @@ public class SendMessageValidator : AbstractValidator<SendMessagePayload>
   {
     RuleFor(x => x.Sender).NotEmpty();
     RuleFor(x => x.Template).NotEmpty();
+
+    When(x => !string.IsNullOrWhiteSpace(x.Locale), () => RuleFor(x => x.Locale!).Locale());
+
+    RuleForEach(x => x.Variables).SetValidator(new VariableValidator());
   }
 }

@@ -154,6 +154,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ILanguageManager, LanguageManager>()
       .AddTransient<IRealmManager, RealmManager>()
       .AddTransient<IRoleManager, RoleManager>()
+      .AddTransient<ISenderManager, SenderManager>()
       .AddTransient<ITemplateManager, TemplateManager>()
       .AddTransient<IUserManager, UserManager>();
   }

@@ -24,16 +24,24 @@
 
 ## Messages
 
+- Variables
+
 ### Commands
 
 - SendMessage
 
 ## Senders
 
+- SenderManager
+
 ### Commands
 
 - CreateOrReplaceSender
 - UpdateSender
+
+## Templates
+
+- TemplateManager.FindAsync
 
 ## Tokens
 
