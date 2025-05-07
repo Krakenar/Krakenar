@@ -192,6 +192,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IConfigurationRepository, ConfigurationRepository>()
       .AddTransient<IDictionaryRepository, DictionaryRepository>()
       .AddTransient<ILanguageRepository, LanguageRepository>()
+      .AddTransient<IMessageRepository, MessageRepository>()
       .AddTransient<IOneTimePasswordRepository, OneTimePasswordRepository>()
       .AddTransient<IRealmRepository, RealmRepository>()
       .AddTransient<IRoleRepository, RoleRepository>()

@@ -28,6 +28,7 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IDictionaryQuerier DictionaryQuerier { get; }
   protected virtual ILanguageQuerier LanguageQuerier { get; }
+  protected virtual IMessageManager MessageManager { get; }
   protected virtual IMessageQuerier MessageQuerier { get; }
   protected virtual IMessageRepository MessageRepository { get; }
   protected virtual ISenderManager SenderManager { get; }
@@ -38,6 +39,7 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
     IApplicationContext applicationContext,
     IDictionaryQuerier dictionaryQuerier,
     ILanguageQuerier languageQuerier,
+    IMessageManager messageManager,
     IMessageQuerier messageQuerier,
     IMessageRepository messageRepository,
     ISenderManager senderManager,
@@ -47,6 +49,7 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
     ApplicationContext = applicationContext;
     DictionaryQuerier = dictionaryQuerier;
     LanguageQuerier = languageQuerier;
+    MessageManager = messageManager;
     MessageQuerier = messageQuerier;
     MessageRepository = messageRepository;
     SenderManager = senderManager;
