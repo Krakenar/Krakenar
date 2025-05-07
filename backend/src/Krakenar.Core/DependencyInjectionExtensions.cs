@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
+using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Passwords;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
@@ -23,6 +24,9 @@ using Krakenar.Core.Dictionaries.Queries;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
+using Krakenar.Core.Messages;
+using Krakenar.Core.Messages.Commands;
+using Krakenar.Core.Messages.Queries;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Passwords.Commands;
 using Krakenar.Core.Passwords.Queries;
@@ -52,6 +56,7 @@ using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
+using MessageDto = Krakenar.Contracts.Messages.Message;
 using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 using RoleDto = Krakenar.Contracts.Roles.Role;
@@ -105,6 +110,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<ReplaceConfiguration, ConfigurationDto>, ReplaceConfigurationHandler>()
       .AddTransient<ICommandHandler<ResetUserPassword, UserDto?>, ResetUserPasswordHandler>()
       .AddTransient<ICommandHandler<SaveUserIdentifier, UserDto?>, SaveUserIdentifierHandler>()
+      .AddTransient<ICommandHandler<SendMessage, SentMessages>, SendMessageHandler>()
       .AddTransient<ICommandHandler<SetDefaultLanguage, LanguageDto?>, SetDefaultLanguageHandler>()
       .AddTransient<ICommandHandler<SetDefaultSender, SenderDto?>, SetDefaultSenderHandler>()
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
@@ -130,6 +136,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IConfigurationService, ConfigurationService>()
       .AddTransient<IDictionaryService, DictionaryService>()
       .AddTransient<ILanguageService, LanguageService>()
+      .AddTransient<IMessageService, MessageService>()
       .AddTransient<IOneTimePasswordService, OneTimePasswordService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
@@ -158,6 +165,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
       .AddTransient<IQueryHandler<ReadDictionary, DictionaryDto?>, ReadDictionaryHandler>()
       .AddTransient<IQueryHandler<ReadLanguage, LanguageDto?>, ReadLanguageHandler>()
+      .AddTransient<IQueryHandler<ReadMessage, MessageDto?>, ReadMessageHandler>()
       .AddTransient<IQueryHandler<ReadOneTimePassword, OneTimePasswordDto?>, ReadOneTimePasswordHandler>()
       .AddTransient<IQueryHandler<ReadRealm, RealmDto?>, ReadRealmHandler>()
       .AddTransient<IQueryHandler<ReadRole, RoleDto?>, ReadRoleHandler>()

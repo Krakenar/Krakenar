@@ -22,6 +22,12 @@
 - DictionaryManager
 - UpdateDictionary
 
+## Messages
+
+### Commands
+
+- SendMessage
+
 ## Senders
 
 ### Commands
