@@ -100,7 +100,7 @@ public class MessageIntegrationTests : IntegrationTests
 
     Dictionary canadianFrenchDictionary = new(canadianFrench, ActorId, DictionaryId.NewId(Realm.Id));
     canadianFrenchDictionary.SetEntry(new Identifier("Hello"), "Bonjour !");
-    frenchDictionary.SetEntry(new Identifier("Cordially"), "Cordialement,");
+    canadianFrenchDictionary.SetEntry(new Identifier("Cordially"), "Cordialement,");
     canadianFrenchDictionary.Update(ActorId);
 
     await _dictionaryRepository.SaveAsync([englishDictionary, frenchDictionary, canadianFrenchDictionary]);
@@ -184,17 +184,16 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(ActorId, message.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
-    Assert.Equal(_passwordRecovery.Subject, message.Subject);
+    Assert.Equal("Réinitialiser votre mot de passe", message.Subject.Value);
     Assert.Equal(_passwordRecovery.Content.Type, message.Body.Type);
     Assert.Contains($@"lang=""{_canadianFrench.Code}""", message.Body.Text);
-    Assert.Contains("Il semblerait que vous avez perdu votre mot de passe.", message.Body.Text);
-    Assert.Contains("Cliquez sur le lien ci-dessous afin de le réinitialiser.", message.Body.Text);
-    Assert.Contains($"https://www.francispion.ca/password/reset?token={token}", message.Body.Text);
-    Assert.Contains("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message.", message.Body.Text);
-    Assert.Contains("Cliquez sur le lien ci-dessous afin de le réinitialiser.", message.Body.Text);
-    Assert.Contains("Cliquez sur le lien ci-dessous afin de le réinitialiser.", message.Body.Text);
-    Assert.Contains("Cordialement,", message.Body.Text);
-    Assert.Contains("The Logitar Team", message.Body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), message.Body.Text); // TODO(fpion): does not work because dictionaries do not have entries!
+    Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), message.Body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cliquez sur le lien ci-dessous afin de le réinitialiser."), message.Body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode($"https://www.francispion.ca/password/reset?token={token}"), message.Body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message."), message.Body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cordialement,"), message.Body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("The Logitar Team"), message.Body.Text);
 
     Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
     foreach (RecipientPayload recipient in payload.Recipients)

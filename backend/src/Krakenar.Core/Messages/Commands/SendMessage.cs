@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
-using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Messages;
-using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Senders;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Localization;
@@ -118,14 +116,14 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
 
   protected virtual async Task<IReadOnlyDictionary<Locale, DictionaryDto>> LoadDictionariesAsync(CancellationToken cancellationToken)
   {
-    SearchResults<DictionaryDto> results = await DictionaryQuerier.SearchAsync(new SearchDictionariesPayload(), cancellationToken);
-    Dictionary<Locale, DictionaryDto> dictionaries = new(capacity: results.Items.Count);
-    foreach (DictionaryDto dictionary in results.Items)
+    IReadOnlyCollection<DictionaryDto> dictionaries = await DictionaryQuerier.ListAsync(cancellationToken);
+    Dictionary<Locale, DictionaryDto> dictionariesByLocale = new(capacity: dictionaries.Count);
+    foreach (DictionaryDto dictionary in dictionaries)
     {
       Locale locale = new(dictionary.Language.Locale.Code);
-      dictionaries[locale] = dictionary;
+      dictionariesByLocale[locale] = dictionary;
     }
-    return dictionaries.AsReadOnly();
+    return dictionariesByLocale.AsReadOnly();
   }
 
   protected virtual async Task<Recipients> ResolveRecipientsAsync(SendMessagePayload payload, RealmId? realmId, SenderKind senderKind, CancellationToken cancellationToken)

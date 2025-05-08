@@ -40,6 +40,17 @@ public class DictionaryQuerier : IDictionaryQuerier
     return streamId is null ? null : new DictionaryId(streamId);
   }
 
+  public virtual async Task<IReadOnlyCollection<DictionaryDto>> ListAsync(CancellationToken cancellationToken)
+  {
+    Entities.Dictionary[] dictionaries = await Dictionaries.AsNoTracking()
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.Entries)
+      .Include(x => x.Language)
+      .ToArrayAsync(cancellationToken);
+
+    return await MapAsync(dictionaries, cancellationToken);
+  }
+
   public virtual async Task<DictionaryDto> ReadAsync(Dictionary dictionary, CancellationToken cancellationToken)
   {
     return await ReadAsync(dictionary.Id, cancellationToken) ?? throw new InvalidOperationException($"The dictionary entity 'StreamId={dictionary.Id}' could not be found.");
