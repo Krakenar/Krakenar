@@ -177,6 +177,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<SearchApiKeys, SearchResults<ApiKeyDto>>, SearchApiKeysHandler>()
       .AddTransient<IQueryHandler<SearchDictionaries, SearchResults<DictionaryDto>>, SearchDictionariesHandler>()
       .AddTransient<IQueryHandler<SearchLanguages, SearchResults<LanguageDto>>, SearchLanguagesHandler>()
+      .AddTransient<IQueryHandler<SearchMessages, SearchResults<MessageDto>>, SearchMessagesHandler>()
       .AddTransient<IQueryHandler<SearchRealms, SearchResults<RealmDto>>, SearchRealmsHandler>()
       .AddTransient<IQueryHandler<SearchRoles, SearchResults<RoleDto>>, SearchRolesHandler>()
       .AddTransient<IQueryHandler<SearchSenders, SearchResults<SenderDto>>, SearchSendersHandler>()

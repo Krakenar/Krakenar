@@ -1,5 +1,7 @@
 ﻿using Krakenar.Contracts.Messages;
+using Krakenar.Contracts.Search;
 using Krakenar.Web.Constants;
+using Krakenar.Web.Models.Message;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,8 +19,15 @@ public class MessageController : ControllerBase
     MessageService = messageService;
   }
 
+  [HttpGet("{id}")]
+  public virtual async Task<ActionResult<Message>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Message? message = await MessageService.ReadAsync(id, cancellationToken);
+    return message is null ? NotFound() : Ok(message);
+  }
+
   [HttpPost]
-  public virtual async Task<ActionResult<SentMessages>> CreateAsync([FromBody] SendMessagePayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<SentMessages>> SendAsync([FromBody] SendMessagePayload payload, CancellationToken cancellationToken)
   {
     SentMessages sentMessages = await MessageService.SendAsync(payload, cancellationToken);
     if (sentMessages.Ids.Count == 1)
@@ -29,10 +38,11 @@ public class MessageController : ControllerBase
     return Ok(sentMessages);
   }
 
-  [HttpGet("{id}")]
-  public virtual async Task<ActionResult<Message>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  [HttpGet]
+  public virtual async Task<ActionResult<SearchResults<Message>>> SearchAsync([FromQuery] SearchMessagesParameters parameters, CancellationToken cancellationToken)
   {
-    Message? message = await MessageService.ReadAsync(id, cancellationToken);
-    return message is null ? NotFound() : Ok(message);
+    SearchMessagesPayload payload = parameters.ToPayload();
+    SearchResults<Message> messages = await MessageService.SearchAsync(payload, cancellationToken);
+    return Ok(messages);
   }
 }
