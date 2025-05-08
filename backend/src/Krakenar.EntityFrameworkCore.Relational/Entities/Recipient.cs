@@ -65,6 +65,24 @@ public sealed class Recipient
   public override int GetHashCode() => Id.GetHashCode();
   public override string ToString()
   {
-    throw new NotImplementedException(); // TODO(fpion): implement
+    List<string> parts = new(capacity: 3);
+    if (DisplayName is not null)
+    {
+      parts.Add($"{DisplayName} <{EmailAddress ?? PhoneE164Formatted}>");
+    }
+    else if (EmailAddress is not null)
+    {
+      parts.Add(EmailAddress);
+    }
+    else if (PhoneE164Formatted is not null)
+    {
+      parts.Add(PhoneE164Formatted);
+    }
+    if (EmailAddress is not null && PhoneE164Formatted is not null)
+    {
+      parts.Add(PhoneE164Formatted);
+    }
+    parts.Add($"{GetType()} (Id={Id})");
+    return string.Join(" | ", parts);
   }
 }
