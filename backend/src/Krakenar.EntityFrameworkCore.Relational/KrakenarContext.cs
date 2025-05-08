@@ -18,8 +18,10 @@ public sealed class KrakenarContext : DbContext
   public DbSet<Dictionary> Dictionaries => Set<Dictionary>();
   public DbSet<DictionaryEntry> DictionaryEntries => Set<DictionaryEntry>();
   public DbSet<Language> Languages => Set<Language>();
+  public DbSet<Message> Messages => Set<Message>();
   public DbSet<OneTimePassword> OneTimePasswords => Set<OneTimePassword>();
   public DbSet<Realm> Realms => Set<Realm>();
+  public DbSet<Recipient> Recipients => Set<Recipient>();
   public DbSet<Role> Roles => Set<Role>();
   public DbSet<Sender> Senders => Set<Sender>();
   public DbSet<Session> Sessions => Set<Session>();

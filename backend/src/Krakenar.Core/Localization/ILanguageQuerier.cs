@@ -8,6 +8,7 @@ public interface ILanguageQuerier
 {
   Task<Locale> FindPlatformDefaultLocaleAsync(CancellationToken cancellationToken = default);
   Task<LanguageId> FindDefaultIdAsync(CancellationToken cancellationToken = default);
+  Task<Locale> FindDefaultLocaleAsync(CancellationToken cancellationToken = default);
   Task<LanguageId?> FindIdAsync(Locale locale, CancellationToken cancellationToken = default);
 
   Task<LanguageDto> ReadAsync(Language language, CancellationToken cancellationToken = default);

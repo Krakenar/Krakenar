@@ -108,6 +108,7 @@ public sealed class User : Aggregate, ISegregatedEntity
 
   public List<UserIdentifier> Identifiers { get; private set; } = [];
   public List<OneTimePassword> OneTimePasswords { get; private set; } = [];
+  public List<Recipient> Recipients { get; private set; } = [];
   public List<Role> Roles { get; private set; } = [];
   public List<Session> Sessions { get; private set; } = [];
 

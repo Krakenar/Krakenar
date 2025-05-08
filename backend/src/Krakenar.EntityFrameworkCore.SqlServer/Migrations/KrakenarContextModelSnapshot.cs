@@ -532,6 +532,182 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("Languages", "Localization");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Message", b =>
+                {
+                    b.Property<int>("MessageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
+
+                    b.Property<string>("BodyText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BodyType")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IgnoreUserLocale")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDemo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Locale")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<int?>("RealmId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("RecipientCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Results")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderDisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("SenderEmailAddress")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("SenderIsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SenderPhoneCountryCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("SenderPhoneE164Formatted")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("SenderPhoneExtension")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("SenderPhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("SenderProvider")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("SenderUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("StreamId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("TemplateDisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TemplateUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TemplateUniqueName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Variables")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("MessageId");
+
+                    b.HasIndex("BodyType");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("IsDemo");
+
+                    b.HasIndex("Locale");
+
+                    b.HasIndex("RealmUid");
+
+                    b.HasIndex("RecipientCount");
+
+                    b.HasIndex("SenderId");
+
+                    b.HasIndex("SenderProvider");
+
+                    b.HasIndex("SenderUid");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("StreamId")
+                        .IsUnique();
+
+                    b.HasIndex("Subject");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("TemplateUid");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("Version");
+
+                    b.HasIndex("RealmId", "Id")
+                        .IsUnique()
+                        .HasFilter("[RealmId] IS NOT NULL");
+
+                    b.ToTable("Messages", "Messaging");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.OneTimePassword", b =>
                 {
                     b.Property<int>("OneTimePasswordId")
@@ -751,6 +927,93 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("Version");
 
                     b.ToTable("Realms", "Krakenar");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Recipient", b =>
+                {
+                    b.Property<int>("RecipientId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecipientId"));
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("EmailAddress")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("MessageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneCountryCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("PhoneE164Formatted")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<string>("PhoneExtension")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UserFullName")
+                        .HasMaxLength(767)
+                        .HasColumnType("nvarchar(767)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserPicture")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<Guid?>("UserUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserUniqueName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("RecipientId");
+
+                    b.HasIndex("DisplayName");
+
+                    b.HasIndex("EmailAddress");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("PhoneE164Formatted");
+
+                    b.HasIndex("Type");
+
+                    b.HasIndex("UserFullName");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserUid");
+
+                    b.HasIndex("UserUniqueName");
+
+                    b.ToTable("Recipients", "Messaging");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Role", b =>
@@ -1604,6 +1867,30 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Realm");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Message", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
+                        .WithMany("Messages")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Sender", "Sender")
+                        .WithMany("Messages")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Template", "Template")
+                        .WithMany("Messages")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Realm");
+
+                    b.Navigation("Sender");
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.OneTimePassword", b =>
                 {
                     b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
@@ -1617,6 +1904,24 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Realm");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Recipient", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Message", "Message")
+                        .WithMany("Recipients")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.User", "User")
+                        .WithMany("Recipients")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Message");
 
                     b.Navigation("User");
                 });
@@ -1722,6 +2027,11 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Dictionary");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Message", b =>
+                {
+                    b.Navigation("Recipients");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", b =>
                 {
                     b.Navigation("Actors");
@@ -1731,6 +2041,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Dictionaries");
 
                     b.Navigation("Languages");
+
+                    b.Navigation("Messages");
 
                     b.Navigation("OneTimePasswords");
 
@@ -1747,11 +2059,23 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Sender", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Template", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.User", b =>
                 {
                     b.Navigation("Identifiers");
 
                     b.Navigation("OneTimePasswords");
+
+                    b.Navigation("Recipients");
 
                     b.Navigation("Sessions");
                 });

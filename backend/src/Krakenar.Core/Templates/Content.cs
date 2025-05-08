@@ -24,4 +24,6 @@ public record Content : IContent
 
   public static Content Html(string text) => new(MediaTypeNames.Text.Html, text);
   public static Content PlainText(string text) => new(MediaTypeNames.Text.Plain, text);
+
+  public Content Create(string text) => new(Type, text);
 }

@@ -5,6 +5,7 @@ using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Logging;
+using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Passwords;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
@@ -122,6 +123,119 @@ public sealed class Mapper
     };
 
     MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public Message ToMessage(Entities.Message source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    Message destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      Body = new Content(source.BodyType, source.BodyText),
+      RecipientCount = source.RecipientCount,
+      IgnoreUserLocale = source.IgnoreUserLocale,
+      IsDemo = source.IsDemo,
+      Status = source.Status
+    };
+
+    foreach (Entities.Recipient recipient in source.Recipients)
+    {
+      destination.Recipients.Add(ToRecipient(recipient, realm));
+    }
+
+    if (source.Sender is not null)
+    {
+      destination.Sender = ToSender(source.Sender, realm);
+    }
+    else
+    {
+      destination.Sender = new Sender
+      {
+        Id = source.SenderUid,
+        Realm = realm,
+        IsDefault = source.SenderIsDefault,
+        DisplayName = source.SenderDisplayName,
+        Provider = source.SenderProvider
+      };
+      if (source.SenderEmailAddress is not null)
+      {
+        destination.Sender.Kind = SenderKind.Email;
+        destination.Sender.Email = new Email(source.SenderEmailAddress);
+      }
+      else if (source.SenderPhoneNumber is not null && source.SenderPhoneE164Formatted is not null)
+      {
+        destination.Sender.Kind = SenderKind.Phone;
+        destination.Sender.Phone = new Phone(source.SenderPhoneCountryCode, source.SenderPhoneNumber, source.SenderPhoneExtension, source.SenderPhoneE164Formatted);
+      }
+    }
+
+    if (source.Template is not null)
+    {
+      destination.Template = ToTemplate(source.Template, realm);
+    }
+    else
+    {
+      destination.Template = new Template
+      {
+        Id = source.TemplateUid,
+        UniqueName = source.TemplateUniqueName,
+        DisplayName = source.TemplateDisplayName
+      };
+    }
+
+    if (source.Locale is not null)
+    {
+      destination.Locale = new Locale(source.Locale);
+    }
+
+    foreach (KeyValuePair<string, string> variable in source.GetVariables())
+    {
+      destination.Variables.Add(new Variable(variable));
+    }
+
+    foreach (KeyValuePair<string, string> result in source.GetResults())
+    {
+      destination.Results.Add(new ResultData(result));
+    }
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+  public Recipient ToRecipient(Entities.Recipient source, Realm? realm)
+  {
+    Recipient destination = new()
+    {
+      Id = source.Id,
+      Type = source.Type,
+      DisplayName = source.DisplayName
+    };
+
+    if (source.EmailAddress is not null)
+    {
+      destination.Email = new Email(source.EmailAddress);
+    }
+
+    if (source.PhoneNumber is not null && source.PhoneE164Formatted is not null)
+    {
+      destination.Phone = new Phone(source.PhoneCountryCode, source.PhoneNumber, source.PhoneExtension, source.PhoneE164Formatted);
+    }
+
+    if (source.User is not null)
+    {
+      destination.User = ToUser(source.User, realm);
+    }
+    else if (source.UserId.HasValue)
+    {
+      throw new ArgumentException("The user is required.", nameof(source));
+    }
 
     return destination;
   }

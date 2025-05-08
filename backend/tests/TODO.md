@@ -1,19 +1,15 @@
 # TODO
 
-- ActorEvents
 - CustomAttributeEvents
-- LanguageManager.FindAsync
-- RefreshToken
-- RoleService.FindAsync
-- UserService.FindAsync
-- XApiKey
 
 ## API Keys
 
+- ActorEvents
 - AuthenticateApiKey
 - CreateOrReplaceApiKeyHandler
 - UpdateApiKeyHandler
-
+- XApiKey
+ 
 ## Dictionaries
 
 - CreateOrReplaceDictionary
@@ -22,14 +18,56 @@
 - DictionaryManager
 - UpdateDictionary
 
+## Languages
+
+- LanguageManager.FindAsync
+
+## Messages
+
+- Dictionaries
+- E2E Tests
+- Integration Tests
+- Message
+- Recipient
+- Recipients
+- Variables
+
+### Commands
+
+- SendMessage
+
+### Infrastructure
+
+- SendGridExtensions
+- TwilioExtensions
+
+## Roles
+
+- RoleService.FindAsync
+
 ## Senders
+
+- SenderManager
 
 ### Commands
 
 - CreateOrReplaceSender
 - UpdateSender
 
+## Sessions
+
+- RefreshToken
+
+## Templates
+
+- TemplateManager.FindAsync
+
 ## Tokens
 
 - CreateToken
 - ValidateToken
+
+## Users
+
+- ActorEvents
+- UserService.FindAsync

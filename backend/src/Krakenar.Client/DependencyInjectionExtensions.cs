@@ -2,6 +2,7 @@
 using Krakenar.Client.Configurations;
 using Krakenar.Client.Dictionaries;
 using Krakenar.Client.Localization;
+using Krakenar.Client.Messages;
 using Krakenar.Client.Passwords;
 using Krakenar.Client.Realms;
 using Krakenar.Client.Roles;
@@ -14,6 +15,7 @@ using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Localization;
+using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Passwords;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Roles;
@@ -43,6 +45,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<IConfigurationService, ConfigurationClient>()
       .AddSingleton<IDictionaryService, DictionaryClient>()
       .AddSingleton<ILanguageService, LanguageClient>()
+      .AddSingleton<IMessageService, MessageClient>()
       .AddSingleton<IOneTimePasswordService, OneTimePasswordClient>()
       .AddSingleton<IRealmService, RealmClient>()
       .AddSingleton<IRoleService, RoleClient>()

@@ -31,6 +31,8 @@ public sealed class Sender : Aggregate, ISegregatedEntity
   public SenderProvider Provider { get; private set; }
   public string? Settings { get; private set; }
 
+  public List<Message> Messages { get; private set; } = [];
+
   public Sender(Realm? realm, EmailSenderCreated @event) : this(realm, (SenderCreated)@event)
   {
     Kind = SenderKind.Email;

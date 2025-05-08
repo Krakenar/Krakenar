@@ -4,7 +4,7 @@ using Logitar;
 
 namespace Krakenar.Core.Localization;
 
-public class LanguageNotFoundException : InvalidCredentialsException
+public class LanguageNotFoundException : NotFoundException
 {
   private const string ErrorMessage = "The specified language could not be found.";
 
