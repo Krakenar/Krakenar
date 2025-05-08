@@ -11,11 +11,13 @@ using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Templates;
 using Krakenar.Senders;
 using Logitar;
+using Logitar.Security.Cryptography;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Email = Krakenar.Core.Users.Email;
 using Message = Krakenar.Core.Messages.Message;
 using MessageDto = Krakenar.Contracts.Messages.Message;
+using Phone = Krakenar.Core.Users.Phone;
 using Recipient = Krakenar.Core.Messages.Recipient;
 using Sender = Krakenar.Core.Senders.Sender;
 
@@ -37,6 +39,9 @@ public class MessageIntegrationTests : IntegrationTests
   private readonly ITemplateRepository _templateRepository;
 
   private Sender _sendGrid = null!;
+  private Sender _twilio = null!;
+
+  private Template _multiFactorAuthentication = null!;
   private Template _passwordRecovery = null!;
 
   public MessageIntegrationTests() : base()
@@ -58,24 +63,46 @@ public class MessageIntegrationTests : IntegrationTests
     SenderConfiguration senderConfiguration = _configuration.GetSection(SenderConfiguration.SectionKey).Get<SenderConfiguration>() ?? new();
 
     Email email = new(senderConfiguration.SendGrid.EmailAddress?.CleanTrim() ?? Faker.Internet.Email());
-    SendGridSettings settings = new(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey());
-    _sendGrid = new(email, settings, isDefault: true, ActorId, SenderId.NewId(Realm.Id))
+    SendGridSettings sendGridSettings = new(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey());
+    _sendGrid = new(email, sendGridSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id))
     {
       DisplayName = new DisplayName(senderConfiguration.SendGrid.DisplayName?.CleanTrim() ?? Faker.Company.CompanyName())
     };
     _sendGrid.Update(ActorId);
-    await _senderRepository.SaveAsync(_sendGrid);
 
-    UniqueName uniqueName = new(Realm.UniqueNameSettings, "PasswordRecovery");
-    Subject subject = new("PasswordRecovery_Subject");
-    string html = await File.ReadAllTextAsync("Templates/PasswordRecovery.cshtml");
-    Content content = Content.Html(html);
-    _passwordRecovery = new Template(uniqueName, subject, content, ActorId, TemplateId.NewId(Realm.Id))
+    Phone phone = new(senderConfiguration.Twilio.PhoneNumber?.CleanTrim() ?? "+15148454636", countryCode: "CA");
+    TwilioSettings twilioSettings = new(
+      senderConfiguration.Twilio.AccountSid?.CleanTrim() ?? SenderHelper.GenerateTwilioAccountSid(),
+      senderConfiguration.Twilio.AuthenticationToken?.CleanTrim() ?? SenderHelper.GenerateTwilioAuthenticationToken());
+    _twilio = new(phone, twilioSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id));
+
+    await _senderRepository.SaveAsync([_sendGrid, _twilio]);
+
+    Content multiFactorAuthenticationContent = Content.PlainText(@"@(Model.Resource(""MultiFactorAuthentication_Body"")) @(Model.Variable(""Code""))");
+    _multiFactorAuthentication = new Template(
+      new UniqueName(Realm.UniqueNameSettings, "MultiFactorAuthentication"),
+      new Subject("MultiFactorAuthentication_Subject"),
+      multiFactorAuthenticationContent,
+      ActorId,
+      TemplateId.NewId(Realm.Id))
+    {
+      DisplayName = new DisplayName("Multi-Factor Authentication")
+    };
+    _multiFactorAuthentication.Update(ActorId);
+
+    Content passwordRecoveryContent = Content.Html(await File.ReadAllTextAsync("Templates/PasswordRecovery.cshtml"));
+    _passwordRecovery = new Template(
+      new UniqueName(Realm.UniqueNameSettings, "PasswordRecovery"),
+      new Subject("PasswordRecovery_Subject"),
+      passwordRecoveryContent,
+      ActorId,
+      TemplateId.NewId(Realm.Id))
     {
       DisplayName = new DisplayName("Password Recovery")
     };
     _passwordRecovery.Update(ActorId);
-    await _templateRepository.SaveAsync(_passwordRecovery);
+
+    await _templateRepository.SaveAsync([_multiFactorAuthentication, _passwordRecovery]);
 
     LanguageId defaultId = await _languageQuerier.FindDefaultIdAsync();
     Language? english = await _languageRepository.LoadAsync(defaultId);
@@ -88,6 +115,8 @@ public class MessageIntegrationTests : IntegrationTests
     Dictionary englishDictionary = new(english, ActorId, DictionaryId.NewId(Realm.Id));
     englishDictionary.SetEntry(new Identifier("Team"), "The Logitar Team");
     englishDictionary.SetEntry(new Identifier("PasswordRecovery_LostYourPassword"), "It seems you have lost your password.");
+    englishDictionary.SetEntry(new Identifier("MultiFactorAuthentication_Body"), "Your Multi-Factor Authentication code has arrived! Do not disclose it to anyone: ");
+    englishDictionary.SetEntry(new Identifier("MultiFactorAuthentication_Subject"), "Your Multi-Factor Authentication code has arrived!");
     englishDictionary.Update(ActorId);
 
     Dictionary frenchDictionary = new(french, ActorId, DictionaryId.NewId(Realm.Id));
@@ -187,7 +216,7 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal("Réinitialiser votre mot de passe", message.Subject.Value);
     Assert.Equal(_passwordRecovery.Content.Type, message.Body.Type);
     Assert.Contains($@"lang=""{_canadianFrench.Code}""", message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), message.Body.Text); // TODO(fpion): does not work because dictionaries do not have entries!
+    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), message.Body.Text);
     Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), message.Body.Text);
     Assert.Contains(HttpUtility.HtmlEncode("Cliquez sur le lien ci-dessous afin de le réinitialiser."), message.Body.Text);
     Assert.Contains(HttpUtility.HtmlEncode($"https://www.francispion.ca/password/reset?token={token}"), message.Body.Text);
@@ -239,7 +268,79 @@ public class MessageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should send a SMS message from Twilio.")]
   public async Task Given_Twilio_When_Send_Then_MessageSent()
   {
-    Assert.Fail("TODO(fpion): implement");
-    await Task.Delay(1);
+    SendMessagePayload payload = new()
+    {
+      Sender = SenderKind.Phone.ToString(),
+      Template = _multiFactorAuthentication.EntityId.ToString(),
+      IsDemo = true
+    };
+
+    RecipientsConfiguration recipients = _configuration.GetSection(RecipientsConfiguration.SectionKey).Get<RecipientsConfiguration>() ?? new();
+    foreach (PhoneRecipient recipient in recipients.Phone)
+    {
+      payload.Recipients.Add(new RecipientPayload(new PhonePayload(recipient.Number, countryCode: "CA"), recipient.Type));
+    }
+
+    string code = RandomStringGenerator.GetString("1234567890", count: 6);
+    payload.Variables.Add(new Variable("Code", code));
+
+    SentMessages sentMessages = await _messageService.SendAsync(payload);
+    Guid entityId = Assert.Single(sentMessages.Ids);
+
+    MessageId messageId = new(entityId, Realm.Id);
+    Message? message = await _messageRepository.LoadAsync(messageId);
+    Assert.NotNull(message);
+
+    Assert.Equal(messageId, message.Id);
+    Assert.Equal(2, message.Version);
+    Assert.Equal(ActorId, message.CreatedBy);
+    Assert.Equal(DateTime.UtcNow, message.CreatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+    Assert.Equal(ActorId, message.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+
+    Assert.Equal("Your Multi-Factor Authentication code has arrived!", message.Subject.Value);
+    Assert.Equal(_multiFactorAuthentication.Content.Type, message.Body.Type);
+    Assert.Equal($"Your Multi-Factor Authentication code has arrived! Do not disclose it to anyone: {code}", message.Body.Text);
+
+    Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
+    foreach (RecipientPayload recipient in payload.Recipients)
+    {
+      Assert.Contains(message.Recipients, r => r.Type == recipient.Type
+        && r.Email?.Address == recipient.Email?.Address
+        && r.Phone?.Number == recipient.Phone?.Number
+        && r.DisplayName?.Value == recipient.DisplayName
+        && r.UserId?.EntityId == recipient.UserId);
+    }
+
+    Assert.Equal(_twilio.Id, message.Sender.Id);
+    Assert.Equal(_twilio.IsDefault, message.Sender.IsDefault);
+    Assert.Equal(_twilio.Email, message.Sender.Email);
+    Assert.Equal(_twilio.Phone, message.Sender.Phone);
+    Assert.Equal(_twilio.DisplayName, message.Sender.DisplayName);
+    Assert.Equal(_twilio.Provider, message.Sender.Provider);
+
+    Assert.Equal(_multiFactorAuthentication.Id, message.Template.Id);
+    Assert.Equal(_multiFactorAuthentication.UniqueName, message.Template.UniqueName);
+    Assert.Equal(_multiFactorAuthentication.DisplayName, message.Template.DisplayName);
+
+    Assert.Equal(payload.IgnoreUserLocale, message.IgnoreUserLocale);
+    Assert.Equal(payload.Locale, message.Locale?.Code);
+
+    Assert.Equal(payload.Variables.Count, message.Variables.Count);
+    foreach (Variable variable in payload.Variables)
+    {
+      Assert.Contains(message.Variables, v => v.Key == variable.Key && v.Value == variable.Value);
+    }
+
+    Assert.Equal(payload.IsDemo, message.IsDemo);
+
+    Assert.Equal(MessageStatus.Succeeded, message.Status);
+    Assert.Equal(6, message.Results.Count);
+    Assert.Contains(message.Results, r => r.Key == "ReasonPhrase" && r.Value == "Created");
+    Assert.Contains(message.Results, r => r.Key == "Version" && r.Value == "1.1");
+    Assert.Contains(message.Results, r => r.Key == "Headers");
+    Assert.Contains(message.Results, r => r.Key == "JsonContent");
+    Assert.Contains(message.Results, r => r.Key == "Status");
+    Assert.Contains(message.Results, r => r.Key == "TrailingHeaders");
   }
 }
