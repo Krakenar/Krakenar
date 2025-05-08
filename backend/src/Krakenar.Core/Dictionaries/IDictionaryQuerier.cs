@@ -9,6 +9,8 @@ public interface IDictionaryQuerier
 {
   Task<DictionaryId?> FindIdAsync(LanguageId languageId, CancellationToken cancellationToken = default);
 
+  Task<IReadOnlyCollection<DictionaryDto>> ListAsync(CancellationToken cancellationToken = default);
+
   Task<DictionaryDto> ReadAsync(Dictionary dictionary, CancellationToken cancellationToken = default);
   Task<DictionaryDto?> ReadAsync(DictionaryId id, CancellationToken cancellationToken = default);
   Task<DictionaryDto?> ReadAsync(Guid id, CancellationToken cancellationToken = default);

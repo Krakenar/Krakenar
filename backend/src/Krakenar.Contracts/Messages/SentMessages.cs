@@ -4,11 +4,12 @@ public record SentMessages
 {
   public List<Guid> Ids { get; set; } = [];
 
-  public SentMessages(IEnumerable<Guid>? ids = null)
+  public SentMessages()
   {
-    if (ids is not null)
-    {
-      Ids.AddRange(ids);
-    }
+  }
+
+  public SentMessages(IEnumerable<Guid> ids)
+  {
+    Ids.AddRange(ids);
   }
 }

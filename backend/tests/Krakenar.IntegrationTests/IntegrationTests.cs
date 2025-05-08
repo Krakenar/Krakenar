@@ -44,6 +44,7 @@ public abstract class IntegrationTests : IAsyncLifetime
   {
     IConfiguration configuration = new ConfigurationBuilder()
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+      .AddUserSecrets("9d4b585d-9a96-4cb3-b1ff-7a8d77eda766")
       .Build();
 
     _databaseProvider = configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
@@ -94,6 +95,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     StringBuilder sql = new();
     TableId[] tables =
     [
+      KrakenarDb.Messages.Table,
       KrakenarDb.Templates.Table,
       KrakenarDb.Senders.Table,
       KrakenarDb.Dictionaries.Table,
