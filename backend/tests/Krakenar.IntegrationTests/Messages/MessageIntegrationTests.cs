@@ -1,20 +1,36 @@
 ﻿using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Search;
+using Krakenar.Contracts.Senders;
+using Krakenar.Contracts.Users;
 using Krakenar.Core;
+using Krakenar.Core.Dictionaries;
+using Krakenar.Core.Localization;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Senders;
+using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Templates;
+using Krakenar.Senders;
+using Logitar;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Email = Krakenar.Core.Users.Email;
 using Message = Krakenar.Core.Messages.Message;
 using MessageDto = Krakenar.Contracts.Messages.Message;
 using Recipient = Krakenar.Core.Messages.Recipient;
+using Sender = Krakenar.Core.Senders.Sender;
 
 namespace Krakenar.Messages;
 
 [Trait(Traits.Category, Categories.Integration)]
 public class MessageIntegrationTests : IntegrationTests
 {
+  private static readonly Locale _canadianFrench = new("fr-CA");
+  private static readonly Locale _french = new("fr");
+
+  private readonly IConfiguration _configuration;
+  private readonly IDictionaryRepository _dictionaryRepository;
+  private readonly ILanguageQuerier _languageQuerier;
+  private readonly ILanguageRepository _languageRepository;
   private readonly IMessageRepository _messageRepository;
   private readonly IMessageService _messageService;
   private readonly ISenderRepository _senderRepository;
@@ -25,6 +41,10 @@ public class MessageIntegrationTests : IntegrationTests
 
   public MessageIntegrationTests() : base()
   {
+    _configuration = ServiceProvider.GetRequiredService<IConfiguration>();
+    _dictionaryRepository = ServiceProvider.GetRequiredService<IDictionaryRepository>();
+    _languageQuerier = ServiceProvider.GetRequiredService<ILanguageQuerier>();
+    _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
     _messageRepository = ServiceProvider.GetRequiredService<IMessageRepository>();
     _messageService = ServiceProvider.GetRequiredService<IMessageService>();
     _senderRepository = ServiceProvider.GetRequiredService<ISenderRepository>();
@@ -35,22 +55,55 @@ public class MessageIntegrationTests : IntegrationTests
   {
     await base.InitializeAsync();
 
-    _sendGrid = new(new Email(Faker.Internet.Email()), SenderHelper.GenerateSendGridSettings(), isDefault: true, ActorId, SenderId.NewId(Realm.Id))
+    SenderConfiguration senderConfiguration = _configuration.GetSection(SenderConfiguration.SectionKey).Get<SenderConfiguration>() ?? new();
+
+    Email email = new(senderConfiguration.SendGrid.EmailAddress?.CleanTrim() ?? Faker.Internet.Email());
+    SendGridSettings settings = new(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey());
+    _sendGrid = new(email, settings, isDefault: true, ActorId, SenderId.NewId(Realm.Id))
     {
-      DisplayName = new DisplayName(Faker.Company.CompanyName())
+      DisplayName = new DisplayName(senderConfiguration.SendGrid.DisplayName?.CleanTrim() ?? Faker.Company.CompanyName())
     };
     _sendGrid.Update(ActorId);
     await _senderRepository.SaveAsync(_sendGrid);
 
     UniqueName uniqueName = new(Realm.UniqueNameSettings, "PasswordRecovery");
     Subject subject = new("PasswordRecovery_Subject");
-    Content content = Content.Html(@"<div>Click the link below to reset your password:<br />@(Model.Variable(""Token""))</div>");
+    string html = await File.ReadAllTextAsync("Templates/PasswordRecovery.cshtml");
+    Content content = Content.Html(html);
     _passwordRecovery = new Template(uniqueName, subject, content, ActorId, TemplateId.NewId(Realm.Id))
     {
       DisplayName = new DisplayName("Password Recovery")
     };
     _passwordRecovery.Update(ActorId);
     await _templateRepository.SaveAsync(_passwordRecovery);
+
+    LanguageId defaultId = await _languageQuerier.FindDefaultIdAsync();
+    Language? english = await _languageRepository.LoadAsync(defaultId);
+    Assert.NotNull(english);
+
+    Language french = new(_french, isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    Language canadianFrench = new(_canadianFrench, isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync([french, canadianFrench]);
+
+    Dictionary englishDictionary = new(english, ActorId, DictionaryId.NewId(Realm.Id));
+    englishDictionary.SetEntry(new Identifier("Team"), "The Logitar Team");
+    englishDictionary.SetEntry(new Identifier("PasswordRecovery_LostYourPassword"), "It seems you have lost your password.");
+    englishDictionary.Update(ActorId);
+
+    Dictionary frenchDictionary = new(french, ActorId, DictionaryId.NewId(Realm.Id));
+    frenchDictionary.SetEntry(new Identifier("PasswordRecovery_Subject"), "Réinitialiser votre mot de passe");
+    frenchDictionary.SetEntry(new Identifier("PasswordRecovery_LostYourPassword"), "Il semblerait que vous avez perdu votre mot de passe.");
+    frenchDictionary.SetEntry(new Identifier("PasswordRecovery_ClickLink"), "Cliquez sur le lien ci-dessous afin de le réinitialiser.");
+    frenchDictionary.SetEntry(new Identifier("PasswordRecovery_Otherwise"), "S’il s’agit d’une erreur de notre part, veuillez supprimer ce message.");
+    frenchDictionary.SetEntry(new Identifier("Cordially"), "Sincèrement,");
+    frenchDictionary.Update(ActorId);
+
+    Dictionary canadianFrenchDictionary = new(canadianFrench, ActorId, DictionaryId.NewId(Realm.Id));
+    canadianFrenchDictionary.SetEntry(new Identifier("Hello"), "Bonjour !");
+    frenchDictionary.SetEntry(new Identifier("Cordially"), "Cordialement,");
+    canadianFrenchDictionary.Update(ActorId);
+
+    await _dictionaryRepository.SaveAsync([englishDictionary, frenchDictionary, canadianFrenchDictionary]);
   }
 
   [Fact(DisplayName = "It should read the message by ID.")]
@@ -94,5 +147,100 @@ public class MessageIntegrationTests : IntegrationTests
 
     MessageDto message = Assert.Single(results.Items);
     Assert.Equal(message2.EntityId, message.Id);
+  }
+
+  [Fact(DisplayName = "It should send an email message from SendGrid.")]
+  public async Task Given_SendGrid_When_Send_Then_MessageSent()
+  {
+    SendMessagePayload payload = new()
+    {
+      Sender = SenderKind.Email.ToString(),
+      Template = $"  {_passwordRecovery.UniqueName.Value}  ",
+      IgnoreUserLocale = true,
+      Locale = _canadianFrench.Code,
+      IsDemo = true
+    };
+
+    RecipientsConfiguration recipients = _configuration.GetSection(RecipientsConfiguration.SectionKey).Get<RecipientsConfiguration>() ?? new();
+    foreach (EmailRecipient recipient in recipients.Email)
+    {
+      payload.Recipients.Add(new RecipientPayload(new EmailPayload(recipient.Address), recipient.DisplayName, recipient.Type));
+    }
+
+    string token = Guid.NewGuid().ToString();
+    payload.Variables.Add(new Variable("Token", token));
+
+    SentMessages sentMessages = await _messageService.SendAsync(payload);
+    Guid entityId = Assert.Single(sentMessages.Ids);
+
+    MessageId messageId = new(entityId, Realm.Id);
+    Message? message = await _messageRepository.LoadAsync(messageId);
+    Assert.NotNull(message);
+
+    Assert.Equal(messageId, message.Id);
+    Assert.Equal(2, message.Version);
+    Assert.Equal(ActorId, message.CreatedBy);
+    Assert.Equal(DateTime.UtcNow, message.CreatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+    Assert.Equal(ActorId, message.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+
+    Assert.Equal(_passwordRecovery.Subject, message.Subject);
+    Assert.Equal(_passwordRecovery.Content.Type, message.Body.Type);
+    Assert.Contains($@"lang=""{_canadianFrench.Code}""", message.Body.Text);
+    Assert.Contains("Il semblerait que vous avez perdu votre mot de passe.", message.Body.Text);
+    Assert.Contains("Cliquez sur le lien ci-dessous afin de le réinitialiser.", message.Body.Text);
+    Assert.Contains($"https://www.francispion.ca/password/reset?token={token}", message.Body.Text);
+    Assert.Contains("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message.", message.Body.Text);
+    Assert.Contains("Cliquez sur le lien ci-dessous afin de le réinitialiser.", message.Body.Text);
+    Assert.Contains("Cliquez sur le lien ci-dessous afin de le réinitialiser.", message.Body.Text);
+    Assert.Contains("Cordialement,", message.Body.Text);
+    Assert.Contains("The Logitar Team", message.Body.Text);
+
+    Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
+    foreach (RecipientPayload recipient in payload.Recipients)
+    {
+      Assert.Contains(message.Recipients, r => r.Type == recipient.Type
+        && r.Email?.Address == recipient.Email?.Address
+        && r.Phone?.Number == recipient.Phone?.Number
+        && r.DisplayName?.Value == recipient.DisplayName
+        && r.UserId?.EntityId == recipient.UserId);
+    }
+
+    Assert.Equal(_sendGrid.Id, message.Sender.Id);
+    Assert.Equal(_sendGrid.IsDefault, message.Sender.IsDefault);
+    Assert.Equal(_sendGrid.Email, message.Sender.Email);
+    Assert.Equal(_sendGrid.Phone, message.Sender.Phone);
+    Assert.Equal(_sendGrid.DisplayName, message.Sender.DisplayName);
+    Assert.Equal(_sendGrid.Provider, message.Sender.Provider);
+
+    Assert.Equal(_passwordRecovery.Id, message.Template.Id);
+    Assert.Equal(_passwordRecovery.UniqueName, message.Template.UniqueName);
+    Assert.Equal(_passwordRecovery.DisplayName, message.Template.DisplayName);
+
+    Assert.Equal(payload.IgnoreUserLocale, message.IgnoreUserLocale);
+    Assert.Equal(payload.Locale, message.Locale?.Code);
+
+    Assert.Equal(payload.Variables.Count, message.Variables.Count);
+    foreach (Variable variable in payload.Variables)
+    {
+      Assert.Contains(message.Variables, v => v.Key == variable.Key && v.Value == variable.Value);
+    }
+
+    Assert.Equal(payload.IsDemo, message.IsDemo);
+
+    Assert.Equal(MessageStatus.Succeeded, message.Status);
+    Assert.Equal(5, message.Results.Count);
+    Assert.Contains(message.Results, r => r.Key == "ReasonPhrase" && r.Value == "Accepted");
+    Assert.Contains(message.Results, r => r.Key == "Version" && r.Value == "1.1");
+    Assert.Contains(message.Results, r => r.Key == "Headers");
+    Assert.Contains(message.Results, r => r.Key == "Status");
+    Assert.Contains(message.Results, r => r.Key == "TrailingHeaders");
+  }
+
+  [Fact(DisplayName = "It should send a SMS message from Twilio.")]
+  public async Task Given_Twilio_When_Send_Then_MessageSent()
+  {
+    Assert.Fail("TODO(fpion): implement");
+    await Task.Delay(1);
   }
 }
