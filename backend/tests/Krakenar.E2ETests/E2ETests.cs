@@ -19,6 +19,7 @@ public abstract class E2ETests : IDisposable
   {
     Configuration = new ConfigurationBuilder()
       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+      .AddUserSecrets("3818b49c-60be-4493-b0cd-f436cc8e1aad")
       .Build();
     KrakenarSettings = KrakenarSettings.Initialize(Configuration);
 
