@@ -3,6 +3,7 @@ using Krakenar.Contracts.Senders;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Messages.Events;
 using Krakenar.Core.Users;
+using Logitar.EventSourcing;
 using RecipientCore = Krakenar.Core.Messages.Recipient;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
@@ -115,6 +116,31 @@ public sealed class Message : Aggregate, ISegregatedEntity
 
   private Message()
   {
+  }
+
+  public override IReadOnlyCollection<ActorId> GetActorIds()
+  {
+    List<ActorId> actorIds = new(base.GetActorIds());
+    if (Realm is not null)
+    {
+      actorIds.AddRange(Realm.GetActorIds());
+    }
+    foreach (Recipient recipient in Recipients)
+    {
+      if (recipient.User is not null)
+      {
+        actorIds.AddRange(recipient.User.GetActorIds());
+      }
+    }
+    if (Sender is not null)
+    {
+      actorIds.AddRange(Sender.GetActorIds());
+    }
+    if (Template is not null)
+    {
+      actorIds.AddRange(Template.GetActorIds());
+    }
+    return actorIds.AsReadOnly();
   }
 
   public void Fail(MessageFailed @event)

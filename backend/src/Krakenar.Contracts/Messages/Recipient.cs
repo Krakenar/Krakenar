@@ -4,6 +4,8 @@ namespace Krakenar.Contracts.Messages;
 
 public record Recipient
 {
+  public Guid Id { get; set; }
+
   public RecipientType Type { get; set; }
 
   public Email? Email { get; set; }

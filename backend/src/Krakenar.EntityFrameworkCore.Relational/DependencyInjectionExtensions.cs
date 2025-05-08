@@ -8,6 +8,7 @@ using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Events;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
+using Krakenar.Core.Messages;
 using Krakenar.Core.Messages.Events;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Passwords.Events;
@@ -139,6 +140,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
       .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
       .AddScoped<ILanguageQuerier, LanguageQuerier>()
+      .AddScoped<IMessageQuerier, MessageQuerier>()
       .AddScoped<IOneTimePasswordQuerier, OneTimePasswordQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()

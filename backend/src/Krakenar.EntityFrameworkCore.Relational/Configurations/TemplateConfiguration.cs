@@ -8,6 +8,8 @@ namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
 public sealed class TemplateConfiguration : AggregateConfiguration<TemplateEntity>, IEntityTypeConfiguration<TemplateEntity>
 {
+  public const int ContentTypeMaximumLength = 16;
+
   public override void Configure(EntityTypeBuilder<TemplateEntity> builder)
   {
     base.Configure(builder);
@@ -27,7 +29,7 @@ public sealed class TemplateConfiguration : AggregateConfiguration<TemplateEntit
     builder.Property(x => x.UniqueNameNormalized).HasMaxLength(Slug.MaximumLength);
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayName.MaximumLength);
     builder.Property(x => x.Subject).HasMaxLength(Subject.MaximumLength);
-    builder.Property(x => x.ContentType).HasMaxLength(16);
+    builder.Property(x => x.ContentType).HasMaxLength(ContentTypeMaximumLength);
 
     builder.HasOne(x => x.Realm).WithMany(x => x.Templates)
       .HasPrincipalKey(x => x.RealmId).HasForeignKey(x => x.RealmId)

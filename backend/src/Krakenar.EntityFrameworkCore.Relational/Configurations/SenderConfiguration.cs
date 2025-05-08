@@ -9,8 +9,6 @@ namespace Krakenar.EntityFrameworkCore.Relational.Configurations;
 
 public sealed class SenderConfiguration : AggregateConfiguration<Entities.Sender>, IEntityTypeConfiguration<Entities.Sender>
 {
-  public const int PhoneE164FormattedMaximumLength = Phone.CountryCodeMaximumLength + 1 + Phone.NumberMaximumLength + 7 + Phone.ExtensionMaximumLength; // NOTE(fpion): enough space to contain the following format '{CountryCode} {Number}, ext. {Extension}'.
-
   public override void Configure(EntityTypeBuilder<Entities.Sender> builder)
   {
     base.Configure(builder);
@@ -31,7 +29,7 @@ public sealed class SenderConfiguration : AggregateConfiguration<Entities.Sender
     builder.Property(x => x.EmailAddress).HasMaxLength(Email.MaximumLength);
     builder.Property(x => x.PhoneCountryCode).HasMaxLength(Phone.CountryCodeMaximumLength);
     builder.Property(x => x.PhoneNumber).HasMaxLength(Phone.NumberMaximumLength);
-    builder.Property(x => x.PhoneE164Formatted).HasMaxLength(PhoneE164FormattedMaximumLength);
+    builder.Property(x => x.PhoneE164Formatted).HasMaxLength(UserConfiguration.PhoneE164FormattedMaximumLength);
     builder.Property(x => x.DisplayName).HasMaxLength(DisplayName.MaximumLength);
     builder.Property(x => x.Provider).HasMaxLength(byte.MaxValue).HasConversion(new EnumToStringConverter<SenderProvider>());
 
