@@ -178,6 +178,65 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(message2.EntityId, message.Id);
   }
 
+  [Fact(DisplayName = "It should return the correct search results (IsDemo).")]
+  public async Task Given_IsDemo_When_Search_Then_CorrectResults()
+  {
+    Recipient[] recipients = [new(email: new Email(Faker.Person.Email))];
+    Message demo = new(_passwordRecovery.Subject, _passwordRecovery.Content, recipients, _sendGrid, _passwordRecovery, isDemo: true, messageId: MessageId.NewId(Realm.Id));
+    Message notDemo = new(_passwordRecovery.Subject, _passwordRecovery.Content, recipients, _sendGrid, _passwordRecovery, messageId: MessageId.NewId(Realm.Id));
+    await _messageRepository.SaveAsync([demo, notDemo]);
+
+    SearchMessagesPayload payload = new()
+    {
+      IsDemo = true
+    };
+    SearchResults<MessageDto> results = await _messageService.SearchAsync(payload);
+    Assert.Equal(1, results.Total);
+
+    MessageDto message = Assert.Single(results.Items);
+    Assert.Equal(demo.EntityId, message.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (Status).")]
+  public async Task Given_Status_When_Search_Then_CorrectResults()
+  {
+    Recipient[] recipients = [new(email: new Email(Faker.Person.Email))];
+    Message unsent = new(_multiFactorAuthentication.Subject, _multiFactorAuthentication.Content, recipients, _sendGrid, _multiFactorAuthentication, messageId: MessageId.NewId(Realm.Id));
+    Message sent = new(_passwordRecovery.Subject, _passwordRecovery.Content, recipients, _sendGrid, _passwordRecovery, messageId: MessageId.NewId(Realm.Id));
+    Message failed = new(_multiFactorAuthentication.Subject, _multiFactorAuthentication.Content, recipients, _sendGrid, _multiFactorAuthentication, messageId: MessageId.NewId(Realm.Id));
+    failed.Fail(ActorId);
+    await _messageRepository.SaveAsync([unsent, sent, failed]);
+
+    SearchMessagesPayload payload = new()
+    {
+      Status = MessageStatus.Failed
+    };
+    SearchResults<MessageDto> results = await _messageService.SearchAsync(payload);
+    Assert.Equal(1, results.Total);
+
+    MessageDto message = Assert.Single(results.Items);
+    Assert.Equal(failed.EntityId, message.Id);
+  }
+
+  [Fact(DisplayName = "It should return the correct search results (Template).")]
+  public async Task Given_Template_When_Search_Then_CorrectResults()
+  {
+    Recipient[] recipients = [new(email: new Email(Faker.Person.Email))];
+    Message multiFactorAuthentication = new(_multiFactorAuthentication.Subject, _multiFactorAuthentication.Content, recipients, _sendGrid, _multiFactorAuthentication, messageId: MessageId.NewId(Realm.Id));
+    Message passwordRecovery = new(_passwordRecovery.Subject, _passwordRecovery.Content, recipients, _sendGrid, _passwordRecovery, messageId: MessageId.NewId(Realm.Id));
+    await _messageRepository.SaveAsync([multiFactorAuthentication, passwordRecovery]);
+
+    SearchMessagesPayload payload = new()
+    {
+      TemplateId = _passwordRecovery.EntityId
+    };
+    SearchResults<MessageDto> results = await _messageService.SearchAsync(payload);
+    Assert.Equal(1, results.Total);
+
+    MessageDto message = Assert.Single(results.Items);
+    Assert.Equal(passwordRecovery.EntityId, message.Id);
+  }
+
   [Fact(DisplayName = "It should send an email message from SendGrid.")]
   public async Task Given_SendGrid_When_Send_Then_MessageSent()
   {
