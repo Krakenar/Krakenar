@@ -39,6 +39,7 @@ public sealed class Realm : Aggregate
   public List<ApiKey> ApiKeys { get; private set; } = [];
   public List<Dictionary> Dictionaries { get; private set; } = [];
   public List<Language> Languages { get; private set; } = [];
+  public List<Message> Messages { get; private set; } = [];
   public List<OneTimePassword> OneTimePasswords { get; private set; } = [];
   public List<Role> Roles { get; private set; } = [];
   public List<Sender> Senders { get; private set; } = [];

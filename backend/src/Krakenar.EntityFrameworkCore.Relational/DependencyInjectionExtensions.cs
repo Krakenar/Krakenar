@@ -8,6 +8,7 @@ using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Events;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
+using Krakenar.Core.Messages.Events;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Passwords.Events;
 using Krakenar.Core.Realms;
@@ -68,6 +69,10 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<LanguageDeleted>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageLocaleChanged>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageSetDefault>, LanguageEvents>()
+      .AddScoped<IEventHandler<MessageCreated>, MessageEvents>()
+      .AddScoped<IEventHandler<MessageDeleted>, MessageEvents>()
+      .AddScoped<IEventHandler<MessageFailed>, MessageEvents>()
+      .AddScoped<IEventHandler<MessageSucceeded>, MessageEvents>()
       .AddScoped<IEventHandler<OneTimePasswordCreated>, OneTimePasswordEvents>()
       .AddScoped<IEventHandler<OneTimePasswordDeleted>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<OneTimePasswordDeleted>, OneTimePasswordEvents>()

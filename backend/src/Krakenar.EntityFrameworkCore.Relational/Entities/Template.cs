@@ -30,6 +30,8 @@ public sealed class Template : Aggregate, ISegregatedEntity
   public string ContentType { get; private set; } = string.Empty;
   public string ContentText { get; private set; } = string.Empty;
 
+  public List<Message> Messages { get; private set; } = [];
+
   public Template(Realm? realm, TemplateCreated @event) : base(@event)
   {
     Realm = realm;
