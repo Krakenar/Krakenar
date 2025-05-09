@@ -58,7 +58,7 @@ async function submit(): Promise<void> {
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="!configuration || isSubmitting || !hasChanges"
+          :disabled="isSubmitting || !hasChanges"
           icon="fas fa-plus"
           :loading="isSubmitting"
           :status="t('loading')"
