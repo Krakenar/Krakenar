@@ -30,6 +30,17 @@ const router = createRouter({
       path: "/configuration",
       component: () => import("./views/ConfigurationEdit.vue"),
     },
+    // API Keys
+    {
+      name: "ApiKeyList",
+      path: "/api-keys",
+      component: () => import("./views/apiKeys/ApiKeyList.vue"),
+    },
+    {
+      name: "ApiKeyEdit",
+      path: "/api-keys/:id",
+      component: () => import("./views/apiKeys/ApiKeyEdit.vue"),
+    },
     // Dictionaries
     {
       name: "DictionaryList",

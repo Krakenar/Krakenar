@@ -87,9 +87,9 @@ watchEffect(() => {
                 <font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}
               </RouterLink>
             </li>
-            <!--<li class="nav-item">
-              <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.list") }}</RouterLink>
-            </li>-->
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.title") }}</RouterLink>
+            </li>
             <li class="nav-item">
               <RouterLink :to="{ name: 'Tokens' }" class="nav-link"> <font-awesome-icon icon="fas fa-id-card" /> {{ t("tokens.title") }} </RouterLink>
             </li>

@@ -1,3 +1,4 @@
+import apiKeys from "./apiKeys.fr.json";
 import configuration from "./configuration.fr.json";
 import countries from "./countries.fr.json";
 import dictionaries from "./dictionaries.fr.json";
@@ -13,6 +14,7 @@ import users from "./users.fr.json";
 
 export default {
   ...index,
+  apiKeys,
   configuration,
   countries,
   dictionaries,
