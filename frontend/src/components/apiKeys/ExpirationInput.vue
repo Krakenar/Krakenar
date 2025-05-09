@@ -8,29 +8,22 @@ const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
+    disabled?: boolean | string;
     id?: string;
     label?: string;
     max?: Date | null;
     min?: Date | null;
     modelValue?: Date;
+    required?: boolean | string;
   }>(),
   {
-    id: "birthdate",
-    label: "users.birthdate",
-    max: () => new Date(),
+    id: "expiration",
+    label: "apiKeys.expiresOn",
+    min: () => new Date(),
   },
 );
 
-const inputMin = computed<Date | undefined>(() => {
-  if (props.min) {
-    return props.min;
-  } else if (props.min !== null && props.max) {
-    const min: Date = new Date(props.max);
-    min.setFullYear(min.getFullYear() - 120);
-    return min;
-  }
-  return undefined;
-});
+const isExpired = computed<boolean>(() => Boolean(props.modelValue && props.modelValue <= new Date()));
 
 defineEmits<{
   (e: "update:model-value", value: Date | undefined): void;
@@ -39,11 +32,17 @@ defineEmits<{
 
 <template>
   <DateTimeInput
+    :disabled="disabled"
     :id="id"
     :label="t(label)"
     :max="max ?? undefined"
-    :min="inputMin"
+    :min="min ?? undefined"
     :model-value="modelValue"
+    :required="required"
     @update:model-value="$emit('update:model-value', $event)"
-  />
+  >
+    <template v-if="isExpired" #append>
+      <span class="input-group-text"><font-awesome-icon class="me-1" icon="fas fa-hourglass-end" />{{ t("apiKeys.expired") }}</span>
+    </template>
+  </DateTimeInput>
 </template>

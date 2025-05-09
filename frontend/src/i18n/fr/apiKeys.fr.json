@@ -1,0 +1,33 @@
+{
+  "authenticated": "A été utilisée",
+  "create": "Nouvelle clé d’API",
+  "created": "La clé d’API a été créée.",
+  "delete": {
+    "confirm": "Afin de supprimer la clé d’API, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer la clé d’API"
+  },
+  "deleted": "La clé d’API a été supprimée.",
+  "empty": "Cette liste est vide.",
+  "expired": "Expirée",
+  "expiresOn": "Expiration",
+  "roles": {
+    "added": "Le rôle a été ajouté.",
+    "empty": "Cette liste est vide.",
+    "removed": "Le rôle a été retiré."
+  },
+  "sort": {
+    "options": {
+      "AuthenticatedOn": "Dernière authentification",
+      "CreatedOn": "Date de création",
+      "ExpiresOn": "Expiration",
+      "Name": "Nom",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Clés d’API",
+  "updated": "La clé d’API a été mise à jour.",
+  "xApiKey": {
+    "help": "Assurez-vous de la sauvegarder en lieu sûr — vous ne pourrez plus y accéder.",
+    "lead": "Votre nouvelle clé d’API"
+  }
+}

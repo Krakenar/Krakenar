@@ -6,31 +6,31 @@ import { useI18n } from "vue-i18n";
 import RoleSelect from "@/components/roles/RoleSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { Role } from "@/types/roles";
-import type { UpdateUserPayload, User } from "@/types/users";
-import { updateUser } from "@/api/users";
+import type { UpdateApiKeyPayload, ApiKey } from "@/types/apiKeys";
+import { updateApiKey } from "@/api/apiKeys";
 
 const { t } = useI18n();
 
 const props = defineProps<{
-  user: User;
+  apiKey: ApiKey;
 }>();
 
 const isSubmitting = ref<boolean>(false);
 const role = ref<Role>();
 
-const excludedIds = computed<string[]>(() => props.user.roles.map(({ id }) => id));
+const excludedIds = computed<string[]>(() => props.apiKey.roles.map(({ id }) => id));
 
 const emit = defineEmits<{
-  (e: "added", value: User): void;
+  (e: "added", value: ApiKey): void;
   (e: "error", value: unknown): void;
-  (e: "removed", value: User): void;
+  (e: "removed", value: ApiKey): void;
 }>();
 
 async function remove(role: Role): Promise<void> {
   if (!isSubmitting.value) {
     isSubmitting.value = true;
     try {
-      const payload: UpdateUserPayload = {
+      const payload: UpdateApiKeyPayload = {
         customAttributes: [],
         roles: [
           {
@@ -39,8 +39,8 @@ async function remove(role: Role): Promise<void> {
           },
         ],
       };
-      const user: User = await updateUser(props.user.id, payload);
-      emit("removed", user);
+      const apiKey: ApiKey = await updateApiKey(props.apiKey.id, payload);
+      emit("removed", apiKey);
     } catch (e: unknown) {
       emit("error", e);
     } finally {
@@ -53,7 +53,7 @@ async function submit(): Promise<void> {
   if (!isSubmitting.value && role.value) {
     isSubmitting.value = true;
     try {
-      const payload: UpdateUserPayload = {
+      const payload: UpdateApiKeyPayload = {
         customAttributes: [],
         roles: [
           {
@@ -62,9 +62,9 @@ async function submit(): Promise<void> {
           },
         ],
       };
-      const user: User = await updateUser(props.user.id, payload);
+      const apiKey: ApiKey = await updateApiKey(props.apiKey.id, payload);
       role.value = undefined;
-      emit("added", user);
+      emit("added", apiKey);
     } catch (e: unknown) {
       emit("error", e);
     } finally {
@@ -91,7 +91,7 @@ async function submit(): Promise<void> {
         </template>
       </RoleSelect>
     </form>
-    <table v-if="user.roles.length" class="table table-striped">
+    <table v-if="apiKey.roles.length" class="table table-striped">
       <thead>
         <tr>
           <th scope="col">{{ t("roles.sort.options.UniqueName") }}</th>
@@ -101,7 +101,7 @@ async function submit(): Promise<void> {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="role in user.roles" :key="role.id">
+        <tr v-for="role in apiKey.roles" :key="role.id">
           <td>
             <RouterLink target="_blank" :to="{ name: 'RoleEdit', params: { id: role.id } }"
               ><font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }}</RouterLink
@@ -126,6 +126,6 @@ async function submit(): Promise<void> {
         </tr>
       </tbody>
     </table>
-    <p v-else>{{ t("users.roles.empty") }}</p>
+    <p v-else>{{ t("apiKeys.roles.empty") }}</p>
   </div>
 </template>

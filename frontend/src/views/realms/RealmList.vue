@@ -165,7 +165,10 @@ watch(
             <td>
               <RouterLink :to="{ name: 'RealmEdit', params: { id: realm.id } }"> <font-awesome-icon icon="fas fa-edit" /> {{ realm.uniqueSlug }} </RouterLink>
             </td>
-            <td>{{ realm.displayName ?? "—" }}</td>
+            <td>
+              <template v-if="realm.displayName">{{ realm.displayName }}</template>
+              <span v-else class="text-muted">{{ "—" }}</span>
+            </td>
             <td><StatusBlock :actor="realm.updatedBy" :date="realm.updatedOn" /></td>
           </tr>
         </tbody>
