@@ -1,0 +1,25 @@
+{
+  "create": "Nouveau gabarit",
+  "created": "Le gabarit a été créé.",
+  "delete": {
+    "confirm": "Afin de supprimer le gabarit, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer le gabarit"
+  },
+  "deleted": "Le gabarit a été supprimé.",
+  "empty": "Cette liste est vide.",
+  "select": {
+    "label": "Gabarit",
+    "placeholder": "Sélectionnez un gabarit"
+  },
+  "sort": {
+    "options": {
+      "CreatedOn": "Date de création",
+      "DisplayName": "Nom d’affichage",
+      "Subject": "Sujet",
+      "UniqueName": "Nom unique",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Gabarits",
+  "updated": "Le gabarit a été mis à jour."
+}
