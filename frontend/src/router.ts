@@ -96,6 +96,17 @@ const router = createRouter({
       path: "/sessions/:id",
       component: () => import("./views/sessions/SessionEdit.vue"),
     },
+    // Templates
+    {
+      name: "TemplateList",
+      path: "/templates",
+      component: () => import("./views/templates/TemplateList.vue"),
+    },
+    {
+      name: "TemplateEdit",
+      path: "/templates/:id",
+      component: () => import("./views/templates/TemplateEdit.vue"),
+    },
     // Users
     {
       name: "UserList",

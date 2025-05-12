@@ -3,9 +3,10 @@ import { nanoid } from "nanoid";
 
 import type { Actor } from "@/types/actor";
 import type { Locale } from "@/types/i18n";
-import type { User } from "@/types/users";
-import { formatLocale, formatRole, formatUser } from "../format";
 import type { Role } from "@/types/roles";
+import type { Template } from "@/types/templates";
+import type { User } from "@/types/users";
+import { formatLocale, formatRole, formatTemplate, formatUser } from "../format";
 
 describe("formatLocale", () => {
   it.concurrent("should format the locale (with region) correctly", () => {
@@ -67,6 +68,39 @@ describe("formatRole", () => {
       customAttributes: [],
     };
     expect(formatRole(role)).toBe("admin");
+  });
+});
+
+describe("formatTemplate", () => {
+  it.concurrent("should format the template with display name correctly", () => {
+    const template: Template = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "PasswordRecovery",
+      displayName: "Password Recovery",
+      subject: "PasswordRecovery_Subject",
+      content: { type: "text/html", text: "<div>Hello World!</div>" },
+    };
+    expect(formatTemplate(template)).toBe("Password Recovery (PasswordRecovery)");
+  });
+
+  it.concurrent("should format the template without display name correctly", () => {
+    const template: Template = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "PasswordRecovery",
+      subject: "PasswordRecovery_Subject",
+      content: { type: "text/plain", text: "Hello World!" },
+    };
+    expect(formatTemplate(template)).toBe("PasswordRecovery");
   });
 });
 

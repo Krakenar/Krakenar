@@ -1,0 +1,40 @@
+{
+  "content": {
+    "text": "Content",
+    "type": {
+      "label": "Type",
+      "options": {
+        "text/html": "HTML",
+        "text/plain": "Plain Text"
+      },
+      "placeholder": "Select a content type"
+    }
+  },
+  "create": "New Template",
+  "created": "The template has been created.",
+  "delete": {
+    "confirm": "To delete the template, enter its name in the field below.",
+    "title": "Delete Template"
+  },
+  "deleted": "The template has been deleted.",
+  "empty": "This list is empty.",
+  "select": {
+    "label": "Template",
+    "placeholder": "Select a template"
+  },
+  "sort": {
+    "options": {
+      "CreatedOn": "Created on",
+      "DisplayName": "Display Name",
+      "Subject": "Subject",
+      "UniqueName": "Unique Name",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "subject": {
+    "help": "You can enter a dictionary key. It will be translated when the message is sent.",
+    "label": "Subject"
+  },
+  "title": "Templates",
+  "updated": "The template has been updated."
+}

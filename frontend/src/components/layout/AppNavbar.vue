@@ -70,6 +70,7 @@ watchEffect(() => {
             <a class="nav-link" :href="swaggerUrl" target="_blank"> <font-awesome-icon icon="fas fa-vial" /> Swagger</a>
           </li>
           <template v-if="user">
+            <!-- TODO(fpion): sub-menus -->
             <li class="nav-item">
               <RouterLink :to="{ name: 'Configuration' }" class="nav-link"><font-awesome-icon icon="fas fa-gear" /> {{ t("configuration.title") }}</RouterLink>
             </li>
@@ -100,6 +101,9 @@ watchEffect(() => {
               <RouterLink :to="{ name: 'DictionaryList' }" class="nav-link">
                 <font-awesome-icon icon="fas fa-spell-check" /> {{ t("dictionaries.title") }}
               </RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'TemplateList' }" class="nav-link"><font-awesome-icon icon="fas fa-file" /> {{ t("templates.title") }}</RouterLink>
             </li>
           </template>
         </ul>

@@ -103,9 +103,9 @@ async function submit(): Promise<void> {
       <tbody>
         <tr v-for="role in apiKey.roles" :key="role.id">
           <td>
-            <RouterLink target="_blank" :to="{ name: 'RoleEdit', params: { id: role.id } }"
-              ><font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }}</RouterLink
-            >
+            <RouterLink target="_blank" :to="{ name: 'RoleEdit', params: { id: role.id } }">
+              <font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }}
+            </RouterLink>
           </td>
           <td>
             <template v-if="role.displayName">{{ role.displayName }}</template>
