@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from "vue-router";
 import { TarAvatar } from "logitar-vue3-ui";
 import { computed } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -35,17 +36,31 @@ const icon = computed<string | undefined>(() => {
     case "User":
       return "fas fa-user";
   }
-  return undefined;
 });
 const parsedRevision = computed<number | undefined>(() => parseNumber(props.revision));
+const route = computed<RouteLocationRaw | undefined>(() => {
+  switch (props.actor.type) {
+    case "ApiKey":
+      return { name: "ApiKeyEdit", params: { id: props.actor.id } };
+    case "User":
+      return { name: "UserEdit", params: { id: props.actor.id } };
+  }
+  return undefined;
+});
 const variant = computed<string | undefined>(() => (props.actor.type === "ApiKey" ? "info" : undefined));
 </script>
 
 <template>
   <span>
     {{ t(format, { date: d(date, "medium") }) }}
-    <TarAvatar :display-name="displayName" :email-address="actor.emailAddress" :icon="icon" :size="24" :url="actor.pictureUrl" :variant="variant" />
-    {{ displayName }}
+    <RouterLink v-if="route" :to="route" target="_blank">
+      <TarAvatar :display-name="displayName" :email-address="actor.emailAddress" :icon="icon" :size="24" :url="actor.pictureUrl" :variant="variant" />
+      {{ displayName }}
+    </RouterLink>
+    <template v-else>
+      <TarAvatar :display-name="displayName" :email-address="actor.emailAddress" :icon="icon" :size="24" :url="actor.pictureUrl" :variant="variant" />
+      {{ displayName }}
+    </template>
     <template v-if="parsedRevision"> {{ t(revisionFormat, { revision: parsedRevision }) }}</template>
   </span>
 </template>
