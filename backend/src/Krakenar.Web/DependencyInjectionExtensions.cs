@@ -21,6 +21,7 @@ public static class DependencyInjectionExtensions
 
     string[] authenticationSchemes = configuration.GetKrakenarAuthenticationSchemes();
     AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
+      .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(Schemes.ApiKey, options => { })
       .AddScheme<BearerAuthenticationOptions, BearerAuthenticationHandler>(Schemes.Bearer, options => { })
       .AddScheme<SessionAuthenticationOptions, SessionAuthenticationHandler>(Schemes.Session, options => { });
     if (authenticationSchemes.Contains(Schemes.Basic))
