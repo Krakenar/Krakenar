@@ -27,13 +27,13 @@ public class CreateOrReplaceSenderValidator : AbstractValidator<CreateOrReplaceS
 
   public override ValidationResult Validate(ValidationContext<CreateOrReplaceSenderPayload> context)
   {
+    List<ValidationFailure> failures = new(capacity: 2);
     if (IsCreate)
     {
       CreateOrReplaceSenderPayload payload = context.InstanceToValidate;
       SenderKind? kind = GetSenderKind(payload);
       SenderProvider? provider = GetSenderProvider(payload);
 
-      List<ValidationFailure> failures = new(capacity: 2);
       if (kind.HasValue && provider.HasValue)
       {
         SenderKind expectedKind = provider.Value.GetSenderKind();
@@ -68,13 +68,10 @@ public class CreateOrReplaceSenderValidator : AbstractValidator<CreateOrReplaceS
           failures.Add(failure);
         }
       }
-      if (failures.Count > 1)
-      {
-        return new ValidationResult(failures);
-      }
     }
 
-    return base.Validate(context);
+    ValidationResult result = base.Validate(context);
+    return new ValidationResult(failures.Concat(result.Errors));
   }
 
   protected virtual void ConfigureCreate()

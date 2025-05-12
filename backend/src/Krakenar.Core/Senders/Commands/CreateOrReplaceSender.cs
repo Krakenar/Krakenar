@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Krakenar.Contracts.Senders;
 using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Senders.Validators;
@@ -35,7 +36,11 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
     }
 
     CreateOrReplaceSenderPayload payload = command.Payload;
-    new CreateOrReplaceSenderValidator(sender?.Provider).ValidateAndThrow(payload);
+    ValidationResult validation = new CreateOrReplaceSenderValidator(sender?.Provider).Validate(payload);
+    if (!validation.IsValid)
+    {
+      throw new ValidationException(validation.Errors);
+    }
 
     Email? email = payload.Email is null ? null : new(payload.Email);
     Phone? phone = payload.Phone is null ? null : new(payload.Phone);
