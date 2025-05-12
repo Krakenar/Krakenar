@@ -6,6 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import DeleteTemplate from "@/components/templates/DeleteTemplate.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import TemplateContents from "@/components/templates/TemplateContents.vue";
 import TemplateGeneral from "@/components/templates/TemplateGeneral.vue";
 import type { Configuration } from "@/types/configuration";
 import type { Template } from "@/types/templates";
@@ -36,6 +37,15 @@ function setMetadata(updated: Template): void {
 function onDeleted(): void {
   toasts.success("templates.deleted");
   router.push({ name: "TemplateList" });
+}
+
+function onContentsUpdated(updated: Template): void {
+  if (template.value) {
+    setMetadata(updated);
+    template.value.subject = updated.subject;
+    template.value.content = { ...updated.content };
+  }
+  toasts.success("templates.updated");
 }
 
 function onGeneralUpdated(updated: Template): void {
@@ -78,7 +88,9 @@ onMounted(async () => {
         <TarTab active id="general" :title="t('general')">
           <TemplateGeneral :configuration="configuration" :template="template" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
-        <!-- TODO(fpion): Contents -->
+        <TarTab id="contents" :title="t('templates.content.text')">
+          <TemplateContents :template="template" @error="handleError" @updated="onContentsUpdated" />
+        </TarTab>
       </TarTabs>
     </template>
   </main>

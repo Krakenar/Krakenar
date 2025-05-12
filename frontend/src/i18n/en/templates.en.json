@@ -1,4 +1,15 @@
 {
+  "content": {
+    "text": "Content",
+    "type": {
+      "label": "Type",
+      "options": {
+        "text/html": "HTML",
+        "text/plain": "Plain Text"
+      },
+      "placeholder": "Select a content type"
+    }
+  },
   "create": "New Template",
   "created": "The template has been created.",
   "delete": {
@@ -19,6 +30,10 @@
       "UniqueName": "Unique Name",
       "UpdatedOn": "Updated on"
     }
+  },
+  "subject": {
+    "help": "You can enter a dictionary key. It will be translated when the message is sent.",
+    "label": "Subject"
   },
   "title": "Templates",
   "updated": "The template has been updated."

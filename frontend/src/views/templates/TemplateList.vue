@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, TarSelect, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -39,6 +39,12 @@ const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 const type = computed<string>(() => route.query.type?.toString() ?? "");
 
+const contentTypeOptions = computed<SelectOption[]>(() =>
+  orderBy(
+    Object.entries(tm(rt("templates.content.type.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    "text",
+  ),
+);
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
     Object.entries(tm(rt("templates.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
@@ -56,7 +62,7 @@ async function refresh(): Promise<void> {
         .map((term) => ({ value: `%${term}%` })),
       operator: "And",
     },
-    contentType: type.value ? (type.value as ContentType) : undefined, // TODO(fpion): à revoir
+    contentType: type.value ? (type.value as ContentType) : undefined,
     sort: sort.value ? [{ field: sort.value as TemplateSort, isDescending: isDescending.value }] : [],
     skip: (page.value - 1) * count.value,
     limit: count.value,
@@ -145,7 +151,16 @@ watch(
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
-      <!-- TODO(fpion): Content-Type Select -->
+      <TarSelect
+        class="col"
+        floating
+        id="type"
+        :label="t('templates.content.type.label')"
+        :model-value="type"
+        :options="contentTypeOptions"
+        :placeholder="t('templates.content.type.placeholder')"
+        @update:model-value="setQuery('type', $event)"
+      />
       <SortSelect
         class="col"
         :descending="isDescending"
@@ -162,20 +177,24 @@ watch(
           <tr>
             <th scope="col">{{ t("templates.sort.options.UniqueName") }}</th>
             <th scope="col">{{ t("templates.sort.options.DisplayName") }}</th>
+            <th scope="col">{{ t("templates.sort.options.Subject") }}</th>
+            <th scope="col">{{ t("templates.content.type.label") }}</th>
             <th scope="col">{{ t("templates.sort.options.UpdatedOn") }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="template in templates" :key="template.id">
             <td>
-              <RouterLink :to="{ name: 'TemplateEdit', params: { id: template.id } }"
-                ><font-awesome-icon icon="fas fa-edit" /> {{ template.uniqueName }}</RouterLink
-              >
+              <RouterLink :to="{ name: 'TemplateEdit', params: { id: template.id } }">
+                <font-awesome-icon icon="fas fa-edit" /> {{ template.uniqueName }}
+              </RouterLink>
             </td>
             <td>
               <template v-if="template.displayName">{{ template.displayName }}</template>
               <span v-else class="text-muted">{{ "—" }}</span>
             </td>
+            <td>{{ template.subject }}</td>
+            <td>{{ t(`templates.content.type.options.${template.content.type}`) }}</td>
             <td><StatusBlock :actor="template.updatedBy" :date="template.updatedOn" /></td>
           </tr>
         </tbody>

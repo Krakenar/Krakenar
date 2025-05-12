@@ -83,7 +83,7 @@ describe("formatTemplate", () => {
       uniqueName: "PasswordRecovery",
       displayName: "Password Recovery",
       subject: "PasswordRecovery_Subject",
-      content: { type: "plain/text", text: "Hello World!" },
+      content: { type: "text/html", text: "<div>Hello World!</div>" },
     };
     expect(formatTemplate(template)).toBe("Password Recovery (PasswordRecovery)");
   });
@@ -98,7 +98,7 @@ describe("formatTemplate", () => {
       updatedOn: now,
       uniqueName: "PasswordRecovery",
       subject: "PasswordRecovery_Subject",
-      content: { type: "plain/text", text: "Hello World!" },
+      content: { type: "text/plain", text: "Hello World!" },
     };
     expect(formatTemplate(template)).toBe("PasswordRecovery");
   });

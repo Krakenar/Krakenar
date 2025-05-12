@@ -1,4 +1,15 @@
 {
+  "content": {
+    "text": "Contenu",
+    "type": {
+      "label": "Type",
+      "options": {
+        "text/html": "HTML",
+        "text/plain": "Texte brut"
+      },
+      "placeholder": "Sélectionnez un type de contenu"
+    }
+  },
   "create": "Nouveau gabarit",
   "created": "Le gabarit a été créé.",
   "delete": {
@@ -19,6 +30,10 @@
       "UniqueName": "Nom unique",
       "UpdatedOn": "Dernière modification"
     }
+  },
+  "subject": {
+    "help": "Vous pouvez entrer la clé d’une entrée de dictionnaire. Cette entrée sera traduite lors de l’envoi du message.",
+    "label": "Sujet"
   },
   "title": "Gabarits",
   "updated": "Le gabarit a été mis à jour."
