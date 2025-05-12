@@ -19,6 +19,11 @@ public abstract class BaseClient
       string value = string.Join(' ', Schemes.Basic, Convert.ToBase64String(Encoding.UTF8.GetBytes(settings.Basic.ToString())));
       HttpClient.DefaultRequestHeaders.Add(Headers.Authorization, value);
     }
+    if (!string.IsNullOrWhiteSpace(settings.Bearer))
+    {
+      string value = string.Join(' ', Schemes.Bearer, settings.Bearer.Trim());
+      HttpClient.DefaultRequestHeaders.Add(Headers.Authorization, value);
+    }
     if (!string.IsNullOrWhiteSpace(settings.Realm))
     {
       HttpClient.DefaultRequestHeaders.Add(Headers.Realm, settings.Realm.Trim());

@@ -5,7 +5,7 @@ namespace Krakenar.Contracts.Sessions;
 
 public class Session : Aggregate
 {
-  public User User { get; set; } = new();
+  public User User { get; set; }
 
   public bool IsPersistent { get; set; }
   public string? RefreshToken { get; set; }
@@ -15,4 +15,13 @@ public class Session : Aggregate
   public DateTime? SignedOutOn { get; set; }
 
   public List<CustomAttribute> CustomAttributes { get; set; } = [];
+
+  public Session() : this(new User())
+  {
+  }
+
+  public Session(User user)
+  {
+    User = user;
+  }
 }

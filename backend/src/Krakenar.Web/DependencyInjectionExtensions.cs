@@ -21,12 +21,15 @@ public static class DependencyInjectionExtensions
 
     string[] authenticationSchemes = configuration.GetKrakenarAuthenticationSchemes();
     AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
+      .AddScheme<BearerAuthenticationOptions, BearerAuthenticationHandler>(Schemes.Bearer, options => { })
       .AddScheme<SessionAuthenticationOptions, SessionAuthenticationHandler>(Schemes.Session, options => { });
     if (authenticationSchemes.Contains(Schemes.Basic))
     {
       authenticationBuilder.AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(Schemes.Basic, options => { });
     }
 
+    OpenAuthenticationSettings openAuthenticationSettings = OpenAuthenticationSettings.Initialize(configuration);
+    services.AddSingleton(openAuthenticationSettings);
     services.AddAuthorizationBuilder()
       .SetDefaultPolicy(new AuthorizationPolicyBuilder(authenticationSchemes).RequireAuthenticatedUser().Build())
       .AddPolicy(Policies.KrakenarAdmin, new AuthorizationPolicyBuilder(authenticationSchemes)
@@ -34,6 +37,7 @@ public static class DependencyInjectionExtensions
         .AddRequirements(new KrakenarAdminRequirement())
         .Build());
     services.AddSingleton<IAuthorizationHandler, KrakenarAdminHandler>();
+    services.AddTransient<IOpenAuthenticationService, OpenAuthenticationService>();
 
     CookiesSettings cookiesSettings = CookiesSettings.Initialize(configuration);
     services.AddSingleton(cookiesSettings);
@@ -56,7 +60,7 @@ public static class DependencyInjectionExtensions
     List<string> schemes = new(capacity: 4)
     {
       //Schemes.ApiKey, // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
-      //Schemes.Bearer, // ISSUE #17: https://github.com/Krakenar/Krakenar/issues/17
+      Schemes.Bearer,
       Schemes.Session
     };
 
