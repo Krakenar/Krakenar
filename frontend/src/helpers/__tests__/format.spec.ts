@@ -4,9 +4,10 @@ import { nanoid } from "nanoid";
 import type { Actor } from "@/types/actor";
 import type { Locale } from "@/types/i18n";
 import type { Role } from "@/types/roles";
+import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
 import type { User } from "@/types/users";
-import { formatLocale, formatRole, formatTemplate, formatUser } from "../format";
+import { formatLocale, formatRole, formatSender, formatTemplate, formatUser } from "../format";
 
 describe("formatLocale", () => {
   it.concurrent("should format the locale (with region) correctly", () => {
@@ -68,6 +69,74 @@ describe("formatRole", () => {
       customAttributes: [],
     };
     expect(formatRole(role)).toBe("admin");
+  });
+});
+
+describe("formatSender", () => {
+  it.concurrent("should format the email sender with display name correctly", () => {
+    const sender: Sender = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      kind: "Email",
+      isDefault: true,
+      email: { address: "no-reply@krakenar.com", isVerified: false },
+      displayName: "Krakenar",
+      provider: "SendGrid",
+    };
+    expect(formatSender(sender)).toBe("Krakenar <no-reply@krakenar.com>");
+  });
+
+  it.concurrent("should format the email sender without display name correctly", () => {
+    const sender: Sender = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      kind: "Email",
+      isDefault: true,
+      email: { address: "no-reply@krakenar.com", isVerified: false },
+      provider: "SendGrid",
+    };
+    expect(formatSender(sender)).toBe("no-reply@krakenar.com");
+  });
+
+  it.concurrent("should format the phone sender with display name correctly", () => {
+    const sender: Sender = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      kind: "Phone",
+      isDefault: true,
+      phone: { countryCode: "CA", number: "2345678900", e164Formatted: "+12345678900", isVerified: false },
+      displayName: "Krakenar",
+      provider: "Twilio",
+    };
+    expect(formatSender(sender)).toBe("Krakenar <+12345678900>");
+  });
+
+  it.concurrent("should format the phone sender without display name correctly", () => {
+    const sender: Sender = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      kind: "Phone",
+      isDefault: true,
+      phone: { countryCode: "CA", number: "2345678900", e164Formatted: "+12345678900", isVerified: false },
+      provider: "Twilio",
+    };
+    expect(formatSender(sender)).toBe("+12345678900");
   });
 });
 

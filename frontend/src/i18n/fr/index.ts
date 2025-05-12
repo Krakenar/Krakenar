@@ -7,6 +7,7 @@ import index from "./index.fr.json";
 import languages from "./languages.fr.json";
 import realms from "./realms.fr.json";
 import roles from "./roles.fr.json";
+import senders from "./senders.fr.json";
 import sessions from "./sessions.fr.json";
 import settings from "./settings.fr.json";
 import templates from "./templates.fr.json";
@@ -23,6 +24,7 @@ export default {
   languages,
   realms,
   roles,
+  senders,
   sessions,
   settings,
   templates,
