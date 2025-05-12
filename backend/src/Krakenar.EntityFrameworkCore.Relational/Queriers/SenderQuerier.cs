@@ -28,6 +28,16 @@ public class SenderQuerier : ISenderQuerier
     SqlHelper = sqlHelper;
   }
 
+  public virtual async Task<int> CountAsync(SenderKind kind, CancellationToken cancellationToken)
+  {
+    int count = await Senders.AsNoTracking()
+      .WhereRealm(ApplicationContext.RealmId)
+      .Where(x => x.Kind == kind)
+      .CountAsync(cancellationToken);
+
+    return count;
+  }
+
   public virtual async Task<SenderId?> FindDefaultIdAsync(SenderKind kind, CancellationToken cancellationToken)
   {
     string? streamId = await Senders.AsNoTracking()
