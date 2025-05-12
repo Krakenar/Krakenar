@@ -2,6 +2,8 @@
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Search;
 using Krakenar.Core;
+using Krakenar.Core.ApiKeys;
+using Krakenar.Core.Passwords;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Users;
 using Logitar;
@@ -15,6 +17,8 @@ namespace Krakenar.Roles;
 [Trait(Traits.Category, Categories.Integration)]
 public class RoleIntegrationTests : IntegrationTests
 {
+  private readonly IApiKeyRepository _apiKeyRepository;
+  private readonly IPasswordManager _passwordManager;
   private readonly IRoleRepository _roleRepository;
   private readonly IRoleService _roleService;
   private readonly IUserRepository _userRepository;
@@ -23,6 +27,8 @@ public class RoleIntegrationTests : IntegrationTests
 
   public RoleIntegrationTests() : base()
   {
+    _apiKeyRepository = ServiceProvider.GetRequiredService<IApiKeyRepository>();
+    _passwordManager = ServiceProvider.GetRequiredService<IPasswordManager>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _roleService = ServiceProvider.GetRequiredService<IRoleService>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
@@ -72,6 +78,11 @@ public class RoleIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should delete the role.")]
   public async Task Given_Role_When_Delete_Then_Deleted()
   {
+    Password secret = _passwordManager.GenerateBase64(XApiKey.SecretLength, out _);
+    ApiKey apiKey = new(secret, new DisplayName("Test API Key"), ActorId, ApiKeyId.NewId(Realm.Id));
+    apiKey.AddRole(_role, ActorId);
+    await _apiKeyRepository.SaveAsync(apiKey);
+
     User user = new(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), password: null, ActorId, UserId.NewId(Realm.Id));
     user.AddRole(_role, ActorId);
     await _userRepository.SaveAsync(user);
@@ -81,6 +92,10 @@ public class RoleIntegrationTests : IntegrationTests
     Assert.Equal(_role.EntityId, role.Id);
 
     Assert.Empty(await KrakenarContext.Roles.AsNoTracking().Where(x => x.StreamId == _role.Id.Value).ToArrayAsync());
+
+    apiKey = (await _apiKeyRepository.LoadAsync(apiKey.Id))!;
+    Assert.NotNull(apiKey);
+    Assert.Empty(apiKey.Roles);
 
     user = (await _userRepository.LoadAsync(user.Id))!;
     Assert.NotNull(user);

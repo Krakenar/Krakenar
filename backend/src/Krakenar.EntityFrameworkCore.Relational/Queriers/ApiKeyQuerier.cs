@@ -5,6 +5,7 @@ using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.ApiKeys;
+using Krakenar.Core.Roles;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar.Data;
 using Logitar.EventSourcing;
@@ -27,6 +28,17 @@ public class ApiKeyQuerier : IApiKeyQuerier
     ApiKeys = context.ApiKeys;
     ApplicationContext = applicationContext;
     SqlHelper = sqlHelper;
+  }
+
+  public virtual async Task<IReadOnlyCollection<ApiKeyId>> FindIdsAsync(RoleId roleId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await ApiKeys.AsNoTracking()
+      .Include(x => x.Roles)
+      .Where(x => x.Roles.Any(r => r.StreamId == roleId.Value))
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new ApiKeyId(streamId)).ToList().AsReadOnly();
   }
 
   public virtual async Task<ApiKeyDto> ReadAsync(ApiKey apiKey, CancellationToken cancellationToken)
