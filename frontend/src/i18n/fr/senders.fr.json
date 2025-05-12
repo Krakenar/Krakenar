@@ -1,4 +1,8 @@
 {
+  "cannotDeleteDefault": {
+    "help": "Vous ne pouvez pas supprimer l’expéditeur par défaut, sauf s’il n’existe aucun autre expéditeur du même type.",
+    "lead": "L’expéditeur par défaut ne peut pas être supprimé."
+  },
   "contact": "Contact",
   "create": "Nouvel expéditeur",
   "created": "L’expéditeur a été créé.",

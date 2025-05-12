@@ -3,8 +3,11 @@ import { TarButton, TarInput, TarModal, type InputStatus } from "logitar-vue3-ui
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import CannotDeleteDefaultSender from "./CannotDeleteDefaultSender.vue";
 import type { Sender } from "@/types/senders";
+import { ErrorCodes, StatusCodes } from "@/types/api";
 import { deleteSender } from "@/api/senders";
+import { isError } from "@/helpers/error";
 
 const { t } = useI18n();
 
@@ -12,6 +15,7 @@ const props = defineProps<{
   sender: Sender;
 }>();
 
+const cannotDeleteDefaultSender = ref<boolean>(false);
 const isDeleting = ref<boolean>(false);
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const name = ref<string>("");
@@ -50,12 +54,17 @@ const emit = defineEmits<{
 async function doDelete(): Promise<void> {
   if (!isDeleting.value) {
     isDeleting.value = true;
+    cannotDeleteDefaultSender.value = false;
     try {
       const sender: Sender = await deleteSender(props.sender.id);
       emit("deleted", sender);
       hide();
     } catch (e: unknown) {
-      emit("error", e);
+      if (isError(e, StatusCodes.BadRequest, ErrorCodes.CannotDeleteDefaultSender)) {
+        cannotDeleteDefaultSender.value = true;
+      } else {
+        emit("error", e);
+      }
     } finally {
       isDeleting.value = false;
     }
@@ -67,6 +76,7 @@ async function doDelete(): Promise<void> {
   <span>
     <TarButton icon="fas fa-trash" :text="t('actions.delete')" variant="danger" data-bs-toggle="modal" data-bs-target="#delete-sender" />
     <TarModal :close="t('actions.close')" id="delete-sender" ref="modalRef" :title="t('senders.delete.title')">
+      <CannotDeleteDefaultSender v-model="cannotDeleteDefaultSender" />
       <p>
         {{ t("senders.delete.confirm") }}
         <br />
