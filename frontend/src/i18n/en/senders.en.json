@@ -1,0 +1,39 @@
+{
+  "contact": "Contact",
+  "create": "New Sender",
+  "created": "The sender has been created.",
+  "default": "Default",
+  "delete": {
+    "confirm": "To delete the sender, enter its name in the field below.",
+    "title": "Delete Sender"
+  },
+  "deleted": "The sender has been deleted.",
+  "empty": "This list is empty.",
+  "kind": {
+    "label": "Type",
+    "options": {
+      "Email": "Email",
+      "Phone": "Phone (SMS)"
+    },
+    "placeholder": "Select a sender type"
+  },
+  "provider": {
+    "label": "Provider",
+    "options": {
+      "SendGrid": "SendGrid",
+      "Twilio": "Twilio"
+    },
+    "placeholder": "Select a sender provider"
+  },
+  "sort": {
+    "options": {
+      "CreatedOn": "Created on",
+      "DisplayName": "Display Name",
+      "EmailAddress": "Email Address",
+      "PhoneNumber": "Phone Number",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "title": "Senders",
+  "updated": "The sender has been updated."
+}

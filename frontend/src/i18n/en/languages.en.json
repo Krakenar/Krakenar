@@ -1,15 +1,15 @@
 {
   "create": "New Language",
   "created": "The language has been created.",
+  "default": {
+    "label": "Default",
+    "set": "The language has been set default."
+  },
   "delete": {
     "confirm": "To delete the language, enter its name in the field below.",
     "title": "Delete Language"
   },
   "deleted": "The language has been deleted.",
-  "default": {
-    "label": "Default",
-    "set": "The language has been set default."
-  },
   "empty": "This list is empty.",
   "otherNames": "Other Names",
   "select": {

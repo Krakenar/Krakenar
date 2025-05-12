@@ -1,0 +1,39 @@
+{
+  "contact": "Contact",
+  "create": "Nouvel expéditeur",
+  "created": "L’expéditeur a été créé.",
+  "default": "Par défaut",
+  "delete": {
+    "confirm": "Afin de supprimer l’expéditeur, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer l’expéditeur"
+  },
+  "deleted": "L’expéditeur a été supprimé.",
+  "empty": "Cette liste est vide.",
+  "kind": {
+    "label": "Type",
+    "options": {
+      "Email": "Courriel",
+      "Phone": "Téléphone (texto)"
+    },
+    "placeholder": "Sélectionnez un type d’expéditeur"
+  },
+  "provider": {
+    "label": "Service",
+    "options": {
+      "SendGrid": "SendGrid",
+      "Twilio": "Twilio"
+    },
+    "placeholder": "Sélectionnez un service d’expédition"
+  },
+  "sort": {
+    "options": {
+      "CreatedOn": "Date de création",
+      "DisplayName": "Nom d’affichage",
+      "EmailAddress": "Adresse courriel",
+      "PhoneNumber": "Numéro de téléphone",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "title": "Expéditeurs",
+  "updated": "L’expéditeur a été mis à jour."
+}
