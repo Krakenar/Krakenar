@@ -91,10 +91,10 @@ onMounted(async () => {
         <DeleteSender :sender="sender" @deleted="onDeleted" @error="handleError" />
       </div>
       <TarTabs>
-        <TarTab id="general" :title="t('general')">
+        <TarTab active id="general" :title="t('general')">
           <SenderGeneral :sender="sender" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
-        <TarTab active id="settings" :title="t('settings.title')">
+        <TarTab id="settings" :title="t('settings.title')">
           <SendGridSettingsEdit v-if="sender.provider === 'SendGrid'" :sender="sender" @error="handleError" @updated="onSendGridUpdated" />
           <TwilioSettingsEdit v-if="sender.provider === 'Twilio'" :sender="sender" @error="handleError" @updated="onTwilioUpdated" />
         </TarTab>

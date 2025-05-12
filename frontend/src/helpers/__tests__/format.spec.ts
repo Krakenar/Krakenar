@@ -122,6 +122,22 @@ describe("formatSender", () => {
     };
     expect(formatSender(sender)).toBe("Krakenar <+12345678900>");
   });
+
+  it.concurrent("should format the phone sender without display name correctly", () => {
+    const sender: Sender = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      kind: "Phone",
+      isDefault: true,
+      phone: { countryCode: "CA", number: "2345678900", e164Formatted: "+12345678900", isVerified: false },
+      provider: "Twilio",
+    };
+    expect(formatSender(sender)).toBe("+12345678900");
+  });
 });
 
 describe("formatTemplate", () => {
