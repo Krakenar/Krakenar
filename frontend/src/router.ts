@@ -96,7 +96,7 @@ const router = createRouter({
       path: "/sessions/:id",
       component: () => import("./views/sessions/SessionEdit.vue"),
     },
-    // Roles
+    // Templates
     {
       name: "TemplateList",
       path: "/templates",
