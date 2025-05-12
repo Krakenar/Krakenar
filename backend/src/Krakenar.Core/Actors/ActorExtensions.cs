@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts.Actors;
+using Krakenar.Core.ApiKeys;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Users;
 using Logitar.EventSourcing;
@@ -9,12 +10,13 @@ public static class ActorExtensions
 {
   public static ActorId GetActorId(this Actor actor)
   {
+    RealmId? realmId = actor.RealmId.HasValue ? new RealmId(actor.RealmId.Value) : null;
     switch (actor.Type)
     {
       case ActorType.ApiKey:
-        throw new NotImplementedException(); // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
+        ApiKeyId apiKeyId = new(actor.Id, realmId);
+        return new ActorId(apiKeyId.Value);
       case ActorType.User:
-        RealmId? realmId = actor.RealmId.HasValue ? new RealmId(actor.RealmId.Value) : null;
         UserId userId = new(actor.Id, realmId);
         return new ActorId(userId.Value);
       default:

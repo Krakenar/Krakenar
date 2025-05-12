@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts.Actors;
+using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Settings;
 using Krakenar.Contracts.Users;
@@ -35,7 +36,11 @@ public class HttpApplicationContext : IApplicationContext
         return new Actor(user).GetActorId();
       }
 
-      // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
+      ApiKey? apiKey = HttpContextAccessor.HttpContext?.GetApiKey();
+      if (apiKey is not null)
+      {
+        return new Actor(apiKey).GetActorId();
+      }
 
       return null;
     }

@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Roles;
+﻿using Krakenar.Contracts.ApiKeys;
+using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Users;
 using Logitar.Security.Claims;
@@ -7,21 +8,21 @@ namespace Krakenar.Web;
 
 public static class ClaimsExtensions
 {
-  //public static ClaimsIdentity CreateClaimsIdentity(this ApiKeyModel apiKey, string? authenticationType = null)
-  //{
-  //  ClaimsIdentity identity = new(authenticationType);
+  public static ClaimsIdentity CreateClaimsIdentity(this ApiKey apiKey, string? authenticationType = null)
+  {
+    ClaimsIdentity identity = new(authenticationType);
 
-  //  identity.AddClaim(new(Rfc7519ClaimNames.Subject, apiKey.Id.ToString()));
-  //  identity.AddClaim(ClaimHelper.Create(Rfc7519ClaimNames.UpdatedAt, apiKey.UpdatedOn));
-  //  identity.AddClaim(new(Rfc7519ClaimNames.FullName, apiKey.DisplayName));
+    identity.AddClaim(new(Rfc7519ClaimNames.Subject, apiKey.Id.ToString()));
+    identity.AddClaim(ClaimHelper.Create(Rfc7519ClaimNames.UpdatedAt, apiKey.UpdatedOn));
+    identity.AddClaim(new(Rfc7519ClaimNames.FullName, apiKey.Name));
 
-  //  if (apiKey.AuthenticatedOn.HasValue)
-  //  {
-  //    identity.AddClaim(ClaimHelper.Create(Rfc7519ClaimNames.AuthenticationTime, apiKey.AuthenticatedOn.Value));
-  //  }
+    if (apiKey.AuthenticatedOn.HasValue)
+    {
+      identity.AddClaim(ClaimHelper.Create(Rfc7519ClaimNames.AuthenticationTime, apiKey.AuthenticatedOn.Value));
+    }
 
-  //  return identity;
-  //} // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
+    return identity;
+  }
 
   public static ClaimsIdentity CreateClaimsIdentity(this Session session, string? authenticationType = null)
   {

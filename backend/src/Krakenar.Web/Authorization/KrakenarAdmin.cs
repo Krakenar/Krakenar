@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Users;
+﻿using Krakenar.Contracts.ApiKeys;
+using Krakenar.Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Krakenar.Web.Authorization;
@@ -19,6 +20,19 @@ public class KrakenarAdminHandler : AuthorizationHandler<KrakenarAdminRequiremen
     HttpContext? httpContext = HttpContextAccessor.HttpContext;
     if (httpContext is not null)
     {
+      ApiKey? apiKey = httpContext.GetApiKey();
+      if (apiKey is not null)
+      {
+        if (apiKey.Realm is null)
+        {
+          context.Succeed(requirement);
+        }
+        else
+        {
+          context.Fail(new AuthorizationFailureReason(this, "The API key should not belong to a realm."));
+        }
+      }
+
       User? user = httpContext.GetUser();
       if (user is not null)
       {
@@ -31,8 +45,6 @@ public class KrakenarAdminHandler : AuthorizationHandler<KrakenarAdminRequiremen
           context.Fail(new AuthorizationFailureReason(this, "The user should not belong to a realm."));
         }
       }
-
-      // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
     }
 
     return Task.CompletedTask;
