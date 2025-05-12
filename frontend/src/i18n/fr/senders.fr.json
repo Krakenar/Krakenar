@@ -25,6 +25,12 @@
     },
     "placeholder": "Sélectionnez un service d’expédition"
   },
+  "sendGrid": {
+    "apiKey": {
+      "help": "Celle-ci ressemble à :",
+      "label": "Clé d’API"
+    }
+  },
   "sort": {
     "options": {
       "CreatedOn": "Date de création",
@@ -35,5 +41,15 @@
     }
   },
   "title": "Expéditeurs",
+  "twilio": {
+    "accountSid": {
+      "help": "Celui-ci ressemble à :",
+      "label": "SID du compte"
+    },
+    "authenticationToken": {
+      "help": "Celui-ci ressemble à :",
+      "label": "Jeton d’authentification"
+    }
+  },
   "updated": "L’expéditeur a été mis à jour."
 }

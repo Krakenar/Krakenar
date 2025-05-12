@@ -5,8 +5,10 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import DeleteSender from "@/components/senders/DeleteSender.vue";
+import SendGridSettingsEdit from "@/components/senders/SendGridSettingsEdit.vue";
 import SenderGeneral from "@/components/senders/SenderGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import TwilioSettingsEdit from "@/components/senders/TwilioSettingsEdit.vue";
 import type { Sender } from "@/types/senders";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatSender } from "@/helpers/format";
@@ -46,6 +48,25 @@ function onGeneralUpdated(updated: Sender): void {
   toasts.success("senders.updated");
 }
 
+function onSendGridUpdated(updated: Sender): void {
+  if (sender.value) {
+    setMetadata(updated);
+    if (updated.sendGrid) {
+      sender.value.sendGrid = { ...updated.sendGrid };
+    }
+  }
+  toasts.success("senders.updated");
+}
+function onTwilioUpdated(updated: Sender): void {
+  if (sender.value) {
+    setMetadata(updated);
+    if (updated.twilio) {
+      sender.value.twilio = { ...updated.twilio };
+    }
+  }
+  toasts.success("senders.updated");
+}
+
 onMounted(async () => {
   try {
     const id = route.params.id as string;
@@ -70,8 +91,12 @@ onMounted(async () => {
         <DeleteSender :sender="sender" @deleted="onDeleted" @error="handleError" />
       </div>
       <TarTabs>
-        <TarTab active id="general" :title="t('general')">
+        <TarTab id="general" :title="t('general')">
           <SenderGeneral :sender="sender" @error="handleError" @updated="onGeneralUpdated" />
+        </TarTab>
+        <TarTab active id="settings" :title="t('settings.title')">
+          <SendGridSettingsEdit v-if="sender.provider === 'SendGrid'" :sender="sender" @error="handleError" @updated="onSendGridUpdated" />
+          <TwilioSettingsEdit v-if="sender.provider === 'Twilio'" :sender="sender" @error="handleError" @updated="onTwilioUpdated" />
         </TarTab>
       </TarTabs>
     </template>

@@ -25,6 +25,12 @@
     },
     "placeholder": "Select a sender provider"
   },
+  "sendGrid": {
+    "apiKey": {
+      "help": "It looks like:",
+      "label": "API Key"
+    }
+  },
   "sort": {
     "options": {
       "CreatedOn": "Created on",
@@ -35,5 +41,15 @@
     }
   },
   "title": "Senders",
+  "twilio": {
+    "accountSid": {
+      "help": "It looks like:",
+      "label": "Account SID"
+    },
+    "authenticationToken": {
+      "help": "It looks like:",
+      "label": "Authentication Token"
+    }
+  },
   "updated": "The sender has been updated."
 }
