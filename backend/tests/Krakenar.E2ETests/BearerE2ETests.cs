@@ -13,7 +13,7 @@ public class BearerE2ETests : E2ETests
   }
 
   [Fact(DisplayName = "Bearer authentication should work correctly.")]
-  public async Task Given_ValidCredentials_When_SignIn_Then_SessionAuthenticated()
+  public async Task Given_ValidCredentials_When_SignIn_Then_BearerAuthenticated()
   {
     Uri requestUri = new("/api/auth/token", UriKind.Relative);
     using HttpRequestMessage getTokenRequest = new(HttpMethod.Post, requestUri);

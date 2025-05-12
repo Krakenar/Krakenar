@@ -6,6 +6,7 @@ public interface IKrakenarSettings
 {
   string? BaseUrl { get; }
 
+  string? ApiKey { get; }
   BasicCredentials? Basic { get; }
   string? Bearer { get; }
 
@@ -19,6 +20,7 @@ public class KrakenarSettings : IKrakenarSettings
 
   public string? BaseUrl { get; set; }
 
+  public string? ApiKey { set; get; }
   public BasicCredentials? Basic { get; set; }
   public string? Bearer { get; set; }
 
@@ -35,6 +37,11 @@ public class KrakenarSettings : IKrakenarSettings
       settings.BaseUrl = baseUrl.Trim();
     }
 
+    string? apiKey = Environment.GetEnvironmentVariable("KRAKENAR_API_KEY");
+    if (!string.IsNullOrWhiteSpace(apiKey))
+    {
+      settings.ApiKey = apiKey.Trim();
+    }
     string? username = Environment.GetEnvironmentVariable("KRAKENAR_BASIC_USERNAME");
     string? password = Environment.GetEnvironmentVariable("KRAKENAR_BASIC_PASSWORD");
     if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
@@ -44,7 +51,7 @@ public class KrakenarSettings : IKrakenarSettings
     string? bearer = Environment.GetEnvironmentVariable("KRAKENAR_BEARER_TOKEN");
     if (!string.IsNullOrWhiteSpace(bearer))
     {
-      settings.Bearer = bearer;
+      settings.Bearer = bearer.Trim();
     }
 
     string? realm = Environment.GetEnvironmentVariable("KRAKENAR_REALM");

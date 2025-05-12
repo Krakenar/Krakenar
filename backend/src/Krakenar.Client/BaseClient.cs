@@ -14,6 +14,10 @@ public abstract class BaseClient
     {
       HttpClient.BaseAddress = new Uri(settings.BaseUrl.Trim(), UriKind.Absolute);
     }
+    if (!string.IsNullOrWhiteSpace(settings.ApiKey))
+    {
+      HttpClient.DefaultRequestHeaders.Add(Headers.ApiKey, settings.ApiKey);
+    }
     if (settings.Basic is not null && !string.IsNullOrWhiteSpace(settings.Basic.Username) && !string.IsNullOrWhiteSpace(settings.Basic.Password))
     {
       string value = string.Join(' ', Schemes.Basic, Convert.ToBase64String(Encoding.UTF8.GetBytes(settings.Basic.ToString())));

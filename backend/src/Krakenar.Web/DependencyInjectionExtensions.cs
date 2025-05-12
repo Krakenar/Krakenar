@@ -21,6 +21,7 @@ public static class DependencyInjectionExtensions
 
     string[] authenticationSchemes = configuration.GetKrakenarAuthenticationSchemes();
     AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
+      .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(Schemes.ApiKey, options => { })
       .AddScheme<BearerAuthenticationOptions, BearerAuthenticationHandler>(Schemes.Bearer, options => { })
       .AddScheme<SessionAuthenticationOptions, SessionAuthenticationHandler>(Schemes.Session, options => { });
     if (authenticationSchemes.Contains(Schemes.Basic))
@@ -59,7 +60,7 @@ public static class DependencyInjectionExtensions
   {
     List<string> schemes = new(capacity: 4)
     {
-      //Schemes.ApiKey, // ISSUE #15: https://github.com/Krakenar/Krakenar/issues/15
+      Schemes.ApiKey,
       Schemes.Bearer,
       Schemes.Session
     };

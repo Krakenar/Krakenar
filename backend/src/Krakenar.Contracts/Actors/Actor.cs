@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Users;
+﻿using Krakenar.Contracts.ApiKeys;
+using Krakenar.Contracts.Users;
 
 namespace Krakenar.Contracts.Actors;
 
@@ -20,6 +21,13 @@ public class Actor
   public Actor(string displayName)
   {
     DisplayName = displayName;
+  }
+
+  public Actor(ApiKey apiKey) : this(apiKey.Name)
+  {
+    RealmId = apiKey.Realm?.Id;
+    Type = ActorType.User;
+    Id = apiKey.Id;
   }
 
   public Actor(User user) : this(user.FullName ?? user.UniqueName)
