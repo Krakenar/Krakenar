@@ -28,7 +28,14 @@ public class DeleteSenderHandler : ICommandHandler<DeleteSender, SenderDto?>
     }
     SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
 
-    // ISSUE #46: https://github.com/Krakenar/Krakenar/issues/46
+    if (sender.IsDefault)
+    {
+      int count = await SenderQuerier.CountAsync(sender.Kind, cancellationToken);
+      if (count > 1)
+      {
+        throw new CannotDeleteDefaultSenderException(sender);
+      }
+    }
 
     sender.Delete(ApplicationContext.ActorId);
     await SenderRepository.SaveAsync(sender, cancellationToken);

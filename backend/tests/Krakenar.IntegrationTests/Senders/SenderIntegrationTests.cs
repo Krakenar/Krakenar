@@ -270,6 +270,19 @@ public class SenderIntegrationTests : IntegrationTests
     Assert.Equal(_twilio.EntityId, sender.Id);
   }
 
+  [Fact(DisplayName = "It should throw CannotDeleteDefaultSenderException when deleting the default sender with other senders of the same kind.")]
+  public async Task Given_OtherSendersInKind_When_HandleAsync_Then_CannotDeleteDefaultSenderException()
+  {
+    Assert.NotNull(_sendGrid.Email);
+    Sender otherSender = new(_sendGrid.Email, SenderHelper.GenerateSendGridSettings(), isDefault: false, ActorId, SenderId.NewId(Realm.Id));
+    await _senderRepository.SaveAsync(otherSender);
+
+    var exception = await Assert.ThrowsAsync<CannotDeleteDefaultSenderException>(async () => await _senderService.DeleteAsync(_sendGrid.EntityId));
+    Assert.Equal(Realm.Id.ToGuid(), exception.RealmId);
+    Assert.Equal(_sendGrid.EntityId, exception.SenderId);
+    Assert.Equal(_sendGrid.Kind, exception.Kind);
+  }
+
   [Fact(DisplayName = "It should throw TooManyResultsException when multiple senders were read.")]
   public async Task Given_MultipleResults_When_Read_Then_TooManyResultsException()
   {

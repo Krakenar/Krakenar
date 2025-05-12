@@ -1,4 +1,8 @@
 {
+  "cannotDeleteDefault": {
+    "help": "Unless there is no other sender of the same type, you cannot delete the default sender.",
+    "lead": "The default sender cannot be deleted."
+  },
   "contact": "Contact",
   "create": "New Sender",
   "created": "The sender has been created.",
