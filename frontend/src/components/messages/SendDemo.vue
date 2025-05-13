@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { TarButton, TarCheckbox } from "logitar-vue3-ui";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import LocaleSelect from "@/components/shared/LocaleSelect.vue";
@@ -8,10 +8,10 @@ import SentMessage from "./SentMessage.vue";
 import TemplateSelect from "@/components/templates/TemplateSelect.vue";
 import VariableList from "./VariableList.vue";
 import locales from "@/resources/locales.json";
+import type { ContentType, Template } from "@/types/templates";
 import type { Locale } from "@/types/i18n";
 import type { SendMessagePayload, SentMessages, Variable } from "@/types/messages";
 import type { Sender } from "@/types/senders";
-import type { Template } from "@/types/templates";
 import { sendMessage } from "@/api/messages";
 import { useAccountStore } from "@/stores/account";
 import { useForm } from "@/forms";
@@ -32,6 +32,8 @@ const selectedLocale = ref<Locale | undefined>(locales.find(({ code }) => code =
 const selectedTemplate = ref<Template>();
 const sentMessageId = ref<string>("");
 const variables = ref<Variable[]>([]);
+
+const contentType = computed<ContentType | undefined>(() => (props.sender?.kind === "Phone" ? "text/plain" : undefined));
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
@@ -64,7 +66,7 @@ async function submit(): Promise<void> {
     <SentMessage v-if="sentMessageId" :id="sentMessageId" />
     <form @submit.prevent="handleSubmit(submit)">
       <!-- TODO(fpion): Sender -->
-      <TemplateSelect v-if="!template" :model-value="selectedTemplate?.id" required @selected="selectedTemplate = $event" />
+      <TemplateSelect v-if="!template" :content-type="contentType" :model-value="selectedTemplate?.id" required @selected="selectedTemplate = $event" />
       <LocaleSelect :model-value="selectedLocale?.code" :required="ignoreUserLocale" @selected="selectedLocale = $event">
         <template #after>
           <TarCheckbox id="ignore-user-locale" :label="t('messages.ignoreUserLocale')" v-model="ignoreUserLocale" />
