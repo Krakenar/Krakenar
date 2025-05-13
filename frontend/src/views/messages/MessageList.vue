@@ -40,7 +40,7 @@ const timestamp = ref<number>(0);
 const total = ref<number>(0);
 
 const count = computed<number>(() => parseNumber(route.query.count?.toString()) || 10);
-const isDemo = computed<boolean | undefined>(() => parseBoolean(route.query.isDescending?.toString()));
+const isDemo = computed<boolean | undefined>(() => parseBoolean(route.query.demo?.toString()));
 const isDescending = computed<boolean>(() => parseBoolean(route.query.isDescending?.toString()) ?? false);
 const page = computed<number>(() => parseNumber(route.query.page?.toString()) || 1);
 const search = computed<string>(() => route.query.search?.toString() ?? "");

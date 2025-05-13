@@ -13,7 +13,6 @@ withDefaults(
     label?: string;
     modelValue?: string;
     placeholder?: string;
-    required?: boolean | string;
   }>(),
   {
     id: "status",
@@ -42,7 +41,6 @@ defineEmits<{
     :model-value="modelValue"
     :options="options"
     :placeholder="t(placeholder)"
-    :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>
