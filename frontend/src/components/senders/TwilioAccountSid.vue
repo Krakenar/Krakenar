@@ -15,7 +15,7 @@ withDefaults(
     type?: InputType;
   }>(),
   {
-    id: "api-key",
+    id: "account-sid",
     label: "senders.twilio.accountSid.label",
     type: "text",
   },

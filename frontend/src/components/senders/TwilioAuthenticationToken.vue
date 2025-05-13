@@ -15,7 +15,7 @@ withDefaults(
     type?: InputType;
   }>(),
   {
-    id: "api-key",
+    id: "authentication-token",
     label: "senders.twilio.authenticationToken.label",
     type: "password",
   },
