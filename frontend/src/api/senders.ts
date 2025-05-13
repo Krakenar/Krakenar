@@ -53,6 +53,11 @@ export async function searchSenders(payload: SearchSendersPayload): Promise<Sear
   return (await get<SearchResults<Sender>>(url)).data;
 }
 
+export async function setDefaultSender(id: string): Promise<Sender> {
+  const url: string = new urlUtils.UrlBuilder({ path: "/api/senders/{id}/default" }).setParameter("id", id).buildRelative();
+  return (await patch<void, Sender>(url)).data;
+}
+
 export async function updateSender(id: string, payload: UpdateSenderPayload): Promise<Sender> {
   const url: string = createUrlBuilder(id).buildRelative();
   return (await patch<UpdateSenderPayload, Sender>(url, payload)).data;

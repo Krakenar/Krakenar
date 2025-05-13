@@ -6,7 +6,10 @@
   "contact": "Contact",
   "create": "Nouvel expéditeur",
   "created": "L’expéditeur a été créé.",
-  "default": "Par défaut",
+  "default": {
+    "label": "Par défaut",
+    "set": "L’expéditeur a été défini par défaut."
+  },
   "delete": {
     "confirm": "Afin de supprimer l’expéditeur, veuillez entrer son nom dans le champs suivant.",
     "title": "Supprimer l’expéditeur"

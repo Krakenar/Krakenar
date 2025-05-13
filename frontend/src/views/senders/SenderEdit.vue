@@ -4,6 +4,7 @@ import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import DefaultButton from "@/components/senders/DefaultButton.vue";
 import DeleteSender from "@/components/senders/DeleteSender.vue";
 import SendGridSettingsEdit from "@/components/senders/SendGridSettingsEdit.vue";
 import SenderGeneral from "@/components/senders/SenderGeneral.vue";
@@ -35,6 +36,16 @@ function setMetadata(updated: Sender): void {
 function onDeleted(): void {
   toasts.success("senders.deleted");
   router.push({ name: "SenderList" });
+}
+
+function onSetDefault(updated: Sender): void {
+  if (sender.value) {
+    sender.value.version = updated.version;
+    sender.value.updatedBy = updated.updatedBy;
+    sender.value.updatedOn = updated.updatedOn;
+    sender.value.isDefault = updated.isDefault;
+  }
+  toasts.success("senders.default.set");
 }
 
 function onGeneralUpdated(updated: Sender): void {
@@ -88,7 +99,8 @@ onMounted(async () => {
       <h1>{{ formatSender(sender) }}</h1>
       <StatusDetail :aggregate="sender" />
       <div class="mb-3">
-        <DeleteSender :sender="sender" @deleted="onDeleted" @error="handleError" />
+        <DeleteSender class="me-1" :sender="sender" @deleted="onDeleted" @error="handleError" />
+        <DefaultButton class="ms-1" :sender="sender" @error="handleError" @saved="onSetDefault" />
       </div>
       <TarTabs>
         <TarTab active id="general" :title="t('general')">

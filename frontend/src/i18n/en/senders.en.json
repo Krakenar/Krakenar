@@ -6,7 +6,10 @@
   "contact": "Contact",
   "create": "New Sender",
   "created": "The sender has been created.",
-  "default": "Default",
+  "default": {
+    "label": "Default",
+    "set": "The sender has been set default."
+  },
   "delete": {
     "confirm": "To delete the sender, enter its name in the field below.",
     "title": "Delete Sender"

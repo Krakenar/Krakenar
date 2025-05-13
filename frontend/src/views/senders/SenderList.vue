@@ -197,7 +197,7 @@ watch(
                 <template v-else-if="sender.phone"><font-awesome-icon icon="fas fa-phone" /> {{ sender.phone.e164Formatted }}</template>
                 <template v-if="sender.isDefault">
                   <br />
-                  <TarBadge><font-awesome-icon icon="fas fa-check" /> {{ t("senders.default") }}</TarBadge>
+                  <TarBadge><font-awesome-icon icon="fas fa-check" /> {{ t("senders.default.label") }}</TarBadge>
                 </template>
               </RouterLink>
             </td>
