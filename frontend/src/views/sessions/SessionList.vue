@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -9,6 +9,8 @@ import { useRoute, useRouter } from "vue-router";
 import ActiveBadge from "@/components/sessions/ActiveBadge.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
+import EditIcon from "@/components/shared/EditIcon.vue";
+import PersistentBadge from "@/components/sessions/PersistentBadge.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
@@ -174,12 +176,10 @@ watch(
         <tbody>
           <tr v-for="session in sessions" :key="session.id">
             <td>
-              <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }">
-                <font-awesome-icon icon="fas fa-edit" /> {{ d(session.createdOn, "medium") }}
-              </RouterLink>
+              <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }"><EditIcon /> {{ d(session.createdOn, "medium") }}</RouterLink>
               <template v-if="session.isPersistent">
                 <br />
-                <TarBadge variant="info"><font-awesome-icon icon="fas fa-check" /> {{ t("sessions.persistent") }}</TarBadge>
+                <PersistentBadge />
               </template>
             </td>
             <td>

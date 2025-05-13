@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarBadge, TarButton, TarSelect, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, TarSelect, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -9,7 +9,9 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateSender from "@/components/senders/CreateSender.vue";
+import DefaultBadge from "@/components/senders/DefaultBadge.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
+import SenderIcon from "@/components/senders/SenderIcon.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { SearchResults } from "@/types/search";
@@ -207,11 +209,12 @@ watch(
           <tr v-for="sender in senders" :key="sender.id">
             <td>
               <RouterLink :to="{ name: 'SenderEdit', params: { id: sender.id } }">
-                <template v-if="sender.email"><font-awesome-icon icon="fas fa-at" /> {{ sender.email.address }}</template>
-                <template v-else-if="sender.phone"><font-awesome-icon icon="fas fa-phone" /> {{ sender.phone.e164Formatted }}</template>
+                <SenderIcon class="me-1" :sender="sender" />
+                <template v-if="sender.email">{{ sender.email.address }}</template>
+                <template v-else-if="sender.phone">{{ sender.phone.e164Formatted }}</template>
                 <template v-if="sender.isDefault">
                   <br />
-                  <TarBadge><font-awesome-icon icon="fas fa-check" /> {{ t("senders.default.label") }}</TarBadge>
+                  <DefaultBadge />
                 </template>
               </RouterLink>
             </td>

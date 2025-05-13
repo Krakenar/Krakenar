@@ -9,6 +9,7 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateTemplate from "@/components/templates/CreateTemplate.vue";
+import EditIcon from "@/components/shared/EditIcon.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
@@ -185,9 +186,7 @@ watch(
         <tbody>
           <tr v-for="template in templates" :key="template.id">
             <td>
-              <RouterLink :to="{ name: 'TemplateEdit', params: { id: template.id } }">
-                <font-awesome-icon icon="fas fa-edit" /> {{ template.uniqueName }}
-              </RouterLink>
+              <RouterLink :to="{ name: 'TemplateEdit', params: { id: template.id } }"><EditIcon /> {{ template.uniqueName }}</RouterLink>
             </td>
             <td>
               <template v-if="template.displayName">{{ template.displayName }}</template>

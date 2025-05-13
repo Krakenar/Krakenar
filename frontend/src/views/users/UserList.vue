@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -16,6 +16,7 @@ import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import UserAvatar from "@/components/users/UserAvatar.vue";
+import VerifiedBadge from "@/components/users/VerifiedBadge.vue";
 import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { SearchResults } from "@/types/search";
 import type { User, UserSort, SearchUsersPayload } from "@/types/users";
@@ -226,21 +227,17 @@ watch(
               <EnabledBadge v-else />
             </td>
             <td>
-              <font-awesome-icon icon="fas fa-at" />
+              <font-awesome-icon class="me-1" icon="fas fa-at" />
               <template v-if="user.email">
                 {{ user.email.address }}
-                <TarBadge v-if="user.email.isVerified" class="ms-1" variant="info">
-                  <font-awesome-icon icon="fas fa-certificate" /> {{ t("users.email.verified.label") }}
-                </TarBadge>
+                <VerifiedBadge v-if="user.email.isVerified" class="ms-1" text="users.email.verified.label" />
               </template>
               <span class="ms-1 text-muted" v-else>{{ "—" }}</span>
               <br />
-              <font-awesome-icon icon="fas fa-phone" />
+              <font-awesome-icon class="me-1" icon="fas fa-phone" />
               <template v-if="user.phone">
                 {{ user.phone.e164Formatted }}
-                <TarBadge v-if="user.phone.isVerified" class="ms-1" variant="info">
-                  <font-awesome-icon icon="fas fa-certificate" /> {{ t("users.phone.verified.label") }}
-                </TarBadge>
+                <VerifiedBadge v-if="user.phone.isVerified" class="ms-1" text="users.phone.verified.label" />
               </template>
               <span class="ms-1 text-muted" v-else>{{ "—" }}</span>
             </td>

@@ -9,6 +9,7 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateApiKey from "@/components/apiKeys/CreateApiKey.vue";
+import EditIcon from "@/components/shared/EditIcon.vue";
 import ExpiredBadge from "@/components/apiKeys/ExpiredBadge.vue";
 import RoleSelect from "@/components/roles/RoleSelect.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
@@ -197,7 +198,7 @@ watch(
         <tbody>
           <tr v-for="apiKey in apiKeys" :key="apiKey.id">
             <td>
-              <RouterLink :to="{ name: 'ApiKeyEdit', params: { id: apiKey.id } }"><font-awesome-icon icon="fas fa-edit" /> {{ apiKey.name }}</RouterLink>
+              <RouterLink :to="{ name: 'ApiKeyEdit', params: { id: apiKey.id } }"><EditIcon /> {{ apiKey.name }}</RouterLink>
             </td>
             <td>
               <ExpiredBadge v-if="isApiKeyExpired(apiKey)" />

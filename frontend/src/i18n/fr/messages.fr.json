@@ -1,5 +1,6 @@
 {
   "demo": "Démo",
+  "empty": "Cette liste est vide.",
   "ignoreUserLocale": "Ignorer la langue de l’utilisateur",
   "missingRecipientContacts": {
     "help": "Afin de recevoir un message, un utilisateur doit avoir une adresse courriel ou un numéro de téléphone, selon l’expéditeur.",
@@ -9,6 +10,24 @@
     "help": "Cliquez sur le bouton ci-dessous pour le voir.",
     "lead": "Votre message a été envoyé !"
   },
+  "sort": {
+    "options": {
+      "CreatedOn": "Date de création",
+      "RecipientCount": "Nombre de destinataires",
+      "Subject": "Sujet",
+      "UpdatedOn": "Dernière modification"
+    }
+  },
+  "status": {
+    "label": "Statut",
+    "options": {
+      "Failed": "Échec",
+      "Succeeded": "Succès",
+      "Unsent": "Non envoyé"
+    },
+    "placeholder": "Sélectionnez un statut"
+  },
+  "title": "Messages",
   "variables": {
     "key": "Clé",
     "title": "Variables",

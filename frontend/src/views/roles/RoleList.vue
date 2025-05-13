@@ -9,6 +9,7 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateRole from "@/components/roles/CreateRole.vue";
+import EditIcon from "@/components/shared/EditIcon.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
@@ -163,7 +164,7 @@ watch(
         <tbody>
           <tr v-for="role in roles" :key="role.id">
             <td>
-              <RouterLink :to="{ name: 'RoleEdit', params: { id: role.id } }"><font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }}</RouterLink>
+              <RouterLink :to="{ name: 'RoleEdit', params: { id: role.id } }"><EditIcon /> {{ role.uniqueName }}</RouterLink>
             </td>
             <td>
               <template v-if="role.displayName">{{ role.displayName }}</template>

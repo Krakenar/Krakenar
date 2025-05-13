@@ -5,6 +5,8 @@ import { arrayUtils, parsingUtils, stringUtils } from "logitar-js";
 import { computed, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 
+import SenderIcon from "@/components/senders/SenderIcon.vue";
+import TemplateIcon from "@/components/templates/TemplateIcon.vue";
 import locales from "@/resources/locales.json";
 import type { CurrentUser } from "@/types/account";
 import type { Locale } from "@/types/i18n";
@@ -102,10 +104,13 @@ watchEffect(() => {
               </RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink :to="{ name: 'SenderList' }" class="nav-link"><font-awesome-icon icon="fas fa-paper-plane" /> {{ t("senders.title") }}</RouterLink>
+              <RouterLink :to="{ name: 'SenderList' }" class="nav-link"><SenderIcon /> {{ t("senders.title") }}</RouterLink>
             </li>
             <li class="nav-item">
-              <RouterLink :to="{ name: 'TemplateList' }" class="nav-link"><font-awesome-icon icon="fas fa-file" /> {{ t("templates.title") }}</RouterLink>
+              <RouterLink :to="{ name: 'TemplateList' }" class="nav-link"><TemplateIcon /> {{ t("templates.title") }}</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'MessageList' }" class="nav-link"><font-awesome-icon icon="fas fa-envelope" /> {{ t("messages.title") }}</RouterLink>
             </li>
           </template>
         </ul>

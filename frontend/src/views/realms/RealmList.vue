@@ -9,6 +9,7 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateRealm from "@/components/realms/CreateRealm.vue";
+import EditIcon from "@/components/shared/EditIcon.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
@@ -163,7 +164,7 @@ watch(
         <tbody>
           <tr v-for="realm in realms" :key="realm.id">
             <td>
-              <RouterLink :to="{ name: 'RealmEdit', params: { id: realm.id } }"> <font-awesome-icon icon="fas fa-edit" /> {{ realm.uniqueSlug }} </RouterLink>
+              <RouterLink :to="{ name: 'RealmEdit', params: { id: realm.id } }"><EditIcon />{{ realm.uniqueSlug }}</RouterLink>
             </td>
             <td>
               <template v-if="realm.displayName">{{ realm.displayName }}</template>

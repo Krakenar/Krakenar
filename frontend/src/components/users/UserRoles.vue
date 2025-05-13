@@ -3,6 +3,7 @@ import { TarButton } from "logitar-vue3-ui";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import EditIcon from "@/components/shared/EditIcon.vue";
 import RoleSelect from "@/components/roles/RoleSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { Role } from "@/types/roles";
@@ -103,9 +104,7 @@ async function submit(): Promise<void> {
       <tbody>
         <tr v-for="role in user.roles" :key="role.id">
           <td>
-            <RouterLink target="_blank" :to="{ name: 'RoleEdit', params: { id: role.id } }">
-              <font-awesome-icon icon="fas fa-edit" /> {{ role.uniqueName }}
-            </RouterLink>
+            <RouterLink target="_blank" :to="{ name: 'RoleEdit', params: { id: role.id } }"><EditIcon /> {{ role.uniqueName }}</RouterLink>
           </td>
           <td>
             <template v-if="role.displayName">{{ role.displayName }}</template>
