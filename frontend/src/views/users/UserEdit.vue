@@ -24,6 +24,7 @@ import { readConfiguration } from "@/api/configuration";
 import { readUser, updateUser } from "@/api/users";
 import { useAccountStore } from "@/stores/account";
 import { useToastStore } from "@/stores/toast";
+import type { CurrentUser } from "@/types/account";
 
 const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -40,6 +41,18 @@ const isCurrentUser = computed<boolean>(() => Boolean(user.value && user.value.i
 function onDeleted(): void {
   toasts.success("users.deleted");
   router.push({ name: "UserList" });
+}
+
+function setCurrentUser(user: User): void {
+  if (isCurrentUser.value && account.currentUser) {
+    const currentUser: CurrentUser = {
+      ...account.currentUser,
+      displayName: user.fullName ?? user.uniqueName,
+      emailAddress: user.email?.address,
+      pictureUrl: user.picture,
+    };
+    account.signIn(currentUser);
+  }
 }
 
 function setMetadata(updated: User): void {
@@ -62,6 +75,7 @@ function onActivationToggled(updated: User): void {
 
 function onAuthenticationUpdated(updated: User): void {
   if (user.value) {
+    setCurrentUser(updated);
     setMetadata(updated);
     user.value.uniqueName = updated.uniqueName;
   }
@@ -69,6 +83,7 @@ function onAuthenticationUpdated(updated: User): void {
 }
 function onContactUpdated(updated: User): void {
   if (user.value) {
+    setCurrentUser(updated);
     setMetadata(updated);
     user.value.address = updated.address;
     user.value.email = updated.email;
@@ -78,6 +93,7 @@ function onContactUpdated(updated: User): void {
 }
 function onPersonalUpdated(updated: User): void {
   if (user.value) {
+    setCurrentUser(updated);
     setMetadata(updated);
     user.value.firstName = updated.firstName;
     user.value.middleName = updated.middleName;
