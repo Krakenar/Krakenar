@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, type SelectOption } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -11,6 +11,7 @@ import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateLanguage from "@/components/languages/CreateLanguage.vue";
 import DefaultBadge from "@/components/languages/DefaultBadge.vue";
 import EditIcon from "@/components/shared/EditIcon.vue";
+import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
@@ -131,15 +132,7 @@ watch(
   <main class="container">
     <h1>{{ t("languages.title") }}</h1>
     <div class="my-3">
-      <TarButton
-        class="me-1"
-        :disabled="isLoading"
-        icon="fas fa-rotate"
-        :loading="isLoading"
-        :status="t('loading')"
-        :text="t('actions.refresh')"
-        @click="refresh()"
-      />
+      <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateLanguage class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">

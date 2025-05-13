@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, type SelectOption } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -11,6 +11,7 @@ import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateUser from "@/components/users/CreateUser.vue";
 import EnabledBadge from "@/components/users/EnabledBadge.vue";
 import HasPasswordSelect from "@/components/users/HasPasswordSelect.vue";
+import RefreshButton from "@/components/shared/RefreshButton.vue";
 import RoleSelect from "@/components/roles/RoleSelect.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
@@ -154,15 +155,7 @@ watch(
   <main class="container-fluid">
     <h1>{{ t("users.title") }}</h1>
     <div class="my-3">
-      <TarButton
-        class="me-1"
-        :disabled="isLoading"
-        icon="fas fa-rotate"
-        :loading="isLoading"
-        :status="t('loading')"
-        :text="t('actions.refresh')"
-        @click="refresh()"
-      />
+      <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateUser class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">

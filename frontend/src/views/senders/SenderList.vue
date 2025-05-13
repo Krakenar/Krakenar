@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, type SelectOption } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -10,6 +10,7 @@ import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateSender from "@/components/senders/CreateSender.vue";
 import DefaultBadge from "@/components/senders/DefaultBadge.vue";
+import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SenderIcon from "@/components/senders/SenderIcon.vue";
 import SenderKindSelect from "@/components/senders/SenderKindSelect.vue";
@@ -140,15 +141,7 @@ watch(
   <main class="container">
     <h1>{{ t("senders.title") }}</h1>
     <div class="my-3">
-      <TarButton
-        class="me-1"
-        :disabled="isLoading"
-        icon="fas fa-rotate"
-        :loading="isLoading"
-        :status="t('loading')"
-        :text="t('actions.refresh')"
-        @click="refresh()"
-      />
+      <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateSender class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
