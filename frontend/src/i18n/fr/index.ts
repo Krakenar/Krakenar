@@ -5,6 +5,7 @@ import dictionaries from "./dictionaries.fr.json";
 import errors from "./errors.fr.json";
 import index from "./index.fr.json";
 import languages from "./languages.fr.json";
+import messages from "./messages.fr.json";
 import realms from "./realms.fr.json";
 import roles from "./roles.fr.json";
 import senders from "./senders.fr.json";
@@ -22,6 +23,7 @@ export default {
   dictionaries,
   errors,
   languages,
+  messages,
   realms,
   roles,
   senders,

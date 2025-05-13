@@ -10,7 +10,6 @@ import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateSender from "@/components/senders/CreateSender.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
-import SenderKindSelect from "@/components/senders/SenderKindSelect.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { SearchResults } from "@/types/search";
@@ -41,6 +40,12 @@ const provider = computed<string>(() => route.query.provider?.toString() ?? "");
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 
+const kindOptions = computed<SelectOption[]>(() =>
+  orderBy(
+    Object.entries(tm(rt("senders.kind.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    "text",
+  ),
+);
 const providerOptions = computed<SelectOption[]>(() =>
   orderBy(
     Object.entries(tm(rt("senders.provider.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
@@ -155,7 +160,16 @@ watch(
       <CreateSender class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
-      <SenderKindSelect class="col" :model-value="kind" @update:model-value="setQuery('kind', $event)" />
+      <TarSelect
+        class="col"
+        floating
+        id="kind"
+        :label="t('senders.kind.label')"
+        :model-value="kind"
+        :options="kindOptions"
+        :placeholder="t('senders.kind.placeholder')"
+        @update:model-value="setQuery('kind', $event)"
+      />
       <TarSelect
         class="col"
         floating

@@ -63,6 +63,17 @@ const router = createRouter({
       path: "/languages/:id",
       component: () => import("./views/languages/LanguageEdit.vue"),
     },
+    // Languages
+    {
+      name: "MessageList",
+      path: "/messages",
+      component: () => import("./views/messages/MessageList.vue"),
+    },
+    {
+      name: "MessageView",
+      path: "/messages/:id",
+      component: () => import("./views/messages/MessageView.vue"),
+    },
     // Realms
     {
       name: "RealmList",

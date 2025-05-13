@@ -1,0 +1,13 @@
+{
+  "demo": "Démo",
+  "ignoreUserLocale": "Ignorer la langue de l’utilisateur",
+  "sent": {
+    "help": "Cliquez sur le bouton ci-dessous pour le voir.",
+    "lead": "Votre message a été envoyé !"
+  },
+  "variables": {
+    "key": "Clé",
+    "title": "Variables",
+    "value": "Valeur"
+  }
+}

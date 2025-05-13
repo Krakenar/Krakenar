@@ -14,7 +14,9 @@
     "remove": "Retirer",
     "restore": "Restaurer",
     "save": "Enregistrer",
-    "validate": "Valider"
+    "send": "Envoyer",
+    "validate": "Valider",
+    "view": "Voir"
   },
   "brand": "Krakenar",
   "by": "Par",

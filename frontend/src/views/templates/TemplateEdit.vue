@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import DeleteTemplate from "@/components/templates/DeleteTemplate.vue";
+import SendDemo from "@/components/messages/SendDemo.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import TemplateContents from "@/components/templates/TemplateContents.vue";
 import TemplateGeneral from "@/components/templates/TemplateGeneral.vue";
@@ -90,6 +91,9 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="contents" :title="t('templates.content.text')">
           <TemplateContents :template="template" @error="handleError" @updated="onContentsUpdated" />
+        </TarTab>
+        <TarTab id="demo" :title="t('messages.demo')">
+          <SendDemo :template="template" @error="handleError" />
         </TarTab>
       </TarTabs>
     </template>
