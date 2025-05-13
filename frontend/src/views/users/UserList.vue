@@ -152,50 +152,52 @@ watch(
 </script>
 
 <template>
-  <main class="container-fluid">
-    <h1>{{ t("users.title") }}</h1>
-    <div class="my-3">
-      <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
-      <CreateUser class="ms-1" @created="onCreated" @error="handleError" />
+  <main>
+    <div class="container">
+      <h1>{{ t("users.title") }}</h1>
+      <div class="my-3">
+        <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
+        <CreateUser class="ms-1" @created="onCreated" @error="handleError" />
+      </div>
+      <div class="mb-3 row">
+        <HasPasswordSelect class="col" :model-value="hasPassword" @update:model-value="setQuery('password', $event?.toString() ?? '')" />
+        <YesNoSelect
+          class="col"
+          id="disabled"
+          label="users.disabled.label"
+          :model-value="isDisabled"
+          @update:model-value="setQuery('disabled', $event?.toString() ?? '')"
+        />
+        <YesNoSelect
+          class="col"
+          id="confirmed"
+          label="users.confirmed"
+          :model-value="isConfirmed"
+          @update:model-value="setQuery('confirmed', $event?.toString() ?? '')"
+        />
+        <YesNoSelect
+          class="col"
+          id="authenticated"
+          label="users.authenticated"
+          :model-value="hasAuthenticated"
+          @update:model-value="setQuery('authenticated', $event?.toString() ?? '')"
+        />
+      </div>
+      <div class="mb-3 row">
+        <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
+        <RoleSelect class="col" :model-value="roleId" @update:model-value="setQuery('role', $event?.toString() ?? '')" />
+        <SortSelect
+          class="col"
+          :descending="isDescending"
+          :model-value="sort"
+          :options="sortOptions"
+          @descending="setQuery('isDescending', $event.toString())"
+          @update:model-value="setQuery('sort', $event)"
+        />
+        <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      </div>
     </div>
-    <div class="mb-3 row">
-      <HasPasswordSelect class="col" :model-value="hasPassword" @update:model-value="setQuery('password', $event?.toString() ?? '')" />
-      <YesNoSelect
-        class="col"
-        id="disabled"
-        label="users.disabled.label"
-        :model-value="isDisabled"
-        @update:model-value="setQuery('disabled', $event?.toString() ?? '')"
-      />
-      <YesNoSelect
-        class="col"
-        id="confirmed"
-        label="users.confirmed"
-        :model-value="isConfirmed"
-        @update:model-value="setQuery('confirmed', $event?.toString() ?? '')"
-      />
-      <YesNoSelect
-        class="col"
-        id="authenticated"
-        label="users.authenticated"
-        :model-value="hasAuthenticated"
-        @update:model-value="setQuery('authenticated', $event?.toString() ?? '')"
-      />
-    </div>
-    <div class="mb-3 row">
-      <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
-      <RoleSelect class="col" :model-value="roleId" @update:model-value="setQuery('role', $event?.toString() ?? '')" />
-      <SortSelect
-        class="col"
-        :descending="isDescending"
-        :model-value="sort"
-        :options="sortOptions"
-        @descending="setQuery('isDescending', $event.toString())"
-        @update:model-value="setQuery('sort', $event)"
-      />
-      <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
-    </div>
-    <template v-if="users.length">
+    <div v-if="users.length" class="container-fluid">
       <table class="table table-striped">
         <thead>
           <tr>
@@ -247,7 +249,9 @@ watch(
         </tbody>
       </table>
       <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
-    </template>
-    <p v-else>{{ t("users.empty") }}</p>
+    </div>
+    <div v-else class="container">
+      <p>{{ t("users.empty") }}</p>
+    </div>
   </main>
 </template>

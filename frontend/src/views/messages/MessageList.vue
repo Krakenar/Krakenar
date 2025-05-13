@@ -140,29 +140,31 @@ watch(
 </script>
 
 <template>
-  <main class="container-fluid">
-    <h1>{{ t("messages.title") }}</h1>
-    <div class="my-3">
-      <RefreshButton :disabled="isLoading" :loading="isLoading" @click="refresh()" />
+  <main>
+    <div class="container">
+      <h1>{{ t("messages.title") }}</h1>
+      <div class="my-3">
+        <RefreshButton :disabled="isLoading" :loading="isLoading" @click="refresh()" />
+      </div>
+      <div class="mb-3 row">
+        <YesNoSelect class="col" id="demo" label="messages.demo" :model-value="isDemo" @update:model-value="setQuery('demo', $event?.toString() ?? '')" />
+        <TemplateSelect class="col" :model-value="template" @update:model-value="setQuery('template', $event)" />
+        <StatusSelect class="col" :model-value="status" @update:model-value="setQuery('status', $event)" />
+      </div>
+      <div class="mb-3 row">
+        <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
+        <SortSelect
+          class="col"
+          :descending="isDescending"
+          :model-value="sort"
+          :options="sortOptions"
+          @descending="setQuery('isDescending', $event.toString())"
+          @update:model-value="setQuery('sort', $event)"
+        />
+        <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
+      </div>
     </div>
-    <div class="mb-3 row">
-      <YesNoSelect class="col" id="demo" label="messages.demo" :model-value="isDemo" @update:model-value="setQuery('demo', $event?.toString() ?? '')" />
-      <TemplateSelect class="col" :model-value="template" @update:model-value="setQuery('template', $event)" />
-      <StatusSelect class="col" :model-value="status" @update:model-value="setQuery('status', $event)" />
-    </div>
-    <div class="mb-3 row">
-      <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
-      <SortSelect
-        class="col"
-        :descending="isDescending"
-        :model-value="sort"
-        :options="sortOptions"
-        @descending="setQuery('isDescending', $event.toString())"
-        @update:model-value="setQuery('sort', $event)"
-      />
-      <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
-    </div>
-    <template v-if="messages.length">
+    <div v-if="messages.length" class="container-fluid">
       <table class="table table-striped">
         <thead>
           <tr>
@@ -208,7 +210,9 @@ watch(
         </tbody>
       </table>
       <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
-    </template>
-    <p v-else>{{ t("messages.empty") }}</p>
+    </div>
+    <div v-else class="container">
+      <p>{{ t("messages.empty") }}</p>
+    </div>
   </main>
 </template>
