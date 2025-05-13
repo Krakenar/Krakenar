@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOption } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils } from "logitar-js";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
+
+import FormSelect from "@/components/forms/FormSelect.vue";
 
 const { orderBy } = arrayUtils;
 const { rt, t, tm } = useI18n();
@@ -13,17 +15,18 @@ withDefaults(
     label?: string;
     modelValue?: string;
     placeholder?: string;
+    required?: boolean | string;
   }>(),
   {
-    id: "content-type",
-    label: "templates.content.type.label",
-    placeholder: "templates.content.type.placeholder",
+    id: "provider",
+    label: "senders.provider.label",
+    placeholder: "senders.provider.placeholder",
   },
 );
 
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    Object.entries(tm(rt("templates.content.type.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    Object.entries(tm(rt("senders.provider.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
     "text",
   ),
 );
@@ -34,13 +37,13 @@ defineEmits<{
 </script>
 
 <template>
-  <TarSelect
-    floating
+  <FormSelect
     :id="id"
     :label="t(label)"
     :model-value="modelValue"
     :options="options"
     :placeholder="t(placeholder)"
+    :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>

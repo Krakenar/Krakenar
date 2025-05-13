@@ -7,7 +7,7 @@ import LocaleSelect from "@/components/shared/LocaleSelect.vue";
 import MissingRecipientContacts from "./MissingRecipientContacts.vue";
 import SenderSelect from "@/components/senders/SenderSelect.vue";
 import SentMessage from "./SentMessage.vue";
-import TemplateSelect from "@/components/templates/TemplateSelect.vue";
+import TemplateFormSelect from "@/components/templates/TemplateFormSelect.vue";
 import VariableList from "./VariableList.vue";
 import locales from "@/resources/locales.json";
 import type { ContentType, Template } from "@/types/templates";
@@ -80,7 +80,7 @@ async function submit(): Promise<void> {
     <SentMessage v-if="sentMessageId" :id="sentMessageId" />
     <form @submit.prevent="handleSubmit(submit)">
       <SenderSelect v-if="!sender" :kind="kind" :model-value="selectedSender?.id" required @selected="selectedSender = $event" />
-      <TemplateSelect v-if="!template" :content-type="contentType" :model-value="selectedTemplate?.id" required @selected="selectedTemplate = $event" />
+      <TemplateFormSelect v-if="!template" :content-type="contentType" :model-value="selectedTemplate?.id" required @selected="selectedTemplate = $event" />
       <LocaleSelect :model-value="selectedLocale?.code" :required="ignoreUserLocale" @selected="selectedLocale = $event">
         <template #after>
           <TarCheckbox id="ignore-user-locale" :label="t('messages.ignoreUserLocale')" v-model="ignoreUserLocale" />

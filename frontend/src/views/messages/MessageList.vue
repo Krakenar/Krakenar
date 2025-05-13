@@ -15,9 +15,12 @@ import SenderIcon from "@/components/senders/SenderIcon.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBadge from "@/components/messages/StatusBadge.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
+import StatusSelect from "@/components/messages/StatusSelect.vue";
 import TemplateIcon from "@/components/templates/TemplateIcon.vue";
+import TemplateSelect from "@/components/templates/TemplateSelect.vue";
 import ViewIcon from "@/components/shared/ViewIcon.vue";
-import type { Message, MessageSort, SearchMessagesPayload } from "@/types/messages";
+import YesNoSelect from "@/components/shared/YesNoSelect.vue";
+import type { Message, MessageSort, MessageStatus, SearchMessagesPayload } from "@/types/messages";
 import type { SearchResults } from "@/types/search";
 import { formatSender, formatTemplate } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
@@ -37,10 +40,13 @@ const timestamp = ref<number>(0);
 const total = ref<number>(0);
 
 const count = computed<number>(() => parseNumber(route.query.count?.toString()) || 10);
+const isDemo = computed<boolean | undefined>(() => parseBoolean(route.query.isDescending?.toString()));
 const isDescending = computed<boolean>(() => parseBoolean(route.query.isDescending?.toString()) ?? false);
 const page = computed<number>(() => parseNumber(route.query.page?.toString()) || 1);
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
+const status = computed<string>(() => route.query.status?.toString() ?? "");
+const template = computed<string>(() => route.query.template?.toString() ?? "");
 
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
@@ -52,6 +58,7 @@ const sortOptions = computed<SelectOption[]>(() =>
 async function refresh(): Promise<void> {
   const payload: SearchMessagesPayload = {
     ids: [],
+    isDemo: isDemo.value,
     search: {
       terms: search.value
         .split(" ")
@@ -59,6 +66,8 @@ async function refresh(): Promise<void> {
         .map((term) => ({ value: `%${term}%` })),
       operator: "And",
     },
+    status: status.value ? (status.value as MessageStatus) : undefined,
+    templateId: template.value,
     sort: sort.value ? [{ field: sort.value as MessageSort, isDescending: isDescending.value }] : [],
     skip: (page.value - 1) * count.value,
     limit: count.value,
@@ -84,7 +93,10 @@ async function refresh(): Promise<void> {
 function setQuery(key: string, value: string): void {
   const query = { ...route.query, [key]: value };
   switch (key) {
+    case "demo":
     case "search":
+    case "status":
+    case "template":
     case "count":
       query.page = "1";
       break;
@@ -102,7 +114,10 @@ watch(
           ...route,
           query: isEmpty(query)
             ? {
+                demo: "",
                 search: "",
+                status: "",
+                template: "",
                 sort: "UpdatedOn",
                 isDescending: "true",
                 page: 1,
@@ -128,6 +143,11 @@ watch(
     <h1>{{ t("messages.title") }}</h1>
     <div class="my-3">
       <TarButton :disabled="isLoading" icon="fas fa-rotate" :loading="isLoading" :status="t('loading')" :text="t('actions.refresh')" @click="refresh()" />
+    </div>
+    <div class="mb-3 row">
+      <YesNoSelect class="col" id="demo" label="messages.demo" :model-value="isDemo" @update:model-value="setQuery('demo', $event?.toString() ?? '')" />
+      <TemplateSelect class="col" :model-value="template" @update:model-value="setQuery('template', $event)" />
+      <StatusSelect class="col" :model-value="status" @update:model-value="setQuery('status', $event)" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />

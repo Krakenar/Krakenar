@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, TarSelect, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -7,6 +7,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
+import ContentTypeSelect from "@/components/templates/ContentTypeSelect.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateTemplate from "@/components/templates/CreateTemplate.vue";
 import EditIcon from "@/components/shared/EditIcon.vue";
@@ -40,12 +41,6 @@ const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 const type = computed<string>(() => route.query.type?.toString() ?? "");
 
-const contentTypeOptions = computed<SelectOption[]>(() =>
-  orderBy(
-    Object.entries(tm(rt("templates.content.type.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
-    "text",
-  ),
-);
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
     Object.entries(tm(rt("templates.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
@@ -152,16 +147,7 @@ watch(
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
-      <TarSelect
-        class="col"
-        floating
-        id="type"
-        :label="t('templates.content.type.label')"
-        :model-value="type"
-        :options="contentTypeOptions"
-        :placeholder="t('templates.content.type.placeholder')"
-        @update:model-value="setQuery('type', $event)"
-      />
+      <ContentTypeSelect class="col" :model-value="type" @update:model-value="setQuery('type', $event)" />
       <SortSelect
         class="col"
         :descending="isDescending"

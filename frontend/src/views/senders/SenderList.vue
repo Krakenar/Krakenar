@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, TarSelect, type SelectOption } from "logitar-vue3-ui";
+import { TarButton, type SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -12,6 +12,8 @@ import CreateSender from "@/components/senders/CreateSender.vue";
 import DefaultBadge from "@/components/senders/DefaultBadge.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SenderIcon from "@/components/senders/SenderIcon.vue";
+import SenderKindSelect from "@/components/senders/SenderKindSelect.vue";
+import SenderProviderSelect from "@/components/senders/SenderProviderSelect.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { SearchResults } from "@/types/search";
@@ -42,18 +44,6 @@ const provider = computed<string>(() => route.query.provider?.toString() ?? "");
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 
-const kindOptions = computed<SelectOption[]>(() =>
-  orderBy(
-    Object.entries(tm(rt("senders.kind.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
-    "text",
-  ),
-);
-const providerOptions = computed<SelectOption[]>(() =>
-  orderBy(
-    Object.entries(tm(rt("senders.provider.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
-    "text",
-  ),
-);
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
     Object.entries(tm(rt("senders.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
@@ -162,26 +152,8 @@ watch(
       <CreateSender class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
-      <TarSelect
-        class="col"
-        floating
-        id="kind"
-        :label="t('senders.kind.label')"
-        :model-value="kind"
-        :options="kindOptions"
-        :placeholder="t('senders.kind.placeholder')"
-        @update:model-value="setQuery('kind', $event)"
-      />
-      <TarSelect
-        class="col"
-        floating
-        id="provider"
-        :label="t('senders.provider.label')"
-        :model-value="provider"
-        :options="providerOptions"
-        :placeholder="t('senders.provider.placeholder')"
-        @update:model-value="setQuery('provider', $event)"
-      />
+      <SenderKindSelect class="col" :model-value="kind" @update:model-value="setQuery('kind', $event)" />
+      <SenderProviderSelect class="col" :model-value="provider" @update:model-value="setQuery('provider', $event)" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
