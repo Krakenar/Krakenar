@@ -1,6 +1,10 @@
 {
   "demo": "Démo",
   "ignoreUserLocale": "Ignorer la langue de l’utilisateur",
+  "missingRecipientContacts": {
+    "help": "Afin de recevoir un message, un utilisateur doit avoir une adresse courriel ou un numéro de téléphone, selon l’expéditeur.",
+    "lead": "Informations de contact incomplètes !"
+  },
   "sent": {
     "help": "Cliquez sur le bouton ci-dessous pour le voir.",
     "lead": "Votre message a été envoyé !"

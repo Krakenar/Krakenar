@@ -1,6 +1,10 @@
 {
   "demo": "Demo",
   "ignoreUserLocale": "Ignore user locale",
+  "missingRecipientContacts": {
+    "help": "To receive a message, a user must have an email or a phone, depending on the sender.",
+    "lead": "Missing contact information!"
+  },
   "sent": {
     "help": "Click the button below to view it.",
     "lead": "Your message has been sent!"

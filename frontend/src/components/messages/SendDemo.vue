@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import LocaleSelect from "@/components/shared/LocaleSelect.vue";
+import MissingRecipientContacts from "./MissingRecipientContacts.vue";
 import SenderSelect from "@/components/senders/SenderSelect.vue";
 import SentMessage from "./SentMessage.vue";
 import TemplateSelect from "@/components/templates/TemplateSelect.vue";
@@ -13,6 +14,8 @@ import type { ContentType, Template } from "@/types/templates";
 import type { Locale } from "@/types/i18n";
 import type { SendMessagePayload, SentMessages, Variable } from "@/types/messages";
 import type { Sender, SenderKind } from "@/types/senders";
+import { ErrorCodes, StatusCodes } from "@/types/api";
+import { isError } from "@/helpers/error";
 import { sendMessage } from "@/api/messages";
 import { useAccountStore } from "@/stores/account";
 import { useForm } from "@/forms";
@@ -29,6 +32,7 @@ if ((!props.sender && !props.template) || (props.sender && props.template)) {
 }
 
 const ignoreUserLocale = ref<boolean>(false);
+const missingRecipientContacts = ref<boolean>(false);
 const selectedLocale = ref<Locale | undefined>(locales.find(({ code }) => code === locale.value));
 const selectedSender = ref<Sender>();
 const selectedTemplate = ref<Template>();
@@ -45,6 +49,7 @@ const emit = defineEmits<{
 const { isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   try {
+    missingRecipientContacts.value = false;
     sentMessageId.value = "";
     const payload: SendMessagePayload = {
       sender: props.sender?.id ?? selectedSender.value?.id ?? "",
@@ -60,13 +65,18 @@ async function submit(): Promise<void> {
       sentMessageId.value = sentMessages.ids[0];
     }
   } catch (e: unknown) {
-    emit("error", e);
+    if (isError(e, StatusCodes.BadRequest, ErrorCodes.MissingRecipientContacts)) {
+      missingRecipientContacts.value = true;
+    } else {
+      emit("error", e);
+    }
   }
 }
 </script>
 
 <template>
   <div>
+    <MissingRecipientContacts v-model="missingRecipientContacts" />
     <SentMessage v-if="sentMessageId" :id="sentMessageId" />
     <form @submit.prevent="handleSubmit(submit)">
       <SenderSelect v-if="!sender" :kind="kind" :model-value="selectedSender?.id" required @selected="selectedSender = $event" />
