@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { TarCheckbox, type InputType } from "logitar-vue3-ui";
-import { computed } from "vue";
-import { parsingUtils } from "logitar-js";
+import type { InputType } from "logitar-vue3-ui";
 import { useI18n } from "vue-i18n";
 
 import FormInput from "@/components/forms/FormInput.vue";
 
-const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     disabled?: boolean | string;
     id?: string;
@@ -18,7 +15,6 @@ const props = withDefaults(
     modelValue?: string;
     required?: boolean | string;
     type?: InputType;
-    verified?: boolean | string;
   }>(),
   {
     id: "email-address",
@@ -28,17 +24,9 @@ const props = withDefaults(
   },
 );
 
-const isVerified = computed<boolean>(() => parseBoolean(props.verified) ?? false);
-
-const emit = defineEmits<{
+defineEmits<{
   (e: "update:model-value", value: string): void;
-  (e: "verified", value: boolean): void;
 }>();
-
-function onAddressChange(value: string) {
-  emit("update:model-value", value);
-  emit("verified", false);
-}
 </script>
 
 <template>
@@ -50,18 +38,10 @@ function onAddressChange(value: string) {
     :model-value="modelValue"
     :required="required"
     :type="type"
-    @update:model-value="onAddressChange"
+    @update:model-value="$emit('update:model-value', $event)"
   >
     <template #append>
-      <div class="input-group-text">
-        <TarCheckbox
-          :disabled="disabled"
-          :id="`${id}-verified`"
-          :label="t('users.email.verified.label')"
-          :model-value="isVerified"
-          @update:model-value="$emit('verified', $event)"
-        />
-      </div>
+      <slot name="append"></slot>
     </template>
   </FormInput>
 </template>

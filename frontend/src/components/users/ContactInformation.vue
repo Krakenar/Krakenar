@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton } from "logitar-vue3-ui";
+import { TarButton, TarCheckbox } from "logitar-vue3-ui";
 import { computed, ref, watch } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
@@ -82,8 +82,17 @@ function onRegionChange(region: string): void {
   address.value.isVerified = false;
 }
 
+function onEmailAddressChange(address: string): void {
+  email.value.address = address;
+  email.value.isVerified = false;
+}
+
 function onPhoneCountryChange(country: string): void {
   phone.value.countryCode = country;
+  phone.value.isVerified = false;
+}
+function onPhoneNumberChange(number: string): void {
+  phone.value.number = number;
   phone.value.isVerified = false;
 }
 function onPhoneExtensionChange(extension: string): void {
@@ -156,18 +165,23 @@ watch(
   <form @submit.prevent="handleSubmit(submit)">
     <div class="mb-3">
       <h5>{{ t("users.email.title") }}</h5>
-      <EmailAddressInput :required="email.isVerified" :verified="email.isVerified" v-model="email.address" @verified="email.isVerified = $event" />
+      <EmailAddressInput :model-value="email.address" :required="email.isVerified" @update:model-value="onEmailAddressChange">
+        <template #append>
+          <div class="input-group-text">
+            <TarCheckbox id="email-address-verified" :label="t('users.email.verified.label')" v-model="email.isVerified" />
+          </div>
+        </template>
+      </EmailAddressInput>
       <h5>{{ t("users.phone.title") }}</h5>
       <div class="row">
         <CountrySelect class="col" id="phone-country" :model-value="phone.countryCode" :required="isPhoneRequired" @update:model-value="onPhoneCountryChange" />
-        <PhoneNumberInput
-          class="col"
-          :country="phoneCountry"
-          :required="isPhoneRequired"
-          :verified="phone.isVerified"
-          v-model="phone.number"
-          @verified="phone.isVerified = $event"
-        />
+        <PhoneNumberInput class="col" :country="phoneCountry" :model-value="phone.number" :required="isPhoneRequired" @update:model-value="onPhoneNumberChange">
+          <template #append>
+            <div class="input-group-text">
+              <TarCheckbox id="phone-number-verified" :label="t('users.phone.verified.label')" v-model="phone.isVerified" />
+            </div>
+          </template>
+        </PhoneNumberInput>
         <PhoneExtensionInput class="col" :model-value="phone.extension" @update:model-value="onPhoneExtensionChange" />
       </div>
       <h5>{{ t("users.address.title") }}</h5>
