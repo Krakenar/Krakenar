@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import LocaleSelect from "@/components/shared/LocaleSelect.vue";
+import SenderSelect from "@/components/senders/SenderSelect.vue";
 import SentMessage from "./SentMessage.vue";
 import TemplateSelect from "@/components/templates/TemplateSelect.vue";
 import VariableList from "./VariableList.vue";
@@ -11,7 +12,7 @@ import locales from "@/resources/locales.json";
 import type { ContentType, Template } from "@/types/templates";
 import type { Locale } from "@/types/i18n";
 import type { SendMessagePayload, SentMessages, Variable } from "@/types/messages";
-import type { Sender } from "@/types/senders";
+import type { Sender, SenderKind } from "@/types/senders";
 import { sendMessage } from "@/api/messages";
 import { useAccountStore } from "@/stores/account";
 import { useForm } from "@/forms";
@@ -29,11 +30,13 @@ if ((!props.sender && !props.template) || (props.sender && props.template)) {
 
 const ignoreUserLocale = ref<boolean>(false);
 const selectedLocale = ref<Locale | undefined>(locales.find(({ code }) => code === locale.value));
+const selectedSender = ref<Sender>();
 const selectedTemplate = ref<Template>();
 const sentMessageId = ref<string>("");
 const variables = ref<Variable[]>([]);
 
 const contentType = computed<ContentType | undefined>(() => (props.sender?.kind === "Phone" ? "text/plain" : undefined));
+const kind = computed<SenderKind | undefined>(() => (props.template?.content.type === "text/html" ? "Email" : undefined));
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
@@ -42,8 +45,9 @@ const emit = defineEmits<{
 const { isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   try {
+    sentMessageId.value = "";
     const payload: SendMessagePayload = {
-      sender: props.sender?.id ?? "", // TODO(fpion): SenderKindSelect or SenderSelect?
+      sender: props.sender?.id ?? selectedSender.value?.id ?? "",
       template: props.template?.id ?? selectedTemplate.value?.id ?? "",
       recipients: [{ type: "To", userId: account.currentUser?.id }], // TODO(fpion): will not work inside a realm
       ignoreUserLocale: ignoreUserLocale.value,
@@ -65,7 +69,7 @@ async function submit(): Promise<void> {
   <div>
     <SentMessage v-if="sentMessageId" :id="sentMessageId" />
     <form @submit.prevent="handleSubmit(submit)">
-      <!-- TODO(fpion): Sender -->
+      <SenderSelect v-if="!sender" :kind="kind" :model-value="selectedSender?.id" required @selected="selectedSender = $event" />
       <TemplateSelect v-if="!template" :content-type="contentType" :model-value="selectedTemplate?.id" required @selected="selectedTemplate = $event" />
       <LocaleSelect :model-value="selectedLocale?.code" :required="ignoreUserLocale" @selected="selectedLocale = $event">
         <template #after>
