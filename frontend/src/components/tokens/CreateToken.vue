@@ -75,7 +75,13 @@ async function submit(): Promise<void> {
       <h5>{{ t("tokens.claims.title") }}</h5>
       <div class="row">
         <SubjectInput class="col" v-model="subject" />
-        <EmailAddressInput class="col" v-model="email.address" :verified="email.isVerified" @verified="email.isVerified = $event" />
+        <EmailAddressInput class="col" v-model="email.address">
+          <template #append>
+            <div class="input-group-text">
+              <TarCheckbox id="email-address-verified" :label="t('users.email.verified.label')" v-model="email.isVerified" />
+            </div>
+          </template>
+        </EmailAddressInput>
       </div>
       <ClaimList v-model="claims" />
       <div class="mb-3">

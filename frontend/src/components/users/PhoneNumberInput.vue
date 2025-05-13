@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import { TarCheckbox } from "logitar-vue3-ui";
-import { computed } from "vue";
-import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
 import FormInput from "@/components/forms/FormInput.vue";
 import type { Country } from "@/types/users";
 
-const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     country?: Country;
     id?: string;
@@ -27,17 +23,9 @@ const props = withDefaults(
   },
 );
 
-const isVerified = computed<boolean>(() => parseBoolean(props.verified) ?? false);
-
-const emit = defineEmits<{
+defineEmits<{
   (e: "update:model-value", value: string): void;
-  (e: "verified", value: boolean): void;
 }>();
-
-function onNumberChange(value: string) {
-  emit("update:model-value", value);
-  emit("verified", false);
-}
 </script>
 
 <template>
@@ -48,17 +36,10 @@ function onNumberChange(value: string) {
     :model-value="modelValue"
     :required="required"
     :rules="{ phone: country?.code }"
-    @update:model-value="onNumberChange"
+    @update:model-value="$emit('update:model-value', $event)"
   >
     <template #append>
-      <div class="input-group-text">
-        <TarCheckbox
-          :id="`${id}-verified`"
-          :label="t('users.phone.verified.label')"
-          :model-value="isVerified"
-          @update:model-value="$emit('verified', $event)"
-        />
-      </div>
+      <slot name="append"></slot>
     </template>
   </FormInput>
 </template>

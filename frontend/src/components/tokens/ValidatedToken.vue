@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { TarCheckbox } from "logitar-vue3-ui";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -42,7 +43,13 @@ function isDateTimeClaim(claim: Claim): boolean {
     <h3>{{ t("tokens.claims.validated") }}</h3>
     <div class="row">
       <SubjectInput class="col" disabled :model-value="token.subject ?? ''" />
-      <EmailAddressInput class="col" disabled :model-value="token.email?.address" />
+      <EmailAddressInput class="col" disabled :model-value="token.email?.address">
+        <template #append>
+          <div class="input-group-text">
+            <TarCheckbox disabled id="email-address-verified" :label="t('users.email.verified.label')" :model-value="token.email?.isVerified" />
+          </div>
+        </template>
+      </EmailAddressInput>
     </div>
     <h5>{{ t("tokens.claims.other") }}</h5>
     <table v-if="token.claims.length > 0" class="table table-striped">
