@@ -32,6 +32,8 @@ public class UserIntegrationTests : IntegrationTests
 {
   private const string PasswordString = "P@s$W0rD";
 
+  private readonly IOneTimePasswordRepository _oneTimePasswordRepository;
+  private readonly IPasswordManager _passwordManager;
   private readonly IRoleRepository _roleRepository;
   private readonly ISessionRepository _sessionRepository;
   private readonly IUserRepository _userRepository;
@@ -41,6 +43,8 @@ public class UserIntegrationTests : IntegrationTests
 
   public UserIntegrationTests() : base()
   {
+    _oneTimePasswordRepository = ServiceProvider.GetRequiredService<IOneTimePasswordRepository>();
+    _passwordManager = ServiceProvider.GetRequiredService<IPasswordManager>();
     _roleRepository = ServiceProvider.GetRequiredService<IRoleRepository>();
     _sessionRepository = ServiceProvider.GetRequiredService<ISessionRepository>();
     _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
@@ -169,9 +173,13 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Contains(user.Roles, r => r.Id == admin.EntityId);
   }
 
-  [Fact(DisplayName = "It should delete the user and its sessions.")]
-  public async Task Given_User_When_Delete_Then_DeletedWithSessions()
+  [Fact(DisplayName = "It should delete the user, its One-Time Passwords (OTP) and its sessions.")]
+  public async Task Given_User_When_Delete_Then_DeletedWithOTPsAndSessions()
   {
+    Password password = _passwordManager.Hash(Faker.Random.String(length: 6, minChar: '0', maxChar: '9'));
+    OneTimePassword oneTimePassword = new(password, expiresOn: null, maximumAttempts: null, _user, ActorId, OneTimePasswordId.NewId(Realm.Id));
+    await _oneTimePasswordRepository.SaveAsync(oneTimePassword);
+
     Session session = new(_user);
     await _sessionRepository.SaveAsync(session);
 
@@ -181,6 +189,7 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(_user.Version, dto.Version);
 
     Assert.Empty(await KrakenarContext.Users.AsNoTracking().Where(x => x.StreamId == _user.Id.Value).ToArrayAsync());
+    Assert.Empty(await KrakenarContext.OneTimePasswords.AsNoTracking().Where(x => x.StreamId == oneTimePassword.Id.Value).ToArrayAsync());
     Assert.Empty(await KrakenarContext.Sessions.AsNoTracking().Where(x => x.StreamId == session.Id.Value).ToArrayAsync());
   }
 

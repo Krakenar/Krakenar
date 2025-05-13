@@ -3,6 +3,7 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.Passwords;
+using Krakenar.Core.Users;
 using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using OneTimePassword = Krakenar.Core.Passwords.OneTimePassword;
@@ -23,6 +24,17 @@ public class OneTimePasswordQuerier : IOneTimePasswordQuerier
     ApplicationContext = applicationContext;
     OneTimePasswords = context.OneTimePasswords;
     SqlHelper = sqlHelper;
+  }
+
+  public virtual async Task<IReadOnlyCollection<OneTimePasswordId>> FindIdsAsync(UserId userId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await OneTimePasswords.AsNoTracking()
+      .Include(x => x.User)
+      .Where(x => x.User!.StreamId == userId.Value)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new OneTimePasswordId(streamId)).ToList().AsReadOnly();
   }
 
   public virtual async Task<OneTimePasswordDto> ReadAsync(OneTimePassword oneTimePassword, CancellationToken cancellationToken)
