@@ -4,6 +4,7 @@ import { inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import MessageContents from "@/components/messages/MessageContents.vue";
 import MessageGeneral from "@/components/messages/MessageGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Message } from "@/types/messages";
@@ -41,6 +42,9 @@ onMounted(async () => {
       <TarTabs>
         <TarTab active id="general" :title="t('general')">
           <MessageGeneral :message="message" />
+        </TarTab>
+        <TarTab id="contents" :title="t('templates.content.text')">
+          <MessageContents :message="message" />
         </TarTab>
       </TarTabs>
     </template>

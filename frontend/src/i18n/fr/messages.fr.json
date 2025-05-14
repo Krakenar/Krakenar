@@ -1,4 +1,9 @@
 {
+  "contents": {
+    "localization": "Traduction",
+    "viewAsHtml": "Visionner en HTML",
+    "warning": "La section suivante peut contenir de l’information sensible."
+  },
   "demo": {
     "hint": "Ce message est une démonstration.",
     "label": "Démo"
@@ -33,6 +38,7 @@
   },
   "title": "Messages",
   "variables": {
+    "empty": "Cette liste est vide.",
     "key": "Clé",
     "title": "Variables",
     "value": "Valeur"

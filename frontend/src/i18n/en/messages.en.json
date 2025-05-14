@@ -1,4 +1,9 @@
 {
+  "contents": {
+    "localization": "Localization",
+    "viewAsHtml": "View as HTML",
+    "warning": "The following section may contain sensitive information."
+  },
   "demo": {
     "hint": "This message is a demo message.",
     "label": "Demo"
@@ -9,7 +14,7 @@
     "help": "To receive a message, a user must have an email or a phone, depending on the sender.",
     "lead": "Missing contact information!"
   },
-  "results": "Result data",
+  "results": "Result Data",
   "sent": {
     "help": "Click the button below to view it.",
     "lead": "Your message has been sent!"
@@ -33,6 +38,7 @@
   },
   "title": "Messages",
   "variables": {
+    "empty": "This list is empty.",
     "key": "Key",
     "title": "Variables",
     "value": "Value"
