@@ -28,6 +28,10 @@
 - CreateOrReplaceFieldType
 - DeleteFieldType
 
+### Queries
+
+- ReadFieldType
+
 ### Settings
 
 - DateTimeSettings

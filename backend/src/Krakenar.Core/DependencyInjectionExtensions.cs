@@ -24,6 +24,7 @@ using Krakenar.Core.Dictionaries.Commands;
 using Krakenar.Core.Dictionaries.Queries;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Commands;
+using Krakenar.Core.Fields.Queries;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
@@ -172,6 +173,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
       .AddTransient<IQueryHandler<ReadDictionary, DictionaryDto?>, ReadDictionaryHandler>()
+      .AddTransient<IQueryHandler<ReadFieldType, FieldTypeDto?>, ReadFieldTypeHandler>()
       .AddTransient<IQueryHandler<ReadLanguage, LanguageDto?>, ReadLanguageHandler>()
       .AddTransient<IQueryHandler<ReadMessage, MessageDto?>, ReadMessageHandler>()
       .AddTransient<IQueryHandler<ReadOneTimePassword, OneTimePasswordDto?>, ReadOneTimePasswordHandler>()
