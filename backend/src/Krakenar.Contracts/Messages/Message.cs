@@ -9,7 +9,7 @@ public class Message : Aggregate
 {
   public Realm? Realm { get; set; }
 
-  public string Subject { get; set; } = string.Empty;
+  public string Subject { get; set; }
   public Content Body { get; set; } = new();
 
   public int RecipientCount { get; set; }
@@ -27,6 +27,15 @@ public class Message : Aggregate
 
   public MessageStatus Status { get; set; }
   public List<ResultData> Results { get; set; } = [];
+
+  public Message() : this(string.Empty)
+  {
+  }
+
+  public Message(string subject)
+  {
+    Subject = subject;
+  }
 
   public override string ToString() => $"{Subject} | {base.ToString()}";
 }

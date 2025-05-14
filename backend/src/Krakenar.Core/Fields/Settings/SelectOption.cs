@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
+using Krakenar.Contracts.Fields.Settings;
+using Krakenar.Core.Fields.Validators;
 using Logitar;
 
 namespace Krakenar.Core.Fields.Settings;
 
-public record SelectOption
+public record SelectOption : ISelectOption
 {
   public string Text { get; }
   public string? Value { get; }
@@ -17,14 +19,10 @@ public record SelectOption
     Value = value?.CleanTrim();
     Label = label?.CleanTrim();
     IsDisabled = isDisabled;
-    new Validator().ValidateAndThrow(this);
+    new SelectOptionValidator().ValidateAndThrow(this);
   }
 
-  private class Validator : AbstractValidator<SelectOption>
+  public SelectOption(ISelectOption option) : this(option.Text, option.Value, option.Label, option.IsDisabled)
   {
-    public Validator()
-    {
-      RuleFor(x => x.Text).NotEmpty();
-    }
   }
 }

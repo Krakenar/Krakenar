@@ -20,6 +20,20 @@ public class Sender : Aggregate
   public SendGridSettings? SendGrid { get; set; }
   public TwilioSettings? Twilio { get; set; }
 
+  public Sender()
+  {
+  }
+
+  public Sender(Email email)
+  {
+    Email = email;
+  }
+
+  public Sender(Phone phone)
+  {
+    Phone = phone;
+  }
+
   public override string ToString()
   {
     StringBuilder sender = new();

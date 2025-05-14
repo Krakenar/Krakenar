@@ -10,7 +10,7 @@ public class User : Aggregate
 {
   public Realm? Realm { get; set; }
 
-  public string UniqueName { get; set; } = string.Empty;
+  public string UniqueName { get; set; }
 
   public bool HasPassword { get; set; }
   public Actor? PasswordChangedBy { get; set; }
@@ -46,6 +46,15 @@ public class User : Aggregate
   public List<CustomIdentifier> CustomIdentifiers { get; set; } = [];
   public List<Role> Roles { get; set; } = [];
   public List<Session> Sessions { get; set; } = [];
+
+  public User() : this(string.Empty)
+  {
+  }
+
+  public User(string uniqueName)
+  {
+    UniqueName = uniqueName;
+  }
 
   public override string ToString() => $"{FullName ?? UniqueName} | {base.ToString()}";
 }
