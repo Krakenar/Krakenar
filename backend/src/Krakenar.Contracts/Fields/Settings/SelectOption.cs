@@ -12,12 +12,12 @@ public record SelectOption : ISelectOption
   }
 
   [JsonConstructor]
-  public SelectOption(string text, string? value = null, string? label = null, bool isDefault = false)
+  public SelectOption(string text, string? value = null, string? label = null, bool isDisabled = false)
   {
     Text = text;
     Value = value;
     Label = label;
-    IsDisabled = isDefault;
+    IsDisabled = isDisabled;
   }
 
   public SelectOption(ISelectOption option) : this(option.Text, option.Value, option.Label, option.IsDisabled)
