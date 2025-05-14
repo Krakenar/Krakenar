@@ -1,4 +1,4 @@
-﻿using Krakenar.Core.Roles.Events;
+﻿using Krakenar.Core.Fields.Events;
 
 namespace Krakenar.Core.Fields;
 
@@ -20,7 +20,7 @@ public class FieldManager : IFieldManager
 
   public virtual async Task SaveAsync(FieldType fieldType, CancellationToken cancellationToken)
   {
-    bool hasUniqueNameChanged = fieldType.Changes.Any(change => change is RoleCreated || change is RoleUniqueNameChanged);
+    bool hasUniqueNameChanged = fieldType.Changes.Any(change => change is FieldTypeCreated || change is FieldTypeUniqueNameChanged);
     if (hasUniqueNameChanged)
     {
       FieldTypeId? conflictId = await FieldTypeQuerier.FindIdAsync(fieldType.UniqueName, cancellationToken);

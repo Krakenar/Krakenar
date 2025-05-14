@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Fields.Settings;
 using Krakenar.Core.Fields.Validators;
+using Logitar;
 
 namespace Krakenar.Core.Fields.Settings;
 
@@ -22,7 +23,7 @@ public record StringSettings : FieldTypeSettings, IStringSettings
   {
     MinimumLength = minimumLength;
     MaximumLength = maximumLength;
-    Pattern = pattern;
+    Pattern = pattern?.CleanTrim();
     new StringSettingsValidator().ValidateAndThrow(this);
   }
 

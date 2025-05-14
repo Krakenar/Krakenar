@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Fields.Settings;
+using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Events;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar;
@@ -34,6 +35,8 @@ public class FieldType : Aggregate, ISegregatedEntity
     Realm = realm;
     RealmId = realm?.RealmId;
     RealmUid = realm?.Id;
+
+    Id = new FieldTypeId(@event.StreamId).EntityId;
 
     UniqueName = @event.UniqueName.Value;
 
@@ -122,6 +125,8 @@ public class FieldType : Aggregate, ISegregatedEntity
 
   public void Update(FieldTypeUpdated @event)
   {
+    base.Update(@event);
+
     if (@event.DisplayName is not null)
     {
       DisplayName = @event.DisplayName.Value?.Value;

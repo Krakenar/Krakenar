@@ -6,8 +6,6 @@ namespace Krakenar.Core.Fields.Validators;
 
 public class UpdateFieldTypeValidator : AbstractValidator<UpdateFieldTypePayload>
 {
-  protected virtual bool IsCreate { get; }
-
   public UpdateFieldTypeValidator(IUniqueNameSettings uniqueNameSettings, DataType dataType)
   {
     When(x => !string.IsNullOrWhiteSpace(x.UniqueName), () => RuleFor(x => x.UniqueName!).UniqueName(uniqueNameSettings));
@@ -17,36 +15,28 @@ public class UpdateFieldTypeValidator : AbstractValidator<UpdateFieldTypePayload
     switch (dataType)
     {
       case DataType.Boolean:
-        When(x => x.Boolean is not null, () => RuleFor(x => x.Boolean!).SetValidator(new BooleanSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.Boolean).NotNull());
+        When(x => x.Boolean is not null, () => RuleFor(x => x.Boolean!).SetValidator(new BooleanSettingsValidator()));
         break;
       case DataType.DateTime:
-        When(x => x.DateTime is not null, () => RuleFor(x => x.DateTime!).SetValidator(new DateTimeSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.DateTime).NotNull());
+        When(x => x.DateTime is not null, () => RuleFor(x => x.DateTime!).SetValidator(new DateTimeSettingsValidator()));
         break;
       case DataType.Number:
-        When(x => x.Number is not null, () => RuleFor(x => x.Number!).SetValidator(new NumberSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.Number).NotNull());
+        When(x => x.Number is not null, () => RuleFor(x => x.Number!).SetValidator(new NumberSettingsValidator()));
         break;
       case DataType.RelatedContent:
-        When(x => x.RelatedContent is not null, () => RuleFor(x => x.RelatedContent!).SetValidator(new RelatedContentSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.RelatedContent).NotNull());
+        When(x => x.RelatedContent is not null, () => RuleFor(x => x.RelatedContent!).SetValidator(new RelatedContentSettingsValidator()));
         break;
       case DataType.RichText:
-        When(x => x.RichText is not null, () => RuleFor(x => x.RichText!).SetValidator(new RichTextSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.RichText).NotNull());
+        When(x => x.RichText is not null, () => RuleFor(x => x.RichText!).SetValidator(new RichTextSettingsValidator()));
         break;
       case DataType.Select:
-        When(x => x.Select is not null, () => RuleFor(x => x.Select!).SetValidator(new SelectSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.Select).NotNull());
+        When(x => x.Select is not null, () => RuleFor(x => x.Select!).SetValidator(new SelectSettingsValidator()));
         break;
       case DataType.String:
-        When(x => x.String is not null, () => RuleFor(x => x.String!).SetValidator(new StringSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.String).NotNull());
+        When(x => x.String is not null, () => RuleFor(x => x.String!).SetValidator(new StringSettingsValidator()));
         break;
       case DataType.Tags:
-        When(x => x.Tags is not null, () => RuleFor(x => x.Tags!).SetValidator(new TagsSettingsValidator()))
-          .Otherwise(() => RuleFor(x => x.Tags).NotNull());
+        When(x => x.Tags is not null, () => RuleFor(x => x.Tags!).SetValidator(new TagsSettingsValidator()));
         break;
       default:
         throw new DataTypeNotSupportedException(dataType);
