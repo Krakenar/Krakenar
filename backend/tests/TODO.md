@@ -18,6 +18,20 @@
 - DictionaryManager
 - UpdateDictionary
 
+## Fields
+
+- FieldType
+
+### Settings
+
+- DateTimeSettings
+- NumberSettings
+- RelatedContentSettings
+- RichTextSettings
+- SelectOption
+- SelectSettings
+- StringSettings
+
 ## Languages
 
 - LanguageManager.FindAsync

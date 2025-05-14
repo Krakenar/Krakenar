@@ -183,7 +183,7 @@ public class Sender : AggregateRoot
   {
     if (Provider != SenderProvider.SendGrid)
     {
-      throw new SenderProviderMismatchException(this, settings.Provider);
+      throw new SenderProviderMismatchException(this, settings.Provider, nameof(settings));
     }
 
     if (_settings != settings)
@@ -200,7 +200,7 @@ public class Sender : AggregateRoot
   {
     if (Provider != SenderProvider.Twilio)
     {
-      throw new SenderProviderMismatchException(this, settings.Provider);
+      throw new SenderProviderMismatchException(this, settings.Provider, nameof(settings));
     }
 
     if (_settings != settings)
