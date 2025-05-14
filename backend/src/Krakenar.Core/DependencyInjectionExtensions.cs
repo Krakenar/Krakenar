@@ -143,6 +143,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IConfigurationService, ConfigurationService>()
       .AddTransient<IDictionaryService, DictionaryService>()
+      .AddTransient<IFieldTypeService, FieldTypeService>()
       .AddTransient<ILanguageService, LanguageService>()
       .AddTransient<IMessageService, MessageService>()
       .AddTransient<IOneTimePasswordService, OneTimePasswordService>()
