@@ -9,8 +9,13 @@ public record TagsSettings : FieldTypeSettings, ITagsSettings
 {
   public override DataType DataType => DataType.Tags;
 
+  [JsonConstructor]
   public TagsSettings()
   {
     new TagsSettingsValidator().ValidateAndThrow(this);
+  }
+
+  public TagsSettings(ITagsSettings _) : this()
+  {
   }
 }

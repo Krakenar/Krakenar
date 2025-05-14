@@ -20,7 +20,12 @@
 
 ## Fields
 
+- FieldManager
 - FieldType
+
+### Commands
+
+- CreateOrReplaceFieldType
 
 ### Settings
 

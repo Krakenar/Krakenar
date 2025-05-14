@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using Krakenar.Core.Fields.Settings;
+using Krakenar.Contracts.Fields.Settings;
 
 namespace Krakenar.Core.Fields.Validators;
 
-public class RelatedContentSettingsValidator : AbstractValidator<RelatedContentSettings>;
+public class RelatedContentSettingsValidator : AbstractValidator<IRelatedContentSettings>;

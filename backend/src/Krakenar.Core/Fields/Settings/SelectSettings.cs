@@ -17,7 +17,7 @@ public record SelectSettings : FieldTypeSettings
   [JsonConstructor]
   public SelectSettings(IReadOnlyCollection<SelectOption> options, bool isMultiple = false)
   {
-    Options = options;
+    Options = options.ToList().AsReadOnly();
     IsMultiple = isMultiple;
     new Validator().ValidateAndThrow(this);
   }
