@@ -92,7 +92,7 @@ onMounted(async () => {
         <TarTab id="contents" :title="t('templates.content.text')">
           <TemplateContents :template="template" @error="handleError" @updated="onContentsUpdated" />
         </TarTab>
-        <TarTab id="demo" :title="t('messages.demo')">
+        <TarTab id="demo" :title="t('messages.demo.label')">
           <SendDemo :template="template" @error="handleError" />
         </TarTab>
       </TarTabs>

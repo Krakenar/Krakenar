@@ -6,5 +6,5 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <TarBadge variant="info">{{ t("messages.demo") }}</TarBadge>
+  <TarBadge variant="info">{{ t("messages.demo.label") }}</TarBadge>
 </template>

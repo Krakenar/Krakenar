@@ -147,7 +147,7 @@ watch(
         <RefreshButton :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       </div>
       <div class="mb-3 row">
-        <YesNoSelect class="col" id="demo" label="messages.demo" :model-value="isDemo" @update:model-value="setQuery('demo', $event?.toString() ?? '')" />
+        <YesNoSelect class="col" id="demo" label="messages.demo.label" :model-value="isDemo" @update:model-value="setQuery('demo', $event?.toString() ?? '')" />
         <TemplateSelect class="col" :model-value="template" @update:model-value="setQuery('template', $event)" />
         <StatusSelect class="col" :model-value="status" @update:model-value="setQuery('status', $event)" />
       </div>

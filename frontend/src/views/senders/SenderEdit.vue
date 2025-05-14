@@ -111,7 +111,7 @@ onMounted(async () => {
           <SendGridSettingsEdit v-if="sender.provider === 'SendGrid'" :sender="sender" @error="handleError" @updated="onSendGridUpdated" />
           <TwilioSettingsEdit v-if="sender.provider === 'Twilio'" :sender="sender" @error="handleError" @updated="onTwilioUpdated" />
         </TarTab>
-        <TarTab id="demo" :title="t('messages.demo')">
+        <TarTab id="demo" :title="t('messages.demo.label')">
           <SendDemo :sender="sender" />
         </TarTab>
       </TarTabs>
