@@ -32,6 +32,7 @@
 ### Queries
 
 - ReadFieldType
+- SearchFieldTypes
 
 ### Settings
 
