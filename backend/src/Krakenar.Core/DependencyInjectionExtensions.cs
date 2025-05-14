@@ -58,6 +58,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
+using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 using MessageDto = Krakenar.Contracts.Messages.Message;
 using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
@@ -103,6 +104,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateToken, CreatedToken>, CreateTokenCommandHandler>()
       .AddTransient<ICommandHandler<DeleteApiKey, ApiKeyDto?>, DeleteApiKeyHandler>()
       .AddTransient<ICommandHandler<DeleteDictionary, DictionaryDto?>, DeleteDictionaryHandler>()
+      .AddTransient<ICommandHandler<DeleteFieldType, FieldTypeDto?>, DeleteFieldTypeHandler>()
       .AddTransient<ICommandHandler<DeleteLanguage, LanguageDto?>, DeleteLanguageHandler>()
       .AddTransient<ICommandHandler<DeleteRole, RoleDto?>, DeleteRoleHandler>()
       .AddTransient<ICommandHandler<DeleteSender, SenderDto?>, DeleteSenderHandler>()

@@ -11,6 +11,7 @@ namespace Krakenar.Core.Fields.Commands;
 
 public record CreateOrReplaceFieldType(Guid? Id, CreateOrReplaceFieldTypePayload Payload, long? Version) : ICommand<CreateOrReplaceFieldTypeResult>;
 
+/// <exception cref="UniqueNameAlreadyUsedException"></exception>
 /// <exception cref="ValidationException"></exception>
 public class CreateOrReplaceFieldTypeHandler : ICommandHandler<CreateOrReplaceFieldType, CreateOrReplaceFieldTypeResult>
 {
@@ -151,7 +152,7 @@ public class CreateOrReplaceFieldTypeHandler : ICommandHandler<CreateOrReplaceFi
     }
     if (payload.Select is not null)
     {
-      SelectOption[] options = payload.Select.Options.Select(option => new SelectOption(option)).ToArray();
+      SelectOption[] options = [.. payload.Select.Options.Select(option => new SelectOption(option))];
       settings.Add(new SelectSettings(options, payload.Select.IsMultiple));
     }
     if (payload.String is not null)

@@ -26,6 +26,7 @@
 ### Commands
 
 - CreateOrReplaceFieldType
+- DeleteFieldType
 
 ### Settings
 
