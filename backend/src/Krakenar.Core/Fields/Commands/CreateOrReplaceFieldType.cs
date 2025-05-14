@@ -152,8 +152,7 @@ public class CreateOrReplaceFieldTypeHandler : ICommandHandler<CreateOrReplaceFi
     }
     if (payload.Select is not null)
     {
-      SelectOption[] options = [.. payload.Select.Options.Select(option => new SelectOption(option))];
-      settings.Add(new SelectSettings(options, payload.Select.IsMultiple));
+      settings.Add(new SelectSettings(payload.Select));
     }
     if (payload.String is not null)
     {

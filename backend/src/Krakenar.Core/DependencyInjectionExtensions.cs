@@ -126,6 +126,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<UpdateApiKey, ApiKeyDto?>, UpdateApiKeyHandler>()
       .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
       .AddTransient<ICommandHandler<UpdateDictionary, DictionaryDto?>, UpdateDictionaryHandler>()
+      .AddTransient<ICommandHandler<UpdateFieldType, FieldTypeDto?>, UpdateFieldTypeHandler>()
       .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
       .AddTransient<ICommandHandler<UpdateRealm, RealmDto?>, UpdateRealmHandler>()
       .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>()

@@ -27,6 +27,7 @@
 
 - CreateOrReplaceFieldType
 - DeleteFieldType
+- UpdateFieldType
 
 ### Queries
 

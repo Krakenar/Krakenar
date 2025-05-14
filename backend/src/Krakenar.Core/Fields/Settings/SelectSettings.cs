@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Fields;
+using SelectSettingsDto = Krakenar.Contracts.Fields.Settings.SelectSettings;
 
 namespace Krakenar.Core.Fields.Settings;
 
@@ -20,6 +21,11 @@ public record SelectSettings : FieldTypeSettings
     Options = options.ToList().AsReadOnly();
     IsMultiple = isMultiple;
     new Validator().ValidateAndThrow(this);
+  }
+
+  public SelectSettings(SelectSettingsDto select)
+    : this([.. select.Options.Select(option => new SelectOption(option))], select.IsMultiple)
+  {
   }
 
   private class Validator : AbstractValidator<SelectSettings>;
