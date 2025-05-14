@@ -6,6 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import MessageContents from "@/components/messages/MessageContents.vue";
 import MessageGeneral from "@/components/messages/MessageGeneral.vue";
+import MessageRecipients from "@/components/messages/MessageRecipients.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Message } from "@/types/messages";
 import { StatusCodes, type ApiFailure } from "@/types/api";
@@ -45,6 +46,9 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="contents" :title="t('templates.content.text')">
           <MessageContents :message="message" />
+        </TarTab>
+        <TarTab id="recipients" :title="t('messages.recipients.title')">
+          <MessageRecipients :message="message" />
         </TarTab>
       </TarTabs>
     </template>

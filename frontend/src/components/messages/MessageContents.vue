@@ -22,7 +22,7 @@ const template = computed<Template>(() => props.message.template);
 </script>
 
 <template>
-  <section>
+  <div>
     <table class="table table-striped">
       <tbody>
         <tr>
@@ -62,5 +62,5 @@ const template = computed<Template>(() => props.message.template);
         <p v-else>{{ t("messages.variables.empty") }}</p>
       </TarAccordionItem>
     </TarAccordion>
-  </section>
+  </div>
 </template>

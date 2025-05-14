@@ -20,7 +20,7 @@ const sender = computed<Sender>(() => props.message.sender);
 </script>
 
 <template>
-  <section>
+  <div>
     <table class="table table-striped">
       <tbody>
         <tr>
@@ -51,5 +51,5 @@ const sender = computed<Sender>(() => props.message.sender);
       </tbody>
     </table>
     <MessageResults v-if="message.results.length > 0" :results="message.results" />
-  </section>
+  </div>
 </template>

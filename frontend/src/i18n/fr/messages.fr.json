@@ -14,6 +14,18 @@
     "help": "Afin de recevoir un message, un utilisateur doit avoir une adresse courriel ou un numéro de téléphone, selon l’expéditeur.",
     "lead": "Informations de contact incomplètes !"
   },
+  "recipients": {
+    "title": "Destinataires",
+    "type": {
+      "label": "Type",
+      "options": {
+        "Bcc": "Bcc",
+        "CC": "CC",
+        "To": "To"
+      }
+    },
+    "user": "Utilisateur associé"
+  },
   "results": "Données de résultat",
   "sent": {
     "help": "Cliquez sur le bouton ci-dessous pour le voir.",

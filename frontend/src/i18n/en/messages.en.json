@@ -14,6 +14,18 @@
     "help": "To receive a message, a user must have an email or a phone, depending on the sender.",
     "lead": "Missing contact information!"
   },
+  "recipients": {
+    "title": "Recipients",
+    "type": {
+      "label": "Type",
+      "options": {
+        "Bcc": "Bcc",
+        "CC": "CC",
+        "To": "To"
+      }
+    },
+    "user": "Associated User"
+  },
   "results": "Result Data",
   "sent": {
     "help": "Click the button below to view it.",

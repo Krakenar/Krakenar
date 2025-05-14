@@ -7,6 +7,7 @@ import { useI18n } from "vue-i18n";
 
 import SenderIcon from "@/components/senders/SenderIcon.vue";
 import TemplateIcon from "@/components/templates/TemplateIcon.vue";
+import UserIcon from "@/components/users/UserIcon.vue";
 import locales from "@/resources/locales.json";
 import type { CurrentUser } from "@/types/account";
 import type { Locale } from "@/types/i18n";
@@ -147,9 +148,7 @@ watchEffect(() => {
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                  <RouterLink class="dropdown-item" :to="{ name: 'UserEdit', params: { id: user.id } }">
-                    <font-awesome-icon icon="fas fa-user" /> {{ user.displayName }}
-                  </RouterLink>
+                  <RouterLink class="dropdown-item" :to="{ name: 'UserEdit', params: { id: user.id } }"><UserIcon /> {{ user.displayName }}</RouterLink>
                 </li>
                 <li>
                   <RouterLink class="dropdown-item" :to="{ name: 'SignOut' }">

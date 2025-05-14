@@ -9,8 +9,10 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateUser from "@/components/users/CreateUser.vue";
+import EmailIcon from "@/components/users/EmailIcon.vue";
 import EnabledBadge from "@/components/users/EnabledBadge.vue";
 import HasPasswordSelect from "@/components/users/HasPasswordSelect.vue";
+import PhoneIcon from "@/components/users/PhoneIcon.vue";
 import RefreshButton from "@/components/shared/RefreshButton.vue";
 import RoleSelect from "@/components/roles/RoleSelect.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
@@ -222,14 +224,14 @@ watch(
               <EnabledBadge v-else />
             </td>
             <td>
-              <font-awesome-icon class="me-1" icon="fas fa-at" />
+              <EmailIcon class="me-1" />
               <template v-if="user.email">
                 {{ user.email.address }}
                 <VerifiedBadge v-if="user.email.isVerified" class="ms-1" text="users.email.verified.label" />
               </template>
               <span class="ms-1 text-muted" v-else>{{ "—" }}</span>
               <br />
-              <font-awesome-icon class="me-1" icon="fas fa-phone" />
+              <PhoneIcon class="me-1" />
               <template v-if="user.phone">
                 {{ user.phone.e164Formatted }}
                 <VerifiedBadge v-if="user.phone.isVerified" class="ms-1" text="users.phone.verified.label" />
