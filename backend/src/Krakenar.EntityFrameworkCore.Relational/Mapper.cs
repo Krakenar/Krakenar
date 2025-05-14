@@ -138,6 +138,7 @@ public sealed class Mapper
     {
       Id = source.Id,
       Realm = realm,
+      Subject = source.Subject,
       Body = new Content(source.BodyType, source.BodyText),
       RecipientCount = source.RecipientCount,
       IgnoreUserLocale = source.IgnoreUserLocale,

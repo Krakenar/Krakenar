@@ -14,7 +14,9 @@
     "remove": "Remove",
     "restore": "Restore",
     "save": "Save",
-    "validate": "Validate"
+    "send": "Send",
+    "validate": "Validate",
+    "view": "View"
   },
   "brand": "Krakenar",
   "by": "By",

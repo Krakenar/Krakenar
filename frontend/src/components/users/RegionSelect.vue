@@ -37,7 +37,7 @@ defineEmits<{
 
 <template>
   <FormSelect
-    :disabled="options.length === 0"
+    :disabled="options.length < 0"
     :id="id"
     :label="t(label)"
     :model-value="modelValue"

@@ -6,6 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 
 import DefaultButton from "@/components/senders/DefaultButton.vue";
 import DeleteSender from "@/components/senders/DeleteSender.vue";
+import SendDemo from "@/components/messages/SendDemo.vue";
 import SendGridSettingsEdit from "@/components/senders/SendGridSettingsEdit.vue";
 import SenderGeneral from "@/components/senders/SenderGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
@@ -109,6 +110,9 @@ onMounted(async () => {
         <TarTab id="settings" :title="t('settings.title')">
           <SendGridSettingsEdit v-if="sender.provider === 'SendGrid'" :sender="sender" @error="handleError" @updated="onSendGridUpdated" />
           <TwilioSettingsEdit v-if="sender.provider === 'Twilio'" :sender="sender" @error="handleError" @updated="onTwilioUpdated" />
+        </TarTab>
+        <TarTab id="demo" :title="t('messages.demo.label')">
+          <SendDemo :sender="sender" />
         </TarTab>
       </TarTabs>
     </template>

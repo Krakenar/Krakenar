@@ -32,6 +32,10 @@
     },
     "placeholder": "Select a sender provider"
   },
+  "select": {
+    "label": "Sender",
+    "placeholder": "Select a sender"
+  },
   "sendGrid": {
     "apiKey": {
       "help": "It looks like:",

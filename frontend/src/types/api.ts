@@ -26,6 +26,7 @@ export enum ErrorCodes {
   InvalidCredentials = "InvalidCredentials",
   LanguageAlreadyUsed = "LanguageAlreadyUsed",
   LocaleAlreadyUsed = "LocaleAlreadyUsed",
+  MissingRecipientContacts = "MissingRecipientContacts",
   UniqueNameAlreadyUsed = "UniqueNameAlreadyUsed",
   UniqueSlugAlreadyUsed = "UniqueSlugAlreadyUsed",
   UserHasNoPassword = "UserHasNoPassword",

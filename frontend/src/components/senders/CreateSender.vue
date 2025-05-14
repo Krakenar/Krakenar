@@ -6,7 +6,7 @@ import { useI18n } from "vue-i18n";
 import CountrySelect from "@/components/users/CountrySelect.vue";
 import EmailAddressInput from "@/components/users/EmailAddressInput.vue";
 import PhoneNumberInput from "@/components/users/PhoneNumberInput.vue";
-import SenderProviderSelect from "./SenderProviderSelect.vue";
+import SenderProviderFormSelect from "./SenderProviderFormSelect.vue";
 import countries from "@/resources/countries.json";
 import type { Country, EmailPayload, PhonePayload } from "@/types/users";
 import type { CreateOrReplaceSenderPayload, Sender, SenderKind, SenderProvider } from "@/types/senders";
@@ -75,7 +75,7 @@ async function submit(): Promise<void> {
     <TarButton icon="fas fa-plus" :text="t('actions.create')" variant="success" data-bs-toggle="modal" data-bs-target="#create-sender" />
     <TarModal :close="t('actions.close')" id="create-sender" ref="modalRef" :title="t('senders.create')">
       <form @submit.prevent="handleSubmit(submit)">
-        <SenderProviderSelect required v-model="provider" />
+        <SenderProviderFormSelect required v-model="provider" />
         <EmailAddressInput v-if="kind === 'Email'" required v-model="email.address" />
         <template v-if="kind === 'Phone'">
           <CountrySelect required v-model="phone.countryCode" />

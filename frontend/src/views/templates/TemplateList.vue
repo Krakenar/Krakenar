@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarButton, TarSelect, type SelectOption } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -7,8 +7,11 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
+import ContentTypeSelect from "@/components/templates/ContentTypeSelect.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateTemplate from "@/components/templates/CreateTemplate.vue";
+import EditIcon from "@/components/shared/EditIcon.vue";
+import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
@@ -39,12 +42,6 @@ const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 const type = computed<string>(() => route.query.type?.toString() ?? "");
 
-const contentTypeOptions = computed<SelectOption[]>(() =>
-  orderBy(
-    Object.entries(tm(rt("templates.content.type.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
-    "text",
-  ),
-);
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
     Object.entries(tm(rt("templates.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
@@ -138,29 +135,12 @@ watch(
   <main class="container">
     <h1>{{ t("templates.title") }}</h1>
     <div class="my-3">
-      <TarButton
-        class="me-1"
-        :disabled="isLoading"
-        icon="fas fa-rotate"
-        :loading="isLoading"
-        :status="t('loading')"
-        :text="t('actions.refresh')"
-        @click="refresh()"
-      />
+      <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateTemplate class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
-      <TarSelect
-        class="col"
-        floating
-        id="type"
-        :label="t('templates.content.type.label')"
-        :model-value="type"
-        :options="contentTypeOptions"
-        :placeholder="t('templates.content.type.placeholder')"
-        @update:model-value="setQuery('type', $event)"
-      />
+      <ContentTypeSelect class="col" :model-value="type" @update:model-value="setQuery('type', $event)" />
       <SortSelect
         class="col"
         :descending="isDescending"
@@ -185,9 +165,7 @@ watch(
         <tbody>
           <tr v-for="template in templates" :key="template.id">
             <td>
-              <RouterLink :to="{ name: 'TemplateEdit', params: { id: template.id } }">
-                <font-awesome-icon icon="fas fa-edit" /> {{ template.uniqueName }}
-              </RouterLink>
+              <RouterLink :to="{ name: 'TemplateEdit', params: { id: template.id } }"><EditIcon /> {{ template.uniqueName }}</RouterLink>
             </td>
             <td>
               <template v-if="template.displayName">{{ template.displayName }}</template>

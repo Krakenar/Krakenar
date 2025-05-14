@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarBadge, TarButton, TarSelect, type SelectOption } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -9,8 +9,12 @@ import { useRoute, useRouter } from "vue-router";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateSender from "@/components/senders/CreateSender.vue";
+import DefaultBadge from "@/components/senders/DefaultBadge.vue";
+import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
+import SenderIcon from "@/components/senders/SenderIcon.vue";
 import SenderKindSelect from "@/components/senders/SenderKindSelect.vue";
+import SenderProviderSelect from "@/components/senders/SenderProviderSelect.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import type { SearchResults } from "@/types/search";
@@ -41,12 +45,6 @@ const provider = computed<string>(() => route.query.provider?.toString() ?? "");
 const search = computed<string>(() => route.query.search?.toString() ?? "");
 const sort = computed<string>(() => route.query.sort?.toString() ?? "");
 
-const providerOptions = computed<SelectOption[]>(() =>
-  orderBy(
-    Object.entries(tm(rt("senders.provider.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
-    "text",
-  ),
-);
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
     Object.entries(tm(rt("senders.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
@@ -143,29 +141,12 @@ watch(
   <main class="container">
     <h1>{{ t("senders.title") }}</h1>
     <div class="my-3">
-      <TarButton
-        class="me-1"
-        :disabled="isLoading"
-        icon="fas fa-rotate"
-        :loading="isLoading"
-        :status="t('loading')"
-        :text="t('actions.refresh')"
-        @click="refresh()"
-      />
+      <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateSender class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
       <SenderKindSelect class="col" :model-value="kind" @update:model-value="setQuery('kind', $event)" />
-      <TarSelect
-        class="col"
-        floating
-        id="provider"
-        :label="t('senders.provider.label')"
-        :model-value="provider"
-        :options="providerOptions"
-        :placeholder="t('senders.provider.placeholder')"
-        @update:model-value="setQuery('provider', $event)"
-      />
+      <SenderProviderSelect class="col" :model-value="provider" @update:model-value="setQuery('provider', $event)" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
@@ -193,11 +174,12 @@ watch(
           <tr v-for="sender in senders" :key="sender.id">
             <td>
               <RouterLink :to="{ name: 'SenderEdit', params: { id: sender.id } }">
-                <template v-if="sender.email"><font-awesome-icon icon="fas fa-at" /> {{ sender.email.address }}</template>
-                <template v-else-if="sender.phone"><font-awesome-icon icon="fas fa-phone" /> {{ sender.phone.e164Formatted }}</template>
+                <SenderIcon class="me-1" :sender="sender" />
+                <template v-if="sender.email">{{ sender.email.address }}</template>
+                <template v-else-if="sender.phone">{{ sender.phone.e164Formatted }}</template>
                 <template v-if="sender.isDefault">
                   <br />
-                  <TarBadge><font-awesome-icon icon="fas fa-check" /> {{ t("senders.default.label") }}</TarBadge>
+                  <DefaultBadge />
                 </template>
               </RouterLink>
             </td>

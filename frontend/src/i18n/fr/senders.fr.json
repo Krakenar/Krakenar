@@ -32,6 +32,10 @@
     },
     "placeholder": "Sélectionnez un service d’expédition"
   },
+  "select": {
+    "label": "Expéditeur",
+    "placeholder": "Sélectionnez un expéditeur"
+  },
   "sendGrid": {
     "apiKey": {
       "help": "Celle-ci ressemble à :",

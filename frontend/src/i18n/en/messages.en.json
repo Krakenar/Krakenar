@@ -1,0 +1,58 @@
+{
+  "contents": {
+    "localization": "Localization",
+    "viewAsHtml": "View as HTML",
+    "warning": "The following section may contain sensitive information."
+  },
+  "demo": {
+    "hint": "This message is a demo message.",
+    "label": "Demo"
+  },
+  "empty": "This list is empty.",
+  "ignoreUserLocale": "Ignore user locale",
+  "missingRecipientContacts": {
+    "help": "To receive a message, a user must have an email or a phone, depending on the sender.",
+    "lead": "Missing contact information!"
+  },
+  "recipients": {
+    "title": "Recipients",
+    "type": {
+      "label": "Type",
+      "options": {
+        "Bcc": "Bcc",
+        "CC": "CC",
+        "To": "To"
+      }
+    },
+    "user": "Associated User"
+  },
+  "results": "Result Data",
+  "sent": {
+    "help": "Click the button below to view it.",
+    "lead": "Your message has been sent!"
+  },
+  "sort": {
+    "options": {
+      "CreatedOn": "Created on",
+      "RecipientCount": "Recipient Count",
+      "Subject": "Subject",
+      "UpdatedOn": "Updated on"
+    }
+  },
+  "status": {
+    "label": "Status",
+    "options": {
+      "Failed": "Failed",
+      "Succeeded": "Succeeded",
+      "Unsent": "Unsent"
+    },
+    "placeholder": "Select a status"
+  },
+  "title": "Messages",
+  "variables": {
+    "empty": "This list is empty.",
+    "key": "Key",
+    "title": "Variables",
+    "value": "Value"
+  }
+}

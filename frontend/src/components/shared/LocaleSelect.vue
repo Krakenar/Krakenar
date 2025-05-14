@@ -6,6 +6,7 @@ import { useI18n } from "vue-i18n";
 
 import FormSelect from "@/components/forms/FormSelect.vue";
 import locales from "@/resources/locales.json";
+import type { Locale } from "@/types/i18n";
 
 const { orderBy } = arrayUtils;
 const { t } = useI18n();
@@ -32,9 +33,17 @@ const options = computed<SelectOption[]>(() =>
   ),
 );
 
-defineEmits<{
+const emit = defineEmits<{
+  (e: "selected", value: Locale | undefined): void;
   (e: "update:model-value", value: string): void;
 }>();
+
+function onModelValueUpdate(value: string): void {
+  emit("update:model-value", value);
+
+  const locale: Locale | undefined = locales.find(({ code }) => code === value);
+  emit("selected", locale);
+}
 </script>
 
 <template>
@@ -45,6 +54,10 @@ defineEmits<{
     :options="options"
     :placeholder="t(placeholder)"
     :required="required"
-    @update:model-value="$emit('update:model-value', $event)"
-  />
+    @update:model-value="onModelValueUpdate"
+  >
+    <template #after>
+      <slot name="after"></slot>
+    </template>
+  </FormSelect>
 </template>

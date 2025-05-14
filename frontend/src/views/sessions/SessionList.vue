@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TarBadge, TarButton, type SelectOption } from "logitar-vue3-ui";
+import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils, objectUtils } from "logitar-js";
 import { computed, inject, ref, watch } from "vue";
 import { parsingUtils } from "logitar-js";
@@ -9,6 +9,9 @@ import { useRoute, useRouter } from "vue-router";
 import ActiveBadge from "@/components/sessions/ActiveBadge.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
+import EditIcon from "@/components/shared/EditIcon.vue";
+import PersistentBadge from "@/components/sessions/PersistentBadge.vue";
+import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
@@ -136,7 +139,7 @@ watch(
   <main class="container">
     <h1>{{ t("sessions.title.list") }}</h1>
     <div class="my-3">
-      <TarButton :disabled="isLoading" icon="fas fa-rotate" :loading="isLoading" :status="t('loading')" :text="t('actions.refresh')" @click="refresh()" />
+      <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
     </div>
     <div class="mb-3 row">
       <UserSelect class="col" :model-value="userId" @error="handleError" @update:model-value="setQuery('user', $event)" />
@@ -174,12 +177,10 @@ watch(
         <tbody>
           <tr v-for="session in sessions" :key="session.id">
             <td>
-              <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }">
-                <font-awesome-icon icon="fas fa-edit" /> {{ d(session.createdOn, "medium") }}
-              </RouterLink>
+              <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }"><EditIcon /> {{ d(session.createdOn, "medium") }}</RouterLink>
               <template v-if="session.isPersistent">
                 <br />
-                <TarBadge variant="info"><font-awesome-icon icon="fas fa-check" /> {{ t("sessions.persistent") }}</TarBadge>
+                <PersistentBadge />
               </template>
             </td>
             <td>
