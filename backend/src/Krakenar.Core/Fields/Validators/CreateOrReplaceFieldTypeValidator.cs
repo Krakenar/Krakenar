@@ -68,17 +68,70 @@ public class CreateOrReplaceFieldTypeValidator : AbstractValidator<CreateOrRepla
       case DataType.Boolean:
         When(x => x.Boolean is not null, () => RuleFor(x => x.Boolean!).SetValidator(new BooleanSettingsValidator()))
           .Otherwise(() => RuleFor(x => x.Boolean).NotNull());
-        RuleFor(x => x.DateTime).Null();
-        RuleFor(x => x.Number).Null();
-        RuleFor(x => x.RelatedContent).Null();
-        RuleFor(x => x.RichText).Null();
-        RuleFor(x => x.Select).Null();
-        RuleFor(x => x.String).Null();
-        RuleFor(x => x.Tags).Null();
         break;
-      // TODO(fpion): complete
+      case DataType.DateTime:
+        When(x => x.DateTime is not null, () => RuleFor(x => x.DateTime!).SetValidator(new DateTimeSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.DateTime).NotNull());
+        break;
+      case DataType.Number:
+        When(x => x.Number is not null, () => RuleFor(x => x.Number!).SetValidator(new NumberSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.Number).NotNull());
+        break;
+      case DataType.RelatedContent:
+        When(x => x.RelatedContent is not null, () => RuleFor(x => x.RelatedContent!).SetValidator(new RelatedContentSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.RelatedContent).NotNull());
+        break;
+      case DataType.RichText:
+        When(x => x.RichText is not null, () => RuleFor(x => x.RichText!).SetValidator(new RichTextSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.RichText).NotNull());
+        break;
+      case DataType.Select:
+        When(x => x.Select is not null, () => RuleFor(x => x.Select!).SetValidator(new SelectSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.Select).NotNull());
+        break;
+      case DataType.String:
+        When(x => x.String is not null, () => RuleFor(x => x.String!).SetValidator(new StringSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.String).NotNull());
+        break;
+      case DataType.Tags:
+        When(x => x.Tags is not null, () => RuleFor(x => x.Tags!).SetValidator(new TagsSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.Tags).NotNull());
+        break;
       default:
         throw new DataTypeNotSupportedException(type);
+    }
+
+    if (type != DataType.Boolean)
+    {
+      RuleFor(x => x.Boolean).Null();
+    }
+    if (type != DataType.DateTime)
+    {
+      RuleFor(x => x.DateTime).Null();
+    }
+    if (type != DataType.Number)
+    {
+      RuleFor(x => x.Number).Null();
+    }
+    if (type != DataType.RelatedContent)
+    {
+      RuleFor(x => x.RelatedContent).Null();
+    }
+    if (type != DataType.RichText)
+    {
+      RuleFor(x => x.RichText).Null();
+    }
+    if (type != DataType.Select)
+    {
+      RuleFor(x => x.Select).Null();
+    }
+    if (type != DataType.String)
+    {
+      RuleFor(x => x.String).Null();
+    }
+    if (type != DataType.Tags)
+    {
+      RuleFor(x => x.Tags).Null();
     }
   }
 
