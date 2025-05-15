@@ -1,0 +1,36 @@
+{
+  "type": {
+    "create": "New Field Type",
+    "created": "The field type has been created.",
+    "dataType": {
+      "label": "Data Type",
+      "options": {
+        "Boolean": "Boolean",
+        "DateTime": "Date & Time",
+        "Number": "Number",
+        "RelatedContent": "Related Content",
+        "RichText": "Rich Text",
+        "Select": "Select",
+        "String": "String",
+        "Tags": "Tags"
+      },
+      "placeholder": "Select a data type"
+    },
+    "delete": {
+      "confirm": "To delete the field type, enter its name in the field below.",
+      "title": "Delete Field Type"
+    },
+    "deleted": "The field type has been deleted.",
+    "empty": "This list is empty.",
+    "sort": {
+      "options": {
+        "CreatedOn": "Created on",
+        "DisplayName": "Display Name",
+        "UniqueName": "Unique Name",
+        "UpdatedOn": "Updated on"
+      }
+    },
+    "title": "Field Types",
+    "updated": "The field type has been updated."
+  }
+}

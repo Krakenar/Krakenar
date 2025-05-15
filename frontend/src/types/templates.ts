@@ -8,7 +8,7 @@ export type Content = {
   text: string;
 };
 
-export type ContentType = "text/html" | "text/plain";
+export type ContentType = "text/html" | "text/plain"; // TODO(fpion): move
 
 export type CreateOrReplaceTemplatePayload = {
   uniqueName: string;

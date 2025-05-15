@@ -8,7 +8,8 @@ import type { Role } from "@/types/roles";
 import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
 import type { User } from "@/types/users";
-import { formatContentType, formatLocale, formatRole, formatSender, formatTemplate, formatUser } from "../format";
+import { formatContentType, formatFieldType, formatLocale, formatRole, formatSender, formatTemplate, formatUser } from "../format";
+import type { FieldType } from "@/types/fields";
 
 const actor: Actor = {
   type: "User",
@@ -46,6 +47,37 @@ describe("formatContentType", () => {
       uniqueName: "BlogCategory",
     };
     expect(formatContentType(contentType)).toBe("BlogCategory");
+  });
+});
+
+describe("formatFieldType", () => {
+  it.concurrent("should format the field type with display name correctly", () => {
+    const fieldType: FieldType = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "ArticleTitle",
+      displayName: "Article Title",
+      dataType: "String",
+    };
+    expect(formatFieldType(fieldType)).toBe("Article Title (ArticleTitle)");
+  });
+
+  it.concurrent("should format the field type without display name correctly", () => {
+    const fieldType: FieldType = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueName: "Contents",
+      dataType: "RichText",
+    };
+    expect(formatFieldType(fieldType)).toBe("Contents");
   });
 });
 

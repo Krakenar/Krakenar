@@ -4,6 +4,7 @@ import contents from "./contents.en.json";
 import countries from "./countries.en.json";
 import dictionaries from "./dictionaries.en.json";
 import errors from "./errors.en.json";
+import fields from "./fields.en.json";
 import index from "./index.en.json";
 import languages from "./languages.en.json";
 import messages from "./messages.en.json";
@@ -24,6 +25,7 @@ export default {
   countries,
   dictionaries,
   errors,
+  fields,
   languages,
   messages,
   realms,
