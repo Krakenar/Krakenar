@@ -13,11 +13,15 @@ public record CreateOrReplaceContentType(Guid? Id, CreateOrReplaceContentTypePay
 public class CreateOrReplaceContentTypeHandler : ICommandHandler<CreateOrReplaceContentType, CreateOrReplaceContentTypeResult>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual ContentManager ContentManager { get; }
+  protected virtual IContentManager ContentManager { get; }
   protected virtual IContentTypeQuerier ContentTypeQuerier { get; }
   protected virtual IContentTypeRepository ContentTypeRepository { get; }
 
-  public CreateOrReplaceContentTypeHandler(IApplicationContext applicationContext, ContentManager contentManager, IContentTypeQuerier contenttypeQuerier, IContentTypeRepository contenttypeRepository)
+  public CreateOrReplaceContentTypeHandler(
+    IApplicationContext applicationContext,
+    IContentManager contentManager,
+    IContentTypeQuerier contenttypeQuerier,
+    IContentTypeRepository contenttypeRepository)
   {
     ApplicationContext = applicationContext;
     ContentManager = contentManager;

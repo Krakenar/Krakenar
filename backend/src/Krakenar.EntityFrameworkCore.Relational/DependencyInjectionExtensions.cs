@@ -4,6 +4,8 @@ using Krakenar.Core.ApiKeys;
 using Krakenar.Core.ApiKeys.Events;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Events;
+using Krakenar.Core.Contents;
+using Krakenar.Core.Contents.Events;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Events;
 using Krakenar.Core.Fields;
@@ -63,6 +65,10 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<ApiKeyUpdated>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<ConfigurationInitialized>, ConfigurationEvents>()
       .AddScoped<IEventHandler<ConfigurationUpdated>, ConfigurationEvents>()
+      .AddScoped<IEventHandler<ContentTypeCreated>, ContentTypeEvents>()
+      .AddScoped<IEventHandler<ContentTypeDeleted>, ContentTypeEvents>()
+      .AddScoped<IEventHandler<ContentTypeUniqueNameChanged>, ContentTypeEvents>()
+      .AddScoped<IEventHandler<ContentTypeUpdated>, ContentTypeEvents>()
       .AddScoped<IEventHandler<DictionaryCreated>, DictionaryEvents>()
       .AddScoped<IEventHandler<DictionaryDeleted>, DictionaryEvents>()
       .AddScoped<IEventHandler<DictionaryLanguageChanged>, DictionaryEvents>()
@@ -152,6 +158,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddScoped<IApiKeyQuerier, ApiKeyQuerier>()
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
+      .AddScoped<IContentTypeQuerier, ContentTypeQuerier>()
       .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
       .AddScoped<IFieldTypeQuerier, FieldTypeQuerier>()
       .AddScoped<ILanguageQuerier, LanguageQuerier>()

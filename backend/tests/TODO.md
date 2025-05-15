@@ -12,7 +12,19 @@
 
 ## Contents
 
+- ContentManager
 - ContentType
+
+### Commands
+
+- CreateOrReplaceContentType
+- DeleteContentType
+- UpdateContentType
+
+### Queries
+
+- ReadContentType
+- SearchContentTypes
 
 ## Dictionaries
 
