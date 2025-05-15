@@ -49,6 +49,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<IConfigurationService, ConfigurationClient>()
       .AddSingleton<IContentTypeService, ContentTypeClient>()
       .AddSingleton<IDictionaryService, DictionaryClient>()
+      .AddSingleton<IFieldDefinitionService, FieldDefinitionClient>()
       .AddSingleton<IFieldTypeService, FieldTypeClient>()
       .AddSingleton<ILanguageService, LanguageClient>()
       .AddSingleton<IMessageService, MessageClient>()
