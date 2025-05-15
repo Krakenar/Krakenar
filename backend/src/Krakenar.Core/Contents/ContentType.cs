@@ -106,11 +106,11 @@ public class ContentType : AggregateRoot
       _isInvariant = @event.IsInvariant.Value;
     }
 
-    if (@event.DisplayName != null)
+    if (@event.DisplayName is not null)
     {
       _displayName = @event.DisplayName.Value;
     }
-    if (@event.Description != null)
+    if (@event.Description is not null)
     {
       _description = @event.Description.Value;
     }
