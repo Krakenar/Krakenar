@@ -5,8 +5,9 @@ import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import FormSelect from "@/components/forms/FormSelect.vue";
-import type { ContentType, Template, SearchTemplatesPayload } from "@/types/templates";
+import type { MediaType } from "@/types/contents";
 import type { SearchResults } from "@/types/search";
+import type { Template, SearchTemplatesPayload } from "@/types/templates";
 import { formatTemplate } from "@/helpers/format";
 import { searchTemplates } from "@/api/templates";
 
@@ -15,7 +16,7 @@ const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
-    contentType?: ContentType;
+    contentType?: MediaType;
     id?: string;
     label?: string;
     modelValue?: string;
@@ -51,7 +52,7 @@ function onModelValueUpdate(id: string): void {
   emit("selected", template);
 }
 
-async function refresh(contentType?: ContentType): Promise<void> {
+async function refresh(contentType?: MediaType): Promise<void> {
   try {
     const payload: SearchTemplatesPayload = {
       contentType,

@@ -1,14 +1,13 @@
 import type { Aggregate } from "./aggregate";
 import type { Change } from "./change";
+import type { MediaType } from "./contents";
 import type { Realm } from "./realms";
 import type { SearchPayload, SortOption } from "./search";
 
 export type Content = {
-  type: ContentType;
+  type: MediaType;
   text: string;
 };
-
-export type ContentType = "text/html" | "text/plain"; // TODO(fpion): move
 
 export type CreateOrReplaceTemplatePayload = {
   uniqueName: string;
@@ -19,7 +18,7 @@ export type CreateOrReplaceTemplatePayload = {
 };
 
 export type SearchTemplatesPayload = SearchPayload & {
-  contentType?: ContentType;
+  contentType?: MediaType;
   sort: TemplateSortOption[];
 };
 

@@ -15,8 +15,9 @@ import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
-import type { ContentType, Template, TemplateSort, SearchTemplatesPayload } from "@/types/templates";
+import type { MediaType } from "@/types/contents";
 import type { SearchResults } from "@/types/search";
+import type { Template, TemplateSort, SearchTemplatesPayload } from "@/types/templates";
 import { handleErrorKey } from "@/inject/App";
 import { searchTemplates } from "@/api/templates";
 import { useToastStore } from "@/stores/toast";
@@ -59,7 +60,7 @@ async function refresh(): Promise<void> {
         .map((term) => ({ value: `%${term}%` })),
       operator: "And",
     },
-    contentType: type.value ? (type.value as ContentType) : undefined,
+    contentType: type.value ? (type.value as MediaType) : undefined,
     sort: sort.value ? [{ field: sort.value as TemplateSort, isDescending: isDescending.value }] : [],
     skip: (page.value - 1) * count.value,
     limit: count.value,

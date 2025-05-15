@@ -1,8 +1,8 @@
 import type { Aggregate } from "./aggregate";
 import type { Change } from "./change";
+import type { MediaType } from "./contents";
 import type { Realm } from "./realms";
 import type { SearchPayload, SortOption } from "./search";
-import type { ContentType } from "./templates";
 
 export type BooleanSettings = {};
 
@@ -61,7 +61,7 @@ export type RelatedContentSettings = {
 };
 
 export type RichTextSettings = {
-  contentType: ContentType;
+  contentType: MediaType;
   minimumLength?: number | null;
   maximumLength?: number | null;
 };

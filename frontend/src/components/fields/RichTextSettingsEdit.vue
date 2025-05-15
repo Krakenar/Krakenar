@@ -6,9 +6,9 @@ import { useI18n } from "vue-i18n";
 import ContentTypeFormSelect from "@/components/templates/ContentTypeFormSelect.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import type { FieldType, RichTextSettings, UpdateFieldTypePayload } from "@/types/fields";
+import type { MediaType } from "@/types/contents";
 import { updateFieldType } from "@/api/fields";
 import { useForm } from "@/forms";
-import type { ContentType } from "@/types/templates";
 
 const { t } = useI18n();
 
@@ -31,7 +31,7 @@ async function submit(): Promise<void> {
   try {
     const payload: UpdateFieldTypePayload = {
       richText: {
-        contentType: contentType.value as ContentType,
+        contentType: contentType.value as MediaType,
         minimumLength: minimumLength.value || undefined,
         maximumLength: maximumLength.value || undefined,
       },
