@@ -113,6 +113,11 @@ watchEffect(() => {
             <li class="nav-item">
               <RouterLink :to="{ name: 'MessageList' }" class="nav-link"><font-awesome-icon icon="fas fa-envelope" /> {{ t("messages.title") }}</RouterLink>
             </li>
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'ContentTypeList' }" class="nav-link">
+                <font-awesome-icon icon="fas fa-list" /> {{ t("contents.type.title") }}
+              </RouterLink>
+            </li>
           </template>
         </ul>
 

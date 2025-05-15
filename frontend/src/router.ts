@@ -41,6 +41,17 @@ const router = createRouter({
       path: "/api-keys/:id",
       component: () => import("./views/apiKeys/ApiKeyEdit.vue"),
     },
+    // Content Types
+    {
+      name: "ContentTypeList",
+      path: "/contents/types",
+      component: () => import("./views/contents/ContentTypeList.vue"),
+    },
+    {
+      name: "ContentTypeEdit",
+      path: "/contents/types/:id",
+      component: () => import("./views/contents/ContentTypeEdit.vue"),
+    },
     // Dictionaries
     {
       name: "DictionaryList",

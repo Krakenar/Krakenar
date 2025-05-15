@@ -1,0 +1,26 @@
+{
+  "type": {
+    "create": "Nouveau type de contenu",
+    "created": "Le type de contenu a été créé.",
+    "delete": {
+      "confirm": "Afin de supprimer le type de contenu, veuillez entrer son nom dans le champs suivant.",
+      "title": "Supprimer le type de contenu"
+    },
+    "deleted": "Le type de contenu a été supprimé.",
+    "empty": "Cette liste est vide.",
+    "invariant": {
+      "help": "Lorsque activé, les traductions des contenus de ce type seront désactivées.",
+      "label": "Invariant"
+    },
+    "sort": {
+      "options": {
+        "CreatedOn": "Date de création",
+        "DisplayName": "Nom d’affichage",
+        "UniqueName": "Nom unique",
+        "UpdatedOn": "Dernière modification"
+      }
+    },
+    "title": "Types de contenus",
+    "updated": "Le type de contenu a été mis à jour."
+  }
+}
