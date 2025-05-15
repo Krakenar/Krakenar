@@ -3,6 +3,7 @@ import { TarButton, TarModal } from "logitar-vue3-ui";
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import ContentTypeFormSelect from "@/components/contents/ContentTypeFormSelect.vue";
 import DataTypeFormSelect from "./DataTypeFormSelect.vue";
 import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
@@ -109,7 +110,7 @@ onMounted(async () => {
       <form @submit.prevent="handleSubmit(submit)">
         <UniqueNameInput required :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />
         <DataTypeFormSelect required v-model="dataType" />
-        <!-- TODO(fpion): ContentTypeSelect if dataType === 'RelatedContent' -->
+        <ContentTypeFormSelect v-if="dataType === 'RelatedContent'" :model-value="contentType?.id" required @selected="contentType = $event" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />

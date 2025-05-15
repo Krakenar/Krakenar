@@ -28,6 +28,7 @@
     },
     "deleted": "Le type de champs a été supprimé.",
     "empty": "Cette liste est vide.",
+    "multiple": "Sélection multiple",
     "number": {
       "step": "Pas",
       "value": {

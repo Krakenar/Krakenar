@@ -8,6 +8,7 @@ import DateTimeSettingsEdit from "@/components/fields/DateTimeSettingsEdit.vue";
 import DeleteFieldType from "@/components/fields/DeleteFieldType.vue";
 import FieldTypeGeneral from "@/components/fields/FieldTypeGeneral.vue";
 import NumberSettingsEdit from "@/components/fields/NumberSettingsEdit.vue";
+import RelatedContentSettingsEdit from "@/components/fields/RelatedContentSettingsEdit.vue";
 import RichTextSettingsEdit from "@/components/fields/RichTextSettingsEdit.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StringSettingsEdit from "@/components/fields/StringSettingsEdit.vue";
@@ -57,8 +58,14 @@ function onGeneralUpdated(updated: FieldType): void {
 function onSettingsUpdated(updated: FieldType): void {
   if (fieldType.value) {
     setMetadata(updated);
+    fieldType.value.boolean = updated.boolean ? { ...updated.boolean } : fieldType.value.boolean;
+    fieldType.value.dateTime = updated.dateTime ? { ...updated.dateTime } : fieldType.value.dateTime;
+    fieldType.value.number = updated.number ? { ...updated.number } : fieldType.value.number;
+    fieldType.value.relatedContent = updated.relatedContent ? { ...updated.relatedContent } : fieldType.value.relatedContent;
     fieldType.value.richText = updated.richText ? { ...updated.richText } : fieldType.value.richText;
+    fieldType.value.select = updated.select ? { ...updated.select } : fieldType.value.select;
     fieldType.value.string = updated.string ? { ...updated.string } : fieldType.value.string;
+    fieldType.value.tags = updated.tags ? { ...updated.tags } : fieldType.value.tags;
   }
   toasts.success("fields.type.updated");
 }
@@ -96,6 +103,13 @@ onMounted(async () => {
         <TarTab v-if="hasSettings" active id="settings" :title="t('settings.title')">
           <DateTimeSettingsEdit v-if="fieldType.dateTime" :id="fieldType.id" :settings="fieldType.dateTime" @error="handleError" @updated="onSettingsUpdated" />
           <NumberSettingsEdit v-if="fieldType.number" :id="fieldType.id" :settings="fieldType.number" @error="handleError" @updated="onSettingsUpdated" />
+          <RelatedContentSettingsEdit
+            v-if="fieldType.relatedContent"
+            :id="fieldType.id"
+            :settings="fieldType.relatedContent"
+            @error="handleError"
+            @updated="onSettingsUpdated"
+          />
           <RichTextSettingsEdit v-if="fieldType.richText" :id="fieldType.id" :settings="fieldType.richText" @error="handleError" @updated="onSettingsUpdated" />
           <StringSettingsEdit v-if="fieldType.string" :id="fieldType.id" :settings="fieldType.string" @error="handleError" @updated="onSettingsUpdated" />
         </TarTab>

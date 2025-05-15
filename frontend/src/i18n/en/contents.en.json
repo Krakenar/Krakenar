@@ -20,6 +20,10 @@
       "help": "When enabled, translations of contents this type will be disabled.",
       "label": "Invariant"
     },
+    "select": {
+      "label": "Content Type",
+      "placeholder": "Select a content type"
+    },
     "sort": {
       "options": {
         "CreatedOn": "Created on",

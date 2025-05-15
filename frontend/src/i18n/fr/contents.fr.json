@@ -20,6 +20,10 @@
       "help": "Lorsque activé, les traductions des contenus de ce type seront désactivées.",
       "label": "Invariant"
     },
+    "select": {
+      "label": "Type de contenu",
+      "placeholder": "Sélectionnez un type de contenu"
+    },
     "sort": {
       "options": {
         "CreatedOn": "Date de création",
