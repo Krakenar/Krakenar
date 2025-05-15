@@ -1,5 +1,6 @@
 ﻿using Krakenar.Client.ApiKeys;
 using Krakenar.Client.Configurations;
+using Krakenar.Client.Contents;
 using Krakenar.Client.Dictionaries;
 using Krakenar.Client.Fields;
 using Krakenar.Client.Localization;
@@ -14,6 +15,7 @@ using Krakenar.Client.Tokens;
 using Krakenar.Client.Users;
 using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Localization;
@@ -45,6 +47,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton(settings)
       .AddSingleton<IApiKeyService, ApiKeyClient>()
       .AddSingleton<IConfigurationService, ConfigurationClient>()
+      .AddSingleton<IContentTypeService, ContentTypeClient>()
       .AddSingleton<IDictionaryService, DictionaryClient>()
       .AddSingleton<IFieldTypeService, FieldTypeClient>()
       .AddSingleton<ILanguageService, LanguageClient>()
