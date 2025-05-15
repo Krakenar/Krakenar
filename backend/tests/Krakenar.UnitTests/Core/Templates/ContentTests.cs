@@ -48,7 +48,7 @@ public class ContentTests
   {
     var exception = Assert.Throws<ValidationException>(() => new Content(MediaTypeNames.Application.Json, @"{""message"":""Hello World!""}"));
     Assert.Single(exception.Errors);
-    Assert.Contains(exception.Errors, e => e.ErrorCode == "ContentTypeValidator" && e.PropertyName == "Type");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "MediaTypeValidator" && e.PropertyName == "Type");
   }
 
   [Fact(DisplayName = "PlainText: it should construct the correct plain text template.")]
