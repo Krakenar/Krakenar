@@ -28,6 +28,7 @@ public class EventSerializer : Logitar.EventSourcing.Infrastructure.EventSeriali
     SerializerOptions.Converters.Add(new MessageIdConverter());
     SerializerOptions.Converters.Add(new OneTimePasswordIdConverter());
     SerializerOptions.Converters.Add(new PersonNameConverter());
+    SerializerOptions.Converters.Add(new PlaceholderConverter());
     SerializerOptions.Converters.Add(new RealmIdConverter());
     SerializerOptions.Converters.Add(new RoleIdConverter());
     SerializerOptions.Converters.Add(new SecretConverter());
