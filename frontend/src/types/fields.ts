@@ -52,6 +52,7 @@ export type FieldTypeSortOption = SortOption & {
 export type NumberSettings = {
   minimumValue?: number | null;
   maximumValue?: number | null;
+  step?: number | null;
 };
 
 export type RelatedContentSettings = {

@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import DateTimeSettingsEdit from "@/components/fields/DateTimeSettingsEdit.vue";
 import DeleteFieldType from "@/components/fields/DeleteFieldType.vue";
 import FieldTypeGeneral from "@/components/fields/FieldTypeGeneral.vue";
+import NumberSettingsEdit from "@/components/fields/NumberSettingsEdit.vue";
+import RichTextSettingsEdit from "@/components/fields/RichTextSettingsEdit.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import StringSettingsEdit from "@/components/fields/StringSettingsEdit.vue";
 import type { Configuration } from "@/types/configuration";
 import type { FieldType } from "@/types/fields";
 import { StatusCodes, type ApiFailure } from "@/types/api";
@@ -24,6 +28,8 @@ const { t } = useI18n();
 
 const configuration = ref<Configuration>();
 const fieldType = ref<FieldType>();
+
+const hasSettings = computed<boolean>(() => Boolean(fieldType.value && fieldType.value.dataType !== "Boolean" && fieldType.value.dataType !== "Tags"));
 
 function setMetadata(updated: FieldType): void {
   if (fieldType.value) {
@@ -44,6 +50,15 @@ function onGeneralUpdated(updated: FieldType): void {
     fieldType.value.uniqueName = updated.uniqueName;
     fieldType.value.displayName = updated.displayName;
     fieldType.value.description = updated.description;
+  }
+  toasts.success("fields.type.updated");
+}
+
+function onSettingsUpdated(updated: FieldType): void {
+  if (fieldType.value) {
+    setMetadata(updated);
+    fieldType.value.richText = updated.richText ? { ...updated.richText } : fieldType.value.richText;
+    fieldType.value.string = updated.string ? { ...updated.string } : fieldType.value.string;
   }
   toasts.success("fields.type.updated");
 }
@@ -75,8 +90,14 @@ onMounted(async () => {
         <DeleteFieldType :fieldType="fieldType" @deleted="onDeleted" @error="handleError" />
       </div>
       <TarTabs>
-        <TarTab active id="general" :title="t('general')">
+        <TarTab id="general" :title="t('general')">
           <FieldTypeGeneral :configuration="configuration" :field-type="fieldType" @error="handleError" @updated="onGeneralUpdated" />
+        </TarTab>
+        <TarTab v-if="hasSettings" active id="settings" :title="t('settings.title')">
+          <DateTimeSettingsEdit v-if="fieldType.dateTime" :id="fieldType.id" :settings="fieldType.dateTime" @error="handleError" @updated="onSettingsUpdated" />
+          <NumberSettingsEdit v-if="fieldType.number" :id="fieldType.id" :settings="fieldType.number" @error="handleError" @updated="onSettingsUpdated" />
+          <RichTextSettingsEdit v-if="fieldType.richText" :id="fieldType.id" :settings="fieldType.richText" @error="handleError" @updated="onSettingsUpdated" />
+          <StringSettingsEdit v-if="fieldType.string" :id="fieldType.id" :settings="fieldType.string" @error="handleError" @updated="onSettingsUpdated" />
         </TarTab>
       </TarTabs>
     </template>

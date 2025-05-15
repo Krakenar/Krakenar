@@ -16,12 +16,31 @@
       },
       "placeholder": "Sélectionnez un type de données"
     },
+    "dateTime": {
+      "value": {
+        "maximum": "Valeur maximale",
+        "minimum": "Valeur minimale"
+      }
+    },
     "delete": {
       "confirm": "Afin de supprimer le type de champs, veuillez entrer son nom dans le champs suivant.",
       "title": "Supprimer le type de champs"
     },
     "deleted": "Le type de champs a été supprimé.",
     "empty": "Cette liste est vide.",
+    "number": {
+      "step": "Pas",
+      "value": {
+        "maximum": "Valeur maximale",
+        "minimum": "Valeur minimale"
+      }
+    },
+    "richText": {
+      "length": {
+        "maximum": "Longueur maximale",
+        "minimum": "Longueur minimale"
+      }
+    },
     "sort": {
       "options": {
         "CreatedOn": "Date de création",
@@ -29,6 +48,13 @@
         "UniqueName": "Nom unique",
         "UpdatedOn": "Dernière modification"
       }
+    },
+    "string": {
+      "length": {
+        "maximum": "Longueur maximale",
+        "minimum": "Longueur minimale"
+      },
+      "pattern": "Patron (expression régulière)"
     },
     "title": "Types de champs",
     "updated": "Le type de champs a été mis à jour."
