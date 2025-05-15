@@ -1,15 +1,5 @@
 {
-  "content": {
-    "text": "Content",
-    "type": {
-      "label": "Type",
-      "options": {
-        "text/html": "HTML",
-        "text/plain": "Plain Text"
-      },
-      "placeholder": "Select a content type"
-    }
-  },
+  "content": "Content",
   "create": "New Template",
   "created": "The template has been created.",
   "delete": {

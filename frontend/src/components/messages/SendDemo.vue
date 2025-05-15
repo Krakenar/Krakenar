@@ -10,10 +10,11 @@ import SentMessage from "./SentMessage.vue";
 import TemplateFormSelect from "@/components/templates/TemplateFormSelect.vue";
 import VariableList from "./VariableList.vue";
 import locales from "@/resources/locales.json";
-import type { ContentType, Template } from "@/types/templates";
 import type { Locale } from "@/types/i18n";
+import type { MediaType } from "@/types/contents";
 import type { SendMessagePayload, SentMessages, Variable } from "@/types/messages";
 import type { Sender, SenderKind } from "@/types/senders";
+import type { Template } from "@/types/templates";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { isError } from "@/helpers/error";
 import { sendMessage } from "@/api/messages";
@@ -39,7 +40,7 @@ const selectedTemplate = ref<Template>();
 const sentMessageId = ref<string>("");
 const variables = ref<Variable[]>([]);
 
-const contentType = computed<ContentType | undefined>(() => (props.sender?.kind === "Phone" ? "text/plain" : undefined));
+const contentType = computed<MediaType | undefined>(() => (props.sender?.kind === "Phone" ? "text/plain" : undefined));
 const kind = computed<SenderKind | undefined>(() => (props.template?.content.type === "text/html" ? "Email" : undefined));
 
 const emit = defineEmits<{

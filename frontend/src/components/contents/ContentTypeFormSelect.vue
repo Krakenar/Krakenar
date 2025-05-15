@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import type { SelectOption } from "logitar-vue3-ui";
 import { arrayUtils } from "logitar-js";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import FormSelect from "@/components/forms/FormSelect.vue";
-import type { MediaType } from "@/types/contents";
+import type { ContentType, SearchContentTypesPayload } from "@/types/contents";
 import type { SearchResults } from "@/types/search";
-import type { Template, SearchTemplatesPayload } from "@/types/templates";
-import { formatTemplate } from "@/helpers/format";
-import { searchTemplates } from "@/api/templates";
+import { formatContentType } from "@/helpers/format";
+import { searchContentTypes } from "@/api/contents";
 
 const { orderBy } = arrayUtils;
 const { t } = useI18n();
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
-    contentType?: MediaType;
     id?: string;
     label?: string;
     modelValue?: string;
@@ -24,52 +22,49 @@ const props = withDefaults(
     required?: boolean | string;
   }>(),
   {
-    id: "template",
-    label: "templates.select.label",
-    placeholder: "templates.select.placeholder",
+    id: "content-type",
+    label: "contents.type.select.label",
+    placeholder: "contents.type.select.placeholder",
   },
 );
 
-const templates = ref<Template[]>([]);
+const contentTypes = ref<ContentType[]>([]);
 
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    templates.value.map((template) => ({ text: formatTemplate(template), value: template.id })),
+    contentTypes.value.map((contentType) => ({ text: formatContentType(contentType), value: contentType.id })),
     "text",
   ),
 );
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
-  (e: "selected", value: Template | undefined): void;
+  (e: "selected", value: ContentType | undefined): void;
   (e: "update:modelValue", value: string): void;
 }>();
 
 function onModelValueUpdate(id: string): void {
   emit("update:modelValue", id);
 
-  const template: Template | undefined = templates.value.find((template) => template.id === id);
-  emit("selected", template);
+  const contentType: ContentType | undefined = contentTypes.value.find((contentType) => contentType.id === id);
+  emit("selected", contentType);
 }
 
-async function refresh(contentType?: MediaType): Promise<void> {
+onMounted(async () => {
   try {
-    const payload: SearchTemplatesPayload = {
-      contentType,
+    const payload: SearchContentTypesPayload = {
       ids: [],
       search: { terms: [], operator: "And" },
       sort: [],
       skip: 0,
       limit: 0,
     };
-    const results: SearchResults<Template> = await searchTemplates(payload);
-    templates.value = results.items;
+    const results: SearchResults<ContentType> = await searchContentTypes(payload);
+    contentTypes.value = results.items;
   } catch (e: unknown) {
     emit("error", e);
   }
-}
-
-watch(() => props.contentType, refresh, { immediate: true });
+});
 </script>
 
 <template>

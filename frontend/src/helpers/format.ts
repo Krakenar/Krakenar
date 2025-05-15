@@ -1,4 +1,5 @@
 import type { ContentType } from "@/types/contents";
+import type { FieldType } from "@/types/fields";
 import type { Locale } from "@/types/i18n";
 import type { Role } from "@/types/roles";
 import type { Sender } from "@/types/senders";
@@ -7,6 +8,10 @@ import type { User } from "@/types/users";
 
 export function formatContentType(contentType: ContentType): string {
   return contentType.displayName ? `${contentType.displayName} (${contentType.uniqueName})` : contentType.uniqueName;
+}
+
+export function formatFieldType(fieldType: FieldType): string {
+  return fieldType.displayName ? `${fieldType.displayName} (${fieldType.uniqueName})` : fieldType.uniqueName;
 }
 
 export function formatLocale(locale: Locale): string {

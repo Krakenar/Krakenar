@@ -1,4 +1,12 @@
 {
+  "media": {
+    "label": "Type",
+    "options": {
+      "text/html": "HTML",
+      "text/plain": "Texte brut"
+    },
+    "placeholder": "Sélectionnez un type de contenu"
+  },
   "type": {
     "create": "Nouveau type de contenu",
     "created": "Le type de contenu a été créé.",
@@ -11,6 +19,10 @@
     "invariant": {
       "help": "Lorsque activé, les traductions des contenus de ce type seront désactivées.",
       "label": "Invariant"
+    },
+    "select": {
+      "label": "Type de contenu",
+      "placeholder": "Sélectionnez un type de contenu"
     },
     "sort": {
       "options": {

@@ -56,7 +56,7 @@ public class UpdateTemplateHandlerTests
     Assert.Contains(exception.Errors, e => e.ErrorCode == "AllowedCharactersValidator" && e.PropertyName == "UniqueName");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "DisplayName.Value");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "MaximumLengthValidator" && e.PropertyName == "Subject");
-    Assert.Contains(exception.Errors, e => e.ErrorCode == "ContentTypeValidator" && e.PropertyName == "Content.Type");
+    Assert.Contains(exception.Errors, e => e.ErrorCode == "MediaTypeValidator" && e.PropertyName == "Content.Type");
     Assert.Contains(exception.Errors, e => e.ErrorCode == "NotEmptyValidator" && e.PropertyName == "Content.Text");
   }
 

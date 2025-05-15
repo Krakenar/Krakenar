@@ -7,7 +7,7 @@ public class RichTextSettingsValidator : AbstractValidator<IRichTextSettings>
 {
   public RichTextSettingsValidator()
   {
-    RuleFor(x => x.ContentType).ContentType();
+    RuleFor(x => x.ContentType).MediaType();
 
     When(x => x.MinimumLength.HasValue, () => RuleFor(x => x.MinimumLength!.Value).GreaterThan(0));
     When(x => x.MaximumLength.HasValue, () => RuleFor(x => x.MaximumLength!.Value).GreaterThan(0));

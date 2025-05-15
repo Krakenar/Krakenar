@@ -1,15 +1,5 @@
 {
-  "content": {
-    "text": "Contenu",
-    "type": {
-      "label": "Type",
-      "options": {
-        "text/html": "HTML",
-        "text/plain": "Texte brut"
-      },
-      "placeholder": "Sélectionnez un type de contenu"
-    }
-  },
+  "content": "Contenu",
   "create": "Nouveau gabarit",
   "created": "Le gabarit a été créé.",
   "delete": {

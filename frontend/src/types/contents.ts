@@ -24,6 +24,8 @@ export type CreateOrReplaceContentTypePayload = {
   description?: string;
 };
 
+export type MediaType = "text/html" | "text/plain";
+
 export type SearchContentTypesPayload = SearchPayload & {
   isInvariant?: boolean;
   sort: ContentTypeSortOption[];

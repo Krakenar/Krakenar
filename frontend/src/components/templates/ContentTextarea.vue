@@ -15,7 +15,7 @@ withDefaults(
   }>(),
   {
     id: "content-text",
-    label: "templates.content.text",
+    label: "templates.content",
     rows: 15,
   },
 );

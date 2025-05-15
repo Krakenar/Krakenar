@@ -89,7 +89,7 @@ onMounted(async () => {
         <TarTab active id="general" :title="t('general')">
           <TemplateGeneral :configuration="configuration" :template="template" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
-        <TarTab id="contents" :title="t('templates.content.text')">
+        <TarTab id="contents" :title="t('templates.content')">
           <TemplateContents :template="template" @error="handleError" @updated="onContentsUpdated" />
         </TarTab>
         <TarTab id="demo" :title="t('messages.demo.label')">

@@ -4,14 +4,14 @@ using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 namespace Krakenar.Core.Validators;
 
 [Trait(Traits.Category, Categories.Unit)]
-public class ContentTypeValidatorTests
+public class MediaTypeValidatorTests
 {
-  private readonly ValidationContext<ContentTypeValidatorTests> _context;
-  private readonly ContentTypeValidator<ContentTypeValidatorTests> _validator = new();
+  private readonly ValidationContext<MediaTypeValidatorTests> _context;
+  private readonly MediaTypeValidator<MediaTypeValidatorTests> _validator = new();
 
-  public ContentTypeValidatorTests()
+  public MediaTypeValidatorTests()
   {
-    _context = new ValidationContext<ContentTypeValidatorTests>(this);
+    _context = new ValidationContext<MediaTypeValidatorTests>(this);
   }
 
   [Theory(DisplayName = "IsValid: it should return false when the value is not a valid content type.")]

@@ -1,4 +1,12 @@
 {
+  "media": {
+    "label": "Type",
+    "options": {
+      "text/html": "HTML",
+      "text/plain": "Plain Text"
+    },
+    "placeholder": "Select a content type"
+  },
   "type": {
     "create": "New Content Type",
     "created": "The content type has been created.",
@@ -11,6 +19,10 @@
     "invariant": {
       "help": "When enabled, translations of contents this type will be disabled.",
       "label": "Invariant"
+    },
+    "select": {
+      "label": "Content Type",
+      "placeholder": "Select a content type"
     },
     "sort": {
       "options": {

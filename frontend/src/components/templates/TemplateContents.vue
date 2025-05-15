@@ -4,7 +4,7 @@ import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import ContentTextarea from "./ContentTextarea.vue";
-import ContentTypeFormSelect from "./ContentTypeFormSelect.vue";
+import MediaTypeFormSelect from "@/components/contents/MediaTypeFormSelect.vue";
 import SubjectInput from "./SubjectInput.vue";
 import type { Content, Template, UpdateTemplatePayload } from "@/types/templates";
 import { updateTemplate } from "@/api/templates";
@@ -53,7 +53,7 @@ watch(
     <form @submit.prevent="handleSubmit(submit)">
       <div class="row">
         <SubjectInput class="col" required v-model="subject" />
-        <ContentTypeFormSelect class="col" required v-model="content.type" />
+        <MediaTypeFormSelect class="col" required v-model="content.type" />
       </div>
       <ContentTextarea required v-model="content.text" />
       <div class="mb-3">

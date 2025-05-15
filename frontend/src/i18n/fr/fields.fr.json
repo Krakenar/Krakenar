@@ -1,0 +1,72 @@
+{
+  "type": {
+    "create": "Nouveau type de champs",
+    "created": "Le type de champs a été créé.",
+    "dataType": {
+      "label": "Type de données",
+      "options": {
+        "Boolean": "Booléen",
+        "DateTime": "Date & Heure",
+        "Number": "Nombre",
+        "RelatedContent": "Contenu connexe",
+        "RichText": "Texte riche",
+        "Select": "Sélection",
+        "String": "Chaîne de caractères",
+        "Tags": "Étiquettes"
+      },
+      "placeholder": "Sélectionnez un type de données"
+    },
+    "dateTime": {
+      "value": {
+        "maximum": "Valeur maximale",
+        "minimum": "Valeur minimale"
+      }
+    },
+    "delete": {
+      "confirm": "Afin de supprimer le type de champs, veuillez entrer son nom dans le champs suivant.",
+      "title": "Supprimer le type de champs"
+    },
+    "deleted": "Le type de champs a été supprimé.",
+    "empty": "Cette liste est vide.",
+    "multiple": "Sélection multiple",
+    "number": {
+      "step": "Pas",
+      "value": {
+        "maximum": "Valeur maximale",
+        "minimum": "Valeur minimale"
+      }
+    },
+    "richText": {
+      "length": {
+        "maximum": "Longueur maximale",
+        "minimum": "Longueur minimale"
+      }
+    },
+    "select": {
+      "option": {
+        "disabled": "Désactivée",
+        "label": "Étiquette",
+        "text": "Texte",
+        "title": "Options",
+        "value": "Valeur"
+      }
+    },
+    "sort": {
+      "options": {
+        "CreatedOn": "Date de création",
+        "DisplayName": "Nom d’affichage",
+        "UniqueName": "Nom unique",
+        "UpdatedOn": "Dernière modification"
+      }
+    },
+    "string": {
+      "length": {
+        "maximum": "Longueur maximale",
+        "minimum": "Longueur minimale"
+      },
+      "pattern": "Patron (expression régulière)"
+    },
+    "title": "Types de champs",
+    "updated": "Le type de champs a été mis à jour."
+  }
+}

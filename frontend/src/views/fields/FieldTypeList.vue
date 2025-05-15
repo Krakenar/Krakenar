@@ -8,18 +8,17 @@ import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
-import CreateTemplate from "@/components/templates/CreateTemplate.vue";
+import CreateFieldType from "@/components/fields/CreateFieldType.vue";
+import DataTypeSelect from "@/components/fields/DataTypeSelect.vue";
 import EditIcon from "@/components/shared/EditIcon.vue";
-import MediaTypeSelect from "@/components/contents/MediaTypeSelect.vue";
 import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
-import type { MediaType } from "@/types/contents";
+import type { DataType, FieldType, FieldTypeSort, SearchFieldTypesPayload } from "@/types/fields";
 import type { SearchResults } from "@/types/search";
-import type { Template, TemplateSort, SearchTemplatesPayload } from "@/types/templates";
 import { handleErrorKey } from "@/inject/App";
-import { searchTemplates } from "@/api/templates";
+import { searchFieldTypes } from "@/api/fields";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -31,8 +30,8 @@ const { orderBy } = arrayUtils;
 const { parseBoolean, parseNumber } = parsingUtils;
 const { rt, t, tm } = useI18n();
 
+const fieldTypes = ref<FieldType[]>([]);
 const isLoading = ref<boolean>(false);
-const templates = ref<Template[]>([]);
 const timestamp = ref<number>(0);
 const total = ref<number>(0);
 
@@ -45,13 +44,14 @@ const type = computed<string>(() => route.query.type?.toString() ?? "");
 
 const sortOptions = computed<SelectOption[]>(() =>
   orderBy(
-    Object.entries(tm(rt("templates.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    Object.entries(tm(rt("fields.type.sort.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
     "text",
   ),
 );
 
 async function refresh(): Promise<void> {
-  const payload: SearchTemplatesPayload = {
+  const payload: SearchFieldTypesPayload = {
+    dataType: type.value ? (type.value as DataType) : undefined,
     ids: [],
     search: {
       terms: search.value
@@ -60,8 +60,7 @@ async function refresh(): Promise<void> {
         .map((term) => ({ value: `%${term}%` })),
       operator: "And",
     },
-    contentType: type.value ? (type.value as MediaType) : undefined,
-    sort: sort.value ? [{ field: sort.value as TemplateSort, isDescending: isDescending.value }] : [],
+    sort: sort.value ? [{ field: sort.value as FieldTypeSort, isDescending: isDescending.value }] : [],
     skip: (page.value - 1) * count.value,
     limit: count.value,
   };
@@ -69,9 +68,9 @@ async function refresh(): Promise<void> {
   const now = Date.now();
   timestamp.value = now;
   try {
-    const results: SearchResults<Template> = await searchTemplates(payload);
+    const results: SearchResults<FieldType> = await searchFieldTypes(payload);
     if (now === timestamp.value) {
-      templates.value = results.items;
+      fieldTypes.value = results.items;
       total.value = results.total;
     }
   } catch (e: unknown) {
@@ -95,15 +94,15 @@ function setQuery(key: string, value: string): void {
   router.replace({ ...route, query });
 }
 
-function onCreated(template: Template) {
-  toasts.success("templates.created");
-  router.push({ name: "TemplateEdit", params: { id: template.id } });
+function onCreated(fieldType: FieldType) {
+  toasts.success("fields.type.created");
+  router.push({ name: "FieldTypeEdit", params: { id: fieldType.id } });
 }
 
 watch(
   () => route,
   (route) => {
-    if (route.name === "TemplateList") {
+    if (route.name === "FieldTypeList") {
       const { query } = route;
       if (!query.page || !query.count) {
         router.replace({
@@ -134,14 +133,14 @@ watch(
 
 <template>
   <main class="container">
-    <h1>{{ t("templates.title") }}</h1>
+    <h1>{{ t("fields.type.title") }}</h1>
     <div class="my-3">
       <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
-      <CreateTemplate class="ms-1" @created="onCreated" @error="handleError" />
+      <CreateFieldType class="ms-1" @created="onCreated" @error="handleError" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
-      <MediaTypeSelect class="col" :model-value="type" @update:model-value="setQuery('type', $event)" />
+      <DataTypeSelect class="col" :model-value="type" @update:model-value="setQuery('type', $event)" />
       <SortSelect
         class="col"
         :descending="isDescending"
@@ -152,34 +151,32 @@ watch(
       />
       <CountSelect class="col" :model-value="count" @update:model-value="setQuery('count', ($event ?? 10).toString())" />
     </div>
-    <template v-if="templates.length">
+    <template v-if="fieldTypes.length">
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">{{ t("templates.sort.options.UniqueName") }}</th>
-            <th scope="col">{{ t("templates.sort.options.DisplayName") }}</th>
-            <th scope="col">{{ t("templates.sort.options.Subject") }}</th>
-            <th scope="col">{{ t("contents.media.label") }}</th>
-            <th scope="col">{{ t("templates.sort.options.UpdatedOn") }}</th>
+            <th scope="col">{{ t("fields.type.sort.options.UniqueName") }}</th>
+            <th scope="col">{{ t("fields.type.sort.options.DisplayName") }}</th>
+            <th scope="col">{{ t("fields.type.dataType.label") }}</th>
+            <th scope="col">{{ t("fields.type.sort.options.UpdatedOn") }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="template in templates" :key="template.id">
+          <tr v-for="fieldType in fieldTypes" :key="fieldType.id">
             <td>
-              <RouterLink :to="{ name: 'TemplateEdit', params: { id: template.id } }"><EditIcon /> {{ template.uniqueName }}</RouterLink>
+              <RouterLink :to="{ name: 'FieldTypeEdit', params: { id: fieldType.id } }"><EditIcon /> {{ fieldType.uniqueName }}</RouterLink>
             </td>
             <td>
-              <template v-if="template.displayName">{{ template.displayName }}</template>
+              <template v-if="fieldType.displayName">{{ fieldType.displayName }}</template>
               <span v-else class="text-muted">{{ "—" }}</span>
             </td>
-            <td>{{ template.subject }}</td>
-            <td>{{ t(`contents.media.options.${template.content.type}`) }}</td>
-            <td><StatusBlock :actor="template.updatedBy" :date="template.updatedOn" /></td>
+            <td>{{ t(`fields.type.dataType.options.${fieldType.dataType}`) }}</td>
+            <td><StatusBlock :actor="fieldType.updatedBy" :date="fieldType.updatedOn" /></td>
           </tr>
         </tbody>
       </table>
       <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
     </template>
-    <p v-else>{{ t("templates.empty") }}</p>
+    <p v-else>{{ t("fields.type.empty") }}</p>
   </main>
 </template>

@@ -18,15 +18,15 @@ withDefaults(
     required?: boolean | string;
   }>(),
   {
-    id: "content-type",
-    label: "templates.content.type.label",
-    placeholder: "templates.content.type.placeholder",
+    id: "data-type",
+    label: "fields.type.dataType.label",
+    placeholder: "fields.type.dataType.placeholder",
   },
 );
 
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    Object.entries(tm(rt("templates.content.type.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
+    Object.entries(tm(rt("fields.type.dataType.options"))).map(([value, text]) => ({ text, value }) as SelectOption),
     "text",
   ),
 );

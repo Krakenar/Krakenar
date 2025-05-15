@@ -1,0 +1,72 @@
+{
+  "type": {
+    "create": "New Field Type",
+    "created": "The field type has been created.",
+    "dataType": {
+      "label": "Data Type",
+      "options": {
+        "Boolean": "Boolean",
+        "DateTime": "Date & Time",
+        "Number": "Number",
+        "RelatedContent": "Related Content",
+        "RichText": "Rich Text",
+        "Select": "Select",
+        "String": "String",
+        "Tags": "Tags"
+      },
+      "placeholder": "Select a data type"
+    },
+    "dateTime": {
+      "value": {
+        "maximum": "Maximum Value",
+        "minimum": "Minimum Value"
+      }
+    },
+    "delete": {
+      "confirm": "To delete the field type, enter its name in the field below.",
+      "title": "Delete Field Type"
+    },
+    "deleted": "The field type has been deleted.",
+    "empty": "This list is empty.",
+    "multiple": "Multiple Selection",
+    "number": {
+      "step": "Step",
+      "value": {
+        "maximum": "Maximum Value",
+        "minimum": "Minimum Value"
+      }
+    },
+    "richText": {
+      "length": {
+        "maximum": "Maximum Length",
+        "minimum": "Minimum Length"
+      }
+    },
+    "select": {
+      "option": {
+        "disabled": "Disabled",
+        "label": "Label",
+        "text": "Text",
+        "title": "Options",
+        "value": "Value"
+      }
+    },
+    "sort": {
+      "options": {
+        "CreatedOn": "Created on",
+        "DisplayName": "Display Name",
+        "UniqueName": "Unique Name",
+        "UpdatedOn": "Updated on"
+      }
+    },
+    "string": {
+      "length": {
+        "maximum": "Maximum Length",
+        "minimum": "Minimum Length"
+      },
+      "pattern": "Pattern (Regular Expression)"
+    },
+    "title": "Field Types",
+    "updated": "The field type has been updated."
+  }
+}

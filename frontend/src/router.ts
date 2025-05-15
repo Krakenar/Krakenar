@@ -63,6 +63,17 @@ const router = createRouter({
       path: "/dictionaries/:id",
       component: () => import("./views/dictionaries/DictionaryEdit.vue"),
     },
+    // Field Types
+    {
+      name: "FieldTypeList",
+      path: "/fields/types",
+      component: () => import("./views/fields/FieldTypeList.vue"),
+    },
+    {
+      name: "FieldTypeEdit",
+      path: "/fields/types/:id",
+      component: () => import("./views/fields/FieldTypeEdit.vue"),
+    },
     // Languages
     {
       name: "LanguageList",
