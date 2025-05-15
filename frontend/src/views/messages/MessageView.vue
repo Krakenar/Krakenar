@@ -44,7 +44,7 @@ onMounted(async () => {
         <TarTab active id="general" :title="t('general')">
           <MessageGeneral :message="message" />
         </TarTab>
-        <TarTab id="contents" :title="t('templates.content.text')">
+        <TarTab id="contents" :title="t('templates.content')">
           <MessageContents :message="message" />
         </TarTab>
         <TarTab id="recipients" :title="t('messages.recipients.title')">

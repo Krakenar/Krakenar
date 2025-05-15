@@ -1,4 +1,12 @@
 {
+  "media": {
+    "label": "Type",
+    "options": {
+      "text/html": "HTML",
+      "text/plain": "Texte brut"
+    },
+    "placeholder": "Sélectionnez un type de contenu"
+  },
   "type": {
     "create": "Nouveau type de contenu",
     "created": "Le type de contenu a été créé.",

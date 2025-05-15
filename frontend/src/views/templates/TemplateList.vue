@@ -7,10 +7,10 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import AppPagination from "@/components/shared/AppPagination.vue";
-import ContentTypeSelect from "@/components/templates/ContentTypeSelect.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateTemplate from "@/components/templates/CreateTemplate.vue";
 import EditIcon from "@/components/shared/EditIcon.vue";
+import MediaTypeSelect from "@/components/contents/MediaTypeSelect.vue";
 import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
@@ -141,7 +141,7 @@ watch(
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
-      <ContentTypeSelect class="col" :model-value="type" @update:model-value="setQuery('type', $event)" />
+      <MediaTypeSelect class="col" :model-value="type" @update:model-value="setQuery('type', $event)" />
       <SortSelect
         class="col"
         :descending="isDescending"
@@ -159,7 +159,7 @@ watch(
             <th scope="col">{{ t("templates.sort.options.UniqueName") }}</th>
             <th scope="col">{{ t("templates.sort.options.DisplayName") }}</th>
             <th scope="col">{{ t("templates.sort.options.Subject") }}</th>
-            <th scope="col">{{ t("templates.content.type.label") }}</th>
+            <th scope="col">{{ t("contents.media.label") }}</th>
             <th scope="col">{{ t("templates.sort.options.UpdatedOn") }}</th>
           </tr>
         </thead>
@@ -173,7 +173,7 @@ watch(
               <span v-else class="text-muted">{{ "—" }}</span>
             </td>
             <td>{{ template.subject }}</td>
-            <td>{{ t(`templates.content.type.options.${template.content.type}`) }}</td>
+            <td>{{ t(`contents.media.options.${template.content.type}`) }}</td>
             <td><StatusBlock :actor="template.updatedBy" :date="template.updatedOn" /></td>
           </tr>
         </tbody>

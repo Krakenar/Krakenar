@@ -44,7 +44,7 @@ const template = computed<Template>(() => props.message.template);
       <i class="text-warning"><font-awesome-icon icon="fas fa-triangle-exclamation" /> {{ t("messages.contents.warning") }}</i>
     </p>
     <TarAccordion>
-      <TarAccordionItem active id="body" :title="t(`templates.content.type.options.${message.body.type}`)">
+      <TarAccordionItem active id="body" :title="t(`contents.media.options.${message.body.type}`)">
         <div class="mb-3">
           <TarCheckbox id="view-as-html" :label="t('messages.contents.viewAsHtml')" switch v-model="viewAsHtml" />
         </div>

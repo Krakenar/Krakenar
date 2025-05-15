@@ -1,4 +1,12 @@
 {
+  "media": {
+    "label": "Type",
+    "options": {
+      "text/html": "HTML",
+      "text/plain": "Plain Text"
+    },
+    "placeholder": "Select a content type"
+  },
   "type": {
     "create": "New Content Type",
     "created": "The content type has been created.",

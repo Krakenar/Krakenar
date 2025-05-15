@@ -3,7 +3,7 @@ import { TarButton } from "logitar-vue3-ui";
 import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
-import ContentTypeFormSelect from "@/components/templates/ContentTypeFormSelect.vue";
+import MediaTypeFormSelect from "@/components/contents/MediaTypeFormSelect.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import type { FieldType, RichTextSettings, UpdateFieldTypePayload } from "@/types/fields";
 import type { MediaType } from "@/types/contents";
@@ -56,7 +56,7 @@ watch(
 
 <template>
   <form @submit.prevent="handleSubmit(submit)">
-    <ContentTypeFormSelect required v-model="contentType" />
+    <MediaTypeFormSelect required v-model="contentType" />
     <div class="row">
       <NumberInput
         class="col"
