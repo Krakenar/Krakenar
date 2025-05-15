@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Actors;
 using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Fields.Settings;
@@ -83,6 +84,28 @@ public sealed class Mapper
       UniqueNameSettings = new UniqueNameSettings(source.UniqueNameSettings),
       PasswordSettings = new PasswordSettings(source.PasswordSettings),
       LoggingSettings = new LoggingSettings(source.LoggingSettings)
+    };
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public ContentType ToContentType(Entities.ContentType source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    ContentType destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      IsInvariant = source.IsInvariant,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description
     };
 
     MapAggregate(source, destination);

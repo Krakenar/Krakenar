@@ -107,7 +107,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeBooleanSettingsChanged(settings), actorId);
     }
@@ -124,7 +124,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeDateTimeSettingsChanged(settings), actorId);
     }
@@ -141,7 +141,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeNumberSettingsChanged(settings), actorId);
     }
@@ -158,7 +158,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeRelatedContentSettingsChanged(settings), actorId);
     }
@@ -175,7 +175,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeRichTextSettingsChanged(settings), actorId);
     }
@@ -192,7 +192,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeSelectSettingsChanged(settings), actorId);
     }
@@ -209,7 +209,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeStringSettingsChanged(settings), actorId);
     }
@@ -226,7 +226,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings == null || !_settings.Equals(settings))
+    if (_settings is null || !_settings.Equals(settings))
     {
       Raise(new FieldTypeTagsSettingsChanged(settings), actorId);
     }
@@ -256,15 +256,15 @@ public class FieldType : AggregateRoot
       _updated = new();
     }
   }
-  protected virtual void Handle(FieldTypeUpdated updated)
+  protected virtual void Handle(FieldTypeUpdated @event)
   {
-    if (updated.DisplayName != null)
+    if (@event.DisplayName is not null)
     {
-      _displayName = updated.DisplayName.Value;
+      _displayName = @event.DisplayName.Value;
     }
-    if (updated.Description != null)
+    if (@event.Description is not null)
     {
-      _description = updated.Description.Value;
+      _description = @event.Description.Value;
     }
   }
 

@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts;
+using Krakenar.Core.Contents;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Roles;
@@ -58,34 +59,38 @@ public class UniqueNameAlreadyUsedException : ConflictException
     }
   }
 
+  public UniqueNameAlreadyUsedException(ContentType contentType, ContentTypeId conflictId)
+    : this(contentType.RealmId, "ContentType", contentType.EntityId, conflictId.EntityId, contentType.UniqueName.Value, nameof(contentType.UniqueName))
+  {
+  }
   public UniqueNameAlreadyUsedException(FieldType fieldType, FieldTypeId conflictId)
-    : this(fieldType.RealmId, "FieldType", fieldType.EntityId, conflictId.EntityId, fieldType.UniqueName, nameof(fieldType.UniqueName))
+    : this(fieldType.RealmId, "FieldType", fieldType.EntityId, conflictId.EntityId, fieldType.UniqueName.Value, nameof(fieldType.UniqueName))
   {
   }
   public UniqueNameAlreadyUsedException(Role role, RoleId conflictId)
-    : this(role.RealmId, "Role", role.EntityId, conflictId.EntityId, role.UniqueName, nameof(role.UniqueName))
+    : this(role.RealmId, "Role", role.EntityId, conflictId.EntityId, role.UniqueName.Value, nameof(role.UniqueName))
   {
   }
   public UniqueNameAlreadyUsedException(Template template, TemplateId conflictId)
-    : this(template.RealmId, "Template", template.EntityId, conflictId.EntityId, template.UniqueName, nameof(template.UniqueName))
+    : this(template.RealmId, "Template", template.EntityId, conflictId.EntityId, template.UniqueName.Value, nameof(template.UniqueName))
   {
   }
   public UniqueNameAlreadyUsedException(User user, UserId conflictId)
-    : this(user.RealmId, "User", user.EntityId, conflictId.EntityId, user.UniqueName, nameof(user.UniqueName))
+    : this(user.RealmId, "User", user.EntityId, conflictId.EntityId, user.UniqueName.Value, nameof(user.UniqueName))
   {
   }
-  private UniqueNameAlreadyUsedException(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, UniqueName uniqueName, string propertyName)
+  private UniqueNameAlreadyUsedException(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, string uniqueName, string propertyName)
     : base(BuildMessage(realmId, entityType, entityId, conflictId, uniqueName, propertyName))
   {
     RealmId = realmId?.ToGuid();
     EntityType = entityType;
     EntityId = entityId;
     ConflictId = conflictId;
-    UniqueName = uniqueName.Value;
+    UniqueName = uniqueName;
     PropertyName = propertyName;
   }
 
-  private static string BuildMessage(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, UniqueName uniqueName, string propertyName) => new ErrorMessageBuilder(ErrorMessage)
+  private static string BuildMessage(RealmId? realmId, string entityType, Guid entityId, Guid conflictId, string uniqueName, string propertyName) => new ErrorMessageBuilder(ErrorMessage)
     .AddData(nameof(RealmId), realmId?.ToGuid(), "<null>")
     .AddData(nameof(EntityType), entityType)
     .AddData(nameof(EntityId), entityId)
