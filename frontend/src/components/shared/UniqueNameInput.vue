@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import type { ValidationRuleSet } from "logitar-validation";
 import { computed } from "vue";
+import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
 import FormInput from "@/components/forms/FormInput.vue";
 import type { UniqueNameSettings } from "@/types/settings";
 
+const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
     id?: string;
+    identifier?: boolean | string;
     label?: string;
     max?: number | string;
     modelValue?: string;
@@ -24,7 +27,11 @@ const props = withDefaults(
   },
 );
 
-const rules = computed<ValidationRuleSet>(() => ({ allowedCharacters: props.settings?.allowedCharacters }));
+const isIdentifier = computed<boolean>(() => parseBoolean(props.identifier) ?? false);
+const rules = computed<ValidationRuleSet>(() => ({
+  allowedCharacters: isIdentifier.value ? undefined : props.settings?.allowedCharacters,
+  identifier: isIdentifier.value,
+}));
 
 defineEmits<{
   (e: "update:model-value", value: string): void;

@@ -2,12 +2,52 @@ import { describe, it, expect } from "vitest";
 import { nanoid } from "nanoid";
 
 import type { Actor } from "@/types/actor";
+import type { ContentType } from "@/types/contents";
 import type { Locale } from "@/types/i18n";
 import type { Role } from "@/types/roles";
 import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
 import type { User } from "@/types/users";
-import { formatLocale, formatRole, formatSender, formatTemplate, formatUser } from "../format";
+import { formatContentType, formatLocale, formatRole, formatSender, formatTemplate, formatUser } from "../format";
+
+const actor: Actor = {
+  type: "User",
+  id: nanoid(),
+  isDeleted: false,
+  displayName: "Administrator",
+};
+const now: string = new Date().toISOString();
+
+describe("formatContentType", () => {
+  it.concurrent("should format the content type with display name correctly", () => {
+    const contentType: ContentType = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      isInvariant: false,
+      uniqueName: "BlogArticle",
+      displayName: "Blog Article",
+    };
+    expect(formatContentType(contentType)).toBe("Blog Article (BlogArticle)");
+  });
+
+  it.concurrent("should format the content type without display name correctly", () => {
+    const contentType: ContentType = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      isInvariant: true,
+      uniqueName: "BlogCategory",
+    };
+    expect(formatContentType(contentType)).toBe("BlogCategory");
+  });
+});
 
 describe("formatLocale", () => {
   it.concurrent("should format the locale (with region) correctly", () => {
@@ -32,14 +72,6 @@ describe("formatLocale", () => {
     expect(formatLocale(locale)).toBe("English (en)");
   });
 });
-
-const actor: Actor = {
-  type: "User",
-  id: nanoid(),
-  isDeleted: false,
-  displayName: "Administrator",
-};
-const now: string = new Date().toISOString();
 
 describe("formatRole", () => {
   it.concurrent("should format the role with display name correctly", () => {

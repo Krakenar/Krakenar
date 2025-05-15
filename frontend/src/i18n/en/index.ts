@@ -1,5 +1,6 @@
 import apiKeys from "./apiKeys.en.json";
 import configuration from "./configuration.en.json";
+import contents from "./contents.en.json";
 import countries from "./countries.en.json";
 import dictionaries from "./dictionaries.en.json";
 import errors from "./errors.en.json";
@@ -19,6 +20,7 @@ export default {
   ...index,
   apiKeys,
   configuration,
+  contents,
   countries,
   dictionaries,
   errors,

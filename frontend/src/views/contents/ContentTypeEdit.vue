@@ -1,0 +1,79 @@
+<script setup lang="ts">
+import { TarTab, TarTabs } from "logitar-vue3-ui";
+import { inject, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useRoute, useRouter } from "vue-router";
+
+import ContentTypeGeneral from "@/components/contents/ContentTypeGeneral.vue";
+import DeleteContentType from "@/components/contents/DeleteContentType.vue";
+import StatusDetail from "@/components/shared/StatusDetail.vue";
+import type { ContentType } from "@/types/contents";
+import { StatusCodes, type ApiFailure } from "@/types/api";
+import { formatContentType } from "@/helpers/format";
+import { handleErrorKey } from "@/inject/App";
+import { readContentType } from "@/api/contents";
+import { useToastStore } from "@/stores/toast";
+
+const handleError = inject(handleErrorKey) as (e: unknown) => void;
+const route = useRoute();
+const router = useRouter();
+const toasts = useToastStore();
+const { t } = useI18n();
+
+const contentType = ref<ContentType>();
+
+function setMetadata(updated: ContentType): void {
+  if (contentType.value) {
+    contentType.value.version = updated.version;
+    contentType.value.updatedBy = updated.updatedBy;
+    contentType.value.updatedOn = updated.updatedOn;
+  }
+}
+
+function onDeleted(): void {
+  toasts.success("contents.type.deleted");
+  router.push({ name: "ContentTypeList" });
+}
+
+function onGeneralUpdated(updated: ContentType): void {
+  if (contentType.value) {
+    setMetadata(updated);
+    contentType.value.isInvariant = updated.isInvariant;
+    contentType.value.uniqueName = updated.uniqueName;
+    contentType.value.displayName = updated.displayName;
+    contentType.value.description = updated.description;
+  }
+  toasts.success("contents.type.updated");
+}
+
+onMounted(async () => {
+  try {
+    const id = route.params.id as string;
+    contentType.value = await readContentType(id);
+  } catch (e: unknown) {
+    const { status } = e as ApiFailure;
+    if (status === StatusCodes.NotFound) {
+      router.push("/not-found");
+    } else {
+      handleError(e);
+    }
+  }
+});
+</script>
+
+<template>
+  <main class="container">
+    <template v-if="contentType">
+      <h1>{{ formatContentType(contentType) }}</h1>
+      <StatusDetail :aggregate="contentType" />
+      <div class="mb-3">
+        <DeleteContentType :contentType="contentType" @deleted="onDeleted" @error="handleError" />
+      </div>
+      <TarTabs>
+        <TarTab active id="general" :title="t('general')">
+          <ContentTypeGeneral :content-type="contentType" @error="handleError" @updated="onGeneralUpdated" />
+        </TarTab>
+      </TarTabs>
+    </template>
+  </main>
+</template>
