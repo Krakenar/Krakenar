@@ -2,4 +2,4 @@
 
 namespace Krakenar.Core.Contents.Events;
 
-public record ContentTypeCreated(bool IsInvariant, UniqueName UniqueName) : DomainEvent;
+public record ContentTypeCreated(bool IsInvariant, Identifier UniqueName) : DomainEvent;

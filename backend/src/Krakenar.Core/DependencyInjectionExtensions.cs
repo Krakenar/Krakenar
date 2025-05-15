@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Localization;
@@ -19,6 +20,9 @@ using Krakenar.Core.ApiKeys.Queries;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
+using Krakenar.Core.Contents;
+using Krakenar.Core.Contents.Commands;
+using Krakenar.Core.Contents.Queries;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Commands;
 using Krakenar.Core.Dictionaries.Queries;
@@ -58,6 +62,7 @@ using Logitar.EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
+using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
@@ -93,6 +98,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<AuthenticateUser, UserDto>, AuthenticateUserHandler>()
       .AddTransient<ICommandHandler<CreateOneTimePassword, OneTimePasswordDto>, CreateOneTimePasswordHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceApiKey, CreateOrReplaceApiKeyResult>, CreateOrReplaceApiKeyHandler>()
+      .AddTransient<ICommandHandler<CreateOrReplaceContentType, CreateOrReplaceContentTypeResult>, CreateOrReplaceContentTypeHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceDictionary, CreateOrReplaceDictionaryResult>, CreateOrReplaceDictionaryHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceFieldType, CreateOrReplaceFieldTypeResult>, CreateOrReplaceFieldTypeHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>, CreateOrReplaceLanguageHandler>()
@@ -104,6 +110,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
       .AddTransient<ICommandHandler<CreateToken, CreatedToken>, CreateTokenCommandHandler>()
       .AddTransient<ICommandHandler<DeleteApiKey, ApiKeyDto?>, DeleteApiKeyHandler>()
+      .AddTransient<ICommandHandler<DeleteContentType, ContentTypeDto?>, DeleteContentTypeHandler>()
       .AddTransient<ICommandHandler<DeleteDictionary, DictionaryDto?>, DeleteDictionaryHandler>()
       .AddTransient<ICommandHandler<DeleteFieldType, FieldTypeDto?>, DeleteFieldTypeHandler>()
       .AddTransient<ICommandHandler<DeleteLanguage, LanguageDto?>, DeleteLanguageHandler>()
@@ -125,6 +132,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<SignOutUser, UserDto?>, SignOutUserHandler>()
       .AddTransient<ICommandHandler<UpdateApiKey, ApiKeyDto?>, UpdateApiKeyHandler>()
       .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
+      .AddTransient<ICommandHandler<UpdateContentType, ContentTypeDto?>, UpdateContentTypeHandler>()
       .AddTransient<ICommandHandler<UpdateDictionary, DictionaryDto?>, UpdateDictionaryHandler>()
       .AddTransient<ICommandHandler<UpdateFieldType, FieldTypeDto?>, UpdateFieldTypeHandler>()
       .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
@@ -142,6 +150,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IConfigurationService, ConfigurationService>()
+      .AddTransient<IContentTypeService, ContentTypeService>()
       .AddTransient<IDictionaryService, DictionaryService>()
       .AddTransient<IFieldTypeService, FieldTypeService>()
       .AddTransient<ILanguageService, LanguageService>()
@@ -159,6 +168,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarManagers(this IServiceCollection services)
   {
     return services
+      .AddTransient<IContentManager, ContentManager>()
       .AddTransient<IDictionaryManager, DictionaryManager>()
       .AddTransient<IFieldManager, FieldManager>()
       .AddTransient<ILanguageManager, LanguageManager>()
@@ -174,6 +184,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
+      .AddTransient<IQueryHandler<ReadContentType, ContentTypeDto?>, ReadContentTypeHandler>()
       .AddTransient<IQueryHandler<ReadDictionary, DictionaryDto?>, ReadDictionaryHandler>()
       .AddTransient<IQueryHandler<ReadFieldType, FieldTypeDto?>, ReadFieldTypeHandler>()
       .AddTransient<IQueryHandler<ReadLanguage, LanguageDto?>, ReadLanguageHandler>()
@@ -186,6 +197,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadTemplate, TemplateDto?>, ReadTemplateHandler>()
       .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
       .AddTransient<IQueryHandler<SearchApiKeys, SearchResults<ApiKeyDto>>, SearchApiKeysHandler>()
+      .AddTransient<IQueryHandler<SearchContentTypes, SearchResults<ContentTypeDto>>, SearchContentTypesHandler>()
       .AddTransient<IQueryHandler<SearchDictionaries, SearchResults<DictionaryDto>>, SearchDictionariesHandler>()
       .AddTransient<IQueryHandler<SearchFieldTypes, SearchResults<FieldTypeDto>>, SearchFieldTypesHandler>()
       .AddTransient<IQueryHandler<SearchLanguages, SearchResults<LanguageDto>>, SearchLanguagesHandler>()
@@ -203,6 +215,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IApiKeyRepository, ApiKeyRepository>()
       .AddTransient<IConfigurationRepository, ConfigurationRepository>()
+      .AddTransient<IContentTypeRepository, ContentTypeRepository>()
       .AddTransient<IDictionaryRepository, DictionaryRepository>()
       .AddTransient<IFieldTypeRepository, FieldTypeRepository>()
       .AddTransient<ILanguageRepository, LanguageRepository>()

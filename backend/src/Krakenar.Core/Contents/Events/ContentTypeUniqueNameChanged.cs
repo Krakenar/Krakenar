@@ -2,4 +2,4 @@
 
 namespace Krakenar.Core.Contents.Events;
 
-public record ContentTypeUniqueNameChanged(UniqueName UniqueName) : DomainEvent;
+public record ContentTypeUniqueNameChanged(Identifier UniqueName) : DomainEvent;

@@ -27,8 +27,8 @@ public class ContentType : AggregateRoot
     }
   }
 
-  private UniqueName? _uniqueName = null;
-  public UniqueName UniqueName => _uniqueName ?? throw new InvalidOperationException("The content type has not been initialized.");
+  private Identifier? _uniqueName = null;
+  public Identifier UniqueName => _uniqueName ?? throw new InvalidOperationException("The content type has not been initialized.");
   private DisplayName? _displayName = null;
   public DisplayName? DisplayName
   {
@@ -60,7 +60,7 @@ public class ContentType : AggregateRoot
   {
   }
 
-  public ContentType(UniqueName uniqueName, bool isInvariant = false, ActorId? actorId = null, ContentTypeId? contentTypeId = null) : base(contentTypeId?.StreamId)
+  public ContentType(Identifier uniqueName, bool isInvariant = false, ActorId? actorId = null, ContentTypeId? contentTypeId = null) : base(contentTypeId?.StreamId)
   {
     Raise(new ContentTypeCreated(isInvariant, uniqueName), actorId);
   }
@@ -79,7 +79,7 @@ public class ContentType : AggregateRoot
     }
   }
 
-  public void SetUniqueName(UniqueName uniqueName, ActorId? actorId = null)
+  public void SetUniqueName(Identifier uniqueName, ActorId? actorId = null)
   {
     if (_uniqueName != uniqueName)
     {
