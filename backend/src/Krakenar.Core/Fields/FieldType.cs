@@ -256,15 +256,15 @@ public class FieldType : AggregateRoot
       _updated = new();
     }
   }
-  protected virtual void Handle(FieldTypeUpdated updated)
+  protected virtual void Handle(FieldTypeUpdated @event)
   {
-    if (updated.DisplayName != null)
+    if (@event.DisplayName != null)
     {
-      _displayName = updated.DisplayName.Value;
+      _displayName = @event.DisplayName.Value;
     }
-    if (updated.Description != null)
+    if (@event.Description != null)
     {
-      _description = updated.Description.Value;
+      _description = @event.Description.Value;
     }
   }
 
