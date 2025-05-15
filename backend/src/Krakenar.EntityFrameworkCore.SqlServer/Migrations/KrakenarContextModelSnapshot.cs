@@ -420,6 +420,104 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("DictionaryEntries", "Localization");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", b =>
+                {
+                    b.Property<int>("FieldTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FieldTypeId"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DataType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("RealmId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Settings")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreamId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UniqueName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UniqueNameNormalized")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("FieldTypeId");
+
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
+                    b.HasIndex("DataType");
+
+                    b.HasIndex("DisplayName");
+
+                    b.HasIndex("RealmUid");
+
+                    b.HasIndex("StreamId")
+                        .IsUnique();
+
+                    b.HasIndex("UniqueName");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("Version");
+
+                    b.HasIndex("RealmId", "Id")
+                        .IsUnique()
+                        .HasFilter("[RealmId] IS NOT NULL");
+
+                    b.HasIndex("RealmId", "UniqueNameNormalized")
+                        .IsUnique()
+                        .HasFilter("[RealmId] IS NOT NULL");
+
+                    b.ToTable("FieldTypes", "Content");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Language", b =>
                 {
                     b.Property<int>("LanguageId")
@@ -1857,6 +1955,16 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Dictionary");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
+                        .WithMany("FieldTypes")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Realm");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Language", b =>
                 {
                     b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
@@ -2039,6 +2147,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("ApiKeys");
 
                     b.Navigation("Dictionaries");
+
+                    b.Navigation("FieldTypes");
 
                     b.Navigation("Languages");
 

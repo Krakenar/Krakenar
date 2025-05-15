@@ -4,7 +4,7 @@ namespace Krakenar.Contracts.Realms;
 
 public class Realm : Aggregate
 {
-  public string UniqueSlug { get; set; } = string.Empty;
+  public string UniqueSlug { get; set; }
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
 
@@ -19,6 +19,15 @@ public class Realm : Aggregate
   public bool RequireConfirmedAccount { get; set; }
 
   public List<CustomAttribute> CustomAttributes { get; set; } = [];
+
+  public Realm() : this(string.Empty)
+  {
+  }
+
+  public Realm(string uniqueSlug)
+  {
+    UniqueSlug = uniqueSlug;
+  }
 
   public override string ToString() => $"{DisplayName ?? UniqueSlug} | {base.ToString()}";
 }

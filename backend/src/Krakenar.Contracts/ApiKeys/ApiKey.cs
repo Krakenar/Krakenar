@@ -9,7 +9,7 @@ public class ApiKey : Aggregate
 
   public string? XApiKey { get; set; }
 
-  public string Name { get; set; } = string.Empty;
+  public string Name { get; set; }
   public string? Description { get; set; }
   public DateTime? ExpiresOn { get; set; }
 
@@ -17,6 +17,15 @@ public class ApiKey : Aggregate
 
   public List<CustomAttribute> CustomAttributes { get; set; } = [];
   public List<Role> Roles { get; set; } = [];
+
+  public ApiKey() : this(string.Empty)
+  {
+  }
+
+  public ApiKey(string name)
+  {
+    Name = name;
+  }
 
   public override string ToString() => $"{Name} | {base.ToString()}";
 }

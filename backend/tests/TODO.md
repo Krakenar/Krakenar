@@ -18,6 +18,32 @@
 - DictionaryManager
 - UpdateDictionary
 
+## Fields
+
+- FieldManager
+- FieldType
+
+### Commands
+
+- CreateOrReplaceFieldType
+- DeleteFieldType
+- UpdateFieldType
+
+### Queries
+
+- ReadFieldType
+- SearchFieldTypes
+
+### Settings
+
+- DateTimeSettings
+- NumberSettings
+- RelatedContentSettings
+- RichTextSettings
+- SelectOption
+- SelectSettings
+- StringSettings
+
 ## Languages
 
 - LanguageManager.FindAsync

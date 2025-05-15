@@ -19,6 +19,7 @@ public class EventSerializer : Logitar.EventSourcing.Infrastructure.EventSeriali
     SerializerOptions.Converters.Add(new DescriptionConverter());
     SerializerOptions.Converters.Add(new DictionaryIdConverter());
     SerializerOptions.Converters.Add(new DisplayNameConverter());
+    SerializerOptions.Converters.Add(new FieldTypeIdConverter());
     SerializerOptions.Converters.Add(new GenderConverter());
     SerializerOptions.Converters.Add(new IdentifierConverter());
     SerializerOptions.Converters.Add(new LanguageIdConverter());

@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts;
+using Krakenar.Core.Fields;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Templates;
@@ -57,6 +58,10 @@ public class UniqueNameAlreadyUsedException : ConflictException
     }
   }
 
+  public UniqueNameAlreadyUsedException(FieldType fieldType, FieldTypeId conflictId)
+    : this(fieldType.RealmId, "FieldType", fieldType.EntityId, conflictId.EntityId, fieldType.UniqueName, nameof(fieldType.UniqueName))
+  {
+  }
   public UniqueNameAlreadyUsedException(Role role, RoleId conflictId)
     : this(role.RealmId, "Role", role.EntityId, conflictId.EntityId, role.UniqueName, nameof(role.UniqueName))
   {

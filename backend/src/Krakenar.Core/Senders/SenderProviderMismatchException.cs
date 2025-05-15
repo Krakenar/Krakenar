@@ -3,7 +3,7 @@ using Logitar;
 
 namespace Krakenar.Core.Senders;
 
-public class SenderProviderMismatchException : Exception
+public class SenderProviderMismatchException : ArgumentException
 {
   private const string ErrorMessage = "The specified sender provider was not expected.";
 
@@ -28,7 +28,8 @@ public class SenderProviderMismatchException : Exception
     private set => Data[nameof(ActualProvider)] = value;
   }
 
-  public SenderProviderMismatchException(Sender sender, SenderProvider actualProvider) : base(BuildMessage(sender, actualProvider))
+  public SenderProviderMismatchException(Sender sender, SenderProvider actualProvider, string paramName)
+    : base(BuildMessage(sender, actualProvider), paramName)
   {
     RealmId = sender.RealmId?.ToGuid();
     SenderId = sender.EntityId;

@@ -6,6 +6,8 @@ using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Events;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Events;
+using Krakenar.Core.Fields;
+using Krakenar.Core.Fields.Events;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
 using Krakenar.Core.Messages;
@@ -66,6 +68,18 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<DictionaryLanguageChanged>, DictionaryEvents>()
       .AddScoped<IEventHandler<DictionaryUpdated>, DictionaryEvents>()
       .AddScoped<IEventHandler<EmailSenderCreated>, SenderEvents>()
+      .AddScoped<IEventHandler<FieldTypeBooleanSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeCreated>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeDateTimeSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeDeleted>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeNumberSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeRelatedContentSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeRichTextSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeSelectSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeStringSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeTagsSettingsChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeUniqueNameChanged>, FieldTypeEvents>()
+      .AddScoped<IEventHandler<FieldTypeUpdated>, FieldTypeEvents>()
       .AddScoped<IEventHandler<LanguageCreated>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageDeleted>, LanguageEvents>()
       .AddScoped<IEventHandler<LanguageLocaleChanged>, LanguageEvents>()
@@ -139,6 +153,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IApiKeyQuerier, ApiKeyQuerier>()
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
       .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
+      .AddScoped<IFieldTypeQuerier, FieldTypeQuerier>()
       .AddScoped<ILanguageQuerier, LanguageQuerier>()
       .AddScoped<IMessageQuerier, MessageQuerier>()
       .AddScoped<IOneTimePasswordQuerier, OneTimePasswordQuerier>()

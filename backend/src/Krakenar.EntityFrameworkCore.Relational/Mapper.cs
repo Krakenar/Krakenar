@@ -3,6 +3,8 @@ using Krakenar.Contracts.Actors;
 using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
+using Krakenar.Contracts.Fields;
+using Krakenar.Contracts.Fields.Settings;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Logging;
 using Krakenar.Contracts.Messages;
@@ -17,6 +19,7 @@ using Krakenar.Contracts.Templates;
 using Krakenar.Contracts.Users;
 using Logitar;
 using Logitar.EventSourcing;
+using DataTypeNotSupportedException = Krakenar.Core.Fields.DataTypeNotSupportedException;
 using SenderProviderNotSupportedException = Krakenar.Core.Senders.SenderProviderNotSupportedException;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
@@ -101,6 +104,61 @@ public sealed class Mapper
       EntryCount = source.EntryCount
     };
     destination.Entries.AddRange(source.Entries.Select(entry => new DictionaryEntry(entry.Key, entry.Value)));
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public FieldType ToFieldType(Entities.FieldType source, Realm? realm)
+  {
+    if (source.RealmId is not null && realm is null)
+    {
+      throw new ArgumentNullException(nameof(realm));
+    }
+
+    FieldType destination = new()
+    {
+      Id = source.Id,
+      Realm = realm,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      DataType = source.DataType
+    };
+
+    if (source.Settings is not null)
+    {
+      switch (source.DataType)
+      {
+        case DataType.Boolean:
+          destination.Boolean = JsonSerializer.Deserialize<BooleanSettings>(source.Settings);
+          break;
+        case DataType.DateTime:
+          destination.DateTime = JsonSerializer.Deserialize<DateTimeSettings>(source.Settings);
+          break;
+        case DataType.Number:
+          destination.Number = JsonSerializer.Deserialize<NumberSettings>(source.Settings);
+          break;
+        case DataType.RelatedContent:
+          destination.RelatedContent = JsonSerializer.Deserialize<RelatedContentSettings>(source.Settings);
+          break;
+        case DataType.RichText:
+          destination.RichText = JsonSerializer.Deserialize<RichTextSettings>(source.Settings);
+          break;
+        case DataType.Select:
+          destination.Select = JsonSerializer.Deserialize<SelectSettings>(source.Settings);
+          break;
+        case DataType.String:
+          destination.String = JsonSerializer.Deserialize<StringSettings>(source.Settings);
+          break;
+        case DataType.Tags:
+          destination.Tags = JsonSerializer.Deserialize<TagsSettings>(source.Settings);
+          break;
+        default:
+          throw new DataTypeNotSupportedException(source.DataType);
+      }
+    }
 
     MapAggregate(source, destination);
 

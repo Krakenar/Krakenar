@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Dictionaries;
+using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Passwords;
@@ -21,6 +22,9 @@ using Krakenar.Core.Configurations.Queries;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Commands;
 using Krakenar.Core.Dictionaries.Queries;
+using Krakenar.Core.Fields;
+using Krakenar.Core.Fields.Commands;
+using Krakenar.Core.Fields.Queries;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
@@ -55,6 +59,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
+using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 using MessageDto = Krakenar.Contracts.Messages.Message;
 using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
@@ -89,6 +94,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateOneTimePassword, OneTimePasswordDto>, CreateOneTimePasswordHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceApiKey, CreateOrReplaceApiKeyResult>, CreateOrReplaceApiKeyHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceDictionary, CreateOrReplaceDictionaryResult>, CreateOrReplaceDictionaryHandler>()
+      .AddTransient<ICommandHandler<CreateOrReplaceFieldType, CreateOrReplaceFieldTypeResult>, CreateOrReplaceFieldTypeHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceLanguage, CreateOrReplaceLanguageResult>, CreateOrReplaceLanguageHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult>, CreateOrReplaceRealmHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceRole, CreateOrReplaceRoleResult>, CreateOrReplaceRoleHandler>()
@@ -99,6 +105,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateToken, CreatedToken>, CreateTokenCommandHandler>()
       .AddTransient<ICommandHandler<DeleteApiKey, ApiKeyDto?>, DeleteApiKeyHandler>()
       .AddTransient<ICommandHandler<DeleteDictionary, DictionaryDto?>, DeleteDictionaryHandler>()
+      .AddTransient<ICommandHandler<DeleteFieldType, FieldTypeDto?>, DeleteFieldTypeHandler>()
       .AddTransient<ICommandHandler<DeleteLanguage, LanguageDto?>, DeleteLanguageHandler>()
       .AddTransient<ICommandHandler<DeleteRole, RoleDto?>, DeleteRoleHandler>()
       .AddTransient<ICommandHandler<DeleteSender, SenderDto?>, DeleteSenderHandler>()
@@ -119,6 +126,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<UpdateApiKey, ApiKeyDto?>, UpdateApiKeyHandler>()
       .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
       .AddTransient<ICommandHandler<UpdateDictionary, DictionaryDto?>, UpdateDictionaryHandler>()
+      .AddTransient<ICommandHandler<UpdateFieldType, FieldTypeDto?>, UpdateFieldTypeHandler>()
       .AddTransient<ICommandHandler<UpdateLanguage, LanguageDto?>, UpdateLanguageHandler>()
       .AddTransient<ICommandHandler<UpdateRealm, RealmDto?>, UpdateRealmHandler>()
       .AddTransient<ICommandHandler<UpdateRole, RoleDto?>, UpdateRoleHandler>()
@@ -135,6 +143,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IConfigurationService, ConfigurationService>()
       .AddTransient<IDictionaryService, DictionaryService>()
+      .AddTransient<IFieldTypeService, FieldTypeService>()
       .AddTransient<ILanguageService, LanguageService>()
       .AddTransient<IMessageService, MessageService>()
       .AddTransient<IOneTimePasswordService, OneTimePasswordService>()
@@ -151,6 +160,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddTransient<IDictionaryManager, DictionaryManager>()
+      .AddTransient<IFieldManager, FieldManager>()
       .AddTransient<ILanguageManager, LanguageManager>()
       .AddTransient<IRealmManager, RealmManager>()
       .AddTransient<IRoleManager, RoleManager>()
@@ -165,6 +175,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
       .AddTransient<IQueryHandler<ReadDictionary, DictionaryDto?>, ReadDictionaryHandler>()
+      .AddTransient<IQueryHandler<ReadFieldType, FieldTypeDto?>, ReadFieldTypeHandler>()
       .AddTransient<IQueryHandler<ReadLanguage, LanguageDto?>, ReadLanguageHandler>()
       .AddTransient<IQueryHandler<ReadMessage, MessageDto?>, ReadMessageHandler>()
       .AddTransient<IQueryHandler<ReadOneTimePassword, OneTimePasswordDto?>, ReadOneTimePasswordHandler>()
@@ -176,6 +187,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
       .AddTransient<IQueryHandler<SearchApiKeys, SearchResults<ApiKeyDto>>, SearchApiKeysHandler>()
       .AddTransient<IQueryHandler<SearchDictionaries, SearchResults<DictionaryDto>>, SearchDictionariesHandler>()
+      .AddTransient<IQueryHandler<SearchFieldTypes, SearchResults<FieldTypeDto>>, SearchFieldTypesHandler>()
       .AddTransient<IQueryHandler<SearchLanguages, SearchResults<LanguageDto>>, SearchLanguagesHandler>()
       .AddTransient<IQueryHandler<SearchMessages, SearchResults<MessageDto>>, SearchMessagesHandler>()
       .AddTransient<IQueryHandler<SearchRealms, SearchResults<RealmDto>>, SearchRealmsHandler>()
@@ -192,6 +204,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IApiKeyRepository, ApiKeyRepository>()
       .AddTransient<IConfigurationRepository, ConfigurationRepository>()
       .AddTransient<IDictionaryRepository, DictionaryRepository>()
+      .AddTransient<IFieldTypeRepository, FieldTypeRepository>()
       .AddTransient<ILanguageRepository, LanguageRepository>()
       .AddTransient<IMessageRepository, MessageRepository>()
       .AddTransient<IOneTimePasswordRepository, OneTimePasswordRepository>()
