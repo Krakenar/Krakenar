@@ -42,6 +42,15 @@
         "minimum": "Minimum Length"
       }
     },
+    "select": {
+      "option": {
+        "disabled": "Disabled",
+        "label": "Label",
+        "text": "Text",
+        "title": "Options",
+        "value": "Value"
+      }
+    },
     "sort": {
       "options": {
         "CreatedOn": "Created on",

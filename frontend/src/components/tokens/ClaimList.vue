@@ -12,7 +12,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: "update:model-value", claim: Claim[]): void;
+  (e: "update:model-value", value: Claim[]): void;
 }>();
 
 function onAdd(): void {

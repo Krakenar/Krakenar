@@ -42,6 +42,15 @@
         "minimum": "Longueur minimale"
       }
     },
+    "select": {
+      "option": {
+        "disabled": "Désactivée",
+        "label": "Étiquette",
+        "text": "Texte",
+        "title": "Options",
+        "value": "Valeur"
+      }
+    },
     "sort": {
       "options": {
         "CreatedOn": "Date de création",

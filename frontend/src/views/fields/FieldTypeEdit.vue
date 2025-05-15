@@ -10,6 +10,7 @@ import FieldTypeGeneral from "@/components/fields/FieldTypeGeneral.vue";
 import NumberSettingsEdit from "@/components/fields/NumberSettingsEdit.vue";
 import RelatedContentSettingsEdit from "@/components/fields/RelatedContentSettingsEdit.vue";
 import RichTextSettingsEdit from "@/components/fields/RichTextSettingsEdit.vue";
+import SelectSettingsEdit from "@/components/fields/SelectSettingsEdit.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StringSettingsEdit from "@/components/fields/StringSettingsEdit.vue";
 import type { Configuration } from "@/types/configuration";
@@ -97,10 +98,10 @@ onMounted(async () => {
         <DeleteFieldType :fieldType="fieldType" @deleted="onDeleted" @error="handleError" />
       </div>
       <TarTabs>
-        <TarTab id="general" :title="t('general')">
+        <TarTab active id="general" :title="t('general')">
           <FieldTypeGeneral :configuration="configuration" :field-type="fieldType" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
-        <TarTab v-if="hasSettings" active id="settings" :title="t('settings.title')">
+        <TarTab v-if="hasSettings" id="settings" :title="t('settings.title')">
           <DateTimeSettingsEdit v-if="fieldType.dateTime" :id="fieldType.id" :settings="fieldType.dateTime" @error="handleError" @updated="onSettingsUpdated" />
           <NumberSettingsEdit v-if="fieldType.number" :id="fieldType.id" :settings="fieldType.number" @error="handleError" @updated="onSettingsUpdated" />
           <RelatedContentSettingsEdit
@@ -111,6 +112,7 @@ onMounted(async () => {
             @updated="onSettingsUpdated"
           />
           <RichTextSettingsEdit v-if="fieldType.richText" :id="fieldType.id" :settings="fieldType.richText" @error="handleError" @updated="onSettingsUpdated" />
+          <SelectSettingsEdit v-if="fieldType.select" :id="fieldType.id" :settings="fieldType.select" @error="handleError" @updated="onSettingsUpdated" />
           <StringSettingsEdit v-if="fieldType.string" :id="fieldType.id" :settings="fieldType.string" @error="handleError" @updated="onSettingsUpdated" />
         </TarTab>
       </TarTabs>
