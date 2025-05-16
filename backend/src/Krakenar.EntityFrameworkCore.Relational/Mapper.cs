@@ -102,6 +102,7 @@ public sealed class Mapper
 
     ContentItem destination = new()
     {
+      Id = source.Id,
       ContentType = ToContentType(source.ContentType, realm)
     };
 

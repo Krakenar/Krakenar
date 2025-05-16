@@ -20,7 +20,7 @@ public sealed class Content : Aggregate, ISegregatedEntity
 
   public List<ContentLocale> Locales { get; private set; } = [];
 
-  public Content(ContentType contentType, ContentCreated @event)
+  public Content(ContentType contentType, ContentCreated @event) : base(@event)
   {
     Realm? realm = contentType.Realm;
     if (realm is not null)
@@ -68,6 +68,8 @@ public sealed class Content : Aggregate, ISegregatedEntity
 
   public void SetLocale(Language? language, ContentLocaleChanged @event)
   {
+    Update(@event);
+
     ContentLocale? locale = Locales.SingleOrDefault(l => language is null ? l.LanguageId is null : l.LanguageId == language.LanguageId);
     if (locale is null)
     {
