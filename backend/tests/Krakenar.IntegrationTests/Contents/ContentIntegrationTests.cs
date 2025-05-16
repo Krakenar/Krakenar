@@ -136,6 +136,25 @@ public class ContentIntegrationTests : IntegrationTests
     Assert.Empty(await KrakenarContext.Contents.AsNoTracking().Where(x => x.StreamId == article.Id.Value).ToArrayAsync());
   }
 
+  [Fact(DisplayName = "It should read an existing content by ID.")]
+  public async Task Given_Id_When_Read_Then_Returned()
+  {
+    Language language = new(new Locale("en-US"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(language);
+
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(blogArticle);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    Content article = new(blogArticle, invariant, ActorId);
+    article.SetLocale(language, invariant, ActorId);
+    await _contentRepository.SaveAsync(article);
+
+    ContentDto? content = await _contentService.ReadAsync(article.EntityId);
+    Assert.NotNull(content);
+    Assert.Equal(article.EntityId, content.Id);
+  }
+
   [Fact(DisplayName = "It should remove an existing content locale.")]
   public async Task Given_Locale_When_Save_Then_Removed()
   {
@@ -236,6 +255,12 @@ public class ContentIntegrationTests : IntegrationTests
     Assert.Equal(payload.UniqueName, locale.UniqueName);
     Assert.Equal(payload.DisplayName.Trim(), locale.DisplayName);
     Assert.Equal(payload.Description.Trim(), locale.Description);
+  }
+
+  [Fact(DisplayName = "It should return null when the content could not be found.")]
+  public async Task Given_NotFound_When_Delete_Then_NullReturned()
+  {
+    Assert.Null(await _contentService.ReadAsync(Guid.Empty));
   }
 
   [Fact(DisplayName = "It should throw ContentUniqueNameAlreadyUsedException when there is a content invariant unique name conflict.")]

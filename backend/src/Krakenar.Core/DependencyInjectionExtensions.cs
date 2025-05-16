@@ -194,6 +194,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
+      .AddTransient<IQueryHandler<ReadContent, ContentDto?>, ReadContentHandler>()
       .AddTransient<IQueryHandler<ReadContentType, ContentTypeDto?>, ReadContentTypeHandler>()
       .AddTransient<IQueryHandler<ReadDictionary, DictionaryDto?>, ReadDictionaryHandler>()
       .AddTransient<IQueryHandler<ReadFieldType, FieldTypeDto?>, ReadFieldTypeHandler>()

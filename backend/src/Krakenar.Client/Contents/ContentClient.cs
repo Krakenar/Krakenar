@@ -22,6 +22,12 @@ public class ContentClient : BaseClient, IContentService
     return (await DeleteAsync<Content>(uri, cancellationToken)).Value;
   }
 
+  public virtual async Task<Content?> ReadAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}", UriKind.Relative);
+    return (await GetAsync<Content>(uri, cancellationToken)).Value;
+  }
+
   public virtual async Task<Content?> SaveLocaleAsync(Guid id, SaveContentLocalePayload payload, string? language, CancellationToken cancellationToken)
   {
     Uri uri = new($"{Path}/{id}?language={language}", UriKind.Relative);

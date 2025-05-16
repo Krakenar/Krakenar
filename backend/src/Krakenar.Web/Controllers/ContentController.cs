@@ -32,6 +32,13 @@ public class ContentController : ControllerBase
     return content is null ? NotFound() : Ok(content);
   }
 
+  [HttpGet("{id}")]
+  public async Task<ActionResult<Content>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.ReadAsync(id, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
   [HttpPut("{id}")]
   public async Task<ActionResult<Content>> SaveLocaleAsync(Guid id, [FromBody] SaveContentLocalePayload payload, string? language, CancellationToken cancellationToken)
   {
