@@ -114,6 +114,79 @@ public class ContentIntegrationTests : IntegrationTests
     Assert.Equal(DateTime.UtcNow, locale.UpdatedOn, TimeSpan.FromSeconds(10));
   }
 
+  [Fact(DisplayName = "It should replace an existing content invariant.")]
+  public async Task Given_Invariant_When_Save_Then_Replaced()
+  {
+    Language language = new(new Locale("en-US"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(language);
+
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(blogArticle);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    Content article = new(blogArticle, invariant, ActorId);
+    article.SetLocale(language, invariant, ActorId);
+    await _contentRepository.SaveAsync(article);
+
+    SaveContentLocalePayload payload = new("The_Clean_Architecture")
+    {
+      DisplayName = " The Clean Architecture ",
+      Description = "  Over the last several years we’ve seen a whole range of ideas regarding the architecture of systems. These include:  "
+    };
+    ContentDto? content = await _contentService.SaveLocaleAsync(article.EntityId, payload);
+    Assert.NotNull(content);
+    Assert.Equal(article.EntityId, content.Id);
+    Assert.Equal(3, content.Version);
+    Assert.Equal(Actor, content.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, content.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    ContentLocaleDto invariantDto = content.Invariant;
+    Assert.Equal(payload.UniqueName, invariantDto.UniqueName);
+    Assert.Equal(payload.DisplayName.Trim(), invariantDto.DisplayName);
+    Assert.Equal(payload.Description.Trim(), invariantDto.Description);
+
+    ContentLocaleDto locale = Assert.Single(content.Locales);
+    Assert.Equal(invariant.UniqueName.Value, locale.UniqueName);
+    Assert.Equal(invariant.DisplayName?.Value, locale.DisplayName);
+    Assert.Equal(invariant.Description?.Value, locale.Description);
+  }
+
+  [Fact(DisplayName = "It should replace an existing content locale.")]
+  public async Task Given_Locale_When_Save_Then_Replaced()
+  {
+    Language language = new(new Locale("en-US"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(language);
+
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(blogArticle);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    Content article = new(blogArticle, invariant, ActorId);
+    await _contentRepository.SaveAsync(article);
+
+    SaveContentLocalePayload payload = new("The_Clean_Architecture")
+    {
+      DisplayName = " The Clean Architecture ",
+      Description = "  Over the last several years we’ve seen a whole range of ideas regarding the architecture of systems. These include:  "
+    };
+    ContentDto? content = await _contentService.SaveLocaleAsync(article.EntityId, payload, language.EntityId.ToString());
+    Assert.NotNull(content);
+    Assert.Equal(article.EntityId, content.Id);
+    Assert.Equal(2, content.Version);
+    Assert.Equal(Actor, content.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, content.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    ContentLocaleDto invariantDto = content.Invariant;
+    Assert.Equal(invariant.UniqueName.Value, invariantDto.UniqueName);
+    Assert.Equal(invariant.DisplayName?.Value, invariantDto.DisplayName);
+    Assert.Equal(invariant.Description?.Value, invariantDto.Description);
+
+    ContentLocaleDto locale = Assert.Single(content.Locales);
+    Assert.Equal(payload.UniqueName, locale.UniqueName);
+    Assert.Equal(payload.DisplayName.Trim(), locale.DisplayName);
+    Assert.Equal(payload.Description.Trim(), locale.Description);
+  }
+
   [Fact(DisplayName = "It should throw ContentUniqueNameAlreadyUsedException when there is a content invariant unique name conflict.")]
   public async Task Given_InvariantUniqueNameConflict_When_Save_Then_ContentUniqueNameAlreadyUsedException()
   {

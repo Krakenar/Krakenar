@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents.Validators;
@@ -39,16 +40,37 @@ public class CreateContentHandler : ICommandHandler<CreateContent, ContentDto>
 
   public virtual async Task<ContentDto> HandleAsync(CreateContent command, CancellationToken cancellationToken)
   {
+    IUniqueNameSettings uniqueNameSettings = ApplicationContext.UniqueNameSettings;
+
     CreateContentPayload payload = command.Payload;
+    new CreateContentValidator(ApplicationContext.UniqueNameSettings).ValidateAndThrow(payload);
+
     ContentType contentType = await ContentManager.FindAsync(payload.ContentType, nameof(payload.ContentType), cancellationToken);
 
-    IUniqueNameSettings uniqueNameSettings = ApplicationContext.UniqueNameSettings;
-    new CreateContentValidator(contentType.IsInvariant, ApplicationContext.UniqueNameSettings).ValidateAndThrow(payload);
-
     Language? language = null;
-    if (!string.IsNullOrWhiteSpace(payload.Language))
+    string? errorMessage = null;
+    if (string.IsNullOrWhiteSpace(payload.Language))
+    {
+      if (!contentType.IsInvariant)
+      {
+        errorMessage = $"'{nameof(payload.Language)}' cannot be null. The content type is not invariant.";
+      }
+    }
+    else if (contentType.IsInvariant)
+    {
+      errorMessage = $"'{nameof(payload.Language)}' must be null. The content type is invariant.";
+    }
+    else
     {
       language = await LanguageManager.FindAsync(payload.Language, nameof(payload.Language), cancellationToken);
+    }
+    if (errorMessage is not null)
+    {
+      ValidationFailure failure = new(nameof(payload.Language), errorMessage, payload.Language)
+      {
+        ErrorCode = "InvariantValidator"
+      };
+      throw new ValidationException([failure]);
     }
 
     ContentId contentId = ContentId.NewId(ApplicationContext.RealmId);
