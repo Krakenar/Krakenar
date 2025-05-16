@@ -3,6 +3,8 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.Contents;
+using Krakenar.Core.Localization;
+using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Content = Krakenar.Core.Contents.Content;
@@ -23,6 +25,23 @@ public class ContentQuerier : IContentQuerier
     ApplicationContext = applicationContext;
     Contents = context.Contents;
     SqlHelper = sqlHelper;
+  }
+
+  public virtual async Task<ContentId?> FindIdAsync(ContentTypeId contentTypeId, LanguageId? languageId, UniqueName uniqueName, CancellationToken cancellationToken)
+  {
+    string uniqueNameNormalized = Helper.Normalize(uniqueName);
+
+    string? streamId = await Contents
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.ContentType)
+      .Include(x => x.Locales).ThenInclude(x => x.Language)
+      .Where(x => x.ContentType!.StreamId == contentTypeId.Value
+        && x.Locales.Any(l => (languageId.HasValue ? (l.Language!.StreamId == languageId.Value.Value) : (l.LanguageId == null))
+          && l.UniqueNameNormalized == uniqueNameNormalized))
+      .Select(x => x.StreamId)
+      .SingleOrDefaultAsync(cancellationToken);
+
+    return streamId is null ? null : new ContentId(streamId);
   }
 
   public virtual async Task<ContentDto> ReadAsync(Content content, CancellationToken cancellationToken)

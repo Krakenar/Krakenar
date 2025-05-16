@@ -11,6 +11,7 @@ namespace Krakenar.Core.Contents.Commands;
 public record CreateContent(CreateContentPayload Payload) : ICommand<ContentDto>;
 
 /// <exception cref="ContentTypeNotFoundException"></exception>
+/// <exception cref="ContentUniqueNameAlreadyUsedException"></exception>
 /// <exception cref="IdAlreadyUsedException{T}"></exception>
 /// <exception cref="LanguageNotFoundException"></exception>
 /// <exception cref="ValidationException"></exception>

@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Krakenar.Core.Contents.Events;
+using Krakenar.Core.Localization;
 using Krakenar.Core.Realms;
+using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Contents;
 
@@ -14,12 +16,21 @@ public interface IContentManager
 public class ContentManager : IContentManager
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IContentQuerier ContentQuerier { get; }
+  protected virtual IContentRepository ContentRepository { get; }
   protected virtual IContentTypeQuerier ContentTypeQuerier { get; }
   protected virtual IContentTypeRepository ContentTypeRepository { get; }
 
-  public ContentManager(IApplicationContext applicationContext, IContentTypeQuerier contentTypeQuerier, IContentTypeRepository contentTypeRepository)
+  public ContentManager(
+    IApplicationContext applicationContext,
+    IContentQuerier contentQuerier,
+    IContentRepository contentRepository,
+    IContentTypeQuerier contentTypeQuerier,
+    IContentTypeRepository contentTypeRepository)
   {
     ApplicationContext = applicationContext;
+    ContentQuerier = contentQuerier;
+    ContentRepository = contentRepository;
     ContentTypeQuerier = contentTypeQuerier;
     ContentTypeRepository = contentTypeRepository;
   }
@@ -54,9 +65,50 @@ public class ContentManager : IContentManager
     return contentType ?? throw new ContentTypeNotFoundException(realmId, idOrUniqueName, propertyName);
   }
 
-  public virtual Task SaveAsync(Content content, CancellationToken cancellationToken)
+  public virtual async Task SaveAsync(Content content, CancellationToken cancellationToken)
   {
-    return Task.CompletedTask; // TODO(fpion): implement
+    bool hasInvariantChanged = false;
+    HashSet<LanguageId> languageIds = [];
+    foreach (IEvent @event in content.Changes)
+    {
+      if (@event is ContentCreated)
+      {
+        hasInvariantChanged = true;
+      }
+      else if (@event is ContentLocaleChanged changed)
+      {
+        if (changed.LanguageId.HasValue)
+        {
+          languageIds.Add(changed.LanguageId.Value);
+        }
+        else
+        {
+          hasInvariantChanged = true;
+        }
+      }
+    }
+
+    if (hasInvariantChanged)
+    {
+      UniqueName uniqueName = content.Invariant.UniqueName;
+      ContentId? conflictId = await ContentQuerier.FindIdAsync(content.ContentTypeId, languageId: null, uniqueName, cancellationToken);
+      if (conflictId.HasValue && !conflictId.Value.Equals(content.Id))
+      {
+        throw new ContentUniqueNameAlreadyUsedException(content, languageId: null, conflictId.Value, uniqueName);
+      }
+    }
+
+    foreach (LanguageId languageId in languageIds)
+    {
+      UniqueName uniqueName = content.FindLocale(languageId).UniqueName;
+      ContentId? conflictId = await ContentQuerier.FindIdAsync(content.ContentTypeId, languageId, uniqueName, cancellationToken);
+      if (conflictId.HasValue && !conflictId.Value.Equals(content.Id))
+      {
+        throw new ContentUniqueNameAlreadyUsedException(content, languageId, conflictId.Value, uniqueName);
+      }
+    }
+
+    await ContentRepository.SaveAsync(content, cancellationToken);
   }
 
   public virtual async Task SaveAsync(ContentType contentType, CancellationToken cancellationToken)
