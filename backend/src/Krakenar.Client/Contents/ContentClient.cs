@@ -21,4 +21,10 @@ public class ContentClient : BaseClient, IContentService
     Uri uri = new($"{Path}/{id}?language={language}", UriKind.Relative);
     return (await PutAsync<Content>(uri, payload, cancellationToken)).Value;
   }
+
+  public virtual async Task<Content?> UpdateLocaleAsync(Guid id, UpdateContentLocalePayload payload, string? language, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}?language={language}", UriKind.Relative);
+    return (await PatchAsync<Content>(uri, payload, cancellationToken)).Value;
+  }
 }
