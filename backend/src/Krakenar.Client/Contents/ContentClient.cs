@@ -16,6 +16,12 @@ public class ContentClient : BaseClient, IContentService
     return result.Value ?? throw CreateInvalidApiResponseException(nameof(CreateAsync), HttpMethod.Post, Path, payload);
   }
 
+  public virtual async Task<Content?> DeleteAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}?language={language}", UriKind.Relative);
+    return (await DeleteAsync<Content>(uri, cancellationToken)).Value;
+  }
+
   public virtual async Task<Content?> SaveLocaleAsync(Guid id, SaveContentLocalePayload payload, string? language, CancellationToken cancellationToken)
   {
     Uri uri = new($"{Path}/{id}?language={language}", UriKind.Relative);

@@ -25,6 +25,13 @@ public class ContentController : ControllerBase
     return Created(location, content);
   }
 
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<Content>> DeleteAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.DeleteAsync(id, language, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
   [HttpPut("{id}")]
   public async Task<ActionResult<Content>> SaveLocaleAsync(Guid id, [FromBody] SaveContentLocalePayload payload, string? language, CancellationToken cancellationToken)
   {

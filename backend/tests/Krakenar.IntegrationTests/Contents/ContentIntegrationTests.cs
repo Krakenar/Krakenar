@@ -2,6 +2,7 @@
 using Krakenar.Core;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Localization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Content = Krakenar.Core.Contents.Content;
 using ContentDto = Krakenar.Contracts.Contents.Content;
@@ -112,6 +113,56 @@ public class ContentIntegrationTests : IntegrationTests
     Assert.Equal(DateTime.UtcNow, locale.CreatedOn, TimeSpan.FromSeconds(10));
     Assert.Equal(Actor, invariant.UpdatedBy);
     Assert.Equal(DateTime.UtcNow, locale.UpdatedOn, TimeSpan.FromSeconds(10));
+  }
+
+  [Fact(DisplayName = "It should delete an existing content.")]
+  public async Task Given_Invariant_When_Delete_Then_Deleted()
+  {
+    Language language = new(new Locale("en-US"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(language);
+
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(blogArticle);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    Content article = new(blogArticle, invariant, ActorId);
+    article.SetLocale(language, invariant, ActorId);
+    await _contentRepository.SaveAsync(article);
+
+    ContentDto? content = await _contentService.DeleteAsync(article.EntityId);
+    Assert.NotNull(content);
+    Assert.Equal(article.EntityId, content.Id);
+
+    Assert.Empty(await KrakenarContext.Contents.AsNoTracking().Where(x => x.StreamId == article.Id.Value).ToArrayAsync());
+  }
+
+  [Fact(DisplayName = "It should remove an existing content locale.")]
+  public async Task Given_Locale_When_Save_Then_Removed()
+  {
+    Language language = new(new Locale("en-US"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(language);
+
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(blogArticle);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    Content article = new(blogArticle, invariant, ActorId);
+    article.SetLocale(language, invariant, ActorId);
+    await _contentRepository.SaveAsync(article);
+
+    ContentDto? content = await _contentService.DeleteAsync(article.EntityId, $" {language.Locale.Code} ");
+    Assert.NotNull(content);
+    Assert.Equal(article.EntityId, content.Id);
+    Assert.Equal(3, content.Version);
+    Assert.Equal(Actor, content.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, content.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    ContentLocaleDto invariantDto = content.Invariant;
+    Assert.Equal(invariant.UniqueName.Value, invariantDto.UniqueName);
+    Assert.Equal(invariant.DisplayName?.Value, invariantDto.DisplayName);
+    Assert.Equal(invariant.Description?.Value, invariantDto.Description);
+
+    Assert.Empty(content.Locales);
   }
 
   [Fact(DisplayName = "It should replace an existing content invariant.")]

@@ -113,6 +113,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
       .AddTransient<ICommandHandler<CreateToken, CreatedToken>, CreateTokenCommandHandler>()
       .AddTransient<ICommandHandler<DeleteApiKey, ApiKeyDto?>, DeleteApiKeyHandler>()
+      .AddTransient<ICommandHandler<DeleteContent, ContentDto?>, DeleteContentHandler>()
       .AddTransient<ICommandHandler<DeleteContentType, ContentTypeDto?>, DeleteContentTypeHandler>()
       .AddTransient<ICommandHandler<DeleteDictionary, DictionaryDto?>, DeleteDictionaryHandler>()
       .AddTransient<ICommandHandler<DeleteFieldDefinition, ContentTypeDto?>, DeleteFieldDefinitionHandler>()

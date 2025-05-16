@@ -62,6 +62,19 @@ public sealed class Content : Aggregate, ISegregatedEntity
     return actorIds.AsReadOnly();
   }
 
+  public ContentLocale? RemoveLocale(ContentLocaleRemoved @event)
+  {
+    Update(@event);
+
+    ContentLocale? locale = Locales.SingleOrDefault(l => l.LanguageUid == @event.LanguageId.EntityId);
+    if (locale is not null)
+    {
+      Locales.Remove(locale);
+    }
+
+    return locale;
+  }
+
   public void SetLocale(Language? language, ContentLocaleChanged @event)
   {
     Update(@event);
