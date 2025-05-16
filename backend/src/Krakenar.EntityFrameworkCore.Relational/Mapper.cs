@@ -20,8 +20,10 @@ using Krakenar.Contracts.Templates;
 using Krakenar.Contracts.Users;
 using Logitar;
 using Logitar.EventSourcing;
+using ContentItem = Krakenar.Contracts.Contents.Content;
 using DataTypeNotSupportedException = Krakenar.Core.Fields.DataTypeNotSupportedException;
 using SenderProviderNotSupportedException = Krakenar.Core.Senders.SenderProviderNotSupportedException;
+using TemplateContent = Krakenar.Contracts.Templates.Content;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
@@ -87,6 +89,65 @@ public sealed class Mapper
     };
 
     MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public ContentItem ToContent(Entities.Content source, Realm? realm)
+  {
+    if (source.ContentType is null)
+    {
+      throw new ArgumentException($"The {nameof(source.ContentType)} is required.", nameof(source));
+    }
+
+    ContentItem destination = new()
+    {
+      Id = source.Id,
+      ContentType = ToContentType(source.ContentType, realm)
+    };
+
+    foreach (Entities.ContentLocale entity in source.Locales)
+    {
+      ContentLocale locale = ToContentLocale(entity, destination, realm);
+      if (locale.Language is null)
+      {
+        destination.Invariant = locale;
+      }
+      else
+      {
+        destination.Locales.Add(locale);
+      }
+    }
+
+    MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public ContentLocale ToContentLocale(Entities.ContentLocale source, ContentItem content, Realm? realm)
+  {
+    if (source.Language is null && source.LanguageId.HasValue)
+    {
+      throw new ArgumentException($"The {nameof(source.Language)} is required.");
+    }
+
+    ContentLocale destination = new()
+    {
+      Content = content,
+      Language = null,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      CreatedBy = TryFindActor(source.CreatedBy) ?? _system,
+      CreatedOn = source.CreatedOn.AsUniversalTime(),
+      UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system,
+      UpdatedOn = source.UpdatedOn.AsUniversalTime()
+    };
+
+    if (source.Language is not null)
+    {
+      destination.Language = ToLanguage(source.Language, realm);
+    }
 
     return destination;
   }
@@ -253,7 +314,7 @@ public sealed class Mapper
       Id = source.Id,
       Realm = realm,
       Subject = source.Subject,
-      Body = new Content(source.BodyType, source.BodyText),
+      Body = new TemplateContent(source.BodyType, source.BodyText),
       RecipientCount = source.RecipientCount,
       IgnoreUserLocale = source.IgnoreUserLocale,
       IsDemo = source.IsDemo,
@@ -519,7 +580,7 @@ public sealed class Mapper
       DisplayName = source.DisplayName,
       Description = source.Description,
       Subject = source.Subject,
-      Content = new Content(source.ContentType, source.ContentText)
+      Content = new TemplateContent(source.ContentType, source.ContentText)
     };
 
     MapAggregate(source, destination);

@@ -95,6 +95,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     StringBuilder sql = new();
     TableId[] tables =
     [
+      KrakenarDb.Contents.Table,
       KrakenarDb.ContentTypes.Table,
       KrakenarDb.FieldTypes.Table,
       KrakenarDb.Messages.Table,

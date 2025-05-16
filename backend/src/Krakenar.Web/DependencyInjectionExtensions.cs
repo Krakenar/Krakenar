@@ -14,7 +14,11 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarWeb(this IServiceCollection services, IConfiguration configuration)
   {
     services.AddControllersWithViews()
-      .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+      .AddJsonOptions(options =>
+      {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+      });
 
     services.AddSingleton(CorsSettings.Initialize(configuration));
     services.AddCors();

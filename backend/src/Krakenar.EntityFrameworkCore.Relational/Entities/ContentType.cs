@@ -30,6 +30,9 @@ public class ContentType : Aggregate, ISegregatedEntity
   public int FieldCount { get; private set; }
   public List<FieldDefinition> FieldDefinitions { get; private set; } = [];
 
+  public List<Content> Contents { get; private set; } = [];
+  public List<ContentLocale> ContentLocales { get; private set; } = [];
+
   public ContentType(Realm? realm, ContentTypeCreated @event) : base(@event)
   {
     Realm = realm;

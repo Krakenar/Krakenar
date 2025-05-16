@@ -8,6 +8,7 @@ public sealed class UserIdentifier : Identifier
 
   public User? User { get; private set; }
   public int UserId { get; private set; }
+  // TODO(fpion): UserUid
 
   public UserIdentifier(User user, UserIdentifierChanged @event) : base(user.Realm, @event.Key.Value)
   {

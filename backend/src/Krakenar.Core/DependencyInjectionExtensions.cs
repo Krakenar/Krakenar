@@ -62,6 +62,7 @@ using Logitar.EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
+using ContentDto = Krakenar.Contracts.Contents.Content;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
@@ -96,6 +97,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<ICommandHandler<AuthenticateApiKey, ApiKeyDto>, AuthenticateApiKeyHandler>()
       .AddTransient<ICommandHandler<AuthenticateUser, UserDto>, AuthenticateUserHandler>()
+      .AddTransient<ICommandHandler<CreateContent, ContentDto>, CreateContentHandler>()
       .AddTransient<ICommandHandler<CreateOneTimePassword, OneTimePasswordDto>, CreateOneTimePasswordHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceApiKey, CreateOrReplaceApiKeyResult>, CreateOrReplaceApiKeyHandler>()
       .AddTransient<ICommandHandler<CreateOrReplaceContentType, CreateOrReplaceContentTypeResult>, CreateOrReplaceContentTypeHandler>()
@@ -153,6 +155,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IApiKeyService, ApiKeyService>()
       .AddTransient<IConfigurationService, ConfigurationService>()
+      .AddTransient<IContentService, ContentService>()
       .AddTransient<IContentTypeService, ContentTypeService>()
       .AddTransient<IDictionaryService, DictionaryService>()
       .AddTransient<IFieldDefinitionService, FieldDefinitionService>()
@@ -219,6 +222,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IApiKeyRepository, ApiKeyRepository>()
       .AddTransient<IConfigurationRepository, ConfigurationRepository>()
+      .AddTransient<IContentRepository, ContentRepository>()
       .AddTransient<IContentTypeRepository, ContentTypeRepository>()
       .AddTransient<IDictionaryRepository, DictionaryRepository>()
       .AddTransient<IFieldTypeRepository, FieldTypeRepository>()
