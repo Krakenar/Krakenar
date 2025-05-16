@@ -30,6 +30,8 @@ public class FieldType : Aggregate, ISegregatedEntity
   public DataType DataType { get; private set; }
   public string? Settings { get; private set; }
 
+  public List<FieldDefinition> FieldDefinitions { get; private set; } = [];
+
   public FieldType(Realm? realm, FieldTypeCreated @event) : base(@event)
   {
     Realm = realm;

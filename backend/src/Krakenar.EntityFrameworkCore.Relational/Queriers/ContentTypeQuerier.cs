@@ -59,6 +59,7 @@ public class ContentTypeQuerier : IContentTypeQuerier
   {
     Entities.ContentType? contentType = await ContentTypes.AsNoTracking()
       .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.FieldDefinitions).ThenInclude(x => x.FieldType)
       .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
     return contentType is null ? null : await MapAsync(contentType, cancellationToken);
@@ -69,6 +70,7 @@ public class ContentTypeQuerier : IContentTypeQuerier
 
     Entities.ContentType? contentType = await ContentTypes.AsNoTracking()
       .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.FieldDefinitions).ThenInclude(x => x.FieldType)
       .SingleOrDefaultAsync(x => x.UniqueNameNormalized == uniqueNameNormalized, cancellationToken);
 
     return contentType is null ? null : await MapAsync(contentType, cancellationToken);

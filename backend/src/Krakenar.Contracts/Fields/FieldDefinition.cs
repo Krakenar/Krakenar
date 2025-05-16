@@ -1,4 +1,6 @@
-﻿namespace Krakenar.Contracts.Fields;
+﻿using Krakenar.Contracts.Actors;
+
+namespace Krakenar.Contracts.Fields;
 
 public class FieldDefinition
 {
@@ -17,6 +19,12 @@ public class FieldDefinition
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
   public string? Placeholder { get; set; }
+
+  public Actor CreatedBy { get; set; } = new();
+  public DateTime CreatedOn { get; set; }
+
+  public Actor UpdatedBy { get; set; } = new();
+  public DateTime UpdatedOn { get; set; }
 
   public FieldDefinition() : this(string.Empty)
   {

@@ -108,6 +108,11 @@ public sealed class Mapper
       Description = source.Description
     };
 
+    foreach (Entities.FieldDefinition field in source.FieldDefinitions)
+    {
+      destination.Fields.Add(ToFieldDefinition(field, realm));
+    }
+
     MapAggregate(source, destination);
 
     return destination;
@@ -130,6 +135,34 @@ public sealed class Mapper
 
     MapAggregate(source, destination);
 
+    return destination;
+  }
+
+  public FieldDefinition ToFieldDefinition(Entities.FieldDefinition source, Realm? realm)
+  {
+    if (source.FieldType is null)
+    {
+      throw new ArgumentException($"The {nameof(source.FieldType)} is required.", nameof(source));
+    }
+
+    FieldDefinition destination = new()
+    {
+      Id = source.Id,
+      Order = source.Order,
+      FieldType = ToFieldType(source.FieldType, realm),
+      IsInvariant = source.IsInvariant,
+      IsRequired = source.IsRequired,
+      IsIndexed = source.IsIndexed,
+      IsUnique = source.IsUnique,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      Placeholder = source.Placeholder,
+      CreatedBy = TryFindActor(source.CreatedBy) ?? _system,
+      CreatedOn = source.CreatedOn.AsUniversalTime(),
+      UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system,
+      UpdatedOn = source.UpdatedOn.AsUniversalTime()
+    };
     return destination;
   }
 

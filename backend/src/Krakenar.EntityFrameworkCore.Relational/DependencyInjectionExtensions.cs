@@ -67,6 +67,8 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<ConfigurationUpdated>, ConfigurationEvents>()
       .AddScoped<IEventHandler<ContentTypeCreated>, ContentTypeEvents>()
       .AddScoped<IEventHandler<ContentTypeDeleted>, ContentTypeEvents>()
+      .AddScoped<IEventHandler<ContentTypeFieldChanged>, ContentTypeEvents>()
+      .AddScoped<IEventHandler<ContentTypeFieldRemoved>, ContentTypeEvents>()
       .AddScoped<IEventHandler<ContentTypeUniqueNameChanged>, ContentTypeEvents>()
       .AddScoped<IEventHandler<ContentTypeUpdated>, ContentTypeEvents>()
       .AddScoped<IEventHandler<DictionaryCreated>, DictionaryEvents>()
