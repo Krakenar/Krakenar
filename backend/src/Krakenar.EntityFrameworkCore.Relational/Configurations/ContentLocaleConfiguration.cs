@@ -17,7 +17,7 @@ public sealed class ContentLocaleConfiguration : IEntityTypeConfiguration<Conten
     builder.HasIndex(x => new { x.ContentId, x.LanguageId }).IsUnique();
     builder.HasIndex(x => x.LanguageUid);
     builder.HasIndex(x => x.UniqueName);
-    builder.HasIndex(x => new { x.ContentTypeId, x.UniqueNameNormalized }).IsUnique();
+    builder.HasIndex(x => new { x.ContentTypeId, x.LanguageId, x.UniqueNameNormalized }).IsUnique();
     builder.HasIndex(x => x.DisplayName);
 
     builder.Property(x => x.UniqueName).HasMaxLength(UniqueName.MaximumLength);

@@ -42,7 +42,7 @@ public class ContentQuerier : IContentQuerier
   {
     Entities.Content? content = await Contents.AsNoTracking()
       .WhereRealm(ApplicationContext.RealmId)
-      .Include(x => x.ContentType).ThenInclude(x => x.FieldDefinitions).ThenInclude(x => x.FieldType)
+      .Include(x => x.ContentType)
       .Include(x => x.Locales).ThenInclude(x => x.Language)
       .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 

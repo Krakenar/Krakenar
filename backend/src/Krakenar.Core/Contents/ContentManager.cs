@@ -54,9 +54,9 @@ public class ContentManager : IContentManager
     return contentType ?? throw new ContentTypeNotFoundException(realmId, idOrUniqueName, propertyName);
   }
 
-  public virtual async Task SaveAsync(Content content, CancellationToken cancellationToken)
+  public virtual Task SaveAsync(Content content, CancellationToken cancellationToken)
   {
-
+    return Task.CompletedTask; // TODO(fpion): implement
   }
 
   public virtual async Task SaveAsync(ContentType contentType, CancellationToken cancellationToken)
