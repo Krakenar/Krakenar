@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core.Contents;
 using Krakenar.Core.Contents.Events;
+using Logitar.EventSourcing;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
@@ -41,6 +42,28 @@ public sealed class Content : Aggregate, ISegregatedEntity
 
   private Content() : base()
   {
+  }
+
+  public override IReadOnlyCollection<ActorId> GetActorIds() => GetActorIds(skipLocales: false);
+  public IReadOnlyCollection<ActorId> GetActorIds(bool skipLocales)
+  {
+    List<ActorId> actorIds = new(base.GetActorIds());
+    if (Realm is not null)
+    {
+      actorIds.AddRange(Realm.GetActorIds());
+    }
+    if (ContentType is not null)
+    {
+      actorIds.AddRange(ContentType.GetActorIds());
+    }
+    if (!skipLocales)
+    {
+      foreach (ContentLocale locale in Locales)
+      {
+        actorIds.AddRange(locale.GetActorIds(skipContent: true));
+      }
+    }
+    return actorIds.AsReadOnly();
   }
 
   public void SetLocale(Language? language, ContentLocaleChanged @event)

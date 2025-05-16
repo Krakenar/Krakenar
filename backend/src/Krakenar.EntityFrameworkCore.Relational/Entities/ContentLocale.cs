@@ -64,6 +64,33 @@ public sealed class ContentLocale
   {
   }
 
+  public IReadOnlyCollection<ActorId> GetActorIds() => GetActorIds(skipContent: false);
+  public IReadOnlyCollection<ActorId> GetActorIds(bool skipContent)
+  {
+    List<ActorId> actorIds = [];
+    if (ContentType is not null)
+    {
+      actorIds.AddRange(ContentType.GetActorIds());
+    }
+    if (!skipContent && Content is not null)
+    {
+      actorIds.AddRange(Content.GetActorIds(skipLocales: true));
+    }
+    if (Language is not null)
+    {
+      actorIds.AddRange(Language.GetActorIds());
+    }
+    if (CreatedBy is not null)
+    {
+      actorIds.Add(new ActorId(CreatedBy));
+    }
+    if (UpdatedBy is not null)
+    {
+      actorIds.Add(new ActorId(UpdatedBy));
+    }
+    return actorIds.AsReadOnly();
+  }
+
   public void Update(Core.Contents.ContentLocale locale, DomainEvent @event)
   {
     UniqueName = locale.UniqueName.Value;

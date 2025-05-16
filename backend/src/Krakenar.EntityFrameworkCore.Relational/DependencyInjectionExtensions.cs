@@ -65,6 +65,8 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<ApiKeyUpdated>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<ConfigurationInitialized>, ConfigurationEvents>()
       .AddScoped<IEventHandler<ConfigurationUpdated>, ConfigurationEvents>()
+      .AddScoped<IEventHandler<ContentCreated>, ContentEvents>()
+      .AddScoped<IEventHandler<ContentLocaleChanged>, ContentEvents>()
       .AddScoped<IEventHandler<ContentTypeCreated>, ContentTypeEvents>()
       .AddScoped<IEventHandler<ContentTypeDeleted>, ContentTypeEvents>()
       .AddScoped<IEventHandler<ContentTypeFieldChanged>, ContentTypeEvents>()
@@ -160,6 +162,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddScoped<IApiKeyQuerier, ApiKeyQuerier>()
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
+      .AddScoped<IContentQuerier, ContentQuerier>()
       .AddScoped<IContentTypeQuerier, ContentTypeQuerier>()
       .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
       .AddScoped<IFieldTypeQuerier, FieldTypeQuerier>()
