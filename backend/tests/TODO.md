@@ -41,8 +41,11 @@
 
 ### Commands
 
+- CreateOrReplaceFieldDefinition
 - CreateOrReplaceFieldType
+- DeleteFieldDefinition
 - DeleteFieldType
+- UpdateFieldDefinition
 - UpdateFieldType
 
 ### Queries

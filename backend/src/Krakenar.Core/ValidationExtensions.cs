@@ -103,6 +103,11 @@ public static class ValidationExtensions
     return ruleBuilder.NotEmpty().MaximumLength(Users.PersonName.MaximumLength);
   }
 
+  public static IRuleBuilderOptions<T, string> Placeholder<T>(this IRuleBuilder<T, string> ruleBuilder)
+  {
+    return ruleBuilder.NotEmpty().MaximumLength(Fields.Placeholder.MaximumLength);
+  }
+
   public static IRuleBuilderOptions<T, string> Secret<T>(this IRuleBuilder<T, string> ruleBuilder)
   {
     return ruleBuilder.NotEmpty().SetValidator(new SecretValidator<T>());

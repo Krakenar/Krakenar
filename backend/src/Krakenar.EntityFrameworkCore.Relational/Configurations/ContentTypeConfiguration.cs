@@ -20,6 +20,7 @@ public sealed class ContentTypeConfiguration : AggregateConfiguration<ContentTyp
     builder.HasIndex(x => x.UniqueName);
     builder.HasIndex(x => new { x.RealmId, x.UniqueNameNormalized }).IsUnique();
     builder.HasIndex(x => x.DisplayName);
+    builder.HasIndex(x => x.FieldCount);
 
     builder.Property(x => x.UniqueName).HasMaxLength(Slug.MaximumLength);
     builder.Property(x => x.UniqueNameNormalized).HasMaxLength(Slug.MaximumLength);

@@ -27,6 +27,9 @@ public class ContentType : Aggregate, ISegregatedEntity
   public string? DisplayName { get; private set; }
   public string? Description { get; private set; }
 
+  public int FieldCount { get; private set; }
+  public List<FieldDefinition> FieldDefinitions { get; private set; } = [];
+
   public ContentType(Realm? realm, ContentTypeCreated @event) : base(@event)
   {
     Realm = realm;
@@ -51,7 +54,50 @@ public class ContentType : Aggregate, ISegregatedEntity
     {
       actorIds.AddRange(Realm.GetActorIds());
     }
+    foreach (FieldDefinition field in FieldDefinitions)
+    {
+      actorIds.AddRange(field.GetActorIds());
+    }
     return actorIds.ToList().AsReadOnly();
+  }
+
+  public void SetField(FieldType fieldType, ContentTypeFieldChanged @event)
+  {
+    Update(@event);
+
+    FieldDefinition? fieldDefinition = FieldDefinitions.SingleOrDefault(f => f.Id == @event.Field.Id);
+    if (fieldDefinition is null)
+    {
+      fieldDefinition = new FieldDefinition(this, fieldType, @event);
+      FieldDefinitions.Add(fieldDefinition);
+      FieldCount = FieldDefinitions.Count;
+    }
+    else
+    {
+      fieldDefinition.Update(@event);
+    }
+  }
+
+  public FieldDefinition? RemoveField(ContentTypeFieldRemoved @event)
+  {
+    Update(@event);
+
+    FieldDefinition? fieldDefinition = FieldDefinitions.SingleOrDefault(f => f.Id == @event.FieldId);
+    if (fieldDefinition is not null)
+    {
+      FieldDefinitions.Remove(fieldDefinition);
+      FieldCount = FieldDefinitions.Count;
+
+      foreach (FieldDefinition field in FieldDefinitions)
+      {
+        if (field.Order > fieldDefinition.Order)
+        {
+          field.Order--;
+        }
+      }
+    }
+
+    return fieldDefinition;
   }
 
   public void SetUniqueName(ContentTypeUniqueNameChanged @event)

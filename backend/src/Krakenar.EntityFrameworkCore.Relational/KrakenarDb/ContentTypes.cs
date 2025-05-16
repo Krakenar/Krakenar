@@ -17,6 +17,7 @@ public static class ContentTypes
   public static readonly ColumnId ContentTypeId = new(nameof(ContentType.ContentTypeId), Table);
   public static readonly ColumnId Description = new(nameof(ContentType.Description), Table);
   public static readonly ColumnId DisplayName = new(nameof(ContentType.DisplayName), Table);
+  public static readonly ColumnId FieldCount = new(nameof(ContentType.FieldCount), Table);
   public static readonly ColumnId Id = new(nameof(ContentType.Id), Table);
   public static readonly ColumnId IsInvariant = new(nameof(ContentType.IsInvariant), Table);
   public static readonly ColumnId RealmId = new(nameof(ContentType.RealmId), Table);

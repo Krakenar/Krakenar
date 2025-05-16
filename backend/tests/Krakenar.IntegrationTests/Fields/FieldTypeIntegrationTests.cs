@@ -176,7 +176,7 @@ public class FieldTypeIntegrationTests : IntegrationTests
     Assert.Equal(payload.Number, dto.Number);
   }
 
-  [Fact(DisplayName = "It should replace an existing fieldType from reference.")]
+  [Fact(DisplayName = "It should replace an existing field tppe from reference.")]
   public async Task Given_Version_When_CreateOrReplace_Then_Replaced()
   {
     UniqueName uniqueName = new(Realm.UniqueNameSettings, "Author");

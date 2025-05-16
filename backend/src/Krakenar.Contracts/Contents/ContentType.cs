@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Realms;
+﻿using Krakenar.Contracts.Fields;
+using Krakenar.Contracts.Realms;
 
 namespace Krakenar.Contracts.Contents;
 
@@ -11,6 +12,8 @@ public class ContentType : Aggregate
   public string UniqueName { get; set; }
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
+
+  public List<FieldDefinition> Fields { get; set; } = [];
 
   public ContentType() : this(string.Empty)
   {

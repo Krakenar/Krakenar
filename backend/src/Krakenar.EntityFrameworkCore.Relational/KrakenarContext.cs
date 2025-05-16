@@ -18,6 +18,7 @@ public sealed class KrakenarContext : DbContext
   public DbSet<CustomAttribute> CustomAttributes => Set<CustomAttribute>();
   public DbSet<Dictionary> Dictionaries => Set<Dictionary>();
   public DbSet<DictionaryEntry> DictionaryEntries => Set<DictionaryEntry>();
+  public DbSet<FieldDefinition> FieldDefinitions => Set<FieldDefinition>();
   public DbSet<FieldType> FieldTypes => Set<FieldType>();
   public DbSet<Language> Languages => Set<Language>();
   public DbSet<Message> Messages => Set<Message>();
