@@ -46,7 +46,7 @@ public class ContentQuerier : IContentQuerier
 
   public virtual async Task<ContentDto> ReadAsync(Content content, CancellationToken cancellationToken)
   {
-    return await ReadAsync(content.Id, cancellationToken) ?? throw new InvalidOperationException($"The content type entity 'StreamId={content.Id}' could not be found.");
+    return await ReadAsync(content.Id, cancellationToken) ?? throw new InvalidOperationException($"The content entity 'StreamId={content.Id}' could not be found.");
   }
   public virtual async Task<ContentDto?> ReadAsync(ContentId id, CancellationToken cancellationToken)
   {

@@ -39,9 +39,9 @@ public sealed class ContentLocale
 
   public ContentLocale(Content content, Language? language, Core.Contents.ContentLocale locale, DomainEvent @event)
   {
-    ContentType = content.ContentType ?? throw new ArgumentException($"The {nameof(content.ContentType)} is required.", nameof(content));
-    ContentTypeId = ContentType.ContentTypeId;
-    ContentTypeUid = ContentType.Id;
+    ContentType = content.ContentType;
+    ContentTypeId = content.ContentTypeId;
+    ContentTypeUid = content.ContentTypeUid;
 
     Content = content;
     ContentId = content.ContentId;

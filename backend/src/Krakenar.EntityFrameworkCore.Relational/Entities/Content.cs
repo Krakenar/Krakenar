@@ -22,13 +22,9 @@ public sealed class Content : Aggregate, ISegregatedEntity
 
   public Content(ContentType contentType, ContentCreated @event) : base(@event)
   {
-    Realm? realm = contentType.Realm;
-    if (realm is not null)
-    {
-      Realm = realm;
-      RealmId = realm.RealmId;
-      RealmUid = realm.Id;
-    }
+    Realm = contentType.Realm;
+    RealmId = contentType.RealmId;
+    RealmUid = contentType.RealmUid;
 
     Id = new ContentId(@event.StreamId).EntityId;
 
