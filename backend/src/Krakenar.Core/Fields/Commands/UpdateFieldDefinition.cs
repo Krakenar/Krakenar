@@ -52,7 +52,7 @@ public class UpdateFieldDefinitionHandler : ICommandHandler<UpdateFieldDefinitio
       payload.IsInvariant ?? fieldDefinition.IsInvariant,
       payload.IsRequired ?? fieldDefinition.IsRequired,
       payload.IsIndexed ?? fieldDefinition.IsIndexed,
-      payload.IsRequired ?? fieldDefinition.IsRequired,
+      payload.IsUnique ?? fieldDefinition.IsUnique,
       uniqueName,
       displayName,
       description,
