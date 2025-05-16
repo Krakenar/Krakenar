@@ -137,6 +137,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<SignOutUser, UserDto?>, SignOutUserHandler>()
       .AddTransient<ICommandHandler<UpdateApiKey, ApiKeyDto?>, UpdateApiKeyHandler>()
       .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()
+      .AddTransient<ICommandHandler<UpdateContentLocale, ContentDto?>, UpdateContentLocaleHandler>()
       .AddTransient<ICommandHandler<UpdateContentType, ContentTypeDto?>, UpdateContentTypeHandler>()
       .AddTransient<ICommandHandler<UpdateDictionary, DictionaryDto?>, UpdateDictionaryHandler>()
       .AddTransient<ICommandHandler<UpdateFieldDefinition, ContentTypeDto?>, UpdateFieldDefinitionHandler>()

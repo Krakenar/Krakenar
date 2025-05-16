@@ -8,12 +8,12 @@ using ContentDto = Krakenar.Contracts.Contents.Content;
 
 namespace Krakenar.Core.Contents.Commands;
 
-public record SaveContentLocale(Guid Id, SaveContentLocalePayload Payload, string? Language) : ICommand<ContentDto?>;
+public record UpdateContentLocale(Guid Id, UpdateContentLocalePayload Payload, string? Language) : ICommand<ContentDto?>;
 
 /// <exception cref="ContentUniqueNameAlreadyUsedException"></exception>
 /// <exception cref="LanguageNotFoundException"></exception>
 /// <exception cref="ValidationException"></exception>
-public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, ContentDto?>
+public class UpdateContentLocaleHandler : ICommandHandler<UpdateContentLocale, ContentDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IContentManager ContentManager { get; }
@@ -22,7 +22,7 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
   protected virtual IContentTypeRepository ContentTypeRepository { get; }
   protected virtual ILanguageManager LanguageManager { get; }
 
-  public SaveContentLocaleHandler(
+  public UpdateContentLocaleHandler(
     IApplicationContext applicationContext,
     IContentManager contentManager,
     IContentQuerier contentQuerier,
@@ -38,12 +38,12 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
     LanguageManager = languageManager;
   }
 
-  public virtual async Task<ContentDto?> HandleAsync(SaveContentLocale command, CancellationToken cancellationToken)
+  public virtual async Task<ContentDto?> HandleAsync(UpdateContentLocale command, CancellationToken cancellationToken)
   {
     IUniqueNameSettings uniqueNameSettings = ApplicationContext.UniqueNameSettings;
 
-    SaveContentLocalePayload payload = command.Payload;
-    new SaveContentLocaleValidator(uniqueNameSettings).ValidateAndThrow(payload);
+    UpdateContentLocalePayload payload = command.Payload;
+    new UpdateContentLocaleValidator(uniqueNameSettings).ValidateAndThrow(payload);
 
     ContentId contentId = new(command.Id, ApplicationContext.RealmId);
     Content? content = await ContentRepository.LoadAsync(contentId, cancellationToken);
@@ -53,6 +53,7 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
     }
 
     Language? language = null;
+    ContentLocale invariantOrLocale = content.Invariant;
     if (!string.IsNullOrWhiteSpace(command.Language))
     {
       ContentType contentType = await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
@@ -68,12 +69,18 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
       }
 
       language = await LanguageManager.FindAsync(command.Language, nameof(command.Language), cancellationToken);
+
+      invariantOrLocale = content.TryGetLocale(language)!;
+      if (invariantOrLocale is null)
+      {
+        return null;
+      }
     }
 
-    UniqueName uniqueName = new(uniqueNameSettings, payload.UniqueName);
-    DisplayName? displayName = DisplayName.TryCreate(payload.DisplayName);
-    Description? description = Description.TryCreate(payload.Description);
-    ContentLocale invariantOrLocale = new(uniqueName, displayName, description);
+    UniqueName uniqueName = string.IsNullOrWhiteSpace(payload.UniqueName) ? invariantOrLocale.UniqueName : new(uniqueNameSettings, payload.UniqueName);
+    DisplayName? displayName = payload.DisplayName is null ? invariantOrLocale.DisplayName : DisplayName.TryCreate(payload.DisplayName.Value);
+    Description? description = payload.Description is null ? invariantOrLocale.Description : Description.TryCreate(payload.Description.Value);
+    invariantOrLocale = new(uniqueName, displayName, description);
     if (language is null)
     {
       content.SetInvariant(invariantOrLocale, ApplicationContext.ActorId);

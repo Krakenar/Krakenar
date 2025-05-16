@@ -237,4 +237,78 @@ public class ContentIntegrationTests : IntegrationTests
     Assert.Equal(payload.UniqueName, exception.UniqueName);
     Assert.Equal("UniqueName", exception.PropertyName);
   }
+
+  [Fact(DisplayName = "It should update an existing content invariant.")]
+  public async Task Given_Invariant_When_Save_Then_Updated()
+  {
+    Language language = new(new Locale("en-US"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(language);
+
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(blogArticle);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    Content article = new(blogArticle, invariant, ActorId);
+    article.SetLocale(language, invariant, ActorId);
+    await _contentRepository.SaveAsync(article);
+
+    UpdateContentLocalePayload payload = new()
+    {
+      DisplayName = new Contracts.Change<string>(" The Clean Architecture "),
+      Description = new Contracts.Change<string>("  Over the last several years we’ve seen a whole range of ideas regarding the architecture of systems. These include:  ")
+    };
+    ContentDto? content = await _contentService.UpdateLocaleAsync(article.EntityId, payload);
+    Assert.NotNull(content);
+    Assert.Equal(article.EntityId, content.Id);
+    Assert.Equal(3, content.Version);
+    Assert.Equal(Actor, content.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, content.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    ContentLocaleDto invariantDto = content.Invariant;
+    Assert.Equal(invariant.UniqueName.Value, invariantDto.UniqueName);
+    Assert.Equal(payload.DisplayName.Value?.Trim(), invariantDto.DisplayName);
+    Assert.Equal(payload.Description.Value?.Trim(), invariantDto.Description);
+
+    ContentLocaleDto locale = Assert.Single(content.Locales);
+    Assert.Equal(invariant.UniqueName.Value, locale.UniqueName);
+    Assert.Equal(invariant.DisplayName?.Value, locale.DisplayName);
+    Assert.Equal(invariant.Description?.Value, locale.Description);
+  }
+
+  [Fact(DisplayName = "It should update an existing content locale.")]
+  public async Task Given_Locale_When_Save_Then_Updated()
+  {
+    Language language = new(new Locale("en-US"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(language);
+
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(blogArticle);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    Content article = new(blogArticle, invariant, ActorId);
+    article.SetLocale(language, invariant, ActorId);
+    await _contentRepository.SaveAsync(article);
+
+    UpdateContentLocalePayload payload = new()
+    {
+      DisplayName = new Contracts.Change<string>(" The Clean Architecture "),
+      Description = new Contracts.Change<string>("  Over the last several years we’ve seen a whole range of ideas regarding the architecture of systems. These include:  ")
+    };
+    ContentDto? content = await _contentService.UpdateLocaleAsync(article.EntityId, payload, language.Locale.Code);
+    Assert.NotNull(content);
+    Assert.Equal(article.EntityId, content.Id);
+    Assert.Equal(3, content.Version);
+    Assert.Equal(Actor, content.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, content.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    ContentLocaleDto invariantDto = content.Invariant;
+    Assert.Equal(invariant.UniqueName.Value, invariantDto.UniqueName);
+    Assert.Equal(invariant.DisplayName?.Value, invariantDto.DisplayName);
+    Assert.Equal(invariant.Description?.Value, invariantDto.Description);
+
+    ContentLocaleDto locale = Assert.Single(content.Locales);
+    Assert.Equal(invariant.UniqueName.Value, locale.UniqueName);
+    Assert.Equal(payload.DisplayName.Value?.Trim(), locale.DisplayName);
+    Assert.Equal(payload.Description.Value?.Trim(), locale.Description);
+  }
 }

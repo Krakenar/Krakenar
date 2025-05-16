@@ -31,4 +31,11 @@ public class ContentController : ControllerBase
     Content? content = await ContentService.SaveLocaleAsync(id, payload, language, cancellationToken);
     return content is null ? NotFound() : Ok(content);
   }
+
+  [HttpPatch("{id}")]
+  public async Task<ActionResult<Content>> UpdateLocaleAsync(Guid id, [FromBody] UpdateContentLocalePayload payload, string? language, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.UpdateLocaleAsync(id, payload, language, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
 }
