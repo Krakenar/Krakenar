@@ -127,6 +127,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<RenewSession, SessionDto>, RenewSessionHandler>()
       .AddTransient<ICommandHandler<ReplaceConfiguration, ConfigurationDto>, ReplaceConfigurationHandler>()
       .AddTransient<ICommandHandler<ResetUserPassword, UserDto?>, ResetUserPasswordHandler>()
+      .AddTransient<ICommandHandler<SaveContentLocale, ContentDto?>, SaveContentLocaleHandler>()
       .AddTransient<ICommandHandler<SaveUserIdentifier, UserDto?>, SaveUserIdentifierHandler>()
       .AddTransient<ICommandHandler<SendMessage, SentMessages>, SendMessageHandler>()
       .AddTransient<ICommandHandler<SetDefaultLanguage, LanguageDto?>, SetDefaultLanguageHandler>()
