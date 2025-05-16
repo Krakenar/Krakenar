@@ -19,9 +19,9 @@ public class FieldDefinitionController : ControllerBase
   }
 
   [HttpPost]
-  public virtual async Task<ActionResult<FieldDefinition>> CreateAsync(Guid contentTypeId, [FromBody] CreateOrReplaceFieldDefinitionPayload payload, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<FieldDefinition>> CreateAsync(Guid contentTypeId, [FromBody] CreateOrReplaceFieldDefinitionPayload payload, CancellationToken cancellationToken)
   {
-    ContentType? contentType = await FieldDefinitionService.CreateOrReplaceAsync(contentTypeId, payload, fieldId: null, version, cancellationToken);
+    ContentType? contentType = await FieldDefinitionService.CreateOrReplaceAsync(contentTypeId, payload, fieldId: null, cancellationToken);
     return contentType is null ? NotFound() : Ok(contentType);
   }
 
@@ -33,9 +33,9 @@ public class FieldDefinitionController : ControllerBase
   }
 
   [HttpPut("{fieldId}")]
-  public virtual async Task<ActionResult<FieldDefinition>> ReplaceAsync(Guid contentTypeId, Guid fieldId, [FromBody] CreateOrReplaceFieldDefinitionPayload payload, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<FieldDefinition>> ReplaceAsync(Guid contentTypeId, Guid fieldId, [FromBody] CreateOrReplaceFieldDefinitionPayload payload, CancellationToken cancellationToken)
   {
-    ContentType? contentType = await FieldDefinitionService.CreateOrReplaceAsync(contentTypeId, payload, fieldId, version, cancellationToken);
+    ContentType? contentType = await FieldDefinitionService.CreateOrReplaceAsync(contentTypeId, payload, fieldId, cancellationToken);
     return contentType is null ? NotFound() : Ok(contentType);
   }
 

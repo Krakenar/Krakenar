@@ -7,7 +7,7 @@ using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 
 namespace Krakenar.Core.Fields.Commands;
 
-public record CreateOrReplaceFieldDefinition(Guid ContentTypeId, CreateOrReplaceFieldDefinitionPayload Payload, Guid? FieldId, long? Version) : ICommand<ContentTypeDto?>;
+public record CreateOrReplaceFieldDefinition(Guid ContentTypeId, CreateOrReplaceFieldDefinitionPayload Payload, Guid? FieldId) : ICommand<ContentTypeDto?>;
 
 /// <exception cref="FieldUniqueNameAlreadyUsedException"></exception>
 /// <exception cref="ValidationException"></exception>
@@ -33,7 +33,7 @@ public class CreateOrReplaceFieldDefinitionHandler : ICommandHandler<CreateOrRep
   public virtual async Task<ContentTypeDto?> HandleAsync(CreateOrReplaceFieldDefinition command, CancellationToken cancellationToken)
   {
     ContentTypeId contentTypeId = new(command.ContentTypeId, ApplicationContext.RealmId);
-    ContentType? contentType = await ContentTypeRepository.LoadAsync(contentTypeId, command.Version, cancellationToken);
+    ContentType? contentType = await ContentTypeRepository.LoadAsync(contentTypeId, cancellationToken);
     if (contentType is null)
     {
       return null;

@@ -20,9 +20,9 @@ public class FieldDefinitionService : IFieldDefinitionService
     UpdateFieldDefinition = updateFieldDefinition;
   }
 
-  public virtual async Task<ContentTypeDto?> CreateOrReplaceAsync(Guid contentTypeId, CreateOrReplaceFieldDefinitionPayload payload, Guid? fieldId, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ContentTypeDto?> CreateOrReplaceAsync(Guid contentTypeId, CreateOrReplaceFieldDefinitionPayload payload, Guid? fieldId, CancellationToken cancellationToken)
   {
-    CreateOrReplaceFieldDefinition command = new(contentTypeId, payload, fieldId, version);
+    CreateOrReplaceFieldDefinition command = new(contentTypeId, payload, fieldId);
     return await CreateOrReplaceFieldDefinition.HandleAsync(command, cancellationToken);
   }
 

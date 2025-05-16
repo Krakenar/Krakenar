@@ -9,9 +9,9 @@ public class FieldDefinitionClient : BaseClient, IFieldDefinitionService
   {
   }
 
-  public virtual async Task<ContentType?> CreateOrReplaceAsync(Guid contentTypeId, CreateOrReplaceFieldDefinitionPayload payload, Guid? fieldId, long? version, CancellationToken cancellationToken)
+  public virtual async Task<ContentType?> CreateOrReplaceAsync(Guid contentTypeId, CreateOrReplaceFieldDefinitionPayload payload, Guid? fieldId, CancellationToken cancellationToken)
   {
-    Uri uri = GetPath(contentTypeId, fieldId, version);
+    Uri uri = GetPath(contentTypeId, fieldId);
     ApiResult<ContentType> result = fieldId is null
       ? await PostAsync<ContentType>(uri, payload, cancellationToken)
       : await PutAsync<ContentType>(uri, payload, cancellationToken);
@@ -30,17 +30,13 @@ public class FieldDefinitionClient : BaseClient, IFieldDefinitionService
     return (await PatchAsync<ContentType>(uri, payload, cancellationToken)).Value;
   }
 
-  protected virtual Uri GetPath(Guid contentTypeId, Guid? fieldId = null, long? version = null)
+  protected virtual Uri GetPath(Guid contentTypeId, Guid? fieldId = null)
   {
     StringBuilder path = new();
     path.Append("/api/contents/types/").Append(contentTypeId).Append("/fields");
     if (fieldId.HasValue)
     {
       path.Append('/').Append(fieldId.Value);
-    }
-    if (version.HasValue)
-    {
-      path.Append("?version=").Append(version.Value);
     }
     return new Uri(path.ToString(), UriKind.Relative);
   }
