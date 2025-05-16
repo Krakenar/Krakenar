@@ -14,6 +14,8 @@ public sealed class KrakenarContext : DbContext
   public DbSet<ApiKeyRole> ApiKeyRoles => Set<ApiKeyRole>();
   public DbSet<BlacklistedToken> TokenBlacklist => Set<BlacklistedToken>();
   public DbSet<Configuration> Configuration => Set<Configuration>();
+  public DbSet<Content> Contents => Set<Content>();
+  public DbSet<ContentLocale> ContentLocales => Set<ContentLocale>();
   public DbSet<ContentType> ContentTypes => Set<ContentType>();
   public DbSet<CustomAttribute> CustomAttributes => Set<CustomAttribute>();
   public DbSet<Dictionary> Dictionaries => Set<Dictionary>();

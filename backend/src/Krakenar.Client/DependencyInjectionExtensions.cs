@@ -47,6 +47,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton(settings)
       .AddSingleton<IApiKeyService, ApiKeyClient>()
       .AddSingleton<IConfigurationService, ConfigurationClient>()
+      .AddSingleton<IContentService, ContentClient>()
       .AddSingleton<IContentTypeService, ContentTypeClient>()
       .AddSingleton<IDictionaryService, DictionaryClient>()
       .AddSingleton<IFieldDefinitionService, FieldDefinitionClient>()

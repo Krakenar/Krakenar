@@ -22,6 +22,7 @@ using Logitar;
 using Logitar.EventSourcing;
 using DataTypeNotSupportedException = Krakenar.Core.Fields.DataTypeNotSupportedException;
 using SenderProviderNotSupportedException = Krakenar.Core.Senders.SenderProviderNotSupportedException;
+using TemplateContent = Krakenar.Contracts.Templates.Content;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
@@ -253,7 +254,7 @@ public sealed class Mapper
       Id = source.Id,
       Realm = realm,
       Subject = source.Subject,
-      Body = new Content(source.BodyType, source.BodyText),
+      Body = new TemplateContent(source.BodyType, source.BodyText),
       RecipientCount = source.RecipientCount,
       IgnoreUserLocale = source.IgnoreUserLocale,
       IsDemo = source.IsDemo,
@@ -519,7 +520,7 @@ public sealed class Mapper
       DisplayName = source.DisplayName,
       Description = source.Description,
       Subject = source.Subject,
-      Content = new Content(source.ContentType, source.ContentText)
+      Content = new TemplateContent(source.ContentType, source.ContentText)
     };
 
     MapAggregate(source, destination);

@@ -14,8 +14,9 @@ public sealed class OneTimePassword : Aggregate, ISegregatedEntity
 
   public User? User { get; private set; }
   public int? UserId { get; private set; }
+  // TODO(fpion): UserUid
 
-  public Guid Id { get; private set; }
+  public Guid Id { get; private set; } // TODO(fpion): before User
 
   public string PasswordHash { get; private set; } = string.Empty;
 

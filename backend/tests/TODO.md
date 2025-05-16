@@ -12,11 +12,13 @@
 
 ## Contents
 
+- Content
 - ContentManager
 - ContentType
 
 ### Commands
 
+- CreateContent
 - CreateOrReplaceContentType
 - DeleteContentType
 - UpdateContentType

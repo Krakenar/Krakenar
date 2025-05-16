@@ -17,6 +17,7 @@ public sealed class Session : Aggregate, ISegregatedEntity
 
   public User? User { get; private set; }
   public int UserId { get; private set; }
+  // TODO(fpion): UserUid
 
   public string? SecretHash { get; private set; }
   public bool IsPersistent
