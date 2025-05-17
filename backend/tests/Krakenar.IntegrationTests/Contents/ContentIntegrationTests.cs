@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Localization;
@@ -261,6 +262,42 @@ public class ContentIntegrationTests : IntegrationTests
   public async Task Given_NotFound_When_Delete_Then_NullReturned()
   {
     Assert.Null(await _contentService.ReadAsync(Guid.Empty));
+  }
+
+  [Fact(DisplayName = "It should return the correct search results.")]
+  public async Task Given_ContentLocales_When_Search_Then_CorrectResults()
+  {
+    Language french = new(new Locale("fr"), isDefault: false, ActorId, LanguageId.NewId(Realm.Id));
+    await _languageRepository.SaveAsync(french);
+
+    ContentType blogCategory = new(new Identifier("BlogCategory"), isInvariant: true, ActorId, ContentTypeId.NewId(Realm.Id));
+    ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync([blogCategory, blogArticle]);
+
+    Content softwareArchitecture = new(blogCategory, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "software-architecture"), null, null), ActorId);
+    Content cleanCode = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "the-clean-code"), null, null), ActorId);
+    Content onion = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "onion-architecture"), null, null), ActorId);
+    Content screaming = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "screaming-architecture"), null, null), ActorId);
+    Content hexagonal = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "hexagonal-architecture"), null, null), ActorId);
+    hexagonal.SetLocale(french, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "architecture-hexagonale"), null, null), ActorId);
+    await _contentRepository.SaveAsync([softwareArchitecture, cleanCode, onion, screaming, hexagonal]);
+
+    SearchContentLocalesPayload payload = new()
+    {
+      ContentTypeId = blogArticle.EntityId,
+      LanguageId = null,
+      Ids = [softwareArchitecture.EntityId, cleanCode.EntityId, onion.EntityId, hexagonal.EntityId, Guid.Empty],
+      Search = new TextSearch([new SearchTerm("%architecture%")]),
+      Sort = [new ContentSortOption(ContentSort.UniqueName, isDescending: true)],
+      Limit = 1,
+      Skip = 1
+    };
+    SearchResults<ContentLocaleDto> results = await _contentService.SearchLocalesAsync(payload);
+    Assert.Equal(2, results.Total);
+
+    ContentLocaleDto locale = Assert.Single(results.Items);
+    Assert.Equal(hexagonal.EntityId, locale.Content?.Id);
+    Assert.Null(locale.Language);
   }
 
   [Fact(DisplayName = "It should throw ContentUniqueNameAlreadyUsedException when there is a content invariant unique name conflict.")]

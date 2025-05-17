@@ -1,7 +1,9 @@
 ﻿using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Search;
 using Krakenar.Core.Contents.Commands;
 using Krakenar.Core.Contents.Queries;
 using ContentDto = Krakenar.Contracts.Contents.Content;
+using ContentLocaleDto = Krakenar.Contracts.Contents.ContentLocale;
 
 namespace Krakenar.Core.Contents;
 
@@ -11,6 +13,7 @@ public class ContentService : IContentService
   protected virtual ICommandHandler<DeleteContent, ContentDto?> DeleteContent { get; }
   protected virtual IQueryHandler<ReadContent, ContentDto?> ReadContent { get; }
   protected virtual ICommandHandler<SaveContentLocale, ContentDto?> SaveContentLocale { get; }
+  protected virtual IQueryHandler<SearchContentLocales, SearchResults<ContentLocaleDto>> SearchContentLocales { get; }
   protected virtual ICommandHandler<UpdateContentLocale, ContentDto?> UpdateContentLocale { get; }
 
   public ContentService(
@@ -18,12 +21,14 @@ public class ContentService : IContentService
     ICommandHandler<DeleteContent, ContentDto?> deleteContent,
     IQueryHandler<ReadContent, ContentDto?> readContent,
     ICommandHandler<SaveContentLocale, ContentDto?> saveContentLocale,
+    IQueryHandler<SearchContentLocales, SearchResults<ContentLocaleDto>> searchContentLocales,
     ICommandHandler<UpdateContentLocale, ContentDto?> updateContentLocale)
   {
     CreateContent = createContent;
     DeleteContent = deleteContent;
     ReadContent = readContent;
     SaveContentLocale = saveContentLocale;
+    SearchContentLocales = searchContentLocales;
     UpdateContentLocale = updateContentLocale;
   }
 
@@ -49,6 +54,12 @@ public class ContentService : IContentService
   {
     SaveContentLocale command = new(id, payload, language);
     return await SaveContentLocale.HandleAsync(command, cancellationToken);
+  }
+
+  public virtual async Task<SearchResults<ContentLocaleDto>> SearchLocalesAsync(SearchContentLocalesPayload payload, CancellationToken cancellationToken)
+  {
+    SearchContentLocales query = new(payload);
+    return await SearchContentLocales.HandleAsync(query, cancellationToken);
   }
 
   public virtual async Task<ContentDto?> UpdateLocaleAsync(Guid id, UpdateContentLocalePayload payload, string? language, CancellationToken cancellationToken)

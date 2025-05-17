@@ -165,6 +165,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IApiKeyQuerier, ApiKeyQuerier>()
       .AddScoped<IConfigurationQuerier, ConfigurationQuerier>()
       .AddScoped<IContentQuerier, ContentQuerier>()
+      .AddScoped<IContentLocaleQuerier, ContentLocaleQuerier>()
       .AddScoped<IContentTypeQuerier, ContentTypeQuerier>()
       .AddScoped<IDictionaryQuerier, DictionaryQuerier>()
       .AddScoped<IFieldTypeQuerier, FieldTypeQuerier>()

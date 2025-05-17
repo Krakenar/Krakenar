@@ -63,6 +63,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 using ContentDto = Krakenar.Contracts.Contents.Content;
+using ContentLocaleDto = Krakenar.Contracts.Contents.ContentLocale;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
@@ -208,6 +209,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadTemplate, TemplateDto?>, ReadTemplateHandler>()
       .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
       .AddTransient<IQueryHandler<SearchApiKeys, SearchResults<ApiKeyDto>>, SearchApiKeysHandler>()
+      .AddTransient<IQueryHandler<SearchContentLocales, SearchResults<ContentLocaleDto>>, SearchContentLocalesHandler>()
       .AddTransient<IQueryHandler<SearchContentTypes, SearchResults<ContentTypeDto>>, SearchContentTypesHandler>()
       .AddTransient<IQueryHandler<SearchDictionaries, SearchResults<DictionaryDto>>, SearchDictionariesHandler>()
       .AddTransient<IQueryHandler<SearchFieldTypes, SearchResults<FieldTypeDto>>, SearchFieldTypesHandler>()

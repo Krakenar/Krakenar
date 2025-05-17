@@ -1,5 +1,7 @@
 ﻿using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Search;
 using Krakenar.Web.Constants;
+using Krakenar.Web.Models.Content;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,6 +46,14 @@ public class ContentController : ControllerBase
   {
     Content? content = await ContentService.SaveLocaleAsync(id, payload, language, cancellationToken);
     return content is null ? NotFound() : Ok(content);
+  }
+
+  [HttpGet]
+  public virtual async Task<ActionResult<SearchResults<ContentLocale>>> SearchAsync([FromQuery] SearchContentLocalesParameters parameters, CancellationToken cancellationToken)
+  {
+    SearchContentLocalesPayload payload = parameters.ToPayload();
+    SearchResults<ContentLocale> contentLocales = await ContentService.SearchLocalesAsync(payload, cancellationToken);
+    return Ok(contentLocales);
   }
 
   [HttpPatch("{id}")]
