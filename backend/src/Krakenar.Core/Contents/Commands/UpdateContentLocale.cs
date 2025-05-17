@@ -127,7 +127,7 @@ public class UpdateContentLocaleHandler : ICommandHandler<UpdateContentLocale, C
       content.SetLocale(language, invariantOrLocale, ApplicationContext.ActorId);
     }
 
-    await ContentManager.SaveAsync(content, cancellationToken);
+    await ContentManager.SaveAsync(content, contentType, cancellationToken);
 
     return await ContentQuerier.ReadAsync(content, cancellationToken);
   }

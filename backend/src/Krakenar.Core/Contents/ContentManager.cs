@@ -9,7 +9,7 @@ namespace Krakenar.Core.Contents;
 public interface IContentManager
 {
   Task<ContentType> FindAsync(string idOrUniqueName, string propertyName, CancellationToken cancellationToken = default);
-  Task SaveAsync(Content content, CancellationToken cancellationToken = default);
+  Task SaveAsync(Content content, ContentType? contentType = null, CancellationToken cancellationToken = default);
   Task SaveAsync(ContentType contentType, CancellationToken cancellationToken = default);
 }
 
@@ -65,7 +65,7 @@ public class ContentManager : IContentManager
     return contentType ?? throw new ContentTypeNotFoundException(realmId, idOrUniqueName, propertyName);
   }
 
-  public virtual async Task SaveAsync(Content content, CancellationToken cancellationToken)
+  public virtual async Task SaveAsync(Content content, ContentType? contentType, CancellationToken cancellationToken)
   {
     bool hasInvariantChanged = false;
     HashSet<LanguageId> languageIds = [];
@@ -90,7 +90,8 @@ public class ContentManager : IContentManager
 
     if (hasInvariantChanged)
     {
-      UniqueName uniqueName = content.Invariant.UniqueName;
+      ContentLocale invariant = content.Invariant;
+      UniqueName uniqueName = invariant.UniqueName;
       ContentId? conflictId = await ContentQuerier.FindIdAsync(content.ContentTypeId, languageId: null, uniqueName, cancellationToken);
       if (conflictId.HasValue && !conflictId.Value.Equals(content.Id))
       {
@@ -100,7 +101,8 @@ public class ContentManager : IContentManager
 
     foreach (LanguageId languageId in languageIds)
     {
-      UniqueName uniqueName = content.FindLocale(languageId).UniqueName;
+      ContentLocale locale = content.FindLocale(languageId);
+      UniqueName uniqueName = locale.UniqueName;
       ContentId? conflictId = await ContentQuerier.FindIdAsync(content.ContentTypeId, languageId, uniqueName, cancellationToken);
       if (conflictId.HasValue && !conflictId.Value.Equals(content.Id))
       {

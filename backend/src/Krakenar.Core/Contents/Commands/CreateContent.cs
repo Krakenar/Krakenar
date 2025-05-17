@@ -140,7 +140,7 @@ public class CreateContentHandler : ICommandHandler<CreateContent, ContentDto>
       content.SetLocale(language, locale, actorId);
     }
 
-    await ContentManager.SaveAsync(content, cancellationToken);
+    await ContentManager.SaveAsync(content, contentType, cancellationToken);
 
     return await ContentQuerier.ReadAsync(content, cancellationToken);
   }
