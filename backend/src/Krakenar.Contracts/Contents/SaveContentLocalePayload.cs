@@ -6,6 +6,8 @@ public record SaveContentLocalePayload
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
 
+  public List<FieldValuePayload> FieldValues { get; set; } = [];
+
   public SaveContentLocalePayload() : this(string.Empty)
   {
   }
