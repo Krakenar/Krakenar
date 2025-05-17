@@ -86,6 +86,7 @@ public class FieldDefinitionIntegrationTests : IntegrationTests
     await _fieldTypeRepository.SaveAsync(fieldType);
 
     ContentType blogCategory = new(new Identifier("BlogCategory"), isInvariant: true, ActorId, ContentTypeId.NewId(Realm.Id));
+    blogCategory.SetField(new FieldDefinition(Guid.NewGuid(), fieldType.Id, true, true, true, true, new Identifier("externalSlug"), null, null, null), ActorId);
     blogCategory.SetField(new FieldDefinition(Guid.NewGuid(), fieldType.Id, true, true, true, true, new Identifier("ExternalSlug"), null, null, null), ActorId);
     await _contentTypeRepository.SaveAsync(blogCategory);
 
