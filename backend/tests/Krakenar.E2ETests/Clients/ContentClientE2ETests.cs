@@ -1,5 +1,6 @@
 ﻿using Krakenar.Client.Contents;
 using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Search;
 
 namespace Krakenar.Clients;
 
@@ -79,5 +80,28 @@ public class ContentClientE2ETests : E2ETests
     Assert.Equal(saveLocalePayload.UniqueName, locale.UniqueName);
     Assert.Equal(saveLocalePayload.DisplayName.Trim(), locale.DisplayName);
     Assert.Equal(saveLocalePayload.Description.Trim(), locale.Description);
+
+    content = (await contents.ReadAsync(contentId, _cancellationToken))!;
+    Assert.NotNull(content);
+    Assert.Equal(contentId, content.Id);
+
+    Assert.NotNull(locale.Language);
+    SearchContentLocalesPayload payload = new()
+    {
+      ContentTypeId = contentTypeId,
+      LanguageId = locale.Language.Id,
+      Ids = [contentId],
+      Search = new TextSearch([new SearchTerm("%bag%")]),
+      Limit = 1
+    };
+    SearchResults<ContentLocale> results = await contents.SearchLocalesAsync(payload, _cancellationToken);
+    Assert.Equal(1, results.Total);
+    locale = Assert.Single(results.Items);
+    Assert.Equal(contentId, locale.Content?.Id);
+    Assert.Same(locale.Language, locale.Language);
+
+    content = (await contents.DeleteAsync(contentId, language: null, _cancellationToken))!;
+    Assert.NotNull(content);
+    Assert.Equal(contentId, content.Id);
   }
 }

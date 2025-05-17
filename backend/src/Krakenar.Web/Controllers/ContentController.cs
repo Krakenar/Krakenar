@@ -1,5 +1,7 @@
 ﻿using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Search;
 using Krakenar.Web.Constants;
+using Krakenar.Web.Models.Content;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,11 +27,33 @@ public class ContentController : ControllerBase
     return Created(location, content);
   }
 
+  [HttpDelete("{id}")]
+  public async Task<ActionResult<Content>> DeleteAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.DeleteAsync(id, language, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
+  [HttpGet("{id}")]
+  public async Task<ActionResult<Content>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.ReadAsync(id, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
   [HttpPut("{id}")]
   public async Task<ActionResult<Content>> SaveLocaleAsync(Guid id, [FromBody] SaveContentLocalePayload payload, string? language, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.SaveLocaleAsync(id, payload, language, cancellationToken);
     return content is null ? NotFound() : Ok(content);
+  }
+
+  [HttpGet]
+  public virtual async Task<ActionResult<SearchResults<ContentLocale>>> SearchAsync([FromQuery] SearchContentLocalesParameters parameters, CancellationToken cancellationToken)
+  {
+    SearchContentLocalesPayload payload = parameters.ToPayload();
+    SearchResults<ContentLocale> contentLocales = await ContentService.SearchLocalesAsync(payload, cancellationToken);
+    return Ok(contentLocales);
   }
 
   [HttpPatch("{id}")]

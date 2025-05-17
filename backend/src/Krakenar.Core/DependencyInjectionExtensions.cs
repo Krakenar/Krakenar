@@ -63,6 +63,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 using ContentDto = Krakenar.Contracts.Contents.Content;
+using ContentLocaleDto = Krakenar.Contracts.Contents.ContentLocale;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
@@ -113,6 +114,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<CreateSession, SessionDto>, CreateSessionHandler>()
       .AddTransient<ICommandHandler<CreateToken, CreatedToken>, CreateTokenCommandHandler>()
       .AddTransient<ICommandHandler<DeleteApiKey, ApiKeyDto?>, DeleteApiKeyHandler>()
+      .AddTransient<ICommandHandler<DeleteContent, ContentDto?>, DeleteContentHandler>()
       .AddTransient<ICommandHandler<DeleteContentType, ContentTypeDto?>, DeleteContentTypeHandler>()
       .AddTransient<ICommandHandler<DeleteDictionary, DictionaryDto?>, DeleteDictionaryHandler>()
       .AddTransient<ICommandHandler<DeleteFieldDefinition, ContentTypeDto?>, DeleteFieldDefinitionHandler>()
@@ -193,6 +195,7 @@ public static class DependencyInjectionExtensions
     return services
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
+      .AddTransient<IQueryHandler<ReadContent, ContentDto?>, ReadContentHandler>()
       .AddTransient<IQueryHandler<ReadContentType, ContentTypeDto?>, ReadContentTypeHandler>()
       .AddTransient<IQueryHandler<ReadDictionary, DictionaryDto?>, ReadDictionaryHandler>()
       .AddTransient<IQueryHandler<ReadFieldType, FieldTypeDto?>, ReadFieldTypeHandler>()
@@ -206,6 +209,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IQueryHandler<ReadTemplate, TemplateDto?>, ReadTemplateHandler>()
       .AddTransient<IQueryHandler<ReadUser, UserDto?>, ReadUserHandler>()
       .AddTransient<IQueryHandler<SearchApiKeys, SearchResults<ApiKeyDto>>, SearchApiKeysHandler>()
+      .AddTransient<IQueryHandler<SearchContentLocales, SearchResults<ContentLocaleDto>>, SearchContentLocalesHandler>()
       .AddTransient<IQueryHandler<SearchContentTypes, SearchResults<ContentTypeDto>>, SearchContentTypesHandler>()
       .AddTransient<IQueryHandler<SearchDictionaries, SearchResults<DictionaryDto>>, SearchDictionariesHandler>()
       .AddTransient<IQueryHandler<SearchFieldTypes, SearchResults<FieldTypeDto>>, SearchFieldTypesHandler>()

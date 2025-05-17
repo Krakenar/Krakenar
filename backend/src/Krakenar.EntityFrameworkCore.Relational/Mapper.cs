@@ -124,7 +124,7 @@ public sealed class Mapper
     return destination;
   }
 
-  public ContentLocale ToContentLocale(Entities.ContentLocale source, ContentItem content, Realm? realm)
+  public ContentLocale ToContentLocale(Entities.ContentLocale source, ContentItem? content, Realm? realm)
   {
     if (source.Language is null && source.LanguageId.HasValue)
     {
@@ -133,8 +133,6 @@ public sealed class Mapper
 
     ContentLocale destination = new()
     {
-      Content = content,
-      Language = null,
       UniqueName = source.UniqueName,
       DisplayName = source.DisplayName,
       Description = source.Description,
@@ -143,6 +141,19 @@ public sealed class Mapper
       UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system,
       UpdatedOn = source.UpdatedOn.AsUniversalTime()
     };
+
+    if (content is not null)
+    {
+      destination.Content = content;
+    }
+    else if (source.Content is not null)
+    {
+      destination.Content = ToContent(source.Content, realm);
+    }
+    else
+    {
+      throw new ArgumentException($"The {nameof(source.Content)} is required.", nameof(source));
+    }
 
     if (source.Language is not null)
     {
