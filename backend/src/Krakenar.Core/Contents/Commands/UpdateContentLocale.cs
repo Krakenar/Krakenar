@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents.Validators;
-using Krakenar.Core.Fields;
 using Krakenar.Core.Localization;
 using ContentDto = Krakenar.Contracts.Contents.Content;
+using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
+using FieldValue = Krakenar.Core.Fields.FieldValue;
 
 namespace Krakenar.Core.Contents.Commands;
 
@@ -53,12 +55,13 @@ public class UpdateContentLocaleHandler : ICommandHandler<UpdateContentLocale, C
       return null;
     }
 
+    ContentType contentType = await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
+      ?? throw new InvalidOperationException($"The content type 'Id={content.ContentTypeId}' was not loaded.");
+
     Language? language = null;
     ContentLocale invariantOrLocale = content.Invariant;
     if (!string.IsNullOrWhiteSpace(command.Language))
     {
-      ContentType contentType = await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
-        ?? throw new InvalidOperationException($"The content type 'Id={content.ContentTypeId}' was not loaded.");
       if (contentType.IsInvariant)
       {
         string errorMessage = $"'{nameof(command.Language)}' must be null. The content type is invariant.";
@@ -81,7 +84,26 @@ public class UpdateContentLocaleHandler : ICommandHandler<UpdateContentLocale, C
     UniqueName uniqueName = string.IsNullOrWhiteSpace(payload.UniqueName) ? invariantOrLocale.UniqueName : new(uniqueNameSettings, payload.UniqueName);
     DisplayName? displayName = payload.DisplayName is null ? invariantOrLocale.DisplayName : DisplayName.TryCreate(payload.DisplayName.Value);
     Description? description = payload.Description is null ? invariantOrLocale.Description : Description.TryCreate(payload.Description.Value);
-    invariantOrLocale = new(uniqueName, displayName, description, new Dictionary<Guid, FieldValue>().AsReadOnly()); // TODO(fpion): implement
+
+    Dictionary<Guid, FieldValue> fieldValues = new(invariantOrLocale.FieldValues);
+    foreach (FieldValuePayload fieldValue in payload.FieldValues)
+    {
+      FieldDefinition? field = contentType.ResolveField(fieldValue.Field);
+      if (field is null)
+      {
+        // TODO(fpion): implement
+      }
+      else if (string.IsNullOrWhiteSpace(fieldValue.Value))
+      {
+        fieldValues.Remove(field.Id);
+      }
+      else
+      {
+        fieldValues[field.Id] = new FieldValue(fieldValue.Value);
+      }
+    }
+
+    invariantOrLocale = new(uniqueName, displayName, description, fieldValues.AsReadOnly());
     if (language is null)
     {
       content.SetInvariant(invariantOrLocale, ApplicationContext.ActorId);
