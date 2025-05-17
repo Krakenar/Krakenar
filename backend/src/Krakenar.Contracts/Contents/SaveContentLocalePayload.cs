@@ -1,4 +1,6 @@
-﻿namespace Krakenar.Contracts.Contents;
+﻿using Krakenar.Contracts.Fields;
+
+namespace Krakenar.Contracts.Contents;
 
 public record SaveContentLocalePayload
 {

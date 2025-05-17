@@ -1,11 +1,14 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents.Validators;
 using Krakenar.Core.Localization;
 using Logitar.EventSourcing;
 using ContentDto = Krakenar.Contracts.Contents.Content;
+using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
+using FieldValue = Krakenar.Core.Fields.FieldValue;
 
 namespace Krakenar.Core.Contents.Commands;
 
@@ -87,16 +90,41 @@ public class CreateContentHandler : ICommandHandler<CreateContent, ContentDto>
 
     ActorId? actorId = ApplicationContext.ActorId;
 
+    int capacity = payload.FieldValues.Count;
+    Dictionary<Guid, FieldValue> invariantFieldValues = new(capacity);
+    Dictionary<Guid, FieldValue> localeFieldValues = new(capacity);
+    foreach (FieldValuePayload fieldValue in payload.FieldValues)
+    {
+      FieldDefinition? field = contentType.ResolveField(fieldValue.Field);
+      if (field is null)
+      {
+        // TODO(fpion): implement
+      }
+      else if (!string.IsNullOrWhiteSpace(fieldValue.Value))
+      {
+        FieldValue value = new(fieldValue.Value);
+        if (field.IsInvariant)
+        {
+          invariantFieldValues[field.Id] = value;
+        }
+        else
+        {
+          localeFieldValues[field.Id] = value;
+        }
+      }
+    }
+
     UniqueName uniqueName = new(uniqueNameSettings, payload.UniqueName);
     DisplayName? displayName = DisplayName.TryCreate(payload.DisplayName);
     Description? description = Description.TryCreate(payload.Description);
-    ContentLocale invariant = new(uniqueName, displayName, description);
 
+    ContentLocale invariant = new(uniqueName, displayName, description, invariantFieldValues);
     content = new Content(contentType, invariant, actorId, contentId);
 
     if (language is not null)
     {
-      content.SetLocale(language, invariant, actorId);
+      ContentLocale locale = new(uniqueName, displayName, description, localeFieldValues);
+      content.SetLocale(language, locale, actorId);
     }
 
     await ContentManager.SaveAsync(content, cancellationToken);

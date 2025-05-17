@@ -1,3 +1,5 @@
-﻿namespace Krakenar.Core.Contents;
+﻿using Krakenar.Core.Fields;
 
-public record ContentLocale(UniqueName UniqueName, DisplayName? DisplayName, Description? Description);
+namespace Krakenar.Core.Contents;
+
+public record ContentLocale(UniqueName UniqueName, DisplayName? DisplayName, Description? Description, IReadOnlyDictionary<Guid, FieldValue> FieldValues);

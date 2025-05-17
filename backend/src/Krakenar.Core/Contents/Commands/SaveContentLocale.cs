@@ -3,6 +3,7 @@ using FluentValidation.Results;
 using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents.Validators;
+using Krakenar.Core.Fields;
 using Krakenar.Core.Localization;
 using ContentDto = Krakenar.Contracts.Contents.Content;
 
@@ -73,7 +74,7 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
     UniqueName uniqueName = new(uniqueNameSettings, payload.UniqueName);
     DisplayName? displayName = DisplayName.TryCreate(payload.DisplayName);
     Description? description = Description.TryCreate(payload.Description);
-    ContentLocale invariantOrLocale = new(uniqueName, displayName, description);
+    ContentLocale invariantOrLocale = new(uniqueName, displayName, description, new Dictionary<Guid, FieldValue>().AsReadOnly()); // TODO(fpion): implement
     if (language is null)
     {
       content.SetInvariant(invariantOrLocale, ApplicationContext.ActorId);

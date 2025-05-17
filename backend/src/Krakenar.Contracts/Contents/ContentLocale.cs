@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts.Actors;
+using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Localization;
 
 namespace Krakenar.Contracts.Contents;

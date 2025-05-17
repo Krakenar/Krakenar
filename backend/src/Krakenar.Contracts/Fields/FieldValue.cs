@@ -1,4 +1,4 @@
-﻿namespace Krakenar.Contracts.Contents;
+﻿namespace Krakenar.Contracts.Fields;
 
 public record FieldValue
 {

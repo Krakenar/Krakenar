@@ -1,4 +1,5 @@
-﻿using Krakenar.Core.Contents.Events;
+﻿using FluentValidation;
+using Krakenar.Core.Contents.Events;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Realms;
 using Logitar.EventSourcing;
@@ -129,6 +130,31 @@ public class ContentType : AggregateRoot
         _fieldNameIndex[pair.Key] = pair.Value - 1;
       }
     }
+  }
+
+  public FieldDefinition? ResolveField(string idOrUniqueName)
+  {
+    FieldDefinition? field = null;
+
+    if (Guid.TryParse(idOrUniqueName, out Guid id))
+    {
+      field = TryGetField(id);
+      if (field is not null)
+      {
+        return field;
+      }
+    }
+
+    try
+    {
+      Identifier uniqueName = new(idOrUniqueName);
+      field = TryGetField(uniqueName);
+    }
+    catch (ValidationException)
+    {
+    }
+
+    return field;
   }
 
   public void SetField(FieldDefinition field, ActorId? actorId = null)
