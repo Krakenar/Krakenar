@@ -86,12 +86,15 @@ public class UpdateContentLocaleHandler : ICommandHandler<UpdateContentLocale, C
     Description? description = payload.Description is null ? invariantOrLocale.Description : Description.TryCreate(payload.Description.Value);
 
     Dictionary<Guid, FieldValue> fieldValues = new(invariantOrLocale.FieldValues);
-    foreach (FieldValuePayload fieldValue in payload.FieldValues)
+    int capacity = payload.FieldValues.Count;
+    Dictionary<int, string> missingFields = new(capacity);
+    for (int index = 0; index < capacity; index++)
     {
+      FieldValuePayload fieldValue = payload.FieldValues[index];
       FieldDefinition? field = contentType.ResolveField(fieldValue.Field);
       if (field is null)
       {
-        // TODO(fpion): implement
+        missingFields[index] = fieldValue.Field;
       }
       else if (string.IsNullOrWhiteSpace(fieldValue.Value))
       {
@@ -101,6 +104,17 @@ public class UpdateContentLocaleHandler : ICommandHandler<UpdateContentLocale, C
       {
         fieldValues[field.Id] = new FieldValue(fieldValue.Value);
       }
+    }
+    if (missingFields.Count > 0)
+    {
+      IEnumerable<ValidationFailure> failures = missingFields.Select(pair => new ValidationFailure
+      {
+        AttemptedValue = pair.Value,
+        ErrorCode = "FieldDefinitionValidator",
+        ErrorMessage = $"The field is not defined on content type '{contentType.DisplayName?.Value ?? contentType.UniqueName.Value}'.",
+        PropertyName = $"{nameof(payload.FieldValues)}[{pair.Key}].{nameof(FieldValuePayload.Field)}"
+      });
+      throw new ValidationException(failures);
     }
 
     invariantOrLocale = new(uniqueName, displayName, description, fieldValues.AsReadOnly());

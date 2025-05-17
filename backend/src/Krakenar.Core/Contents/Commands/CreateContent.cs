@@ -93,12 +93,14 @@ public class CreateContentHandler : ICommandHandler<CreateContent, ContentDto>
     int capacity = payload.FieldValues.Count;
     Dictionary<Guid, FieldValue> invariantFieldValues = new(capacity);
     Dictionary<Guid, FieldValue> localeFieldValues = new(capacity);
-    foreach (FieldValuePayload fieldValue in payload.FieldValues)
+    Dictionary<int, string> missingFields = new(capacity);
+    for (int index = 0; index < capacity; index++)
     {
+      FieldValuePayload fieldValue = payload.FieldValues[index];
       FieldDefinition? field = contentType.ResolveField(fieldValue.Field);
       if (field is null)
       {
-        // TODO(fpion): implement
+        missingFields[index] = fieldValue.Field;
       }
       else if (!string.IsNullOrWhiteSpace(fieldValue.Value))
       {
@@ -112,6 +114,17 @@ public class CreateContentHandler : ICommandHandler<CreateContent, ContentDto>
           localeFieldValues[field.Id] = value;
         }
       }
+    }
+    if (missingFields.Count > 0)
+    {
+      IEnumerable<ValidationFailure> failures = missingFields.Select(pair => new ValidationFailure
+      {
+        AttemptedValue = pair.Value,
+        ErrorCode = "FieldDefinitionValidator",
+        ErrorMessage = $"The field is not defined on content type '{contentType.DisplayName?.Value ?? contentType.UniqueName.Value}'.",
+        PropertyName = $"{nameof(payload.FieldValues)}[{pair.Key}].{nameof(FieldValuePayload.Field)}"
+      });
+      throw new ValidationException(failures);
     }
 
     UniqueName uniqueName = new(uniqueNameSettings, payload.UniqueName);
