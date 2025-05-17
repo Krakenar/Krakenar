@@ -118,12 +118,12 @@ public class CreateContentHandler : ICommandHandler<CreateContent, ContentDto>
     DisplayName? displayName = DisplayName.TryCreate(payload.DisplayName);
     Description? description = Description.TryCreate(payload.Description);
 
-    ContentLocale invariant = new(uniqueName, displayName, description, invariantFieldValues);
+    ContentLocale invariant = new(uniqueName, displayName, description, invariantFieldValues.AsReadOnly());
     content = new Content(contentType, invariant, actorId, contentId);
 
     if (language is not null)
     {
-      ContentLocale locale = new(uniqueName, displayName, description, localeFieldValues);
+      ContentLocale locale = new(uniqueName, displayName, description, localeFieldValues.AsReadOnly());
       content.SetLocale(language, locale, actorId);
     }
 

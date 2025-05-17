@@ -1,11 +1,13 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents.Validators;
-using Krakenar.Core.Fields;
 using Krakenar.Core.Localization;
 using ContentDto = Krakenar.Contracts.Contents.Content;
+using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
+using FieldValue = Krakenar.Core.Fields.FieldValue;
 
 namespace Krakenar.Core.Contents.Commands;
 
@@ -53,11 +55,12 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
       return null;
     }
 
+    ContentType contentType = await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
+      ?? throw new InvalidOperationException($"The content type 'Id={content.ContentTypeId}' was not loaded.");
+
     Language? language = null;
     if (!string.IsNullOrWhiteSpace(command.Language))
     {
-      ContentType contentType = await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
-        ?? throw new InvalidOperationException($"The content type 'Id={content.ContentTypeId}' was not loaded.");
       if (contentType.IsInvariant)
       {
         string errorMessage = $"'{nameof(command.Language)}' must be null. The content type is invariant.";
@@ -74,7 +77,23 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
     UniqueName uniqueName = new(uniqueNameSettings, payload.UniqueName);
     DisplayName? displayName = DisplayName.TryCreate(payload.DisplayName);
     Description? description = Description.TryCreate(payload.Description);
-    ContentLocale invariantOrLocale = new(uniqueName, displayName, description, new Dictionary<Guid, FieldValue>().AsReadOnly()); // TODO(fpion): implement
+
+    Dictionary<Guid, FieldValue> fieldValues = new(capacity: payload.FieldValues.Count);
+    foreach (FieldValuePayload fieldValue in payload.FieldValues)
+    {
+      FieldDefinition? field = contentType.ResolveField(fieldValue.Field);
+      if (field is null)
+      {
+        // TODO(fpion): implement
+      }
+      else if (!string.IsNullOrWhiteSpace(fieldValue.Value))
+      {
+        FieldValue value = new(fieldValue.Value);
+        fieldValues[field.Id] = value;
+      }
+    }
+
+    ContentLocale invariantOrLocale = new(uniqueName, displayName, description, fieldValues.AsReadOnly());
     if (language is null)
     {
       content.SetInvariant(invariantOrLocale, ApplicationContext.ActorId);
