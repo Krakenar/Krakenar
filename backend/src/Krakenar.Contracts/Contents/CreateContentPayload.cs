@@ -11,6 +11,8 @@ public record CreateContentPayload
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
 
+  public List<FieldValuePayload> FieldValues { get; set; } = [];
+
   public CreateContentPayload() : this(string.Empty, string.Empty)
   {
   }

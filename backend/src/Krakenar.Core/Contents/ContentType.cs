@@ -58,7 +58,7 @@ public class ContentType : AggregateRoot
   }
 
   private readonly Dictionary<Guid, int> _fieldIdIndex = [];
-  private readonly Dictionary<Identifier, int> _fieldNameIndex = [];
+  private readonly Dictionary<string, int> _fieldNameIndex = [];
   private readonly List<FieldDefinition> _fields = [];
   public IReadOnlyCollection<FieldDefinition> Fields => _fields.AsReadOnly();
 
@@ -118,7 +118,7 @@ public class ContentType : AggregateRoot
       }
     }
 
-    foreach (KeyValuePair<Identifier, int> pair in _fieldNameIndex)
+    foreach (KeyValuePair<string, int> pair in _fieldNameIndex)
     {
       if (pair.Value == index)
       {
@@ -153,16 +153,17 @@ public class ContentType : AggregateRoot
   protected virtual void Handle(ContentTypeFieldChanged @event)
   {
     FieldDefinition field = @event.Field;
+    string uniqueNameNormalized = Normalize(field.UniqueName);
     bool found = _fieldIdIndex.TryGetValue(field.Id, out int index);
     if (found)
     {
       _fields[index] = field;
 
-      Identifier uniqueName = _fieldNameIndex.Single(x => x.Value == index).Key;
-      if (uniqueName != field.UniqueName)
+      string uniqueName = _fieldNameIndex.Single(x => x.Value == index).Key;
+      if (uniqueName != uniqueNameNormalized)
       {
         _fieldNameIndex.Remove(uniqueName);
-        _fieldNameIndex[field.UniqueName] = index;
+        _fieldNameIndex[uniqueNameNormalized] = index;
       }
     }
     else
@@ -170,7 +171,7 @@ public class ContentType : AggregateRoot
       index = _fields.Count;
       _fields.Add(field);
       _fieldIdIndex[field.Id] = index;
-      _fieldNameIndex[field.UniqueName] = index;
+      _fieldNameIndex[uniqueNameNormalized] = index;
     }
   }
 
@@ -187,7 +188,7 @@ public class ContentType : AggregateRoot
   }
 
   public FieldDefinition? TryGetField(Guid id) => _fieldIdIndex.TryGetValue(id, out int index) ? _fields[index] : null;
-  public FieldDefinition? TryGetField(Identifier uniqueName) => _fieldNameIndex.TryGetValue(uniqueName, out int index) ? _fields[index] : null;
+  public FieldDefinition? TryGetField(Identifier uniqueName) => _fieldNameIndex.TryGetValue(Normalize(uniqueName), out int index) ? _fields[index] : null;
 
   public void Update(ActorId? actorId = null)
   {
@@ -215,4 +216,6 @@ public class ContentType : AggregateRoot
   }
 
   public override string ToString() => $"{DisplayName?.Value ?? UniqueName.Value} | {base.ToString()}";
+
+  private static string Normalize(Identifier identifier) => identifier.Value.ToUpperInvariant();
 }
