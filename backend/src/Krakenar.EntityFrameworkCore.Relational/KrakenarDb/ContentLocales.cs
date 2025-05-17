@@ -20,6 +20,7 @@ public static class ContentLocales
   public static readonly ColumnId ContentUid = new(nameof(ContentLocale.ContentUid), Table);
   public static readonly ColumnId Description = new(nameof(ContentLocale.Description), Table);
   public static readonly ColumnId DisplayName = new(nameof(ContentLocale.DisplayName), Table);
+  public static readonly ColumnId FieldValues = new(nameof(ContentLocale.FieldValues), Table);
   public static readonly ColumnId LanguageId = new(nameof(ContentLocale.LanguageId), Table);
   public static readonly ColumnId LanguageUid = new(nameof(ContentLocale.LanguageUid), Table);
   public static readonly ColumnId UniqueName = new(nameof(ContentLocale.UniqueName), Table);

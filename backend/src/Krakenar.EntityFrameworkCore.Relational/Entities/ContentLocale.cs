@@ -29,6 +29,8 @@ public sealed class ContentLocale
   public string? DisplayName { get; private set; }
   public string? Description { get; private set; }
 
+  public string? FieldValues { get; private set; }
+
   public long Version { get; private set; }
 
   public string? CreatedBy { get; private set; }
@@ -91,11 +93,19 @@ public sealed class ContentLocale
     return actorIds.AsReadOnly();
   }
 
+  public Dictionary<Guid, string> GetFieldValues()
+  {
+    return (FieldValues is null ? null : JsonSerializer.Deserialize<Dictionary<Guid, string>>(FieldValues)) ?? [];
+  }
+
   public void Update(Core.Contents.ContentLocale locale, DomainEvent @event)
   {
     UniqueName = locale.UniqueName.Value;
     DisplayName = locale.DisplayName?.Value;
     Description = locale.Description?.Value;
+
+    Dictionary<Guid, string> fieldValues = locale.FieldValues.ToDictionary(x => x.Key, x => x.Value.Value);
+    FieldValues = fieldValues.Count < 1 ? null : JsonSerializer.Serialize(fieldValues);
 
     Version = @event.Version;
 
