@@ -27,7 +27,7 @@ public class ContentQuerier : IContentQuerier
     SqlHelper = sqlHelper;
   }
 
-  public async Task<IReadOnlyDictionary<Guid, Guid>> FindContentTypeIdsAsync(IEnumerable<Guid> contentIds, CancellationToken cancellationToken)
+  public virtual async Task<IReadOnlyDictionary<Guid, Guid>> FindContentTypeIdsAsync(IEnumerable<Guid> contentIds, CancellationToken cancellationToken)
   {
     HashSet<Guid> distinctIds = [.. contentIds];
 

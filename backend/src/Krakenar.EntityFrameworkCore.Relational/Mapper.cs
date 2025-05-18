@@ -468,6 +468,28 @@ public sealed class Mapper
     return destination;
   }
 
+  public PublishedContentLocale ToPublishedContentLocale(Entities.PublishedContent source, PublishedContent content, Language? language)
+  {
+    PublishedContentLocale destination = new()
+    {
+      Content = content,
+      Language = language,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      Version = source.Version,
+      PublishedBy = TryFindActor(source.PublishedBy) ?? _system,
+      PublishedOn = source.PublishedOn.AsUniversalTime()
+    };
+
+    foreach (KeyValuePair<Guid, string> fieldValue in source.GetFieldValues())
+    {
+      destination.FieldValues.Add(new FieldValue(fieldValue));
+    }
+
+    return destination;
+  }
+
   public Realm ToRealm(Entities.Realm source)
   {
     Realm destination = new()

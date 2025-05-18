@@ -45,7 +45,7 @@ public class UnpublishContentHandler : ICommandHandler<UnpublishContent, Content
     LanguageManager = languageManager;
   }
 
-  public async Task<ContentDto?> HandleAsync(UnpublishContent command, CancellationToken cancellationToken)
+  public virtual async Task<ContentDto?> HandleAsync(UnpublishContent command, CancellationToken cancellationToken)
   {
     ContentId contentId = new(command.ContentId);
     Content? content = await ContentRepository.LoadAsync(contentId, cancellationToken);

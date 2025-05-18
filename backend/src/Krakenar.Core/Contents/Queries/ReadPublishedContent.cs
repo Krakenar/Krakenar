@@ -14,7 +14,7 @@ internal class ReadPublishedContentHandler : IQueryHandler<ReadPublishedContent,
     PublishedContentQuerier = publishedContentQuerier;
   }
 
-  public async Task<PublishedContent?> HandleAsync(ReadPublishedContent query, CancellationToken cancellationToken)
+  public virtual async Task<PublishedContent?> HandleAsync(ReadPublishedContent query, CancellationToken cancellationToken)
   {
     Dictionary<Guid, PublishedContent> publishedContents = new(capacity: 3);
 

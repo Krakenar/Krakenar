@@ -14,7 +14,7 @@ public class SearchPublishedContentsHandler : IQueryHandler<SearchPublishedConte
     PublishedContentQuerier = publishedContentQuerier;
   }
 
-  public async Task<SearchResults<PublishedContentLocale>> HandleAsync(SearchPublishedContents query, CancellationToken cancellationToken)
+  public virtual async Task<SearchResults<PublishedContentLocale>> HandleAsync(SearchPublishedContents query, CancellationToken cancellationToken)
   {
     return await PublishedContentQuerier.SearchAsync(query.Payload, cancellationToken);
   }

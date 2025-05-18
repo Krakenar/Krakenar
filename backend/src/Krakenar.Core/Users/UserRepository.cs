@@ -26,7 +26,7 @@ public class UserRepository : Repository, IUserRepository
   {
     return await LoadAsync<User>(id.StreamId, version, cancellationToken);
   }
-  public async Task<IReadOnlyCollection<User>> LoadAsync(IEnumerable<UserId> ids, CancellationToken cancellationToken)
+  public virtual async Task<IReadOnlyCollection<User>> LoadAsync(IEnumerable<UserId> ids, CancellationToken cancellationToken)
   {
     return await LoadAsync<User>(ids.Select(id => id.StreamId), cancellationToken);
   }

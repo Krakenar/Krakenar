@@ -15,7 +15,7 @@ public record PublishedContentLocale
 
   public List<FieldValue> FieldValues { get; set; } = [];
 
-  public long Revision { get; set; }
+  public long Version { get; set; }
   public Actor PublishedBy { get; set; } = new();
   public DateTime PublishedOn { get; set; }
 

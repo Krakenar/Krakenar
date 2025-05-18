@@ -174,6 +174,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<ILanguageQuerier, LanguageQuerier>()
       .AddScoped<IMessageQuerier, MessageQuerier>()
       .AddScoped<IOneTimePasswordQuerier, OneTimePasswordQuerier>()
+      .AddScoped<IPublishedContentQuerier, PublishedContentQuerier>()
       .AddScoped<IRealmQuerier, RealmQuerier>()
       .AddScoped<IRoleQuerier, RoleQuerier>()
       .AddScoped<ISenderQuerier, SenderQuerier>()
