@@ -49,7 +49,7 @@ public class UnpublishContentHandler : ICommandHandler<UnpublishContent, Content
   {
     ContentId contentId = new(command.ContentId);
     Content? content = await ContentRepository.LoadAsync(contentId, cancellationToken);
-    if (content == null)
+    if (content is null)
     {
       return null;
     }

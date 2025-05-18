@@ -38,14 +38,14 @@ public class ContentController : ControllerBase
   public async Task<ActionResult<Content>> PublishAllAsync(Guid id, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.PublishAllAsync(id, cancellationToken);
-    return content == null ? NotFound() : Ok(content);
+    return content is null ? NotFound() : Ok(content);
   }
 
   [HttpPatch("{id}/publish")]
   public async Task<ActionResult<Content>> PublishAsync(Guid id, string? language, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.PublishAsync(id, language, cancellationToken);
-    return content == null ? NotFound() : Ok(content);
+    return content is null ? NotFound() : Ok(content);
   }
 
   [HttpGet("{id}")]
@@ -74,14 +74,14 @@ public class ContentController : ControllerBase
   public async Task<ActionResult<Content>> UnpublishAllAsync(Guid id, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.UnpublishAllAsync(id, cancellationToken);
-    return content == null ? NotFound() : Ok(content);
+    return content is null ? NotFound() : Ok(content);
   }
 
   [HttpPatch("{id}/unpublish")]
   public async Task<ActionResult<Content>> UnpublishAsync(Guid id, string? language, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.UnpublishAsync(id, language, cancellationToken);
-    return content == null ? NotFound() : Ok(content);
+    return content is null ? NotFound() : Ok(content);
   }
 
   [HttpPatch("{id}")]

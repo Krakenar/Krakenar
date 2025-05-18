@@ -19,6 +19,7 @@ public sealed class Content : Aggregate, ISegregatedEntity
   public Guid ContentTypeUid { get; private set; }
 
   public List<ContentLocale> Locales { get; private set; } = [];
+  public List<PublishedContent> PublishedContents { get; private set; } = [];
 
   public Content(ContentType contentType, ContentCreated @event) : base(@event)
   {
@@ -62,6 +63,20 @@ public sealed class Content : Aggregate, ISegregatedEntity
     return actorIds.AsReadOnly();
   }
 
+  public ContentLocale? Publish(ContentLocalePublished @event)
+  {
+    Update(@event);
+
+    ContentLocale? locale = Locales.SingleOrDefault(l => l.LanguageUid == @event.LanguageId?.EntityId);
+    if (locale is null)
+    {
+      return null;
+    }
+
+    locale.Publish(@event);
+    return locale;
+  }
+
   public ContentLocale? RemoveLocale(ContentLocaleRemoved @event)
   {
     Update(@event);
@@ -89,5 +104,19 @@ public sealed class Content : Aggregate, ISegregatedEntity
     {
       locale.Update(@event.Locale, @event);
     }
+  }
+
+  public ContentLocale? Unpublish(ContentLocaleUnpublished @event)
+  {
+    Update(@event);
+
+    ContentLocale? locale = Locales.SingleOrDefault(l => l.LanguageUid == @event.LanguageId?.EntityId);
+    if (locale is null)
+    {
+      return null;
+    }
+
+    locale.Unpublish(@event);
+    return locale;
   }
 }
