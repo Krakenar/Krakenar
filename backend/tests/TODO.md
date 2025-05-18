@@ -32,8 +32,10 @@
 
 - ReadContent
 - ReadContentType
+- ReadPublishedContent
 - SearchContentLocales
 - SearchContentTypes
+- SearchPublishedContents
 
 ## Dictionaries
 
