@@ -2,9 +2,11 @@
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Events;
 using Krakenar.Core.Realms;
+using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using FieldTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldType;
+using ICommand = Logitar.Data.ICommand;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
@@ -24,11 +26,13 @@ public class FieldTypeEvents : IEventHandler<FieldTypeBooleanSettingsChanged>,
 {
   protected virtual KrakenarContext Context { get; }
   protected virtual ILogger<FieldTypeEvents> Logger { get; }
+  protected virtual ISqlHelper SqlHelper { get; }
 
-  public FieldTypeEvents(KrakenarContext context, ILogger<FieldTypeEvents> logger)
+  public FieldTypeEvents(KrakenarContext context, ILogger<FieldTypeEvents> logger, ISqlHelper sqlHelper)
   {
     Context = context;
     Logger = logger;
+    SqlHelper = sqlHelper;
   }
 
   public virtual async Task HandleAsync(FieldTypeBooleanSettingsChanged @event, CancellationToken cancellationToken)
@@ -213,6 +217,18 @@ public class FieldTypeEvents : IEventHandler<FieldTypeBooleanSettingsChanged>,
     fieldType.SetUniqueName(@event);
 
     await Context.SaveChangesAsync(cancellationToken);
+
+    ICommand command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.FieldIndex.FieldTypeName, fieldType.UniqueNameNormalized))
+      .Where(new OperatorCondition(KrakenarDb.FieldIndex.FieldTypeId, Operators.IsEqualTo(fieldType.FieldTypeId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.UniqueIndex.FieldTypeName, fieldType.UniqueNameNormalized))
+      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.FieldTypeId, Operators.IsEqualTo(fieldType.FieldTypeId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
 
     Logger.LogSuccess(@event);
   }

@@ -88,9 +88,21 @@ public class ContentTypeEvents : IEventHandler<ContentTypeCreated>,
       .SingleOrDefaultAsync(x => x.StreamId == @event.Field.FieldTypeId.Value, cancellationToken)
       ?? throw new InvalidOperationException($"The field type entity 'StreamId={@event.Field.FieldTypeId}' could not be found.");
 
-    contentType.SetField(fieldType, @event);
+    FieldDefinitionEntity fieldDefinition = contentType.SetField(fieldType, @event);
 
     await Context.SaveChangesAsync(cancellationToken);
+
+    ICommand command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.FieldIndex.FieldDefinitionName, fieldDefinition.UniqueNameNormalized))
+      .Where(new OperatorCondition(KrakenarDb.FieldIndex.FieldDefinitionId, Operators.IsEqualTo(fieldDefinition.FieldDefinitionId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.UniqueIndex.FieldDefinitionName, fieldDefinition.UniqueNameNormalized))
+      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.FieldDefinitionId, Operators.IsEqualTo(fieldDefinition.FieldDefinitionId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
 
     Logger.LogSuccess(@event);
   }
@@ -134,7 +146,19 @@ public class ContentTypeEvents : IEventHandler<ContentTypeCreated>,
       .Set(new Update(KrakenarDb.PublishedContents.ContentTypeName, contentType.UniqueNameNormalized))
       .Where(new OperatorCondition(KrakenarDb.PublishedContents.ContentTypeId, Operators.IsEqualTo(contentType.ContentTypeId)))
       .Build();
-    await Context.Database.ExecuteSqlRawAsync(command.Text, [.. command.Parameters], cancellationToken);
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.FieldIndex.ContentTypeName, contentType.UniqueNameNormalized))
+      .Where(new OperatorCondition(KrakenarDb.FieldIndex.ContentTypeId, Operators.IsEqualTo(contentType.ContentTypeId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.UniqueIndex.ContentTypeName, contentType.UniqueNameNormalized))
+      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.ContentTypeId, Operators.IsEqualTo(contentType.ContentTypeId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
 
     Logger.LogSuccess(@event);
   }

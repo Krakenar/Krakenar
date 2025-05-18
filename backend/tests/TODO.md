@@ -15,6 +15,9 @@
 - Content
 - ContentManager
 - ContentType
+- Published Content Integration Tests
+- Field Index Integration Tests
+- Unique Index Integration Tests
 
 ### Commands
 

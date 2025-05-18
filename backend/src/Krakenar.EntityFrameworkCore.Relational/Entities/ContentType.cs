@@ -67,7 +67,7 @@ public class ContentType : Aggregate, ISegregatedEntity
     return actorIds.ToList().AsReadOnly();
   }
 
-  public void SetField(FieldType fieldType, ContentTypeFieldChanged @event)
+  public FieldDefinition SetField(FieldType fieldType, ContentTypeFieldChanged @event)
   {
     Update(@event);
 
@@ -82,6 +82,7 @@ public class ContentType : Aggregate, ISegregatedEntity
     {
       fieldDefinition.Update(@event);
     }
+    return fieldDefinition;
   }
 
   public FieldDefinition? RemoveField(ContentTypeFieldRemoved @event)

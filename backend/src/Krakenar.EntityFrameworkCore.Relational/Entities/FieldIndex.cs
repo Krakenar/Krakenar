@@ -106,7 +106,7 @@ public sealed class FieldIndex
 
   public void Update(long version, string value)
   {
-    if (FieldType == null)
+    if (FieldType is null)
     {
       throw new InvalidOperationException($"The {nameof(FieldType)} is required.");
     }

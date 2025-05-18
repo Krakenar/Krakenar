@@ -92,7 +92,7 @@ public sealed class Content : Aggregate, ISegregatedEntity
     return locale;
   }
 
-  public void SetLocale(Language? language, ContentLocaleChanged @event)
+  public ContentLocale SetLocale(Language? language, ContentLocaleChanged @event)
   {
     Update(@event);
 
@@ -106,6 +106,7 @@ public sealed class Content : Aggregate, ISegregatedEntity
     {
       locale.Update(@event.Locale, @event);
     }
+    return locale;
   }
 
   public ContentLocale? Unpublish(ContentLocaleUnpublished @event)

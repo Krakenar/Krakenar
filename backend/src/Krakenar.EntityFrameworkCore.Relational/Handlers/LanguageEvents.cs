@@ -83,7 +83,19 @@ public class LanguageEvents : IEventHandler<LanguageCreated>, IEventHandler<Lang
       .Set(new Update(KrakenarDb.PublishedContents.LanguageCode, language.CodeNormalized))
       .Where(new OperatorCondition(KrakenarDb.PublishedContents.LanguageId, Operators.IsEqualTo(language.LanguageId)))
       .Build();
-    await Context.Database.ExecuteSqlRawAsync(command.Text, [.. command.Parameters], cancellationToken);
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.FieldIndex.LanguageCode, language.CodeNormalized))
+      .Where(new OperatorCondition(KrakenarDb.FieldIndex.LanguageId, Operators.IsEqualTo(language.LanguageId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.UniqueIndex.LanguageCode, language.CodeNormalized))
+      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.LanguageId, Operators.IsEqualTo(language.LanguageId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
 
     Logger.LogSuccess(@event);
   }
@@ -105,7 +117,19 @@ public class LanguageEvents : IEventHandler<LanguageCreated>, IEventHandler<Lang
       .Set(new Update(KrakenarDb.PublishedContents.LanguageIsDefault, language.IsDefault))
       .Where(new OperatorCondition(KrakenarDb.PublishedContents.LanguageId, Operators.IsEqualTo(language.LanguageId)))
       .Build();
-    await Context.Database.ExecuteSqlRawAsync(command.Text, [.. command.Parameters], cancellationToken);
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.FieldIndex.LanguageIsDefault, language.IsDefault))
+      .Where(new OperatorCondition(KrakenarDb.FieldIndex.LanguageId, Operators.IsEqualTo(language.LanguageId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.UniqueIndex.LanguageIsDefault, language.IsDefault))
+      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.LanguageId, Operators.IsEqualTo(language.LanguageId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
 
     Logger.LogSuccess(@event);
   }
