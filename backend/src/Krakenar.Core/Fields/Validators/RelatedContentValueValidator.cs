@@ -15,7 +15,7 @@ public class RelatedContentValueValidator : IFieldValueValidator
     Settings = settings;
   }
 
-  public async Task<ValidationResult> ValidateAsync(FieldValue fieldValue, string propertyName, CancellationToken cancellationToken)
+  public virtual async Task<ValidationResult> ValidateAsync(FieldValue fieldValue, string propertyName, CancellationToken cancellationToken)
   {
     string value = fieldValue.Value;
     IReadOnlyCollection<Guid>? contentIds = null;

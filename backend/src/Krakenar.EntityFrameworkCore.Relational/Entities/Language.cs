@@ -31,6 +31,7 @@ public sealed class Language : Aggregate, ISegregatedEntity
 
   public List<ContentLocale> ContentLocales { get; private set; } = [];
   public Dictionary? Dictionary { get; private set; }
+  public List<PublishedContent> PublishedContents { get; private set; } = [];
 
   public Language(Realm? realm, LanguageCreated @event) : base(@event)
   {

@@ -66,7 +66,7 @@ public class UserQuerier : IUserQuerier
 
     return streamIds.Select(streamId => new UserId(streamId)).ToList().AsReadOnly();
   }
-  public async Task<IReadOnlyCollection<UserId>> FindIdsAsync(RoleId roleId, CancellationToken cancellationToken)
+  public virtual async Task<IReadOnlyCollection<UserId>> FindIdsAsync(RoleId roleId, CancellationToken cancellationToken)
   {
     string[] streamIds = await Users.AsNoTracking()
       .Include(x => x.Roles)

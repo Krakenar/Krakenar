@@ -6,24 +6,25 @@ using Logitar.Net.Sms.Twilio;
 
 namespace Krakenar.Infrastructure.Messages.Providers.Twilio;
 
-internal class TwilioHandler : IMessageHandler
+public class TwilioHandler : IMessageHandler
 {
-  private readonly TwilioClient _client;
+  protected virtual TwilioClient Client { get; }
 
   public TwilioHandler(TwilioSettings settings)
   {
-    _client = new(settings.AccountSid, settings.AuthenticationToken);
+    Client = new(settings.AccountSid, settings.AuthenticationToken);
   }
 
-  public void Dispose()
+  public virtual void Dispose()
   {
-    _client.Dispose();
+    Client.Dispose();
+    GC.SuppressFinalize(this);
   }
 
-  public async Task<SendMailResult> SendAsync(Message message, CancellationToken cancellationToken)
+  public virtual async Task<SendMailResult> SendAsync(Message message, CancellationToken cancellationToken)
   {
     SmsMessage smsMessage = message.ToSmsMessage();
-    SendSmsResult result = await _client.SendAsync(smsMessage, cancellationToken);
+    SendSmsResult result = await Client.SendAsync(smsMessage, cancellationToken);
     return new SendMailResult(result.Succeeded, result.Data.ToDictionary());
   }
 }

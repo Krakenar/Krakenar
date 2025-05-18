@@ -55,6 +55,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<ILanguageService, LanguageClient>()
       .AddSingleton<IMessageService, MessageClient>()
       .AddSingleton<IOneTimePasswordService, OneTimePasswordClient>()
+      .AddSingleton<IPublishedContentService, PublishedContentClient>()
       .AddSingleton<IRealmService, RealmClient>()
       .AddSingleton<IRoleService, RoleClient>()
       .AddSingleton<ISenderService, SenderClient>()

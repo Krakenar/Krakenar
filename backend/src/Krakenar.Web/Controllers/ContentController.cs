@@ -20,7 +20,7 @@ public class ContentController : ControllerBase
   }
 
   [HttpPost]
-  public async Task<ActionResult<Content>> CreateAsync([FromBody] CreateContentPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Content>> CreateAsync([FromBody] CreateContentPayload payload, CancellationToken cancellationToken)
   {
     Content content = await ContentService.CreateAsync(payload, cancellationToken);
     Uri location = new($"{Request.Scheme}://{Request.Host}/api/contents/{content.Id}", UriKind.Absolute);
@@ -28,21 +28,35 @@ public class ContentController : ControllerBase
   }
 
   [HttpDelete("{id}")]
-  public async Task<ActionResult<Content>> DeleteAsync(Guid id, string? language, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Content>> DeleteAsync(Guid id, string? language, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.DeleteAsync(id, language, cancellationToken);
     return content is null ? NotFound() : Ok(content);
   }
 
+  [HttpPatch("{id}/publish/all")]
+  public virtual async Task<ActionResult<Content>> PublishAllAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.PublishAllAsync(id, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
+  [HttpPatch("{id}/publish")]
+  public virtual async Task<ActionResult<Content>> PublishAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.PublishAsync(id, language, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
   [HttpGet("{id}")]
-  public async Task<ActionResult<Content>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Content>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.ReadAsync(id, cancellationToken);
     return content is null ? NotFound() : Ok(content);
   }
 
   [HttpPut("{id}")]
-  public async Task<ActionResult<Content>> SaveLocaleAsync(Guid id, [FromBody] SaveContentLocalePayload payload, string? language, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Content>> SaveLocaleAsync(Guid id, [FromBody] SaveContentLocalePayload payload, string? language, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.SaveLocaleAsync(id, payload, language, cancellationToken);
     return content is null ? NotFound() : Ok(content);
@@ -56,8 +70,22 @@ public class ContentController : ControllerBase
     return Ok(contentLocales);
   }
 
+  [HttpPatch("{id}/unpublish/all")]
+  public virtual async Task<ActionResult<Content>> UnpublishAllAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.UnpublishAllAsync(id, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
+  [HttpPatch("{id}/unpublish")]
+  public virtual async Task<ActionResult<Content>> UnpublishAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.UnpublishAsync(id, language, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
+  }
+
   [HttpPatch("{id}")]
-  public async Task<ActionResult<Content>> UpdateLocaleAsync(Guid id, [FromBody] UpdateContentLocalePayload payload, string? language, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<Content>> UpdateLocaleAsync(Guid id, [FromBody] UpdateContentLocalePayload payload, string? language, CancellationToken cancellationToken)
   {
     Content? content = await ContentService.UpdateLocaleAsync(id, payload, language, cancellationToken);
     return content is null ? NotFound() : Ok(content);

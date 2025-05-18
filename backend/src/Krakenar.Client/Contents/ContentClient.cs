@@ -23,6 +23,18 @@ public class ContentClient : BaseClient, IContentService
     return (await DeleteAsync<Content>(uri, cancellationToken)).Value;
   }
 
+  public virtual async Task<Content?> PublishAllAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}/publish/all", UriKind.Relative);
+    return (await PatchAsync<Content>(uri, cancellationToken)).Value;
+  }
+
+  public virtual async Task<Content?> PublishAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}/publish?language={language}", UriKind.Relative);
+    return (await PatchAsync<Content>(uri, cancellationToken)).Value;
+  }
+
   public virtual async Task<Content?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
     Uri uri = new($"{Path}/{id}", UriKind.Relative);
@@ -45,6 +57,18 @@ public class ContentClient : BaseClient, IContentService
     Uri uri = new($"{Path}?{parameters.ToQueryString()}", UriKind.Relative);
     return (await GetAsync<SearchResults<ContentLocale>>(uri, cancellationToken)).Value
       ?? throw CreateInvalidApiResponseException(nameof(SearchLocalesAsync), HttpMethod.Get, uri);
+  }
+
+  public virtual async Task<Content?> UnpublishAllAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}/unpublish/all", UriKind.Relative);
+    return (await PatchAsync<Content>(uri, cancellationToken)).Value;
+  }
+
+  public virtual async Task<Content?> UnpublishAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}/unpublish?language={language}", UriKind.Relative);
+    return (await PatchAsync<Content>(uri, cancellationToken)).Value;
   }
 
   public virtual async Task<Content?> UpdateLocaleAsync(Guid id, UpdateContentLocalePayload payload, string? language, CancellationToken cancellationToken)

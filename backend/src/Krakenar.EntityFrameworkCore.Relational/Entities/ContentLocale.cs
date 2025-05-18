@@ -1,4 +1,5 @@
-﻿using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
+﻿using Krakenar.Core.Contents.Events;
+using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar;
 using Logitar.EventSourcing;
 
@@ -38,6 +39,13 @@ public sealed class ContentLocale
 
   public string? UpdatedBy { get; private set; }
   public DateTime UpdatedOn { get; private set; }
+
+  public bool IsPublished { get; private set; }
+  public long? PublishedVersion { get; private set; }
+  public string? PublishedBy { get; private set; }
+  public DateTime? PublishedOn { get; private set; }
+
+  public PublishedContent? PublishedContent { get; private set; }
 
   public ContentLocale(Content content, Language? language, Core.Contents.ContentLocale locale, DomainEvent @event)
   {
@@ -90,12 +98,41 @@ public sealed class ContentLocale
     {
       actorIds.Add(new ActorId(UpdatedBy));
     }
+    if (PublishedBy is not null)
+    {
+      actorIds.Add(new ActorId(PublishedBy));
+    }
     return actorIds.AsReadOnly();
   }
 
   public Dictionary<Guid, string> GetFieldValues()
   {
     return (FieldValues is null ? null : JsonSerializer.Deserialize<Dictionary<Guid, string>>(FieldValues)) ?? [];
+  }
+
+  public void Publish(ContentLocalePublished @event)
+  {
+    if (PublishedContent is null)
+    {
+      PublishedContent = new(this, @event);
+    }
+    else
+    {
+      PublishedContent.Update(this, @event);
+    }
+
+    IsPublished = true;
+    PublishedVersion = Version;
+    PublishedBy = @event.ActorId?.Value;
+    PublishedOn = @event.OccurredOn.AsUniversalTime();
+  }
+
+  public void Unpublish(ContentLocaleUnpublished _)
+  {
+    IsPublished = false;
+    PublishedVersion = null;
+    PublishedBy = null;
+    PublishedOn = null;
   }
 
   public void Update(Core.Contents.ContentLocale locale, DomainEvent @event)

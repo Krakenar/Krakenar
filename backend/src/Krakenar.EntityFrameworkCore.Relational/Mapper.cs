@@ -139,7 +139,11 @@ public sealed class Mapper
       CreatedBy = TryFindActor(source.CreatedBy) ?? _system,
       CreatedOn = source.CreatedOn.AsUniversalTime(),
       UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system,
-      UpdatedOn = source.UpdatedOn.AsUniversalTime()
+      UpdatedOn = source.UpdatedOn.AsUniversalTime(),
+      IsPublished = source.IsPublished,
+      PublishedVersion = source.PublishedVersion,
+      PublishedBy = TryFindActor(source.PublishedBy),
+      PublishedOn = source.PublishedOn?.AsUniversalTime()
     };
     destination.FieldValues.AddRange(source.GetFieldValues().Select(fieldValue => new FieldValue(fieldValue)));
 
@@ -460,6 +464,28 @@ public sealed class Mapper
     }
 
     MapAggregate(source, destination);
+
+    return destination;
+  }
+
+  public PublishedContentLocale ToPublishedContentLocale(Entities.PublishedContent source, PublishedContent content, Language? language)
+  {
+    PublishedContentLocale destination = new()
+    {
+      Content = content,
+      Language = language,
+      UniqueName = source.UniqueName,
+      DisplayName = source.DisplayName,
+      Description = source.Description,
+      Version = source.Version,
+      PublishedBy = TryFindActor(source.PublishedBy) ?? _system,
+      PublishedOn = source.PublishedOn.AsUniversalTime()
+    };
+
+    foreach (KeyValuePair<Guid, string> fieldValue in source.GetFieldValues())
+    {
+      destination.FieldValues.Add(new FieldValue(fieldValue));
+    }
 
     return destination;
   }

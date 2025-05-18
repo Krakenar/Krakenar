@@ -28,34 +28,34 @@ public class FieldTypeClient : BaseClient, IFieldTypeService
 
   public virtual async Task<FieldType?> ReadAsync(Guid? id, string? uniqueName, CancellationToken cancellationToken)
   {
-    Dictionary<Guid, FieldType> roles = new(capacity: 2);
+    Dictionary<Guid, FieldType> fieldTypes = new(capacity: 2);
 
     if (id.HasValue)
     {
       Uri uri = new($"{Path}/{id}", UriKind.Relative);
-      FieldType? role = (await GetAsync<FieldType>(uri, cancellationToken)).Value;
-      if (role is not null)
+      FieldType? fieldType = (await GetAsync<FieldType>(uri, cancellationToken)).Value;
+      if (fieldType is not null)
       {
-        roles[role.Id] = role;
+        fieldTypes[fieldType.Id] = fieldType;
       }
     }
 
     if (!string.IsNullOrWhiteSpace(uniqueName))
     {
       Uri uri = new($"{Path}/name:{uniqueName}", UriKind.Relative);
-      FieldType? role = (await GetAsync<FieldType>(uri, cancellationToken)).Value;
-      if (role is not null)
+      FieldType? fieldType = (await GetAsync<FieldType>(uri, cancellationToken)).Value;
+      if (fieldType is not null)
       {
-        roles[role.Id] = role;
+        fieldTypes[fieldType.Id] = fieldType;
       }
     }
 
-    if (roles.Count > 1)
+    if (fieldTypes.Count > 1)
     {
-      throw TooManyResultsException<FieldType>.ExpectedSingle(roles.Count);
+      throw TooManyResultsException<FieldType>.ExpectedSingle(fieldTypes.Count);
     }
 
-    return roles.SingleOrDefault().Value;
+    return fieldTypes.SingleOrDefault().Value;
   }
 
   public virtual async Task<SearchResults<FieldType>> SearchAsync(SearchFieldTypesPayload payload, CancellationToken cancellationToken)

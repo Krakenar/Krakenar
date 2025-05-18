@@ -2,8 +2,10 @@
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
 using Krakenar.Core.Realms;
+using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ICommand = Logitar.Data.ICommand;
 using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 
@@ -13,11 +15,13 @@ public class LanguageEvents : IEventHandler<LanguageCreated>, IEventHandler<Lang
 {
   protected virtual KrakenarContext Context { get; }
   protected virtual ILogger<LanguageEvents> Logger { get; }
+  protected virtual ISqlHelper SqlHelper { get; }
 
-  public LanguageEvents(KrakenarContext context, ILogger<LanguageEvents> logger)
+  public LanguageEvents(KrakenarContext context, ILogger<LanguageEvents> logger, ISqlHelper sqlHelper)
   {
     Context = context;
     Logger = logger;
+    SqlHelper = sqlHelper;
   }
 
   public virtual async Task HandleAsync(LanguageCreated @event, CancellationToken cancellationToken)
@@ -75,6 +79,12 @@ public class LanguageEvents : IEventHandler<LanguageCreated>, IEventHandler<Lang
 
     await Context.SaveChangesAsync(cancellationToken);
 
+    ICommand command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.PublishedContents.LanguageCode, language.CodeNormalized))
+      .Where(new OperatorCondition(KrakenarDb.PublishedContents.LanguageId, Operators.IsEqualTo(language.LanguageId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, [.. command.Parameters], cancellationToken);
+
     Logger.LogSuccess(@event);
   }
 
@@ -90,6 +100,12 @@ public class LanguageEvents : IEventHandler<LanguageCreated>, IEventHandler<Lang
     language.SetDefault(@event);
 
     await Context.SaveChangesAsync(cancellationToken);
+
+    ICommand command = SqlHelper.Update()
+      .Set(new Update(KrakenarDb.PublishedContents.LanguageIsDefault, language.IsDefault))
+      .Where(new OperatorCondition(KrakenarDb.PublishedContents.LanguageId, Operators.IsEqualTo(language.LanguageId)))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, [.. command.Parameters], cancellationToken);
 
     Logger.LogSuccess(@event);
   }

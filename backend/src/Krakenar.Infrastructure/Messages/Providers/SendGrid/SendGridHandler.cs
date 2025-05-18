@@ -5,24 +5,25 @@ using Logitar.Net.Mail.SendGrid;
 
 namespace Krakenar.Infrastructure.Messages.Providers.SendGrid;
 
-internal class SendGridHandler : IMessageHandler
+public class SendGridHandler : IMessageHandler
 {
-  private readonly SendGridClient _client;
+  protected virtual SendGridClient Client { get; }
 
   public SendGridHandler(SendGridSettings settings)
   {
-    _client = new(settings.ApiKey);
+    Client = new(settings.ApiKey);
   }
 
-  public void Dispose()
+  public virtual void Dispose()
   {
-    _client.Dispose();
+    Client.Dispose();
+    GC.SuppressFinalize(this);
   }
 
-  public async Task<SendMailResult> SendAsync(Message message, CancellationToken cancellationToken)
+  public virtual async Task<SendMailResult> SendAsync(Message message, CancellationToken cancellationToken)
   {
     MailMessage mailMessage = message.ToMailMessage();
-    SendMailResult result = await _client.SendAsync(mailMessage, cancellationToken);
+    SendMailResult result = await Client.SendAsync(mailMessage, cancellationToken);
     return result;
   }
 }
