@@ -125,7 +125,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content article = new(blogArticle, invariant, ActorId);
     article.SetLocale(language, invariant, ActorId);
     await _contentRepository.SaveAsync(article);
@@ -146,7 +146,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content article = new(blogArticle, invariant, ActorId);
     article.SetLocale(language, invariant, ActorId);
     await _contentRepository.SaveAsync(article);
@@ -165,7 +165,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content article = new(blogArticle, invariant, ActorId);
     article.SetLocale(language, invariant, ActorId);
     await _contentRepository.SaveAsync(article);
@@ -194,7 +194,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content article = new(blogArticle, invariant, ActorId);
     article.SetLocale(language, invariant, ActorId);
     await _contentRepository.SaveAsync(article);
@@ -231,7 +231,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content article = new(blogArticle, invariant, ActorId);
     await _contentRepository.SaveAsync(article);
 
@@ -274,12 +274,12 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync([blogCategory, blogArticle]);
 
-    Content softwareArchitecture = new(blogCategory, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "software-architecture"), null, null), ActorId);
-    Content cleanCode = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "the-clean-code"), null, null), ActorId);
-    Content onion = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "onion-architecture"), null, null), ActorId);
-    Content screaming = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "screaming-architecture"), null, null), ActorId);
-    Content hexagonal = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "hexagonal-architecture"), null, null), ActorId);
-    hexagonal.SetLocale(french, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "architecture-hexagonale"), null, null), ActorId);
+    Content softwareArchitecture = new(blogCategory, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "software-architecture")), ActorId);
+    Content cleanCode = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "the-clean-code")), ActorId);
+    Content onion = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "onion-architecture")), ActorId);
+    Content screaming = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "screaming-architecture")), ActorId);
+    Content hexagonal = new(blogArticle, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "hexagonal-architecture")), ActorId);
+    hexagonal.SetLocale(french, new ContentLocale(new UniqueName(Realm.UniqueNameSettings, "architecture-hexagonale")), ActorId);
     await _contentRepository.SaveAsync([softwareArchitecture, cleanCode, onion, screaming, hexagonal]);
 
     SearchContentLocalesPayload payload = new()
@@ -306,7 +306,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogCategory = new(new Identifier("BlogCategory"), isInvariant: true, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogCategory);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "architecture-logicielle"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "architecture-logicielle"));
     Content content = new(blogCategory, invariant, ActorId);
     await _contentRepository.SaveAsync(content);
 
@@ -330,9 +330,9 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content content = new(blogArticle, invariant, ActorId);
-    ContentLocale locale = new(new UniqueName(Realm.UniqueNameSettings, "software-architecture"), DisplayName: null, Description: null);
+    ContentLocale locale = new(new UniqueName(Realm.UniqueNameSettings, "software-architecture"));
     content.SetLocale(language, locale, ActorId);
     await _contentRepository.SaveAsync(content);
 
@@ -360,7 +360,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content article = new(blogArticle, invariant, ActorId);
     article.SetLocale(language, invariant, ActorId);
     await _contentRepository.SaveAsync(article);
@@ -397,7 +397,7 @@ public class ContentIntegrationTests : IntegrationTests
     ContentType blogArticle = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(blogArticle);
 
-    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"), DisplayName: null, Description: null);
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "the-clean-architecture"));
     Content article = new(blogArticle, invariant, ActorId);
     article.SetLocale(language, invariant, ActorId);
     await _contentRepository.SaveAsync(article);

@@ -141,6 +141,7 @@ public sealed class Mapper
       UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system,
       UpdatedOn = source.UpdatedOn.AsUniversalTime()
     };
+    destination.FieldValues.AddRange(source.GetFieldValues().Select(fieldValue => new FieldValue(fieldValue)));
 
     if (content is not null)
     {

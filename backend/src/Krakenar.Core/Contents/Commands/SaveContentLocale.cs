@@ -1,10 +1,13 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents.Validators;
 using Krakenar.Core.Localization;
 using ContentDto = Krakenar.Contracts.Contents.Content;
+using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
+using FieldValue = Krakenar.Core.Fields.FieldValue;
 
 namespace Krakenar.Core.Contents.Commands;
 
@@ -52,11 +55,12 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
       return null;
     }
 
+    ContentType contentType = await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
+      ?? throw new InvalidOperationException($"The content type 'Id={content.ContentTypeId}' was not loaded.");
+
     Language? language = null;
     if (!string.IsNullOrWhiteSpace(command.Language))
     {
-      ContentType contentType = await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
-        ?? throw new InvalidOperationException($"The content type 'Id={content.ContentTypeId}' was not loaded.");
       if (contentType.IsInvariant)
       {
         string errorMessage = $"'{nameof(command.Language)}' must be null. The content type is invariant.";
@@ -73,7 +77,37 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
     UniqueName uniqueName = new(uniqueNameSettings, payload.UniqueName);
     DisplayName? displayName = DisplayName.TryCreate(payload.DisplayName);
     Description? description = Description.TryCreate(payload.Description);
-    ContentLocale invariantOrLocale = new(uniqueName, displayName, description);
+
+    int capacity = payload.FieldValues.Count;
+    Dictionary<Guid, FieldValue> fieldValues = new(capacity);
+    Dictionary<int, string> missingFields = new(capacity);
+    for (int index = 0; index < capacity; index++)
+    {
+      FieldValuePayload fieldValue = payload.FieldValues[index];
+      FieldDefinition? field = contentType.ResolveField(fieldValue.Field);
+      if (field is null)
+      {
+        missingFields[index] = fieldValue.Field;
+      }
+      else if (!string.IsNullOrWhiteSpace(fieldValue.Value))
+      {
+        FieldValue value = new(fieldValue.Value);
+        fieldValues[field.Id] = value;
+      }
+    }
+    if (missingFields.Count > 0)
+    {
+      IEnumerable<ValidationFailure> failures = missingFields.Select(pair => new ValidationFailure
+      {
+        AttemptedValue = pair.Value,
+        ErrorCode = "FieldDefinitionValidator",
+        ErrorMessage = $"The field is not defined on content type '{contentType.DisplayName?.Value ?? contentType.UniqueName.Value}'.",
+        PropertyName = $"{nameof(payload.FieldValues)}[{pair.Key}].{nameof(FieldValuePayload.Field)}"
+      });
+      throw new ValidationException(failures);
+    }
+
+    ContentLocale invariantOrLocale = new(uniqueName, displayName, description, fieldValues.AsReadOnly());
     if (language is null)
     {
       content.SetInvariant(invariantOrLocale, ApplicationContext.ActorId);
@@ -83,7 +117,7 @@ public class SaveContentLocaleHandler : ICommandHandler<SaveContentLocale, Conte
       content.SetLocale(language, invariantOrLocale, ApplicationContext.ActorId);
     }
 
-    await ContentManager.SaveAsync(content, cancellationToken);
+    await ContentManager.SaveAsync(content, contentType, cancellationToken);
 
     return await ContentQuerier.ReadAsync(content, cancellationToken);
   }

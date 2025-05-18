@@ -1,5 +1,8 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Krakenar.Core.Contents.Events;
+using Krakenar.Core.Fields;
+using Krakenar.Core.Fields.Validators;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Realms;
 using Logitar.EventSourcing;
@@ -9,7 +12,7 @@ namespace Krakenar.Core.Contents;
 public interface IContentManager
 {
   Task<ContentType> FindAsync(string idOrUniqueName, string propertyName, CancellationToken cancellationToken = default);
-  Task SaveAsync(Content content, CancellationToken cancellationToken = default);
+  Task SaveAsync(Content content, ContentType? contentType = null, CancellationToken cancellationToken = default);
   Task SaveAsync(ContentType contentType, CancellationToken cancellationToken = default);
 }
 
@@ -20,19 +23,25 @@ public class ContentManager : IContentManager
   protected virtual IContentRepository ContentRepository { get; }
   protected virtual IContentTypeQuerier ContentTypeQuerier { get; }
   protected virtual IContentTypeRepository ContentTypeRepository { get; }
+  protected virtual IFieldTypeRepository FieldTypeRepository { get; }
+  protected virtual IFieldValueValidatorFactory FieldValueValidatorFactory { get; }
 
   public ContentManager(
     IApplicationContext applicationContext,
     IContentQuerier contentQuerier,
     IContentRepository contentRepository,
     IContentTypeQuerier contentTypeQuerier,
-    IContentTypeRepository contentTypeRepository)
+    IContentTypeRepository contentTypeRepository,
+    IFieldTypeRepository fieldTypeRepository,
+    IFieldValueValidatorFactory fieldValueValidatorFactory)
   {
     ApplicationContext = applicationContext;
     ContentQuerier = contentQuerier;
     ContentRepository = contentRepository;
     ContentTypeQuerier = contentTypeQuerier;
     ContentTypeRepository = contentTypeRepository;
+    FieldTypeRepository = fieldTypeRepository;
+    FieldValueValidatorFactory = fieldValueValidatorFactory;
   }
 
   public virtual async Task<ContentType> FindAsync(string idOrUniqueName, string propertyName, CancellationToken cancellationToken)
@@ -65,15 +74,14 @@ public class ContentManager : IContentManager
     return contentType ?? throw new ContentTypeNotFoundException(realmId, idOrUniqueName, propertyName);
   }
 
-  public virtual async Task SaveAsync(Content content, CancellationToken cancellationToken)
+  public virtual async Task SaveAsync(Content content, ContentType? contentType, CancellationToken cancellationToken)
   {
-    bool hasInvariantChanged = false;
-    HashSet<LanguageId> languageIds = [];
+    HashSet<LanguageId?> languageIds = [];
     foreach (IEvent @event in content.Changes)
     {
       if (@event is ContentCreated)
       {
-        hasInvariantChanged = true;
+        languageIds.Add(null);
       }
       else if (@event is ContentLocaleChanged changed)
       {
@@ -83,32 +91,84 @@ public class ContentManager : IContentManager
         }
         else
         {
-          hasInvariantChanged = true;
+          languageIds.Add(null);
         }
       }
     }
 
-    if (hasInvariantChanged)
+    if (languageIds.Count > 0)
     {
-      UniqueName uniqueName = content.Invariant.UniqueName;
-      ContentId? conflictId = await ContentQuerier.FindIdAsync(content.ContentTypeId, languageId: null, uniqueName, cancellationToken);
-      if (conflictId.HasValue && !conflictId.Value.Equals(content.Id))
-      {
-        throw new ContentUniqueNameAlreadyUsedException(content, languageId: null, conflictId.Value, uniqueName);
-      }
-    }
+      contentType ??= await ContentTypeRepository.LoadAsync(content.ContentTypeId, cancellationToken)
+        ?? throw new InvalidOperationException($"The content type 'Id={content.ContentTypeId}' was not loaded.");
 
-    foreach (LanguageId languageId in languageIds)
-    {
-      UniqueName uniqueName = content.FindLocale(languageId).UniqueName;
-      ContentId? conflictId = await ContentQuerier.FindIdAsync(content.ContentTypeId, languageId, uniqueName, cancellationToken);
-      if (conflictId.HasValue && !conflictId.Value.Equals(content.Id))
+      HashSet<FieldTypeId> fieldTypeIds = [.. contentType.Fields.Select(field => field.FieldTypeId)];
+      Dictionary<FieldTypeId, FieldType> fieldTypes = fieldTypeIds.Count == 0
+        ? []
+        : (await FieldTypeRepository.LoadAsync(fieldTypeIds, cancellationToken)).ToDictionary(x => x.Id, x => x);
+
+      foreach (LanguageId? languageId in languageIds)
       {
-        throw new ContentUniqueNameAlreadyUsedException(content, languageId, conflictId.Value, uniqueName);
+        ContentLocale locale = languageId.HasValue ? content.FindLocale(languageId.Value) : content.Invariant;
+        UniqueName uniqueName = locale.UniqueName;
+        ContentId? conflictId = await ContentQuerier.FindIdAsync(content.ContentTypeId, languageId, uniqueName, cancellationToken);
+        if (conflictId.HasValue && !conflictId.Value.Equals(content.Id))
+        {
+          throw new ContentUniqueNameAlreadyUsedException(content, languageId, conflictId.Value, uniqueName);
+        }
+
+        bool isInvariant = !languageId.HasValue;
+        await ValidateAsync(contentType, fieldTypes, isInvariant, locale, cancellationToken);
       }
     }
 
     await ContentRepository.SaveAsync(content, cancellationToken);
+  }
+  protected virtual async Task ValidateAsync(
+    ContentType contentType,
+    IReadOnlyDictionary<FieldTypeId, FieldType> fieldTypes,
+    bool isInvariant,
+    ContentLocale locale,
+    CancellationToken cancellationToken)
+  {
+    List<ValidationFailure> failures = [];
+
+    string propertyName = nameof(locale.FieldValues);
+    foreach (KeyValuePair<Guid, FieldValue> fieldValue in locale.FieldValues)
+    {
+      FieldDefinition? fieldDefinition = contentType.TryGetField(fieldValue.Key);
+      if (fieldDefinition is null)
+      {
+        string errorMessage = $"The field is not defined on content type '{contentType.DisplayName?.Value ?? contentType.UniqueName.Value}'.";
+        ValidationFailure failure = new(propertyName, errorMessage, fieldValue.Key)
+        {
+          ErrorCode = "FieldDefinitionValidator"
+        };
+        failures.Add(failure);
+      }
+      else if (fieldDefinition.IsInvariant != isInvariant)
+      {
+        string errorMessage = fieldDefinition.IsInvariant
+          ? "The field is defined as invariant, but saved in a localized content."
+          : "The field is defined as localized, but saved in an invariant content.";
+        ValidationFailure failure = new(propertyName, errorMessage, fieldValue.Key)
+        {
+          ErrorCode = "InvariantValidator"
+        };
+        failures.Add(failure);
+      }
+      else
+      {
+        FieldType fieldType = fieldTypes[fieldDefinition.FieldTypeId];
+        IFieldValueValidator validator = FieldValueValidatorFactory.Create(fieldType);
+        ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
+        failures.AddRange(result.Errors);
+      }
+    }
+
+    if (failures.Count > 0)
+    {
+      throw new ValidationException(failures);
+    }
   }
 
   public virtual async Task SaveAsync(ContentType contentType, CancellationToken cancellationToken)

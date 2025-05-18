@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts.Actors;
+using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Localization;
 
 namespace Krakenar.Contracts.Contents;
@@ -11,6 +12,8 @@ public record ContentLocale
   public string UniqueName { get; set; }
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
+
+  public List<FieldValue> FieldValues { get; set; } = [];
 
   public Actor CreatedBy { get; set; } = new();
   public DateTime CreatedOn { get; set; }

@@ -6,6 +6,7 @@ public interface IFieldTypeRepository
 {
   Task<FieldType?> LoadAsync(FieldTypeId id, CancellationToken cancellationToken = default);
   Task<FieldType?> LoadAsync(FieldTypeId id, long? version, CancellationToken cancellationToken = default);
+  Task<IReadOnlyCollection<FieldType>> LoadAsync(IEnumerable<FieldTypeId> ids, CancellationToken cancellationToken = default);
 
   Task SaveAsync(FieldType fieldType, CancellationToken cancellationToken = default);
   Task SaveAsync(IEnumerable<FieldType> fieldTypes, CancellationToken cancellationToken = default);
@@ -24,6 +25,10 @@ public class FieldTypeRepository : Repository, IFieldTypeRepository
   public virtual async Task<FieldType?> LoadAsync(FieldTypeId id, long? version, CancellationToken cancellationToken)
   {
     return await LoadAsync<FieldType>(id.StreamId, version, cancellationToken);
+  }
+  public virtual async Task<IReadOnlyCollection<FieldType>> LoadAsync(IEnumerable<FieldTypeId> ids, CancellationToken cancellationToken)
+  {
+    return await LoadAsync<FieldType>(ids.Select(id => id.StreamId), cancellationToken);
   }
 
   public virtual async Task SaveAsync(FieldType fieldType, CancellationToken cancellationToken)
