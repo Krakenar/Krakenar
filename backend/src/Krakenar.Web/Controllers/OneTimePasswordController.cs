@@ -19,7 +19,7 @@ public class OneTimePasswordController : ControllerBase
   }
 
   [HttpPost]
-  public async Task<ActionResult<OneTimePasswordDto>> CreateAsync([FromBody] CreateOneTimePasswordPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<OneTimePasswordDto>> CreateAsync([FromBody] CreateOneTimePasswordPayload payload, CancellationToken cancellationToken)
   {
     OneTimePasswordDto oneTimePassword = await OneTimePasswordService.CreateAsync(payload, cancellationToken);
     Uri location = new($"{Request.Scheme}://{Request.Host}/api/one-time-passwords/{oneTimePassword.Id}", UriKind.Absolute);
@@ -27,14 +27,14 @@ public class OneTimePasswordController : ControllerBase
   }
 
   [HttpGet("{id}")]
-  public async Task<ActionResult<OneTimePasswordDto>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<OneTimePasswordDto>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
     OneTimePasswordDto? oneTimePassword = await OneTimePasswordService.ReadAsync(id, cancellationToken);
     return oneTimePassword is null ? NotFound() : Ok(oneTimePassword);
   }
 
   [HttpPut("{id}")]
-  public async Task<ActionResult<OneTimePasswordDto>> ValidateAsync(Guid id, [FromBody] ValidateOneTimePasswordPayload payload, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<OneTimePasswordDto>> ValidateAsync(Guid id, [FromBody] ValidateOneTimePasswordPayload payload, CancellationToken cancellationToken)
   {
     OneTimePasswordDto? oneTimePassword = await OneTimePasswordService.ValidateAsync(id, payload, cancellationToken);
     return oneTimePassword is null ? NotFound() : Ok(oneTimePassword);
