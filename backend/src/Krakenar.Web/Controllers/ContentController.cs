@@ -34,6 +34,20 @@ public class ContentController : ControllerBase
     return content is null ? NotFound() : Ok(content);
   }
 
+  [HttpPatch("{id}/publish/all")]
+  public async Task<ActionResult<Content>> PublishAllAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.PublishAllAsync(id, cancellationToken);
+    return content == null ? NotFound() : Ok(content);
+  }
+
+  [HttpPatch("{id}/publish")]
+  public async Task<ActionResult<Content>> PublishAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.PublishAsync(id, language, cancellationToken);
+    return content == null ? NotFound() : Ok(content);
+  }
+
   [HttpGet("{id}")]
   public async Task<ActionResult<Content>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
@@ -54,6 +68,20 @@ public class ContentController : ControllerBase
     SearchContentLocalesPayload payload = parameters.ToPayload();
     SearchResults<ContentLocale> contentLocales = await ContentService.SearchLocalesAsync(payload, cancellationToken);
     return Ok(contentLocales);
+  }
+
+  [HttpPatch("{id}/unpublish/all")]
+  public async Task<ActionResult<Content>> UnpublishAllAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.UnpublishAllAsync(id, cancellationToken);
+    return content == null ? NotFound() : Ok(content);
+  }
+
+  [HttpPatch("{id}/unpublish")]
+  public async Task<ActionResult<Content>> UnpublishAsync(Guid id, string? language, CancellationToken cancellationToken)
+  {
+    Content? content = await ContentService.UnpublishAsync(id, language, cancellationToken);
+    return content == null ? NotFound() : Ok(content);
   }
 
   [HttpPatch("{id}")]

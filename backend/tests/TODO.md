@@ -20,12 +20,19 @@
 
 - CreateContent
 - CreateOrReplaceContentType
+- DeleteContent
 - DeleteContentType
+- PublishContent
+- SaveContentLocale
+- UnpublishContent
+- UpdateContentLocale
 - UpdateContentType
 
 ### Queries
 
+- ReadContent
 - ReadContentType
+- SearchContentLocales
 - SearchContentTypes
 
 ## Dictionaries
