@@ -29,6 +29,7 @@ using Krakenar.Core.Dictionaries.Queries;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Commands;
 using Krakenar.Core.Fields.Queries;
+using Krakenar.Core.Fields.Validators;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
@@ -90,7 +91,8 @@ public static class DependencyInjectionExtensions
       .AddKrakenarQueries()
       .AddKrakenarRepositories()
       .AddLogitarEventSourcing()
-      .AddSingleton<IAddressHelper, AddressHelper>();
+      .AddSingleton<IAddressHelper, AddressHelper>()
+      .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>();
   }
 
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)
