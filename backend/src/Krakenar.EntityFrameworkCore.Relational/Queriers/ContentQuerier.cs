@@ -27,6 +27,24 @@ public class ContentQuerier : IContentQuerier
     SqlHelper = sqlHelper;
   }
 
+  public async Task<IReadOnlyDictionary<Guid, Guid>> FindContentTypeIdsAsync(IEnumerable<Guid> contentIds, CancellationToken cancellationToken)
+  {
+    HashSet<Guid> distinctIds = [.. contentIds];
+
+    var associations = await Contents.AsNoTracking()
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.ContentType)
+      .Where(x => distinctIds.Contains(x.Id))
+      .Select(x => new
+      {
+        ContentId = x.Id,
+        ContentTypeId = x.ContentType!.Id
+      })
+      .ToArrayAsync(cancellationToken);
+
+    return associations.ToDictionary(x => x.ContentId, x => x.ContentTypeId);
+  }
+
   public virtual async Task<ContentId?> FindIdAsync(ContentTypeId contentTypeId, LanguageId? languageId, UniqueName uniqueName, CancellationToken cancellationToken)
   {
     string uniqueNameNormalized = Helper.Normalize(uniqueName);

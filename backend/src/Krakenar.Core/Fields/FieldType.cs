@@ -52,7 +52,8 @@ public class FieldType : AggregateRoot
   {
   }
 
-  public FieldType(UniqueName uniqueName, FieldTypeSettings settings, ActorId? actorId = null, FieldTypeId? fieldTypeId = null) : base(fieldTypeId?.StreamId)
+  public FieldType(UniqueName uniqueName, FieldTypeSettings settings, ActorId? actorId = null, FieldTypeId? fieldTypeId = null)
+    : base((fieldTypeId ?? FieldTypeId.NewId()).StreamId)
   {
     Raise(new FieldTypeCreated(uniqueName, settings.DataType), actorId);
     switch (settings.DataType)

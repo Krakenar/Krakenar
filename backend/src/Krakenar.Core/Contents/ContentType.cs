@@ -67,7 +67,8 @@ public class ContentType : AggregateRoot
   {
   }
 
-  public ContentType(Identifier uniqueName, bool isInvariant = false, ActorId? actorId = null, ContentTypeId? contentTypeId = null) : base(contentTypeId?.StreamId)
+  public ContentType(Identifier uniqueName, bool isInvariant = false, ActorId? actorId = null, ContentTypeId? contentTypeId = null)
+    : base((contentTypeId ?? ContentTypeId.NewId()).StreamId)
   {
     Raise(new ContentTypeCreated(isInvariant, uniqueName), actorId);
   }
