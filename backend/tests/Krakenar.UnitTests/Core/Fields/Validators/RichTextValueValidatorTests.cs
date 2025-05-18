@@ -57,6 +57,6 @@ public class RichTextValueValidatorTests
     Assert.NotNull(property);
 
     object? value = property.GetValue(instance);
-    return propertyValue == null ? value == null : propertyValue.Equals(value);
+    return propertyValue is null ? value is null : propertyValue.Equals(value);
   }
 }
