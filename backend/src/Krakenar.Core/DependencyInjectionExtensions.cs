@@ -171,6 +171,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ILanguageService, LanguageService>()
       .AddTransient<IMessageService, MessageService>()
       .AddTransient<IOneTimePasswordService, OneTimePasswordService>()
+      .AddTransient<IPublishedContentService, PublishedContentService>()
       .AddTransient<IRealmService, RealmService>()
       .AddTransient<IRoleService, RoleService>()
       .AddTransient<ISenderService, SenderService>()

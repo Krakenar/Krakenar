@@ -20,18 +20,26 @@ public class PublishedContentController : ControllerBase
   }
 
   [HttpGet("{id}")]
-  public virtual async Task<ActionResult<PublishedContent>> ReadAsync(Guid id, CancellationToken cancellationToken)
+  public virtual async Task<ActionResult<PublishedContent>> ReadAsync(string id, CancellationToken cancellationToken)
   {
-    PublishedContent? content = await PublishedContentService.ReadAsync(id, key: null, cancellationToken);
-    return content is not null ? NotFound() : Ok(content);
+    PublishedContent? content = null;
+    if (int.TryParse(id, out int integerId))
+    {
+      content = await PublishedContentService.ReadAsync(integerId, uid: null, key: null, cancellationToken);
+    }
+    else if (Guid.TryParse(id, out Guid uid))
+    {
+      content = await PublishedContentService.ReadAsync(id: null, uid, key: null, cancellationToken);
+    }
+    return content is null ? NotFound() : Ok(content);
   }
 
   [HttpGet("types/{contentType}/name:{uniqueName}")]
   public virtual async Task<ActionResult<PublishedContent>> ReadAsync(string contentType, string uniqueName, string? language, CancellationToken cancellationToken)
   {
     PublishedContentKey key = new(contentType, uniqueName, language);
-    PublishedContent? content = await PublishedContentService.ReadAsync(id: null, key, cancellationToken);
-    return content is not null ? NotFound() : Ok(content);
+    PublishedContent? content = await PublishedContentService.ReadAsync(id: null, uid: null, key, cancellationToken);
+    return content is null ? NotFound() : Ok(content);
   }
 
   [HttpGet]

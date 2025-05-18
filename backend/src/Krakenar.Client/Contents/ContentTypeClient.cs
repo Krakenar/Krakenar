@@ -28,34 +28,34 @@ public class ContentTypeClient : BaseClient, IContentTypeService
 
   public virtual async Task<ContentType?> ReadAsync(Guid? id, string? uniqueName, CancellationToken cancellationToken)
   {
-    Dictionary<Guid, ContentType> roles = new(capacity: 2);
+    Dictionary<Guid, ContentType> contentTypes = new(capacity: 2);
 
     if (id.HasValue)
     {
       Uri uri = new($"{Path}/{id}", UriKind.Relative);
-      ContentType? role = (await GetAsync<ContentType>(uri, cancellationToken)).Value;
-      if (role is not null)
+      ContentType? contentType = (await GetAsync<ContentType>(uri, cancellationToken)).Value;
+      if (contentType is not null)
       {
-        roles[role.Id] = role;
+        contentTypes[contentType.Id] = contentType;
       }
     }
 
     if (!string.IsNullOrWhiteSpace(uniqueName))
     {
       Uri uri = new($"{Path}/name:{uniqueName}", UriKind.Relative);
-      ContentType? role = (await GetAsync<ContentType>(uri, cancellationToken)).Value;
-      if (role is not null)
+      ContentType? contentType = (await GetAsync<ContentType>(uri, cancellationToken)).Value;
+      if (contentType is not null)
       {
-        roles[role.Id] = role;
+        contentTypes[contentType.Id] = contentType;
       }
     }
 
-    if (roles.Count > 1)
+    if (contentTypes.Count > 1)
     {
-      throw TooManyResultsException<ContentType>.ExpectedSingle(roles.Count);
+      throw TooManyResultsException<ContentType>.ExpectedSingle(contentTypes.Count);
     }
 
-    return roles.SingleOrDefault().Value;
+    return contentTypes.SingleOrDefault().Value;
   }
 
   public virtual async Task<SearchResults<ContentType>> SearchAsync(SearchContentTypesPayload payload, CancellationToken cancellationToken)
