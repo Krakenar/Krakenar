@@ -175,8 +175,6 @@ public class ContentManager : IContentManager
       }
       else
       {
-        // TODO(fpion): required fields
-
         FieldType fieldType = fieldTypes[fieldDefinition.FieldTypeId];
         IFieldValueValidator validator = FieldValueValidatorFactory.Create(fieldType);
         ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
