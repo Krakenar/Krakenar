@@ -21,6 +21,7 @@ public sealed class KrakenarContext : DbContext
   public DbSet<Dictionary> Dictionaries => Set<Dictionary>();
   public DbSet<DictionaryEntry> DictionaryEntries => Set<DictionaryEntry>();
   public DbSet<FieldDefinition> FieldDefinitions => Set<FieldDefinition>();
+  public DbSet<FieldIndex> FieldIndex => Set<FieldIndex>();
   public DbSet<FieldType> FieldTypes => Set<FieldType>();
   public DbSet<Language> Languages => Set<Language>();
   public DbSet<Message> Messages => Set<Message>();
@@ -32,6 +33,7 @@ public sealed class KrakenarContext : DbContext
   public DbSet<Sender> Senders => Set<Sender>();
   public DbSet<Session> Sessions => Set<Session>();
   public DbSet<Template> Templates => Set<Template>();
+  public DbSet<UniqueIndex> UniqueIndex => Set<UniqueIndex>();
   public DbSet<User> Users => Set<User>();
   public DbSet<UserIdentifier> UserIdentifiers => Set<UserIdentifier>();
   public DbSet<UserRole> UserRoles => Set<UserRole>();

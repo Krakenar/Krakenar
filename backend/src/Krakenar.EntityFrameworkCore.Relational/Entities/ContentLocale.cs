@@ -45,7 +45,9 @@ public sealed class ContentLocale
   public string? PublishedBy { get; private set; }
   public DateTime? PublishedOn { get; private set; }
 
+  public List<FieldIndex> FieldIndex { get; private set; } = [];
   public PublishedContent? PublishedContent { get; private set; }
+  public List<UniqueIndex> UniqueIndex { get; private set; } = [];
 
   public ContentLocale(Content content, Language? language, Core.Contents.ContentLocale locale, DomainEvent @event)
   {

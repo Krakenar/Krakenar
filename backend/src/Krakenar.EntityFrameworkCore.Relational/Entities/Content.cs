@@ -18,8 +18,10 @@ public sealed class Content : Aggregate, ISegregatedEntity
   public int ContentTypeId { get; private set; }
   public Guid ContentTypeUid { get; private set; }
 
+  public List<FieldIndex> FieldIndex { get; private set; } = [];
   public List<ContentLocale> Locales { get; private set; } = [];
   public List<PublishedContent> PublishedContents { get; private set; } = [];
+  public List<UniqueIndex> UniqueIndex { get; private set; } = [];
 
   public Content(ContentType contentType, ContentCreated @event) : base(@event)
   {
