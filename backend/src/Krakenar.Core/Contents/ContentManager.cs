@@ -117,7 +117,8 @@ public class ContentManager : IContentManager
         }
 
         bool isInvariant = !languageId.HasValue;
-        await ValidateAsync(contentType, fieldTypes, isInvariant, locale, cancellationToken);
+        bool isPublished = content.IsPublished(languageId);
+        await ValidateAsync(contentType, fieldTypes, isInvariant, isPublished, locale, cancellationToken);
       }
     }
 
@@ -127,12 +128,28 @@ public class ContentManager : IContentManager
     ContentType contentType,
     IReadOnlyDictionary<FieldTypeId, FieldType> fieldTypes,
     bool isInvariant,
+    bool isPublished,
     ContentLocale locale,
     CancellationToken cancellationToken)
   {
     List<ValidationFailure> failures = [];
-
     string propertyName = nameof(locale.FieldValues);
+
+    if (isPublished)
+    {
+      foreach (FieldDefinition fieldDefinition in contentType.Fields)
+      {
+        if (fieldDefinition.IsRequired && !locale.FieldValues.ContainsKey(fieldDefinition.Id))
+        {
+          ValidationFailure failure = new(propertyName, "The specified field is missing.", fieldDefinition.Id)
+          {
+            ErrorCode = "RequiredFieldValidator"
+          };
+          failures.Add(failure);
+        }
+      }
+    }
+
     foreach (KeyValuePair<Guid, FieldValue> fieldValue in locale.FieldValues)
     {
       FieldDefinition? fieldDefinition = contentType.TryGetField(fieldValue.Key);
@@ -158,6 +175,8 @@ public class ContentManager : IContentManager
       }
       else
       {
+        // TODO(fpion): required fields
+
         FieldType fieldType = fieldTypes[fieldDefinition.FieldTypeId];
         IFieldValueValidator validator = FieldValueValidatorFactory.Create(fieldType);
         ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
