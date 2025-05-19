@@ -17,7 +17,7 @@ public sealed class Session : Aggregate, ISegregatedEntity
 
   public User? User { get; private set; }
   public int UserId { get; private set; }
-  // TODO(fpion): UserUid
+  public Guid UserUid { get; private set; }
 
   public string? SecretHash { get; private set; }
   public bool IsPersistent
@@ -46,6 +46,7 @@ public sealed class Session : Aggregate, ISegregatedEntity
 
     User = user;
     UserId = user.UserId;
+    UserUid = user.Id;
 
     SecretHash = @event.Secret?.Encode();
   }

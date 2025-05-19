@@ -57,6 +57,7 @@ public sealed class FieldIndex : ISegregatedEntity
   public string? Tags { get; private set; }
 
   public FieldIndex(
+    Realm? realm,
     ContentType contentType,
     Language? language,
     FieldType fieldType,
@@ -66,6 +67,13 @@ public sealed class FieldIndex : ISegregatedEntity
     ContentStatus status,
     string value)
   {
+    if (realm is not null)
+    {
+      Realm = realm;
+      RealmId = realm.RealmId;
+      RealmUid = realm.Id;
+    }
+
     ContentType = contentType;
     ContentTypeId = contentType.ContentTypeId;
     ContentTypeUid = contentType.Id;

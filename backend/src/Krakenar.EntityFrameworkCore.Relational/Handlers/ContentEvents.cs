@@ -11,6 +11,7 @@ using FieldDefinitionEntity = Krakenar.EntityFrameworkCore.Relational.Entities.F
 using FieldIndexEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldIndex;
 using FieldTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldType;
 using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
+using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 using UniqueIndexEntity = Krakenar.EntityFrameworkCore.Relational.Entities.UniqueIndex;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
@@ -37,6 +38,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
     if (content is null)
     {
       ContentTypeEntity contentType = await Context.ContentTypes
+        .Include(x => x.Realm)
         .SingleOrDefaultAsync(x => x.StreamId == @event.ContentTypeId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The content type entity 'StreamId={@event.ContentTypeId}' could not be found.");
 
@@ -76,6 +78,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
   public virtual async Task HandleAsync(ContentLocaleChanged @event, CancellationToken cancellationToken)
   {
     ContentEntity? content = await Context.Contents
+      .Include(x => x.ContentType).ThenInclude(x => x!.Realm)
       .Include(x => x.Locales)
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
     if (content is null || content.Version != (@event.Version - 1))
@@ -110,6 +113,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
   {
     ContentEntity? content = await Context.Contents
       .Include(x => x.ContentType).ThenInclude(x => x!.FieldDefinitions).ThenInclude(x => x.FieldType)
+      .Include(x => x.ContentType).ThenInclude(x => x!.Realm)
       .Include(x => x.Locales).ThenInclude(x => x.Language)
       .Include(x => x.Locales).ThenInclude(x => x.PublishedContent)
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
@@ -192,6 +196,9 @@ public class ContentEvents : IEventHandler<ContentCreated>,
       ? (locale.Language ?? throw new ArgumentException("The language is required.", nameof(locale)))
       : null;
     ContentTypeEntity contentType = content.ContentType ?? throw new ArgumentException("The content type is required.", nameof(locale));
+    RealmEntity? realm = contentType.RealmId.HasValue
+      ? (contentType.Realm ?? throw new ArgumentException("The realm is required.", nameof(locale)))
+      : null;
     Dictionary<Guid, FieldDefinitionEntity> fieldDefinitions = contentType.FieldDefinitions.ToDictionary(x => x.Id, x => x);
 
     Dictionary<Guid, FieldIndexEntity> indexedFields = await Context.FieldIndex
@@ -233,7 +240,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
         }
         else
         {
-          indexedField = new(contentType, language, fieldType, fieldDefinition, content, locale, status, fieldValue.Value);
+          indexedField = new(realm, contentType, language, fieldType, fieldDefinition, content, locale, status, fieldValue.Value);
           indexedFields[fieldValue.Key] = indexedField;
 
           Context.FieldIndex.Add(indexedField);
@@ -248,7 +255,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
         }
         else
         {
-          uniqueField = new(contentType, language, fieldType, fieldDefinition, content, locale, status, fieldValue.Value);
+          uniqueField = new(realm, contentType, language, fieldType, fieldDefinition, content, locale, status, fieldValue.Value);
           uniqueFields[fieldValue.Key] = uniqueField;
 
           Context.UniqueIndex.Add(uniqueField);

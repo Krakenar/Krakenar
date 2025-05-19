@@ -12,11 +12,11 @@ public sealed class OneTimePassword : Aggregate, ISegregatedEntity
   public int? RealmId { get; private set; }
   public Guid? RealmUid { get; private set; }
 
+  public Guid Id { get; private set; }
+
   public User? User { get; private set; }
   public int? UserId { get; private set; }
-  // TODO(fpion): UserUid
-
-  public Guid Id { get; private set; } // TODO(fpion): before User
+  public Guid? UserUid { get; private set; }
 
   public string PasswordHash { get; private set; } = string.Empty;
 
@@ -38,6 +38,7 @@ public sealed class OneTimePassword : Aggregate, ISegregatedEntity
   {
     User = user;
     UserId = user.UserId;
+    UserUid = user.Id;
   }
   private OneTimePassword(OneTimePasswordCreated @event) : base(@event)
   {
