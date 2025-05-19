@@ -25,4 +25,5 @@ public static class Sessions
   public static readonly ColumnId SignedOutBy = new(nameof(Session.SignedOutBy), Table);
   public static readonly ColumnId SignedOutOn = new(nameof(Session.SignedOutOn), Table);
   public static readonly ColumnId UserId = new(nameof(Session.UserId), Table);
+  public static readonly ColumnId UserUid = new(nameof(Session.UserUid), Table);
 }

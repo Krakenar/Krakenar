@@ -17,6 +17,7 @@ public sealed class SessionConfiguration : AggregateConfiguration<Session>, IEnt
     builder.HasIndex(x => new { x.RealmId, x.Id }).IsUnique();
     builder.HasIndex(x => x.RealmUid);
     builder.HasIndex(x => x.Id);
+    builder.HasIndex(x => x.UserUid);
     builder.HasIndex(x => x.IsPersistent);
     builder.HasIndex(x => x.SignedOutBy);
     builder.HasIndex(x => x.SignedOutOn);

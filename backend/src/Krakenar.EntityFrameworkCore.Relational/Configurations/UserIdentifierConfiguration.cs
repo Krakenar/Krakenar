@@ -14,6 +14,7 @@ public sealed class UserIdentifierConfiguration : IdentifierConfiguration<UserId
     builder.HasKey(x => x.UserIdentifierId);
 
     builder.HasIndex(x => new { x.UserId, x.Key }).IsUnique();
+    builder.HasIndex(x => x.UserUid);
     builder.HasIndex(x => x.Key);
     builder.HasIndex(x => x.Value);
 

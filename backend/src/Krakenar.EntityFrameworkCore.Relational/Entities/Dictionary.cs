@@ -17,7 +17,7 @@ public sealed class Dictionary : Aggregate, ISegregatedEntity
 
   public Language? Language { get; private set; }
   public int LanguageId { get; private set; }
-  // TODO(fpion): LanguageUid
+  public Guid LanguageUid { get; private set; }
 
   public int EntryCount { get; private set; }
   public List<DictionaryEntry> Entries { get; private set; } = [];
@@ -30,8 +30,7 @@ public sealed class Dictionary : Aggregate, ISegregatedEntity
 
     Id = new DictionaryId(@event.StreamId).EntityId;
 
-    Language = language;
-    LanguageId = language.LanguageId;
+    SetLanguage(language);
   }
 
   private Dictionary() : base()
@@ -57,8 +56,13 @@ public sealed class Dictionary : Aggregate, ISegregatedEntity
   {
     Update(@event);
 
+    SetLanguage(language);
+  }
+  private void SetLanguage(Language language)
+  {
     Language = language;
     LanguageId = language.LanguageId;
+    LanguageUid = language.Id;
   }
 
   public void Update(DictionaryUpdated @event)

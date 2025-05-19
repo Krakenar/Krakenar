@@ -24,5 +24,6 @@ public static class OneTimePasswords
   public static readonly ColumnId RealmId = new(nameof(OneTimePassword.RealmId), Table);
   public static readonly ColumnId RealmUid = new(nameof(OneTimePassword.RealmUid), Table);
   public static readonly ColumnId UserId = new(nameof(OneTimePassword.UserId), Table);
+  public static readonly ColumnId UserUid = new(nameof(OneTimePassword.UserUid), Table);
   public static readonly ColumnId ValidationSucceededOn = new(nameof(OneTimePassword.ValidationSucceededOn), Table);
 }

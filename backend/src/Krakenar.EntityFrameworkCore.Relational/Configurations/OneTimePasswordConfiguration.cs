@@ -16,6 +16,7 @@ public sealed class OneTimePasswordConfiguration : AggregateConfiguration<OneTim
     builder.HasIndex(x => new { x.RealmId, x.Id }).IsUnique();
     builder.HasIndex(x => x.RealmUid);
     builder.HasIndex(x => x.Id);
+    builder.HasIndex(x => x.UserUid);
     builder.HasIndex(x => x.ExpiresOn);
     builder.HasIndex(x => x.MaximumAttempts);
     builder.HasIndex(x => x.AttemptCount);
