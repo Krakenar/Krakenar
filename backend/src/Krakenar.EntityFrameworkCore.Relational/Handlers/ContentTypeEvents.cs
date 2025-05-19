@@ -2,6 +2,7 @@
 using Krakenar.Core.Contents;
 using Krakenar.Core.Contents.Events;
 using Krakenar.Core.Realms;
+using Krakenar.EntityFrameworkCore.Relational.Entities;
 using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -114,6 +115,12 @@ public class ContentTypeEvents : IEventHandler<ContentTypeCreated>,
     FieldDefinitionEntity? fieldDefinition = contentType.RemoveField(@event);
     if (fieldDefinition is not null)
     {
+      FieldIndex[] fieldIndices = await Context.FieldIndex.Where(x => x.FieldDefinitionId == fieldDefinition.FieldDefinitionId).ToArrayAsync(cancellationToken);
+      Context.FieldIndex.RemoveRange(fieldIndices);
+
+      UniqueIndex[] uniqueIndices = await Context.UniqueIndex.Where(x => x.FieldDefinitionId == fieldDefinition.FieldDefinitionId).ToArrayAsync(cancellationToken);
+      Context.UniqueIndex.RemoveRange(uniqueIndices);
+
       Context.FieldDefinitions.Remove(fieldDefinition);
     }
 
