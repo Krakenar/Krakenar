@@ -16,7 +16,6 @@
 - ContentManager
 - ContentType
 - Published Content Integration Tests
-- Field Index Integration Tests
 
 ### Commands
 

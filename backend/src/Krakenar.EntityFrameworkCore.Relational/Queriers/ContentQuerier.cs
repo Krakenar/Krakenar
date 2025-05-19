@@ -73,6 +73,17 @@ public class ContentQuerier : IContentQuerier
 
     return streamIds.Select(streamId => new ContentId(streamId)).ToList().AsReadOnly();
   }
+  public virtual async Task<IReadOnlyCollection<ContentId>> FindIdsAsync(LanguageId languageId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await Contents
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.Locales).ThenInclude(x => x.Language)
+      .Where(x => x.Locales.Any(l => l.Language!.StreamId == languageId.Value))
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new ContentId(streamId)).ToList().AsReadOnly();
+  }
 
   public virtual async Task<ContentDto> ReadAsync(Content content, CancellationToken cancellationToken)
   {

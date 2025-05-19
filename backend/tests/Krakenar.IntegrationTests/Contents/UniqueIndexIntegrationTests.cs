@@ -177,7 +177,7 @@ public class UniqueIndexIntegrationTests : IntegrationTests
   }
 
   [Fact(DisplayName = "Removing field definitions should clear indices.")]
-  public async Task Given_FieldValues_When_FieldDefinitionRemoved_Then_IndicesClear()
+  public async Task Given_FieldValues_When_FieldDefinitionRemoved_Then_IndicesCleared()
   {
     Dictionary<Guid, FieldValue> fieldValues = new()
     {
