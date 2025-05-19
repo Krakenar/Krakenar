@@ -14,7 +14,7 @@ public static class UniqueIndex
   public static readonly ColumnId ContentTypeUid = new(nameof(Entities.UniqueIndex.ContentTypeUid), Table);
   public static readonly ColumnId ContentUid = new(nameof(Entities.UniqueIndex.ContentUid), Table);
   public static readonly ColumnId FieldDefinitionId = new(nameof(Entities.UniqueIndex.FieldDefinitionId), Table);
-  public static readonly ColumnId FieldDefinitionName = new(nameof(Entities.UniqueIndex.FieldTypeName), Table);
+  public static readonly ColumnId FieldDefinitionName = new(nameof(Entities.UniqueIndex.FieldDefinitionName), Table);
   public static readonly ColumnId FieldDefinitionUid = new(nameof(Entities.UniqueIndex.FieldDefinitionUid), Table);
   public static readonly ColumnId FieldTypeId = new(nameof(Entities.UniqueIndex.FieldTypeId), Table);
   public static readonly ColumnId FieldTypeName = new(nameof(Entities.UniqueIndex.FieldTypeName), Table);

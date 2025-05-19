@@ -181,6 +181,18 @@ public class ContentEvents : IEventHandler<ContentCreated>,
 
     await Context.SaveChangesAsync(cancellationToken);
 
+    ICommand command = SqlHelper.Delete(KrakenarDb.FieldIndex.Table)
+      .Where(new OperatorCondition(KrakenarDb.FieldIndex.ContentLocaleId, Operators.IsEqualTo(locale.ContentLocaleId)))
+      .Where(new OperatorCondition(KrakenarDb.FieldIndex.Status, Operators.IsEqualTo(ContentStatus.Published.ToString())))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
+    command = SqlHelper.Delete(KrakenarDb.UniqueIndex.Table)
+      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.ContentLocaleId, Operators.IsEqualTo(locale.ContentLocaleId)))
+      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.Status, Operators.IsEqualTo(ContentStatus.Published.ToString())))
+      .Build();
+    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+
     Logger.LogSuccess(@event);
   }
 

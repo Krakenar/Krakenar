@@ -14,7 +14,7 @@ public static class FieldIndex
   public static readonly ColumnId ContentTypeUid = new(nameof(Entities.FieldIndex.ContentTypeUid), Table);
   public static readonly ColumnId ContentUid = new(nameof(Entities.FieldIndex.ContentUid), Table);
   public static readonly ColumnId FieldDefinitionId = new(nameof(Entities.FieldIndex.FieldDefinitionId), Table);
-  public static readonly ColumnId FieldDefinitionName = new(nameof(Entities.FieldIndex.FieldTypeName), Table);
+  public static readonly ColumnId FieldDefinitionName = new(nameof(Entities.FieldIndex.FieldDefinitionName), Table);
   public static readonly ColumnId FieldDefinitionUid = new(nameof(Entities.FieldIndex.FieldDefinitionUid), Table);
   public static readonly ColumnId FieldIndexId = new(nameof(Entities.FieldIndex.FieldIndexId), Table);
   public static readonly ColumnId FieldTypeId = new(nameof(Entities.FieldIndex.FieldTypeId), Table);

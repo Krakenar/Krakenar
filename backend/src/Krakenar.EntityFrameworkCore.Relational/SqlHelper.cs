@@ -7,6 +7,7 @@ public interface ISqlHelper
 {
   IQueryBuilder ApplyTextSearch(IQueryBuilder builder, TextSearch search, params ColumnId[] columns);
 
+  IDeleteBuilder Delete(TableId table);
   IQueryBuilder Query(TableId table);
   IUpdateBuilder Update();
 }
@@ -48,6 +49,7 @@ public abstract class SqlHelper : ISqlHelper
   }
   protected virtual ConditionalOperator CreateOperator(string pattern) => Operators.IsLike(pattern);
 
+  public abstract IDeleteBuilder Delete(TableId table);
   public abstract IQueryBuilder Query(TableId table);
   public abstract IUpdateBuilder Update();
 }
