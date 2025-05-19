@@ -1,4 +1,5 @@
-﻿using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
+﻿using Logitar.EventSourcing;
+using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 
 namespace Krakenar.Core.Contents.Commands;
 
@@ -7,28 +8,50 @@ public record DeleteContentType(Guid Id) : ICommand<ContentTypeDto?>;
 public class DeleteContentTypeHandler : ICommandHandler<DeleteContentType, ContentTypeDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IContentQuerier ContentQuerier { get; }
+  protected virtual IContentRepository ContentRepository { get; }
   protected virtual IContentTypeQuerier ContentTypeQuerier { get; }
   protected virtual IContentTypeRepository ContentTypeRepository { get; }
 
-  public DeleteContentTypeHandler(IApplicationContext applicationContext, IContentTypeQuerier contentTypeQuerier, IContentTypeRepository contentTypeRepository)
+  public DeleteContentTypeHandler(
+    IApplicationContext applicationContext,
+    IContentQuerier contentQuerier,
+    IContentRepository contentRepository,
+    IContentTypeQuerier contentTypeQuerier,
+    IContentTypeRepository contentTypeRepository)
   {
     ApplicationContext = applicationContext;
+    ContentQuerier = contentQuerier;
+    ContentRepository = contentRepository;
     ContentTypeQuerier = contentTypeQuerier;
     ContentTypeRepository = contentTypeRepository;
   }
 
   public virtual async Task<ContentTypeDto?> HandleAsync(DeleteContentType command, CancellationToken cancellationToken)
   {
-    ContentTypeId roleId = new(command.Id, ApplicationContext.RealmId);
-    ContentType? role = await ContentTypeRepository.LoadAsync(roleId, cancellationToken);
-    if (role is null)
+    ContentTypeId contentTypeId = new(command.Id, ApplicationContext.RealmId);
+    ContentType? contentType = await ContentTypeRepository.LoadAsync(contentTypeId, cancellationToken);
+    if (contentType is null)
     {
       return null;
     }
-    ContentTypeDto dto = await ContentTypeQuerier.ReadAsync(role, cancellationToken);
+    ContentTypeDto dto = await ContentTypeQuerier.ReadAsync(contentType, cancellationToken);
 
-    role.Delete(ApplicationContext.ActorId);
-    await ContentTypeRepository.SaveAsync(role, cancellationToken);
+    ActorId? actorId = ApplicationContext.ActorId;
+
+    IReadOnlyCollection<ContentId> contentIds = await ContentQuerier.FindIdsAsync(contentType.Id, cancellationToken);
+    if (contentIds.Any())
+    {
+      IReadOnlyCollection<Content> contents = await ContentRepository.LoadAsync(contentIds, cancellationToken);
+      foreach (Content content in contents)
+      {
+        content.Delete(actorId);
+      }
+      await ContentRepository.SaveAsync(contents, cancellationToken);
+    }
+
+    contentType.Delete(actorId);
+    await ContentTypeRepository.SaveAsync(contentType, cancellationToken);
 
     return dto;
   }

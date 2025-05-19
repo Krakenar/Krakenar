@@ -3,9 +3,12 @@ using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Contents;
+using Krakenar.Core.Fields;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Content = Krakenar.Core.Contents.Content;
+using ContentLocale = Krakenar.Core.Contents.ContentLocale;
 using ContentType = Krakenar.Core.Contents.ContentType;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 
@@ -14,11 +17,13 @@ namespace Krakenar.Contents;
 [Trait(Traits.Category, Categories.Integration)]
 public class ContentTypeIntegrationTests : IntegrationTests
 {
+  private readonly IContentRepository _contentRepository;
   private readonly IContentTypeRepository _contentTypeRepository;
   private readonly IContentTypeService _contentTypeService;
 
   public ContentTypeIntegrationTests()
   {
+    _contentRepository = ServiceProvider.GetRequiredService<IContentRepository>();
     _contentTypeRepository = ServiceProvider.GetRequiredService<IContentTypeRepository>();
     _contentTypeService = ServiceProvider.GetRequiredService<IContentTypeService>();
   }
@@ -88,17 +93,23 @@ public class ContentTypeIntegrationTests : IntegrationTests
     Assert.Equal(payload.Description.Trim(), contentType.Description);
   }
 
-  [Fact(DisplayName = "It should delete an existing content type.")]
+  [Fact(DisplayName = "It should delete an existing content type and contents of this type.")]
   public async Task Given_ContentType_When_Delete_Then_Deleted()
   {
     ContentType contentType = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
     await _contentTypeRepository.SaveAsync(contentType);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "my-first-article"), null, null, new Dictionary<Guid, FieldValue>());
+    Content content = new(contentType, invariant, ActorId);
+    await _contentRepository.SaveAsync(content);
 
     ContentTypeDto? dto = await _contentTypeService.DeleteAsync(contentType.EntityId);
     Assert.NotNull(dto);
     Assert.Equal(contentType.EntityId, dto.Id);
 
     Assert.Empty(await KrakenarContext.ContentTypes.AsNoTracking().Where(x => x.StreamId == contentType.Id.Value).ToArrayAsync());
+
+    Assert.Empty(await KrakenarContext.Contents.AsNoTracking().Where(x => x.StreamId == content.Id.Value).ToArrayAsync());
   }
 
   [Fact(DisplayName = "It should read the content type by ID.")]

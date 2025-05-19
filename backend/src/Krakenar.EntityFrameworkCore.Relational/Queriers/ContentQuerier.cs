@@ -62,6 +62,18 @@ public class ContentQuerier : IContentQuerier
     return streamId is null ? null : new ContentId(streamId);
   }
 
+  public virtual async Task<IReadOnlyCollection<ContentId>> FindIdsAsync(ContentTypeId contentTypeId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await Contents
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.ContentType)
+      .Where(x => x.ContentType!.StreamId == contentTypeId.Value)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new ContentId(streamId)).ToList().AsReadOnly();
+  }
+
   public virtual async Task<ContentDto> ReadAsync(Content content, CancellationToken cancellationToken)
   {
     return await ReadAsync(content.Id, cancellationToken) ?? throw new InvalidOperationException($"The content entity 'StreamId={content.Id}' could not be found.");

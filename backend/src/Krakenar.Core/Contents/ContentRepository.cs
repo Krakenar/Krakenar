@@ -6,6 +6,7 @@ public interface IContentRepository
 {
   Task<Content?> LoadAsync(ContentId id, CancellationToken cancellationToken = default);
   Task<Content?> LoadAsync(ContentId id, long? version, CancellationToken cancellationToken = default);
+  Task<IReadOnlyCollection<Content>> LoadAsync(IEnumerable<ContentId> ids, CancellationToken cancellationToken = default);
 
   Task SaveAsync(Content content, CancellationToken cancellationToken = default);
   Task SaveAsync(IEnumerable<Content> contents, CancellationToken cancellationToken = default);
@@ -24,6 +25,10 @@ public class ContentRepository : Repository, IContentRepository
   public virtual async Task<Content?> LoadAsync(ContentId id, long? version, CancellationToken cancellationToken)
   {
     return await LoadAsync<Content>(id.StreamId, version, cancellationToken);
+  }
+  public virtual async Task<IReadOnlyCollection<Content>> LoadAsync(IEnumerable<ContentId> ids, CancellationToken cancellationToken)
+  {
+    return await LoadAsync<Content>(ids.Select(id => id.StreamId), cancellationToken);
   }
 
   public virtual async Task SaveAsync(Content content, CancellationToken cancellationToken)
