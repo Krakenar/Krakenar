@@ -59,6 +59,10 @@ public class SignInSessionHandler : ICommandHandler<SignInSession, SessionDto>
 
     FoundUsers users = await UserManager.FindAsync(payload.UniqueName, cancellationToken);
     User user = users.ByUniqueName ?? users.ByEmailAddress ?? throw new UserNotFoundException(realmId, payload.UniqueName, nameof(payload.UniqueName));
+    if (ApplicationContext.RequireConfirmedAccount && !user.IsConfirmed)
+    {
+      throw new UserIsNotConfirmedException(user);
+    }
 
     ActorId? actorId = ApplicationContext.ActorId;
 

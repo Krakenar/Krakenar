@@ -35,6 +35,7 @@ public class SessionClientE2ETests : E2ETests
     Guid id = Guid.Parse("ff9543de-0651-4813-9bda-3ff69bfe3049");
     CreateOrReplaceUserPayload createOrReplaceUser = new("admin")
     {
+      Email = new EmailPayload(_faker.Person.Email, isVerified: true),
       Password = new ChangePasswordPayload(PasswordString),
       IsDisabled = false
     };

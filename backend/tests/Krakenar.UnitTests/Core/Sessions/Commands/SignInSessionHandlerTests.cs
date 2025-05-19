@@ -72,6 +72,8 @@ public class SignInSessionHandlerTests
   [Fact(DisplayName = "It should create a new persistent session.")]
   public async Task Given_Persistent_When_HandleAsync_Then_SessionCreated()
   {
+    _applicationContext.SetupGet(x => x.RequireConfirmedAccount).Returns(true);
+
     ActorId actorId = ActorId.NewId();
     _applicationContext.SetupGet(x => x.ActorId).Returns(actorId);
 
@@ -151,6 +153,26 @@ public class SignInSessionHandlerTests
     Assert.Equal("Session", exception.EntityType);
     Assert.Equal(payload.Id.Value, exception.EntityId);
     Assert.Equal("Id", exception.PropertyName);
+  }
+
+  [Fact(DisplayName = "It should throw UserIsNotConfirmedException when the user is not confirmed.")]
+  public async Task Given_UserNotConfirmed_When_HandleAsync_Then_UserIsNotConfirmedException()
+  {
+    _applicationContext.SetupGet(x => x.RequireConfirmedAccount).Returns(true);
+
+    ActorId actorId = ActorId.NewId();
+    _applicationContext.SetupGet(x => x.ActorId).Returns(actorId);
+
+    RealmId realmId = RealmId.NewId();
+    _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
+
+    User user = new(_user.UniqueName, new Base64Password(Password), actorId, UserId.NewId(realmId));
+    _userManager.Setup(x => x.FindAsync(user.UniqueName.Value, _cancellationToken)).ReturnsAsync(new FoundUsers(null, user, null, null));
+
+    SignInSession command = new(new SignInSessionPayload(user.UniqueName.Value, "invalid"));
+    var exception = await Assert.ThrowsAsync<UserIsNotConfirmedException>(async () => await _handler.HandleAsync(command, _cancellationToken));
+    Assert.Equal(realmId.ToGuid(), exception.RealmId);
+    Assert.Equal(user.EntityId, exception.UserId);
   }
 
   [Fact(DisplayName = "It should throw UserNotFoundException when the user was not found.")]
