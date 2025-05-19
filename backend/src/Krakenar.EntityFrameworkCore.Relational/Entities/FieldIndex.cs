@@ -11,6 +11,8 @@ public sealed class FieldIndex
 
   public int FieldIndexId { get; private set; }
 
+  // TODO(fpion): Realm?
+
   public ContentType? ContentType { get; private set; }
   public int ContentTypeId { get; private set; }
   public Guid ContentTypeUid { get; private set; }

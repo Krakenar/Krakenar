@@ -11,6 +11,8 @@ public sealed class UniqueIndex
 
   public int UniqueIndexId { get; private set; }
 
+  // TODO(fpion): Realm?
+
   public ContentType? ContentType { get; private set; }
   public int ContentTypeId { get; private set; }
   public Guid ContentTypeUid { get; private set; }
