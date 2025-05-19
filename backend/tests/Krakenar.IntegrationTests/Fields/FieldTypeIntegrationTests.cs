@@ -2,12 +2,14 @@
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Search;
 using Krakenar.Core;
+using Krakenar.Core.Contents;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Settings;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using BooleanSettingsDto = Krakenar.Contracts.Fields.Settings.BooleanSettings;
+using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
 using FieldType = Krakenar.Core.Fields.FieldType;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
@@ -23,11 +25,13 @@ namespace Krakenar.Fields;
 [Trait(Traits.Category, Categories.Integration)]
 public class FieldTypeIntegrationTests : IntegrationTests
 {
+  private readonly IContentTypeRepository _contentTypeRepository;
   private readonly IFieldTypeRepository _fieldTypeRepository;
   private readonly IFieldTypeService _fieldTypeService;
 
   public FieldTypeIntegrationTests()
   {
+    _contentTypeRepository = ServiceProvider.GetRequiredService<IContentTypeRepository>();
     _fieldTypeRepository = ServiceProvider.GetRequiredService<IFieldTypeRepository>();
     _fieldTypeService = ServiceProvider.GetRequiredService<IFieldTypeService>();
   }
@@ -103,7 +107,7 @@ public class FieldTypeIntegrationTests : IntegrationTests
     Assert.Equal(payload.RichText, fieldType.RichText);
   }
 
-  [Fact(DisplayName = "It should delete an existing field type.")]
+  [Fact(DisplayName = "It should delete an existing field type and associated field definitions.")]
   public async Task Given_FieldType_When_Delete_Then_Deleted()
   {
     UniqueName uniqueName = new(Realm.UniqueNameSettings, "Birthdate");
@@ -111,11 +115,18 @@ public class FieldTypeIntegrationTests : IntegrationTests
     FieldType fieldType = new(uniqueName, settings, ActorId, FieldTypeId.NewId(Realm.Id));
     await _fieldTypeRepository.SaveAsync(fieldType);
 
+    ContentType contentType = new(new Identifier("Person"), isInvariant: true, ActorId, ContentTypeId.NewId(Realm.Id));
+    FieldDefinition field = new(Guid.NewGuid(), fieldType.Id, true, false, true, false, new Identifier("Birthdate"), null, null, null);
+    contentType.SetField(field, ActorId);
+    await _contentTypeRepository.SaveAsync(contentType);
+
     FieldTypeDto? dto = await _fieldTypeService.DeleteAsync(fieldType.EntityId);
     Assert.NotNull(dto);
     Assert.Equal(fieldType.EntityId, dto.Id);
 
     Assert.Empty(await KrakenarContext.FieldTypes.AsNoTracking().Where(x => x.StreamId == fieldType.Id.Value).ToArrayAsync());
+
+    Assert.Empty(await KrakenarContext.FieldDefinitions.AsNoTracking().Where(x => x.FieldTypeUid == fieldType.EntityId).ToArrayAsync());
   }
 
   [Fact(DisplayName = "It should read the field type by ID.")]
