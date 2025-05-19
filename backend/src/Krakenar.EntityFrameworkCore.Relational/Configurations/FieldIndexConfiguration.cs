@@ -16,6 +16,7 @@ public sealed class FieldIndexConfiguration : IEntityTypeConfiguration<FieldInde
     builder.ToTable(KrakenarDb.FieldIndex.Table.Table ?? string.Empty, KrakenarDb.FieldIndex.Table.Schema);
     builder.HasKey(x => x.FieldIndexId);
 
+    builder.HasIndex(x => x.RealmUid);
     builder.HasIndex(x => x.ContentTypeId);
     builder.HasIndex(x => x.ContentTypeUid);
     builder.HasIndex(x => x.ContentTypeName);
@@ -49,6 +50,9 @@ public sealed class FieldIndexConfiguration : IEntityTypeConfiguration<FieldInde
     builder.Property(x => x.ContentLocaleName).HasMaxLength(UniqueName.MaximumLength);
     builder.Property(x => x.String).HasMaxLength(FieldIndex.MaximumLength);
 
+    builder.HasOne(x => x.Realm).WithMany(x => x.FieldIndex)
+      .HasPrincipalKey(x => x.RealmId).HasForeignKey(x => x.RealmId)
+      .OnDelete(DeleteBehavior.Restrict);
     builder.HasOne(x => x.ContentType).WithMany(x => x.FieldIndex)
       .HasPrincipalKey(x => x.ContentTypeId).HasForeignKey(x => x.ContentTypeId)
       .OnDelete(DeleteBehavior.Cascade);

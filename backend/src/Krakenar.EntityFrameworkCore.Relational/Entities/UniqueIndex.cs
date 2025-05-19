@@ -1,17 +1,20 @@
 ﻿using Krakenar.Core.Contents;
+using Krakenar.Core.Fields;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public sealed class UniqueIndex
+public sealed class UniqueIndex : ISegregatedEntity
 {
   public const char KeySeparator = '|';
   public const int MaximumLength = byte.MaxValue;
 
   public int UniqueIndexId { get; private set; }
 
-  // TODO(fpion): Realm?
+  public Realm? Realm { get; private set; }
+  public int? RealmId { get; private set; }
+  public Guid? RealmUid { get; private set; }
 
   public ContentType? ContentType { get; private set; }
   public int ContentTypeId { get; private set; }
@@ -110,7 +113,7 @@ public sealed class UniqueIndex
   {
   }
 
-  public static string CreateKey(KeyValuePair<Guid, string> fieldValue) => CreateKey(fieldValue.Key, fieldValue.Value);
+  public static string CreateKey(KeyValuePair<Guid, FieldValue> fieldValue) => CreateKey(fieldValue.Key, fieldValue.Value.Value);
   public static string CreateKey(Guid fieldDefinitionId, string value) => string.Join(KeySeparator,
     Convert.ToBase64String(fieldDefinitionId.ToByteArray()).TrimEnd('='),
     Helper.Normalize(value));

@@ -16,6 +16,7 @@ public sealed class UniqueIndexConfiguration : IEntityTypeConfiguration<UniqueIn
     builder.ToTable(KrakenarDb.UniqueIndex.Table.Table ?? string.Empty, KrakenarDb.UniqueIndex.Table.Schema);
     builder.HasKey(x => x.UniqueIndexId);
 
+    builder.HasIndex(x => x.RealmUid);
     builder.HasIndex(x => x.ContentTypeId);
     builder.HasIndex(x => x.ContentTypeUid);
     builder.HasIndex(x => x.ContentTypeName);
@@ -50,6 +51,9 @@ public sealed class UniqueIndexConfiguration : IEntityTypeConfiguration<UniqueIn
     builder.Property(x => x.Key).HasMaxLength(UniqueIndex.MaximumLength + 22 + 1); // NOTE(fpion): 22 base64 characters in a Guid and 1 separator character.
     builder.Property(x => x.ContentLocaleName).HasMaxLength(UniqueName.MaximumLength);
 
+    builder.HasOne(x => x.Realm).WithMany(x => x.UniqueIndex)
+      .HasPrincipalKey(x => x.RealmId).HasForeignKey(x => x.RealmId)
+      .OnDelete(DeleteBehavior.Restrict);
     builder.HasOne(x => x.ContentType).WithMany(x => x.UniqueIndex)
       .HasPrincipalKey(x => x.ContentTypeId).HasForeignKey(x => x.ContentTypeId)
       .OnDelete(DeleteBehavior.Cascade);

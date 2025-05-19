@@ -5,13 +5,15 @@ using Logitar;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public sealed class FieldIndex
+public sealed class FieldIndex : ISegregatedEntity
 {
   public const int MaximumLength = byte.MaxValue;
 
   public int FieldIndexId { get; private set; }
 
-  // TODO(fpion): Realm?
+  public Realm? Realm { get; private set; }
+  public int? RealmId { get; private set; }
+  public Guid? RealmUid { get; private set; }
 
   public ContentType? ContentType { get; private set; }
   public int ContentTypeId { get; private set; }
