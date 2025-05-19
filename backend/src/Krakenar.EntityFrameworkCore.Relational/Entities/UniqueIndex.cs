@@ -62,6 +62,7 @@ public sealed class UniqueIndex : ISegregatedEntity
   public string ContentLocaleName { get; private set; } = string.Empty;
 
   public UniqueIndex(
+    Realm? realm,
     ContentType contentType,
     Language? language,
     FieldType fieldType,
@@ -71,6 +72,13 @@ public sealed class UniqueIndex : ISegregatedEntity
     ContentStatus status,
     string value)
   {
+    if (realm is not null)
+    {
+      Realm = realm;
+      RealmId = realm.RealmId;
+      RealmUid = realm.Id;
+    }
+
     ContentType = contentType;
     ContentTypeId = contentType.ContentTypeId;
     ContentTypeUid = contentType.Id;
