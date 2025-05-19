@@ -43,6 +43,9 @@ public sealed class FieldDefinition
   public string? UpdatedBy { get; private set; }
   public DateTime UpdatedOn { get; private set; }
 
+  public List<FieldIndex> FieldIndex { get; private set; } = [];
+  public List<UniqueIndex> UniqueIndex { get; private set; } = [];
+
   public FieldDefinition(ContentType contentType, FieldType fieldType, ContentTypeFieldChanged @event)
   {
     ContentType = contentType;

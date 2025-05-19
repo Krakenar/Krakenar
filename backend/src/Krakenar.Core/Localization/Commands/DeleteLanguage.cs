@@ -1,4 +1,5 @@
-﻿using Krakenar.Core.Dictionaries;
+﻿using Krakenar.Core.Contents;
+using Krakenar.Core.Dictionaries;
 using Logitar.EventSourcing;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 
@@ -9,6 +10,8 @@ public record DeleteLanguage(Guid Id) : ICommand<LanguageDto?>;
 public class DeleteLanguageHandler : ICommandHandler<DeleteLanguage, LanguageDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IContentQuerier ContentQuerier { get; }
+  protected virtual IContentRepository ContentRepository { get; }
   protected virtual IDictionaryQuerier DictionaryQuerier { get; }
   protected virtual IDictionaryRepository DictionaryRepository { get; }
   protected virtual ILanguageQuerier LanguageQuerier { get; }
@@ -16,12 +19,16 @@ public class DeleteLanguageHandler : ICommandHandler<DeleteLanguage, LanguageDto
 
   public DeleteLanguageHandler(
     IApplicationContext applicationContext,
+    IContentQuerier contentQuerier,
+    IContentRepository contentRepository,
     IDictionaryQuerier dictionaryQuerier,
     IDictionaryRepository dictionaryRepository,
     ILanguageQuerier languageQuerier,
     ILanguageRepository languageRepository)
   {
     ApplicationContext = applicationContext;
+    ContentQuerier = contentQuerier;
+    ContentRepository = contentRepository;
     DictionaryQuerier = dictionaryQuerier;
     DictionaryRepository = dictionaryRepository;
     LanguageQuerier = languageQuerier;
@@ -51,6 +58,17 @@ public class DeleteLanguageHandler : ICommandHandler<DeleteLanguage, LanguageDto
         ?? throw new InvalidOperationException($"The dictionary 'Id={dictionaryId}' was not loaded.");
       dictionary.Delete(actorId);
       await DictionaryRepository.SaveAsync(dictionary, cancellationToken);
+    }
+
+    IReadOnlyCollection<ContentId> contentIds = await ContentQuerier.FindIdsAsync(language.Id, cancellationToken);
+    if (contentIds.Count > 0)
+    {
+      IReadOnlyCollection<Content> contents = await ContentRepository.LoadAsync(contentIds, cancellationToken);
+      foreach (Content content in contents)
+      {
+        content.RemoveLocale(language, actorId);
+      }
+      await ContentRepository.SaveAsync(contents, cancellationToken);
     }
 
     language.Delete(actorId);

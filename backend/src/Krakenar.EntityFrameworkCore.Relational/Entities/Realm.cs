@@ -40,6 +40,7 @@ public sealed class Realm : Aggregate
   public List<Content> Contents { get; private set; } = [];
   public List<ContentType> ContentTypes { get; private set; } = [];
   public List<Dictionary> Dictionaries { get; private set; } = [];
+  public List<FieldIndex> FieldIndex { get; private set; } = [];
   public List<FieldType> FieldTypes { get; private set; } = [];
   public List<Language> Languages { get; private set; } = [];
   public List<Message> Messages { get; private set; } = [];
@@ -48,6 +49,7 @@ public sealed class Realm : Aggregate
   public List<Sender> Senders { get; private set; } = [];
   public List<Session> Sessions { get; private set; } = [];
   public List<Template> Templates { get; private set; } = [];
+  public List<UniqueIndex> UniqueIndex { get; private set; } = [];
   public List<User> Users { get; private set; } = [];
   public List<UserIdentifier> UserIdentifiers { get; private set; } = [];
 

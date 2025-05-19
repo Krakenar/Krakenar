@@ -45,7 +45,9 @@ public sealed class ContentLocale
   public string? PublishedBy { get; private set; }
   public DateTime? PublishedOn { get; private set; }
 
+  public List<FieldIndex> FieldIndex { get; private set; } = [];
   public PublishedContent? PublishedContent { get; private set; }
+  public List<UniqueIndex> UniqueIndex { get; private set; } = [];
 
   public ContentLocale(Content content, Language? language, Core.Contents.ContentLocale locale, DomainEvent @event)
   {
@@ -112,6 +114,8 @@ public sealed class ContentLocale
 
   public void Publish(ContentLocalePublished @event)
   {
+    Update(@event);
+
     if (PublishedContent is null)
     {
       PublishedContent = new(this, @event);
@@ -135,19 +139,24 @@ public sealed class ContentLocale
     PublishedOn = null;
   }
 
+  public void Update(DomainEvent @event)
+  {
+    Version = @event.Version;
+
+    UpdatedBy = @event.ActorId?.Value;
+    UpdatedOn = @event.OccurredOn.AsUniversalTime();
+  }
+
   public void Update(Core.Contents.ContentLocale locale, DomainEvent @event)
   {
+    Update(@event);
+
     UniqueName = locale.UniqueName.Value;
     DisplayName = locale.DisplayName?.Value;
     Description = locale.Description?.Value;
 
     Dictionary<Guid, string> fieldValues = locale.FieldValues.ToDictionary(x => x.Key, x => x.Value.Value);
     FieldValues = fieldValues.Count < 1 ? null : JsonSerializer.Serialize(fieldValues);
-
-    Version = @event.Version;
-
-    UpdatedBy = @event.ActorId?.Value;
-    UpdatedOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public override bool Equals(object? obj) => obj is ContentLocale locale && locale.ContentLocaleId == ContentLocaleId;

@@ -15,6 +15,7 @@
 - Content
 - ContentManager
 - ContentType
+- Published Content Integration Tests
 
 ### Commands
 

@@ -18,7 +18,7 @@ public class PublishedContentQuerier : IPublishedContentQuerier
   protected virtual DbSet<Entities.PublishedContent> PublishedContents { get; }
   protected virtual ISqlHelper SqlHelper { get; }
 
-  public PublishedContentQuerier(IActorService actorService, KrakenarContext context, SqlHelper sqlHelper)
+  public PublishedContentQuerier(IActorService actorService, KrakenarContext context, ISqlHelper sqlHelper)
   {
     ActorService = actorService;
     PublishedContents = context.PublishedContents;

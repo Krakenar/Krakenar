@@ -31,6 +31,8 @@ public class FieldType : Aggregate, ISegregatedEntity
   public string? Settings { get; private set; }
 
   public List<FieldDefinition> FieldDefinitions { get; private set; } = [];
+  public List<FieldIndex> FieldIndex { get; private set; } = [];
+  public List<UniqueIndex> UniqueIndex { get; private set; } = [];
 
   public FieldType(Realm? realm, FieldTypeCreated @event) : base(@event)
   {

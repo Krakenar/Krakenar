@@ -5,7 +5,6 @@ using Krakenar.Core.Realms;
 using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using ICommand = Logitar.Data.ICommand;
 using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 
@@ -79,11 +78,17 @@ public class LanguageEvents : IEventHandler<LanguageCreated>, IEventHandler<Lang
 
     await Context.SaveChangesAsync(cancellationToken);
 
-    ICommand command = SqlHelper.Update()
-      .Set(new Update(KrakenarDb.PublishedContents.LanguageCode, language.CodeNormalized))
-      .Where(new OperatorCondition(KrakenarDb.PublishedContents.LanguageId, Operators.IsEqualTo(language.LanguageId)))
-      .Build();
-    await Context.Database.ExecuteSqlRawAsync(command.Text, [.. command.Parameters], cancellationToken);
+    await Context.PublishedContents
+      .Where(x => x.LanguageId == language.LanguageId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.LanguageCode, language.CodeNormalized), cancellationToken);
+
+    await Context.FieldIndex
+      .Where(x => x.LanguageId == language.LanguageId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.LanguageCode, language.CodeNormalized), cancellationToken);
+
+    await Context.UniqueIndex
+      .Where(x => x.LanguageId == language.LanguageId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.LanguageCode, language.CodeNormalized), cancellationToken);
 
     Logger.LogSuccess(@event);
   }
@@ -101,11 +106,17 @@ public class LanguageEvents : IEventHandler<LanguageCreated>, IEventHandler<Lang
 
     await Context.SaveChangesAsync(cancellationToken);
 
-    ICommand command = SqlHelper.Update()
-      .Set(new Update(KrakenarDb.PublishedContents.LanguageIsDefault, language.IsDefault))
-      .Where(new OperatorCondition(KrakenarDb.PublishedContents.LanguageId, Operators.IsEqualTo(language.LanguageId)))
-      .Build();
-    await Context.Database.ExecuteSqlRawAsync(command.Text, [.. command.Parameters], cancellationToken);
+    await Context.PublishedContents
+      .Where(x => x.LanguageId == language.LanguageId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.LanguageIsDefault, language.IsDefault), cancellationToken);
+
+    await Context.FieldIndex
+      .Where(x => x.LanguageId == language.LanguageId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.LanguageIsDefault, language.IsDefault), cancellationToken);
+
+    await Context.UniqueIndex
+      .Where(x => x.LanguageId == language.LanguageId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.LanguageIsDefault, language.IsDefault), cancellationToken);
 
     Logger.LogSuccess(@event);
   }

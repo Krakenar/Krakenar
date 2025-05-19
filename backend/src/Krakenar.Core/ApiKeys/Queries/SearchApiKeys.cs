@@ -10,9 +10,9 @@ public class SearchApiKeysHandler : IQueryHandler<SearchApiKeys, SearchResults<A
 {
   protected virtual IApiKeyQuerier ApiKeyQuerier { get; }
 
-  public SearchApiKeysHandler(IApiKeyQuerier roleQuerier)
+  public SearchApiKeysHandler(IApiKeyQuerier apiKeyQuerier)
   {
-    ApiKeyQuerier = roleQuerier;
+    ApiKeyQuerier = apiKeyQuerier;
   }
 
   public virtual async Task<SearchResults<ApiKeyDto>> HandleAsync(SearchApiKeys query, CancellationToken cancellationToken)

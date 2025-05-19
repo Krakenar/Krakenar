@@ -10,9 +10,9 @@ public class SearchFieldTypesHandler : IQueryHandler<SearchFieldTypes, SearchRes
 {
   protected virtual IFieldTypeQuerier FieldTypeQuerier { get; }
 
-  public SearchFieldTypesHandler(IFieldTypeQuerier roleQuerier)
+  public SearchFieldTypesHandler(IFieldTypeQuerier fieldTypeQuerier)
   {
-    FieldTypeQuerier = roleQuerier;
+    FieldTypeQuerier = fieldTypeQuerier;
   }
 
   public virtual async Task<SearchResults<FieldTypeDto>> HandleAsync(SearchFieldTypes query, CancellationToken cancellationToken)

@@ -2,6 +2,7 @@
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Events;
 using Krakenar.Core.Realms;
+using Logitar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using FieldTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldType;
@@ -213,6 +214,14 @@ public class FieldTypeEvents : IEventHandler<FieldTypeBooleanSettingsChanged>,
     fieldType.SetUniqueName(@event);
 
     await Context.SaveChangesAsync(cancellationToken);
+
+    await Context.FieldIndex
+      .Where(x => x.FieldTypeId == fieldType.FieldTypeId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.FieldTypeName, fieldType.UniqueNameNormalized), cancellationToken);
+
+    await Context.UniqueIndex
+      .Where(x => x.FieldTypeId == fieldType.FieldTypeId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.FieldTypeName, fieldType.UniqueNameNormalized), cancellationToken);
 
     Logger.LogSuccess(@event);
   }

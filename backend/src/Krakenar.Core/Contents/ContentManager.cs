@@ -116,9 +116,8 @@ public class ContentManager : IContentManager
           throw new ContentUniqueNameAlreadyUsedException(content, languageId, conflictId.Value, uniqueName);
         }
 
-        bool isInvariant = !languageId.HasValue;
         bool isPublished = content.IsPublished(languageId);
-        await ValidateAsync(contentType, fieldTypes, isInvariant, isPublished, locale, cancellationToken);
+        await ValidateAsync(contentType, fieldTypes, content.Id, languageId, isPublished, locale, cancellationToken);
       }
     }
 
@@ -127,7 +126,8 @@ public class ContentManager : IContentManager
   protected virtual async Task ValidateAsync(
     ContentType contentType,
     IReadOnlyDictionary<FieldTypeId, FieldType> fieldTypes,
-    bool isInvariant,
+    ContentId contentId,
+    LanguageId? languageId,
     bool isPublished,
     ContentLocale locale,
     CancellationToken cancellationToken)
@@ -150,6 +150,8 @@ public class ContentManager : IContentManager
       }
     }
 
+    bool isInvariant = !languageId.HasValue;
+    Dictionary<Guid, FieldValue> uniqueValues = new(capacity: locale.FieldValues.Count);
     foreach (KeyValuePair<Guid, FieldValue> fieldValue in locale.FieldValues)
     {
       FieldDefinition? fieldDefinition = contentType.TryGetField(fieldValue.Key);
@@ -179,6 +181,21 @@ public class ContentManager : IContentManager
         IFieldValueValidator validator = FieldValueValidatorFactory.Create(fieldType);
         ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
         failures.AddRange(result.Errors);
+
+        if (fieldDefinition.IsUnique)
+        {
+          uniqueValues[fieldDefinition.Id] = fieldValue.Value;
+        }
+      }
+    }
+
+    if (uniqueValues.Count > 0)
+    {
+      ContentStatus status = isPublished ? ContentStatus.Published : ContentStatus.Latest;
+      IReadOnlyDictionary<Guid, ContentId> conflicts = await ContentQuerier.FindConflictsAsync(contentType.Id, languageId, status, uniqueValues, contentId, cancellationToken);
+      if (conflicts.Count > 0)
+      {
+        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName);
       }
     }
 

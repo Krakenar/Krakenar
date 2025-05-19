@@ -3,6 +3,7 @@ using Krakenar.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(KrakenarContext))]
-    partial class KrakenarContextModelSnapshot : ModelSnapshot
+    [Migration("20250518210940_AddIndicesTables")]
+    partial class AddIndicesTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -907,12 +910,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<double?>("Number")
                         .HasColumnType("float");
 
-                    b.Property<int?>("RealmId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("RealmUid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("RelatedContent")
                         .HasColumnType("nvarchar(max)");
 
@@ -978,10 +975,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("LanguageUid");
 
                     b.HasIndex("Number");
-
-                    b.HasIndex("RealmId");
-
-                    b.HasIndex("RealmUid");
 
                     b.HasIndex("Status");
 
@@ -2271,12 +2264,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<Guid?>("LanguageUid")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("RealmId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("RealmUid")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -2332,10 +2319,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("LanguageIsDefault");
 
                     b.HasIndex("LanguageUid");
-
-                    b.HasIndex("RealmId");
-
-                    b.HasIndex("RealmUid");
 
                     b.HasIndex("Status");
 
@@ -2894,11 +2877,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
-                        .WithMany("FieldIndex")
-                        .HasForeignKey("RealmId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Content");
 
                     b.Navigation("ContentLocale");
@@ -2910,8 +2888,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("FieldType");
 
                     b.Navigation("Language");
-
-                    b.Navigation("Realm");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", b =>
@@ -3112,11 +3088,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
-                        .WithMany("UniqueIndex")
-                        .HasForeignKey("RealmId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.Navigation("Content");
 
                     b.Navigation("ContentLocale");
@@ -3128,8 +3099,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("FieldType");
 
                     b.Navigation("Language");
-
-                    b.Navigation("Realm");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.User", b =>
@@ -3261,8 +3230,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.Navigation("Dictionaries");
 
-                    b.Navigation("FieldIndex");
-
                     b.Navigation("FieldTypes");
 
                     b.Navigation("Languages");
@@ -3278,8 +3245,6 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Sessions");
 
                     b.Navigation("Templates");
-
-                    b.Navigation("UniqueIndex");
 
                     b.Navigation("UserIdentifiers");
 

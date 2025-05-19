@@ -1,6 +1,8 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Localization;
 using Krakenar.Contracts.Search;
+using Krakenar.Core;
+using Krakenar.Core.Contents;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Localization;
 using Logitar;
@@ -15,6 +17,8 @@ namespace Krakenar.Localization;
 [Trait(Traits.Category, Categories.Integration)]
 public class LanguageIntegrationTests : IntegrationTests
 {
+  private readonly IContentRepository _contentRepository;
+  private readonly IContentTypeRepository _contentTypeRepository;
   private readonly IDictionaryRepository _dictionaryRepository;
   private readonly ILanguageRepository _languageRepository;
   private readonly ILanguageService _languageService;
@@ -23,6 +27,8 @@ public class LanguageIntegrationTests : IntegrationTests
 
   public LanguageIntegrationTests() : base()
   {
+    _contentRepository = ServiceProvider.GetRequiredService<IContentRepository>();
+    _contentTypeRepository = ServiceProvider.GetRequiredService<IContentTypeRepository>();
     _dictionaryRepository = ServiceProvider.GetRequiredService<IDictionaryRepository>();
     _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
     _languageService = ServiceProvider.GetRequiredService<ILanguageService>();
@@ -62,11 +68,20 @@ public class LanguageIntegrationTests : IntegrationTests
     Assert.Equal(payload.Locale, language.Locale.Code);
   }
 
-  [Fact(DisplayName = "It should delete the language.")]
+  [Fact(DisplayName = "It should delete the language and its associated dictionary and contents.")]
   public async Task Given_Language_When_Delete_Then_Deleted()
   {
     Dictionary dictionary = new(_language, ActorId, DictionaryId.NewId(Realm.Id));
     await _dictionaryRepository.SaveAsync(dictionary);
+
+    ContentType contentType = new(new Identifier("BlogArticle"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync(contentType);
+
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, "my-blog-article"));
+    Content content = new(contentType, invariant, ActorId);
+    ContentLocale locale = new(new UniqueName(Realm.UniqueNameSettings, "mon-article-de-blogue"));
+    content.SetLocale(_language, locale, ActorId);
+    await _contentRepository.SaveAsync(content);
 
     LanguageDto? language = await _languageService.DeleteAsync(_language.EntityId);
     Assert.NotNull(language);
@@ -74,6 +89,7 @@ public class LanguageIntegrationTests : IntegrationTests
 
     Assert.Empty(await KrakenarContext.Languages.AsNoTracking().Where(x => x.StreamId == _language.Id.Value).ToArrayAsync());
     Assert.Empty(await KrakenarContext.Dictionaries.AsNoTracking().Include(x => x.Language).Where(x => x.Language!.StreamId == _language.Id.Value).ToArrayAsync());
+    Assert.Empty(await KrakenarContext.ContentLocales.AsNoTracking().Include(x => x.Language).Where(x => x.Language!.StreamId == _language.Id.Value).ToArrayAsync());
   }
 
   [Fact(DisplayName = "It should read the language by ID.")]
