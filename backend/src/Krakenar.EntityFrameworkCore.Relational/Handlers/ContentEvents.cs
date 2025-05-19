@@ -10,7 +10,6 @@ using ContentTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Conte
 using FieldDefinitionEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldDefinition;
 using FieldIndexEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldIndex;
 using FieldTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldType;
-using ICommand = Logitar.Data.ICommand;
 using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;
 using UniqueIndexEntity = Krakenar.EntityFrameworkCore.Relational.Entities.UniqueIndex;
 
@@ -25,13 +24,11 @@ public class ContentEvents : IEventHandler<ContentCreated>,
 {
   protected virtual KrakenarContext Context { get; }
   protected virtual ILogger<ContentTypeEvents> Logger { get; }
-  protected virtual ISqlHelper SqlHelper { get; }
 
-  public ContentEvents(KrakenarContext context, ILogger<ContentTypeEvents> logger, ISqlHelper sqlHelper)
+  public ContentEvents(KrakenarContext context, ILogger<ContentTypeEvents> logger)
   {
     Context = context;
     Logger = logger;
-    SqlHelper = sqlHelper;
   }
 
   public virtual async Task HandleAsync(ContentCreated @event, CancellationToken cancellationToken)
@@ -96,17 +93,13 @@ public class ContentEvents : IEventHandler<ContentCreated>,
 
     await Context.SaveChangesAsync(cancellationToken);
 
-    ICommand command = SqlHelper.Update()
-      .Set(new Update(KrakenarDb.FieldIndex.ContentLocaleName, locale.UniqueNameNormalized))
-      .Where(new OperatorCondition(KrakenarDb.FieldIndex.ContentLocaleId, Operators.IsEqualTo(locale.ContentLocaleId)))
-      .Build();
-    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+    await Context.FieldIndex
+      .Where(x => x.ContentLocaleId == locale.ContentLocaleId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.ContentLocaleName, locale.UniqueNameNormalized), cancellationToken);
 
-    command = SqlHelper.Update()
-      .Set(new Update(KrakenarDb.UniqueIndex.ContentLocaleName, locale.UniqueNameNormalized))
-      .Where(new OperatorCondition(KrakenarDb.UniqueIndex.ContentLocaleId, Operators.IsEqualTo(locale.ContentLocaleId)))
-      .Build();
-    await Context.Database.ExecuteSqlRawAsync(command.Text, command.Parameters.ToArray(), cancellationToken);
+    await Context.UniqueIndex
+      .Where(x => x.ContentLocaleId == locale.ContentLocaleId)
+      .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.ContentLocaleName, locale.UniqueNameNormalized), cancellationToken);
 
     await UpdateIndicesAsync(locale, ContentStatus.Latest, cancellationToken);
 
