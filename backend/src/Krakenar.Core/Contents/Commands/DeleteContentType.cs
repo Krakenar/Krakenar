@@ -40,7 +40,7 @@ public class DeleteContentTypeHandler : ICommandHandler<DeleteContentType, Conte
     ActorId? actorId = ApplicationContext.ActorId;
 
     IReadOnlyCollection<ContentId> contentIds = await ContentQuerier.FindIdsAsync(contentType.Id, cancellationToken);
-    if (contentIds.Any())
+    if (contentIds.Count > 0)
     {
       IReadOnlyCollection<Content> contents = await ContentRepository.LoadAsync(contentIds, cancellationToken);
       foreach (Content content in contents)
