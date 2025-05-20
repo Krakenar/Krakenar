@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Settings;
+using Krakenar.Core.Contents;
 using Krakenar.Core.Fields.Settings;
 using Krakenar.Core.Fields.Validators;
 using Logitar.EventSourcing;
@@ -10,6 +11,7 @@ namespace Krakenar.Core.Fields.Commands;
 
 public record UpdateFieldType(Guid Id, UpdateFieldTypePayload Payload) : ICommand<FieldTypeDto?>;
 
+/// <exception cref="ContentTypeNotFoundException"></exception>
 /// <exception cref="UniqueNameAlreadyUsedException"></exception>
 /// <exception cref="ValidationException"></exception>
 public class UpdateFieldTypeHandler : ICommandHandler<UpdateFieldType, FieldTypeDto?>

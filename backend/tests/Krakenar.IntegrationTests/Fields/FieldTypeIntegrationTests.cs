@@ -12,6 +12,7 @@ using BooleanSettingsDto = Krakenar.Contracts.Fields.Settings.BooleanSettings;
 using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
 using FieldType = Krakenar.Core.Fields.FieldType;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
+using FieldTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldType;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 using NumberSettingsDto = Krakenar.Contracts.Fields.Settings.NumberSettings;
 using RelatedContentSettingsDto = Krakenar.Contracts.Fields.Settings.RelatedContentSettings;
@@ -187,11 +188,15 @@ public class FieldTypeIntegrationTests : IntegrationTests
     Assert.Equal(payload.Number, dto.Number);
   }
 
-  [Fact(DisplayName = "It should replace an existing field tppe from reference.")]
+  [Fact(DisplayName = "It should replace an existing field type from reference.")]
   public async Task Given_Version_When_CreateOrReplace_Then_Replaced()
   {
+    ContentType blogCategory = new(new Identifier("BlogCategory"), isInvariant: true, ActorId, ContentTypeId.NewId(Realm.Id));
+    ContentType blogAuthor = new(new Identifier("BlogAuthor"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync([blogCategory, blogAuthor]);
+
     UniqueName uniqueName = new(Realm.UniqueNameSettings, "Author");
-    RelatedContentSettings oldSettings = new(Guid.Empty, isMultiple: false);
+    RelatedContentSettings oldSettings = new(blogCategory.EntityId, isMultiple: false);
     FieldType fieldType = new(uniqueName, oldSettings, ActorId, FieldTypeId.NewId(Realm.Id));
 
     long version = fieldType.Version;
@@ -200,10 +205,19 @@ public class FieldTypeIntegrationTests : IntegrationTests
     fieldType.Description = description;
     fieldType.Update(ActorId);
 
-    RelatedContentSettings newSettings = new(Guid.NewGuid(), isMultiple: true);
+    RelatedContentSettings newSettings = new(blogAuthor.EntityId, isMultiple: true);
     fieldType.SetSettings(newSettings, ActorId);
 
     await _fieldTypeRepository.SaveAsync(fieldType);
+
+    FieldTypeEntity? entity = await KrakenarContext.FieldTypes.AsNoTracking()
+      .Include(x => x.RelatedContentType)
+      .SingleOrDefaultAsync(x => x.StreamId == fieldType.Id.Value);
+    Assert.NotNull(entity);
+    Assert.NotNull(entity.RelatedContentType);
+    Assert.Equal(entity.RelatedContentTypeId, entity.RelatedContentType.ContentTypeId);
+    Assert.Equal(entity.RelatedContentTypeUid, entity.RelatedContentType.Id);
+    Assert.Equal(blogAuthor.Id.Value, entity.RelatedContentType.StreamId);
 
     CreateOrReplaceFieldTypePayload payload = new()
     {
@@ -259,6 +273,19 @@ public class FieldTypeIntegrationTests : IntegrationTests
 
     FieldTypeDto fieldType = Assert.Single(results.Items);
     Assert.Equal(title.EntityId, fieldType.Id);
+  }
+
+  [Fact(DisplayName = "It should throw ContentTypeNotFoundException when the related content type was not found.")]
+  public async Task Given_RelatedContentTypeNotFound_When_Save_Then_ContentTypeNotFoundException()
+  {
+    CreateOrReplaceFieldTypePayload payload = new("TalentList")
+    {
+      RelatedContent = new RelatedContentSettingsDto(Guid.NewGuid(), isMultiple: true)
+    };
+    var exception = await Assert.ThrowsAsync<ContentTypeNotFoundException>(async () => await _fieldTypeService.CreateOrReplaceAsync(payload));
+    Assert.Equal(Realm.Id.ToGuid(), exception.RealmId);
+    Assert.Equal(payload.RelatedContent.ContentTypeId.ToString(), exception.ContentType);
+    Assert.Equal("RelatedContent.ContentTypeId", exception.PropertyName);
   }
 
   [Fact(DisplayName = "It should throw TooManyResultsException when multiple field types were read.")]

@@ -4,6 +4,7 @@ using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Fields;
+using Krakenar.Core.Fields.Settings;
 using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,12 +21,14 @@ public class ContentTypeIntegrationTests : IntegrationTests
   private readonly IContentRepository _contentRepository;
   private readonly IContentTypeRepository _contentTypeRepository;
   private readonly IContentTypeService _contentTypeService;
+  private readonly IFieldTypeRepository _fieldTypeRepository;
 
   public ContentTypeIntegrationTests()
   {
     _contentRepository = ServiceProvider.GetRequiredService<IContentRepository>();
     _contentTypeRepository = ServiceProvider.GetRequiredService<IContentTypeRepository>();
     _contentTypeService = ServiceProvider.GetRequiredService<IContentTypeService>();
+    _fieldTypeRepository = ServiceProvider.GetRequiredService<IFieldTypeRepository>();
   }
 
   public override async Task InitializeAsync()
@@ -110,6 +113,77 @@ public class ContentTypeIntegrationTests : IntegrationTests
     Assert.Empty(await KrakenarContext.ContentTypes.AsNoTracking().Where(x => x.StreamId == contentType.Id.Value).ToArrayAsync());
 
     Assert.Empty(await KrakenarContext.Contents.AsNoTracking().Where(x => x.StreamId == content.Id.Value).ToArrayAsync());
+  }
+
+  [Fact(DisplayName = "It should delete an existing content type and remove related field definitions.")]
+  public async Task Given_RelatedContentType_When_Delete_Then_FieldDefinitionsRemoved()
+  {
+    ContentType specialization = new(new Identifier("Specialization"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    ContentType talent = new(new Identifier("Talent"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+    await _contentTypeRepository.SaveAsync([specialization, talent]);
+
+    FieldType requiredTalent = new(
+      new UniqueName(Realm.UniqueNameSettings, "RequiredTalent"),
+      new RelatedContentSettings(talent.EntityId),
+      ActorId,
+      FieldTypeId.NewId(Realm.Id));
+    FieldType stringList = new(
+      new UniqueName(Realm.UniqueNameSettings, "StringList"),
+      new RichTextSettings(),
+      ActorId,
+      FieldTypeId.NewId(Realm.Id));
+    FieldType talentList = new(
+      new UniqueName(Realm.UniqueNameSettings, "TalentList"),
+      new RelatedContentSettings(talent.EntityId, isMultiple: true),
+      ActorId,
+      FieldTypeId.NewId(Realm.Id));
+    FieldType specializationTier = new(
+      new UniqueName(Realm.UniqueNameSettings, "SpecializationTier"),
+      new NumberSettings(minimumValue: 1, maximumValue: 3, step: 1),
+      ActorId,
+      FieldTypeId.NewId(Realm.Id));
+    FieldType talentTier = new(
+      new UniqueName(Realm.UniqueNameSettings, "TalentTier"),
+      new NumberSettings(minimumValue: 0, maximumValue: 3, step: 1),
+      ActorId,
+      FieldTypeId.NewId(Realm.Id));
+    await _fieldTypeRepository.SaveAsync([requiredTalent, stringList, talentList, specializationTier, talentTier]);
+
+    specialization.SetField(
+      new FieldDefinition(Guid.NewGuid(), specializationTier.Id, true, true, true, false, new Identifier("Tier"), null, null, null),
+      ActorId);
+    specialization.SetField(
+      new FieldDefinition(Guid.NewGuid(), requiredTalent.Id, true, false, true, false, new Identifier("MandatoryTalent"), null, null, null),
+      ActorId);
+    specialization.SetField(
+      new FieldDefinition(Guid.NewGuid(), stringList.Id, false, false, false, false, new Identifier("OtherRequirements"), null, null, null),
+      ActorId);
+    specialization.SetField(
+      new FieldDefinition(Guid.NewGuid(), talentList.Id, true, false, false, false, new Identifier("OptionalTalents"), null, null, null),
+      ActorId);
+    specialization.SetField(
+      new FieldDefinition(Guid.NewGuid(), stringList.Id, false, false, false, false, new Identifier("OtherOptions"), null, null, null),
+      ActorId);
+    talent.SetField(
+      new FieldDefinition(Guid.NewGuid(), talentTier.Id, true, true, true, false, new Identifier("Tier"), null, null, null),
+      ActorId);
+    talent.SetField(
+      new FieldDefinition(Guid.NewGuid(), requiredTalent.Id, true, false, true, false, new Identifier("RequiredTalent"), null, null, null),
+      ActorId);
+    await _contentTypeRepository.SaveAsync([specialization, talent]);
+
+    ContentTypeDto? deleted = await _contentTypeService.DeleteAsync(talent.EntityId);
+    Assert.NotNull(deleted);
+    Assert.Equal(talent.EntityId, deleted.Id);
+
+    Assert.Empty(await KrakenarContext.ContentTypes.AsNoTracking().Where(x => x.StreamId == talent.Id.Value).ToArrayAsync());
+
+    specialization = (await _contentTypeRepository.LoadAsync(specialization.Id))!;
+    Assert.NotNull(specialization);
+    Assert.Equal(3, specialization.Fields.Count);
+    Assert.True(specialization.HasField(new Identifier("Tier")));
+    Assert.True(specialization.HasField(new Identifier("OtherRequirements")));
+    Assert.True(specialization.HasField(new Identifier("OtherOptions")));
   }
 
   [Fact(DisplayName = "It should read the content type by ID.")]

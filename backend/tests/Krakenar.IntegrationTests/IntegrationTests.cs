@@ -92,6 +92,8 @@ public abstract class IntegrationTests : IAsyncLifetime
     ICommandHandler<MigrateDatabase> migrationHandler = ServiceProvider.GetRequiredService<ICommandHandler<MigrateDatabase>>();
     await migrationHandler.HandleAsync(command);
 
+    await KrakenarContext.FieldTypes.ExecuteUpdateAsync(setters => setters.SetProperty(x => x.RelatedContentTypeId, x => null));
+
     StringBuilder sql = new();
     TableId[] tables =
     [

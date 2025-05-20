@@ -2,6 +2,7 @@
 using FluentValidation.Results;
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Settings;
+using Krakenar.Core.Contents;
 using Krakenar.Core.Fields.Settings;
 using Krakenar.Core.Fields.Validators;
 using Logitar.EventSourcing;
@@ -11,6 +12,7 @@ namespace Krakenar.Core.Fields.Commands;
 
 public record CreateOrReplaceFieldType(Guid? Id, CreateOrReplaceFieldTypePayload Payload, long? Version) : ICommand<CreateOrReplaceFieldTypeResult>;
 
+/// <exception cref="ContentTypeNotFoundException"></exception>
 /// <exception cref="UniqueNameAlreadyUsedException"></exception>
 /// <exception cref="ValidationException"></exception>
 public class CreateOrReplaceFieldTypeHandler : ICommandHandler<CreateOrReplaceFieldType, CreateOrReplaceFieldTypeResult>

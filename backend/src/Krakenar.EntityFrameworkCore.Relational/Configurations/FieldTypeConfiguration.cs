@@ -22,6 +22,7 @@ public sealed class FieldTypeConfiguration : AggregateConfiguration<FieldType>, 
     builder.HasIndex(x => new { x.RealmId, x.UniqueNameNormalized }).IsUnique();
     builder.HasIndex(x => x.DisplayName);
     builder.HasIndex(x => x.DataType);
+    builder.HasIndex(x => x.RelatedContentTypeUid);
 
     builder.Property(x => x.UniqueName).HasMaxLength(Slug.MaximumLength);
     builder.Property(x => x.UniqueNameNormalized).HasMaxLength(Slug.MaximumLength);
@@ -30,6 +31,9 @@ public sealed class FieldTypeConfiguration : AggregateConfiguration<FieldType>, 
 
     builder.HasOne(x => x.Realm).WithMany(x => x.FieldTypes)
       .HasPrincipalKey(x => x.RealmId).HasForeignKey(x => x.RealmId)
+      .OnDelete(DeleteBehavior.Restrict);
+    builder.HasOne(x => x.RelatedContentType).WithMany(x => x.RelatedFieldTypes)
+      .HasPrincipalKey(x => x.ContentTypeId).HasForeignKey(x => x.RelatedContentTypeId)
       .OnDelete(DeleteBehavior.Restrict);
   }
 }

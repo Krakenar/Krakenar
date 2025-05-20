@@ -4,6 +4,7 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Search;
 using Krakenar.Core;
 using Krakenar.Core.Actors;
+using Krakenar.Core.Contents;
 using Krakenar.Core.Fields;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
 using Logitar.Data;
@@ -40,6 +41,18 @@ public class FieldTypeQuerier : IFieldTypeQuerier
       .SingleOrDefaultAsync(cancellationToken);
 
     return streamId is null ? null : new FieldTypeId(streamId);
+  }
+
+  public virtual async Task<IReadOnlyCollection<FieldTypeId>> FindIdsAsync(ContentTypeId contentTypeId, CancellationToken cancellationToken)
+  {
+    string[] streamIds = await FieldTypes.AsNoTracking()
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.RelatedContentType)
+      .Where(x => x.RelatedContentType!.StreamId == contentTypeId.Value)
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new FieldTypeId(streamId)).ToList().AsReadOnly();
   }
 
   public virtual async Task<FieldTypeDto> ReadAsync(FieldType fieldType, CancellationToken cancellationToken)

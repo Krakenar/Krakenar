@@ -34,6 +34,7 @@ public class ContentType : Aggregate, ISegregatedEntity
   public List<ContentLocale> ContentLocales { get; private set; } = [];
   public List<FieldIndex> FieldIndex { get; private set; } = [];
   public List<PublishedContent> PublishedContents { get; private set; } = [];
+  public List<FieldType> RelatedFieldTypes { get; private set; } = [];
   public List<UniqueIndex> UniqueIndex { get; private set; } = [];
 
   public ContentType(Realm? realm, ContentTypeCreated @event) : base(@event)

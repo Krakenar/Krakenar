@@ -131,7 +131,11 @@ public class FieldTypeEvents : IEventHandler<FieldTypeBooleanSettingsChanged>,
       return;
     }
 
-    fieldType.SetSettings(@event);
+    Entities.ContentType relatedContentType = await Context.ContentTypes
+      .SingleOrDefaultAsync(x => x.RealmId == fieldType.RealmId && x.Id == @event.Settings.ContentTypeId, cancellationToken)
+      ?? throw new InvalidOperationException($"The content type entity 'RealmId={fieldType.RealmId}, Id={@event.Settings.ContentTypeId}' could not be found.");
+
+    fieldType.SetSettings(relatedContentType, @event);
 
     await Context.SaveChangesAsync(cancellationToken);
 

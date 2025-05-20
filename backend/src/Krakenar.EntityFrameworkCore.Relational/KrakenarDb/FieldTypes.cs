@@ -21,6 +21,8 @@ public static class FieldTypes
   public static readonly ColumnId Id = new(nameof(FieldType.Id), Table);
   public static readonly ColumnId RealmId = new(nameof(FieldType.RealmId), Table);
   public static readonly ColumnId RealmUid = new(nameof(FieldType.RealmUid), Table);
+  public static readonly ColumnId RelatedContentTypeId = new(nameof(FieldType.RelatedContentTypeId), Table);
+  public static readonly ColumnId RelatedContentTypeUid = new(nameof(FieldType.RelatedContentTypeUid), Table);
   public static readonly ColumnId Settings = new(nameof(FieldType.Settings), Table);
   public static readonly ColumnId UniqueName = new(nameof(FieldType.UniqueName), Table);
   public static readonly ColumnId UniqueNameNormalized = new(nameof(FieldType.UniqueNameNormalized), Table);
