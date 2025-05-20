@@ -1,5 +1,5 @@
-﻿using Krakenar.Constants;
-using Krakenar.Contracts.Constants;
+﻿using Krakenar.Contracts.Constants;
+using Krakenar.Web.Settings;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using TemplateContent = Krakenar.Contracts.Templates.Content;
@@ -8,7 +8,7 @@ namespace Krakenar.Extensions;
 
 internal static class SwaggerExtensions
 {
-  public static IServiceCollection AddKrakenarSwagger(this IServiceCollection services)
+  public static IServiceCollection AddKrakenarSwagger(this IServiceCollection services, AdminSettings settings)
   {
     services.AddEndpointsApiExplorer();
     services.AddSwaggerGen(config =>
@@ -24,7 +24,7 @@ internal static class SwaggerExtensions
         Arguments = [],
         Type = typeof(AddHeaderParameters)
       });
-      config.SwaggerDoc(name: $"v{Api.Version.Major}", new OpenApiInfo
+      config.SwaggerDoc(name: $"v{settings.Version.Major}", new OpenApiInfo
       {
         Contact = new OpenApiContact
         {
@@ -38,20 +38,20 @@ internal static class SwaggerExtensions
           Name = "Use under MIT",
           Url = new Uri("https://github.com/Krakenar/Krakenar/blob/main/LICENSE", UriKind.Absolute)
         },
-        Title = Api.Title,
-        Version = $"v{Api.Version}"
+        Title = settings.Title,
+        Version = $"v{settings.Version}"
       });
     });
 
     return services;
   }
 
-  public static void UseKrakenarSwagger(this IApplicationBuilder builder)
+  public static void UseKrakenarSwagger(this IApplicationBuilder builder, AdminSettings settings)
   {
     builder.UseSwagger();
     builder.UseSwaggerUI(config => config.SwaggerEndpoint(
-      url: $"/swagger/v{Api.Version.Major}/swagger.json",
-      name: $"{Api.Title} v{Api.Version}"
+      url: $"/swagger/v{settings.Version.Major}/swagger.json",
+      name: $"{settings.Title} v{settings.Version}"
     ));
   }
 

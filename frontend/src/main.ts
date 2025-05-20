@@ -10,6 +10,14 @@ import i18n from "./i18n";
 import jsonViewer from "./jsonViewer";
 import router from "./router";
 
+declare global {
+  interface Window {
+    KRAKENAR_BASE_URL?: string;
+    KRAKENAR_ENABLE_SWAGGER?: boolean;
+    KRAKENAR_VERSION?: string;
+  }
+}
+
 const app = createApp(App);
 
 const pinia = createPinia();

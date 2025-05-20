@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
-const version = import.meta.env.VITE_APP_VERSION;
+const version = window.KRAKENAR_VERSION ?? import.meta.env.VITE_APP_VERSION;
 const year: number = new Date().getUTCFullYear();
 const { t } = useI18n();
 </script>

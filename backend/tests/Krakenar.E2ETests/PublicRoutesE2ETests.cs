@@ -1,5 +1,4 @@
-﻿using Krakenar.Constants;
-using Krakenar.Models.Index;
+﻿using Krakenar.Models.Index;
 
 namespace Krakenar;
 
@@ -44,8 +43,8 @@ public class PublicRoutesE2ETests : E2ETests
 
     ApiVersion? apiVersion = await response.Content.ReadFromJsonAsync<ApiVersion>(SerializerOptions);
     Assert.NotNull(apiVersion);
-    Assert.Equal(Api.Title, apiVersion.Title);
-    Assert.Equal(Api.Version.ToString(), apiVersion.Version);
+    Assert.NotEmpty(apiVersion.Title);
+    Assert.NotEmpty(apiVersion.Version);
   }
 
   [Fact(DisplayName = "Health checks should return Healthy.")]

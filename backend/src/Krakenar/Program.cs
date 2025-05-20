@@ -1,9 +1,7 @@
-﻿using Krakenar.Constants;
-using Krakenar.Core;
+﻿using Krakenar.Core;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Infrastructure.Commands;
 using Krakenar.Settings;
-using Microsoft.FeatureManagement;
 
 namespace Krakenar;
 
@@ -19,12 +17,12 @@ internal class Program
 
     WebApplication application = builder.Build();
 
-    await startup.ConfigureAsync(application);
+    startup.Configure(application);
 
     using IServiceScope scope = application.Services.CreateScope();
 
-    IFeatureManager featureManager = application.Services.GetRequiredService<IFeatureManager>();
-    if (await featureManager.IsEnabledAsync(Features.MigrateDatabase))
+    DatabaseSettings database = application.Services.GetRequiredService<DatabaseSettings>();
+    if (database.ApplyMigrations)
     {
       MigrateDatabase migrateDatabase = new();
       ICommandHandler<MigrateDatabase> migrationHandler = scope.ServiceProvider.GetRequiredService<ICommandHandler<MigrateDatabase>>();

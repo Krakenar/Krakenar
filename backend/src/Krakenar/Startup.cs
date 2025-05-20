@@ -1,14 +1,13 @@
-﻿using Krakenar.Constants;
-using Krakenar.Core;
+﻿using Krakenar.Core;
 using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Extensions;
 using Krakenar.Infrastructure;
+using Krakenar.Settings;
 using Krakenar.Web;
 using Krakenar.Web.Middlewares;
 using Krakenar.Web.Settings;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
-using Microsoft.FeatureManagement;
 
 namespace Krakenar;
 
@@ -26,17 +25,17 @@ internal class Startup : StartupBase
     base.ConfigureServices(services);
 
     services.AddApplicationInsightsTelemetry();
-    services.AddFeatureManagement();
 
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational();
     services.AddKrakenarWeb(_configuration);
-    services.AddKrakenarSwagger();
+    services.AddKrakenarSwagger(AdminSettings.Initialize(_configuration));
 
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
-    DatabaseProvider databaseProvider = GetDatabaseProvider();
-    switch (databaseProvider)
+    DatabaseSettings databaseSettings = DatabaseSettings.Initialize(_configuration);
+    services.AddSingleton(databaseSettings);
+    switch (databaseSettings.Provider)
     {
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         services.AddKrakenarEntityFrameworkCoreSqlServer(_configuration);
@@ -44,33 +43,23 @@ internal class Startup : StartupBase
         healthChecks.AddDbContextCheck<KrakenarContext>();
         break;
       default:
-        throw new DatabaseProviderNotSupportedException(databaseProvider);
+        throw new DatabaseProviderNotSupportedException(databaseSettings.Provider);
     }
-  }
-  private DatabaseProvider GetDatabaseProvider()
-  {
-    string? value = Environment.GetEnvironmentVariable("DATABASE_PROVIDER");
-    if (!string.IsNullOrWhiteSpace(value) && Enum.TryParse(value, out DatabaseProvider databaseProvider) && Enum.IsDefined(databaseProvider))
-    {
-      return databaseProvider;
-    }
-    return _configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
   }
 
   public override void Configure(IApplicationBuilder builder)
   {
     if (builder is WebApplication application)
     {
-      ConfigureAsync(application).Wait();
+      Configure(application);
     }
   }
-  public virtual async Task ConfigureAsync(WebApplication application)
+  public virtual void Configure(WebApplication application)
   {
-    IFeatureManager featureManager = application.Services.GetRequiredService<IFeatureManager>();
-
-    if (await featureManager.IsEnabledAsync(Features.UseSwaggerUI))
+    AdminSettings adminSettings = application.Services.GetRequiredService<AdminSettings>();
+    if (adminSettings.EnableSwagger)
     {
-      application.UseKrakenarSwagger();
+      application.UseKrakenarSwagger(adminSettings);
     }
 
     application.UseHttpsRedirection();
@@ -86,10 +75,7 @@ internal class Startup : StartupBase
     application.UseMiddleware<ResolveUser>();
 
     application.MapControllers();
-
-    AdminSettings adminSettings = application.Services.GetRequiredService<AdminSettings>();
     application.MapControllerRoute(name: "Admin", pattern: $"{adminSettings.BasePath}/{{**anything}}", defaults: new { Controller = "Admin", Action = "Index" });
-
     application.MapHealthChecks("/health");
   }
 }
