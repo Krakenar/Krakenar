@@ -8,10 +8,12 @@ import type { Session } from "@/types/sessions";
 import { handleErrorKey } from "@/inject/App";
 import { signOutSession } from "@/api/sessions";
 import { useAccountStore } from "@/stores/account";
+import { useRealmStore } from "@/stores/realm";
 import { useToastStore } from "@/stores/toast";
 
 const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
+const realm = useRealmStore();
 const router = useRouter();
 const toasts = useToastStore();
 const { d, t } = useI18n();
@@ -42,6 +44,7 @@ async function executeSignOut(): Promise<void> {
       const session = await signOutSession(props.session.id);
       if (isCurrentSession.value) {
         account.signOut();
+        realm.exit();
         router.push({ name: "SignIn" });
       } else {
         emit("signed-out", session);

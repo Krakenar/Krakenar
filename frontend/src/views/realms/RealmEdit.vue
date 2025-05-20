@@ -5,9 +5,11 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
+import DeleteRealm from "@/components/realms/DeleteRealm.vue";
 import RealmGeneral from "@/components/realms/RealmGeneral.vue";
 import RealmSettings from "@/components/realms/RealmSettings.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import SwitchButton from "@/components/realms/SwitchButton.vue";
 import type { CustomAttribute } from "@/types/custom";
 import type { Realm, UpdateRealmPayload } from "@/types/realms";
 import { StatusCodes, type ApiFailure } from "@/types/api";
@@ -22,6 +24,11 @@ const toasts = useToastStore();
 const { t } = useI18n();
 
 const realm = ref<Realm>();
+
+function onDeleted(): void {
+  toasts.success("realms.deleted");
+  router.push({ name: "RealmList" });
+}
 
 function setMetadata(updated: Realm): void {
   if (realm.value) {
@@ -82,6 +89,10 @@ onMounted(async () => {
     <template v-if="realm">
       <h1>{{ realm.displayName ?? realm.uniqueSlug }}</h1>
       <StatusDetail :aggregate="realm" />
+      <div class="mb-3">
+        <DeleteRealm class="me-1" :realm="realm" @deleted="onDeleted" @error="handleError" />
+        <SwitchButton class="ms-1" :realm="realm" />
+      </div>
       <TarTabs>
         <TarTab active id="general" :title="t('general')">
           <RealmGeneral :realm="realm" @error="handleError" @updated="onGeneralUpdated" />

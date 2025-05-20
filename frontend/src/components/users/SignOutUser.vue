@@ -9,10 +9,12 @@ import { formatUser } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { signOutUser } from "@/api/users";
 import { useAccountStore } from "@/stores/account";
+import { useRealmStore } from "@/stores/realm";
 import { useToastStore } from "@/stores/toast";
 
 const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
+const realm = useRealmStore();
 const router = useRouter();
 const toasts = useToastStore();
 const { t } = useI18n();
@@ -43,6 +45,7 @@ async function onSignOut(): Promise<void> {
       const user = await signOutUser(props.user.id);
       if (isCurrentUser.value) {
         account.signOut();
+        realm.exit();
         router.push({ name: "SignIn" });
       } else {
         emit("signed-out", user);
