@@ -30,7 +30,14 @@ internal class Startup : StartupBase
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational();
     services.AddKrakenarWeb(_configuration);
-    services.AddKrakenarSwagger(AdminSettings.Initialize(_configuration));
+
+    AdminSettings? adminSettings = services.Where(x => x.ServiceType.Equals(typeof(AdminSettings)) && x.ImplementationInstance is AdminSettings)
+      .FirstOrDefault()?.ImplementationInstance as AdminSettings
+      ?? throw new InvalidOperationException($"The {nameof(AdminSettings)} service has not been regiseterd.");
+    if (adminSettings.EnableSwagger)
+    {
+      services.AddKrakenarSwagger(adminSettings);
+    }
 
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
     DatabaseSettings databaseSettings = DatabaseSettings.Initialize(_configuration);
