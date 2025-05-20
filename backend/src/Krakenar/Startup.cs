@@ -6,6 +6,7 @@ using Krakenar.Extensions;
 using Krakenar.Infrastructure;
 using Krakenar.Web;
 using Krakenar.Web.Middlewares;
+using Krakenar.Web.Settings;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.FeatureManagement;
 
@@ -85,6 +86,10 @@ internal class Startup : StartupBase
     application.UseMiddleware<ResolveUser>();
 
     application.MapControllers();
+
+    AdminSettings adminSettings = application.Services.GetRequiredService<AdminSettings>();
+    application.MapControllerRoute(name: "Admin", pattern: $"{adminSettings.BasePath}/{{**anything}}", defaults: new { Controller = "Admin", Action = "Index" });
+
     application.MapHealthChecks("/health");
   }
 }

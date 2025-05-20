@@ -13,6 +13,8 @@ public static class DependencyInjectionExtensions
 {
   public static IServiceCollection AddKrakenarWeb(this IServiceCollection services, IConfiguration configuration)
   {
+    AdminSettings adminSettings = AdminSettings.Initialize(configuration);
+    services.AddSingleton(adminSettings);
     services.AddControllersWithViews()
       .AddJsonOptions(options =>
       {
