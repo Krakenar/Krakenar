@@ -2,7 +2,7 @@ import { urlUtils } from "logitar-js";
 
 import type { CreateOrReplaceRealmPayload, Realm, SearchRealmsPayload, UpdateRealmPayload } from "@/types/realms";
 import type { SearchResults } from "@/types/search";
-import { get, patch, post, put } from ".";
+import { _delete, get, patch, post, put } from ".";
 
 function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
   if (id) {
@@ -14,6 +14,11 @@ function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
 export async function createRealm(payload: CreateOrReplaceRealmPayload): Promise<Realm> {
   const url: string = createUrlBuilder().buildRelative();
   return (await post<CreateOrReplaceRealmPayload, Realm>(url, payload)).data;
+}
+
+export async function deleteRealm(id: string): Promise<Realm> {
+  const url: string = createUrlBuilder(id).buildRelative();
+  return (await _delete<Realm>(url)).data;
 }
 
 export async function readRealm(id: string): Promise<Realm> {

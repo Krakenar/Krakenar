@@ -1,7 +1,13 @@
 {
   "create": "Nouveau royaume",
   "created": "Le royaume a été créé.",
+  "delete": {
+    "confirm": "Afin de supprimer le royaume, veuillez entrer son nom dans le champs suivant.",
+    "title": "Supprimer le royaume"
+  },
+  "deleted": "Le royaume a été supprimé.",
   "empty": "Cette liste est vide.",
+  "none": "Krakenar (aucun royaume)",
   "sort": {
     "options": {
       "CreatedOn": "Date de création",

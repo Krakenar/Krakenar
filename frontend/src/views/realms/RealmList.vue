@@ -14,6 +14,7 @@ import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
+import SwitchButton from "@/components/realms/SwitchButton.vue";
 import type { Realm, RealmSort, SearchRealmsPayload } from "@/types/realms";
 import type { SearchResults } from "@/types/search";
 import { handleErrorKey } from "@/inject/App";
@@ -152,6 +153,7 @@ watch(
             <th scope="col">{{ t("realms.sort.options.UniqueSlug") }}</th>
             <th scope="col">{{ t("realms.sort.options.DisplayName") }}</th>
             <th scope="col">{{ t("realms.sort.options.UpdatedOn") }}</th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -164,6 +166,7 @@ watch(
               <span v-else class="text-muted">{{ "—" }}</span>
             </td>
             <td><StatusBlock :actor="realm.updatedBy" :date="realm.updatedOn" /></td>
+            <td><SwitchButton :realm="realm" /></td>
           </tr>
         </tbody>
       </table>

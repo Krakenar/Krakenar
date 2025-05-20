@@ -8,9 +8,11 @@ import AppNavbar from "./components/layout/AppNavbar.vue";
 import type { ApiFailure } from "./types/api";
 import { handleErrorKey } from "./inject/App";
 import { useAccountStore } from "./stores/account";
+import { useRealmStore } from "./stores/realm";
 import { useToastStore } from "./stores/toast";
 
 const account = useAccountStore();
+const realm = useRealmStore();
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
@@ -20,6 +22,7 @@ function handleError(e: unknown): void {
     const { status } = e as ApiFailure;
     if (status === 401) {
       account.signOut();
+      realm.exit();
       toasts.warning("toasts.warning.signedOut");
       router.push({ name: "SignIn", query: { redirect: route.fullPath } });
     } else {

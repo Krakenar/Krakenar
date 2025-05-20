@@ -1,7 +1,13 @@
 {
   "create": "New Realm",
   "created": "The realm has been created.",
+  "delete": {
+    "confirm": "To delete the realm, enter its name in the field below.",
+    "title": "Delete Realm"
+  },
+  "deleted": "The realm has been deleted.",
   "empty": "This list is empty.",
+  "none": "Krakenar (no realm)",
   "sort": {
     "options": {
       "CreatedOn": "Created on",

@@ -3,13 +3,14 @@ import { nanoid } from "nanoid";
 
 import type { Actor } from "@/types/actor";
 import type { ContentType } from "@/types/contents";
+import type { FieldType } from "@/types/fields";
 import type { Locale } from "@/types/i18n";
+import type { Realm } from "@/types/realms";
 import type { Role } from "@/types/roles";
 import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
 import type { User } from "@/types/users";
-import { formatContentType, formatFieldType, formatLocale, formatRole, formatSender, formatTemplate, formatUser } from "../format";
-import type { FieldType } from "@/types/fields";
+import { formatContentType, formatFieldType, formatLocale, formatRealm, formatRole, formatSender, formatTemplate, formatUser } from "../format";
 
 const actor: Actor = {
   type: "User",
@@ -102,6 +103,61 @@ describe("formatLocale", () => {
       nativeName: "English",
     };
     expect(formatLocale(locale)).toBe("English (en)");
+  });
+});
+
+describe("formatRealm", () => {
+  it.concurrent("should format the realm with display name correctly", () => {
+    const realm: Realm = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueSlug: "new-world",
+      displayName: "The New World",
+      uniqueNameSettings: {},
+      passwordSettings: {
+        requiredLength: 8,
+        requiredUniqueChars: 8,
+        requireDigit: true,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireNonAlphanumeric: true,
+        hashingStrategy: "PBKDF2",
+      },
+      requireUniqueEmail: true,
+      requireConfirmedAccount: true,
+      customAttributes: [],
+    };
+    expect(formatRealm(realm)).toBe("The New World (new-world)");
+  });
+
+  it.concurrent("should format the realm without display name correctly", () => {
+    const realm: Realm = {
+      id: nanoid(),
+      version: 0,
+      createdBy: actor,
+      createdOn: now,
+      updatedBy: actor,
+      updatedOn: now,
+      uniqueSlug: "new-world",
+      uniqueNameSettings: {},
+      passwordSettings: {
+        requiredLength: 8,
+        requiredUniqueChars: 8,
+        requireDigit: true,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireNonAlphanumeric: true,
+        hashingStrategy: "PBKDF2",
+      },
+      requireUniqueEmail: true,
+      requireConfirmedAccount: true,
+      customAttributes: [],
+    };
+    expect(formatRealm(realm)).toBe("new-world");
   });
 });
 

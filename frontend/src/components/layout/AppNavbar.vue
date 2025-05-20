@@ -7,6 +7,7 @@ import { useI18n } from "vue-i18n";
 
 import MessageIcon from "@/components/messages/MessageIcon.vue";
 import SenderIcon from "@/components/senders/SenderIcon.vue";
+import SwitchSelect from "@/components/realms/SwitchSelect.vue";
 import TemplateIcon from "@/components/templates/TemplateIcon.vue";
 import UserIcon from "@/components/users/UserIcon.vue";
 import locales from "@/resources/locales.json";
@@ -156,6 +157,14 @@ watchEffect(() => {
           </template>
         </ul>
         <ul class="navbar-nav mb-2 mb-lg-0">
+          <template v-if="user">
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'Configuration' }" class="nav-link"><font-awesome-icon icon="fas fa-gear" /> {{ t("configuration.title") }}</RouterLink>
+            </li>
+            <li class="nav-item">
+              <SwitchSelect />
+            </li>
+          </template>
           <template v-if="i18n.locale">
             <li v-if="otherLocales.length > 1" class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">{{ i18n.locale.nativeName }}</a>
@@ -170,9 +179,6 @@ watchEffect(() => {
             </li>
           </template>
           <template v-if="user">
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'Configuration' }" class="nav-link"><font-awesome-icon icon="fas fa-gear" /> {{ t("configuration.title") }}</RouterLink>
-            </li>
             <li class="nav-item d-block d-lg-none">
               <RouterLink class="nav-link" :to="{ name: 'UserEdit', params: { id: user.id } }">
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />

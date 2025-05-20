@@ -6,9 +6,11 @@ import type { CurrentUser } from "@/types/account";
 import { handleErrorKey } from "@/inject/App";
 import { signOutSession } from "@/api/sessions";
 import { useAccountStore } from "@/stores/account";
+import { useRealmStore } from "@/stores/realm";
 
 const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
+const realm = useRealmStore();
 const router = useRouter();
 
 onMounted(async () => {
@@ -17,6 +19,7 @@ onMounted(async () => {
     try {
       await signOutSession(currentUser.sessionId);
       account.signOut();
+      realm.exit();
     } catch (e: unknown) {
       handleError(e);
     }
