@@ -3,9 +3,7 @@
 namespace Krakenar.Web.Controllers;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-[Route("app")]
-public class AppController : Controller
+public class AdminController : Controller
 {
-  [HttpGet("{**anything}")]
   public ActionResult Index() => View();
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.Extensions;
+﻿using Krakenar.Web.Settings;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Krakenar.Web.Middlewares;
 
@@ -11,13 +12,13 @@ public class RedirectNotFound
     Next = next;
   }
 
-  public virtual async Task InvokeAsync(HttpContext context)
+  public virtual async Task InvokeAsync(HttpContext context, AdminSettings adminSettings)
   {
     await Next(context);
 
     if (context.Response.StatusCode == StatusCodes.Status404NotFound && !context.Request.Path.StartsWithSegments("/api"))
     {
-      context.Response.Redirect($"/app/{UriHelper.GetEncodedPathAndQuery(context.Request).Trim('/')}");
+      context.Response.Redirect($"/{adminSettings.BasePath}/{UriHelper.GetEncodedPathAndQuery(context.Request).Trim('/')}");
     }
   }
 }

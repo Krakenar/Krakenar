@@ -4,8 +4,15 @@ import HomeView from "./views/HomeView.vue";
 
 import { useAccountStore } from "./stores/account";
 
+declare global {
+  interface Window {
+    KRAKENAR_BASE_URL?: string;
+  }
+}
+const baseUrl: string = window.KRAKENAR_BASE_URL ?? import.meta.env.VITE_APP_BASE_URL ?? import.meta.env.BASE_URL;
+
 const router = createRouter({
-  history: createWebHistory(import.meta.env.VITE_APP_BASE_URL ?? import.meta.env.BASE_URL),
+  history: createWebHistory(baseUrl),
   routes: [
     {
       name: "Home",

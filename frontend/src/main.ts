@@ -21,4 +21,4 @@ app.use(jsonViewer);
 app.use(pinia);
 app.use(router);
 
-app.mount("#app");
+app.mount("#krakenar");
