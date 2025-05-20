@@ -54,6 +54,19 @@ public class ContentTypeQuerier : IContentTypeQuerier
 
     return streamIds.Select(streamId => new ContentTypeId(streamId)).ToList().AsReadOnly();
   }
+  public virtual async Task<IReadOnlyCollection<ContentTypeId>> FindIdsAsync(IEnumerable<FieldTypeId> fieldTypeIds, CancellationToken cancellationToken)
+  {
+    HashSet<string> fieldTypeStreamIds = fieldTypeIds.Select(id => id.Value).ToHashSet();
+
+    string[] streamIds = await ContentTypes.AsNoTracking()
+      .WhereRealm(ApplicationContext.RealmId)
+      .Include(x => x.FieldDefinitions).ThenInclude(x => x.FieldType)
+      .Where(x => x.FieldDefinitions.Any(f => fieldTypeStreamIds.Contains(f.FieldType!.StreamId)))
+      .Select(x => x.StreamId)
+      .ToArrayAsync(cancellationToken);
+
+    return streamIds.Select(streamId => new ContentTypeId(streamId)).ToList().AsReadOnly();
+  }
 
   public virtual async Task<ContentTypeDto> ReadAsync(ContentType contentType, CancellationToken cancellationToken)
   {
