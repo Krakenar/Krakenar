@@ -6,6 +6,7 @@ import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import DefaultBadge from "@/components/senders/DefaultBadge.vue";
@@ -143,6 +144,7 @@ watch(
   <main>
     <div class="container">
       <h1>{{ t("messages.title") }}</h1>
+      <AppBreadcrumb :current="t('messages.title')" />
       <div class="my-3">
         <RefreshButton :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       </div>

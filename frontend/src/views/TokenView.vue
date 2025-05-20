@@ -3,6 +3,7 @@ import { TarTab, TarTabs } from "logitar-vue3-ui";
 import { inject } from "vue";
 import { useI18n } from "vue-i18n";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import CreateToken from "@/components/tokens/CreateToken.vue";
 import ValidateToken from "@/components/tokens/ValidateToken.vue";
 import { handleErrorKey } from "@/inject/App";
@@ -14,6 +15,7 @@ const { t } = useI18n();
 <template>
   <main class="container">
     <h1>{{ t("tokens.title") }}</h1>
+    <AppBreadcrumb :current="t('tokens.title')" />
     <TarTabs>
       <TarTab active id="create" :title="t('actions.create')">
         <CreateToken @error="handleError" />

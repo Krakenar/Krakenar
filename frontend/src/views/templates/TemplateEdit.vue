@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import DeleteTemplate from "@/components/templates/DeleteTemplate.vue";
 import SendDemo from "@/components/messages/SendDemo.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import TemplateContents from "@/components/templates/TemplateContents.vue";
 import TemplateGeneral from "@/components/templates/TemplateGeneral.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Configuration } from "@/types/configuration";
 import type { Template } from "@/types/templates";
 import { StatusCodes, type ApiFailure } from "@/types/api";
@@ -26,6 +28,9 @@ const { t } = useI18n();
 
 const configuration = ref<Configuration>();
 const template = ref<Template>();
+
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "TemplateList" }, text: t("templates.title") }]);
+const title = computed<string>(() => (template.value ? formatTemplate(template.value) : ""));
 
 function setMetadata(updated: Template): void {
   if (template.value) {
@@ -80,7 +85,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="template">
-      <h1>{{ formatTemplate(template) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="template" />
       <div class="mb-3">
         <DeleteTemplate :template="template" @deleted="onDeleted" @error="handleError" />

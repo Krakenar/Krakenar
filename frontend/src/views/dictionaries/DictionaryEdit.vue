@@ -4,11 +4,13 @@ import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import DeleteDictionary from "@/components/dictionaries/DeleteDictionary.vue";
 import DictionaryEntryList from "@/components/dictionaries/DictionaryEntryList.vue";
 import LanguageAlreadyUsed from "@/components/languages/LanguageAlreadyUsed.vue";
 import LanguageSelect from "@/components/languages/LanguageSelect.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { CreateOrReplaceDictionaryPayload, Dictionary, DictionaryEntry } from "@/types/dictionaries";
 import type { Language } from "@/types/languages";
 import { ErrorCodes, StatusCodes, type ApiFailure } from "@/types/api";
@@ -31,7 +33,9 @@ const entries = ref<DictionaryEntry[]>([]);
 const language = ref<Language>();
 const languageAlreadyUsed = ref<boolean>();
 
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "DictionaryList" }, text: t("dictionaries.title") }]);
 const hasChanges = computed<boolean>(() => hasFormChanges.value || entries.value.some((entry) => entry.isRemoved));
+const title = computed<string>(() => (dictionary.value ? formatLocale(dictionary.value.language.locale) : ""));
 
 function onDeleted(): void {
   toasts.success("dictionaries.deleted");
@@ -85,7 +89,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="dictionary">
-      <h1>{{ formatLocale(dictionary.language.locale) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="dictionary" />
       <div class="mb-3">
         <DeleteDictionary :dictionary="dictionary" @deleted="onDeleted" @error="handleError" />

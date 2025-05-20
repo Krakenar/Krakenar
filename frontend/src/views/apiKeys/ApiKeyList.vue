@@ -6,6 +6,7 @@ import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateApiKey from "@/components/apiKeys/CreateApiKey.vue";
@@ -145,6 +146,7 @@ watch(
 <template>
   <main class="container">
     <h1>{{ t("apiKeys.title") }}</h1>
+    <AppBreadcrumb :current="t('apiKeys.title')" />
     <div class="my-3">
       <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateApiKey class="ms-1" @created="onCreated" @error="handleError" />

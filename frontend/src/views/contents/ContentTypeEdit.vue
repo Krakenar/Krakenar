@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import ContentTypeGeneral from "@/components/contents/ContentTypeGeneral.vue";
 import DeleteContentType from "@/components/contents/DeleteContentType.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { ContentType } from "@/types/contents";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatContentType } from "@/helpers/format";
@@ -21,6 +23,9 @@ const toasts = useToastStore();
 const { t } = useI18n();
 
 const contentType = ref<ContentType>();
+
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "ContentTypeList" }, text: t("contents.type.title") }]);
+const title = computed<string>(() => (contentType.value ? formatContentType(contentType.value) : ""));
 
 function setMetadata(updated: ContentType): void {
   if (contentType.value) {
@@ -64,7 +69,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="contentType">
-      <h1>{{ formatContentType(contentType) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="contentType" />
       <div class="mb-3">
         <DeleteContentType :contentType="contentType" @deleted="onDeleted" @error="handleError" />

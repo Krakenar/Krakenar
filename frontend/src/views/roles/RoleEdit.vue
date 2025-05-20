@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import DeleteRole from "@/components/roles/DeleteRole.vue";
 import RoleGeneral from "@/components/roles/RoleGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Configuration } from "@/types/configuration";
 import type { CustomAttribute } from "@/types/custom";
 import type { Role, UpdateRolePayload } from "@/types/roles";
@@ -26,6 +28,9 @@ const { t } = useI18n();
 
 const configuration = ref<Configuration>();
 const role = ref<Role>();
+
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "RoleList" }, text: t("roles.title") }]);
+const title = computed<string>(() => (role.value ? formatRole(role.value) : ""));
 
 function setMetadata(updated: Role): void {
   if (role.value) {
@@ -81,7 +86,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="role">
-      <h1>{{ formatRole(role) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="role" />
       <div class="mb-3">
         <DeleteRole :role="role" @deleted="onDeleted" @error="handleError" />

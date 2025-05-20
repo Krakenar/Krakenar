@@ -5,11 +5,13 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import ActiveBadge from "@/components/sessions/ActiveBadge.vue";
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import SignOutSession from "@/components/sessions/SignOutSession.vue";
 import SignOutUser from "@/components/users/SignOutUser.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UserAvatar from "@/components/users/UserAvatar.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { CustomAttribute } from "@/types/custom";
 import type { Session } from "@/types/sessions";
 import type { User } from "@/types/users";
@@ -27,6 +29,7 @@ const session = ref<Session>();
 const additionalInformation = computed<string | undefined>(
   () => session.value?.customAttributes.find((customAttribute) => customAttribute.key === "AdditionalInformation")?.value,
 );
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "SessionList" }, text: t("sessions.title.list") }]);
 const customAttributes = computed<CustomAttribute[]>(
   () => session.value?.customAttributes.filter(({ key }) => key !== "AdditionalInformation" && key !== "IpAddress") ?? [],
 );
@@ -59,6 +62,7 @@ onMounted(async () => {
 <template>
   <main class="container">
     <h1>{{ t("sessions.title.edit") }}</h1>
+    <AppBreadcrumb :current="t('sessions.title.edit')" :parent="breadcrumb" />
     <template v-if="session">
       <StatusDetail :aggregate="session" />
       <div class="mb-3">
