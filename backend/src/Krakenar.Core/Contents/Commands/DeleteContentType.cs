@@ -60,10 +60,22 @@ public class DeleteContentTypeHandler : ICommandHandler<DeleteContentType, Conte
     HashSet<FieldTypeId> fieldTypeIds = (await FieldTypeQuerier.FindIdsAsync(contentType.Id, cancellationToken)).ToHashSet();
     if (fieldTypeIds.Count > 0)
     {
+      IReadOnlyCollection<ContentTypeId> contentTypeIds = await ContentTypeQuerier.FindIdsAsync(fieldTypeIds, cancellationToken);
+      IReadOnlyCollection<ContentType> contentTypes = await ContentTypeRepository.LoadAsync(contentTypeIds, cancellationToken);
+      foreach (ContentType relatedContentType in contentTypes)
+      {
+        FieldDefinition[] fields = [.. relatedContentType.Fields];
+        foreach (FieldDefinition field in fields)
+        {
+          if (fieldTypeIds.Contains(field.FieldTypeId))
+          {
+            relatedContentType.RemoveField(field.Id, actorId);
+          }
+        }
+      }
+      await ContentTypeRepository.SaveAsync(contentTypes, cancellationToken);
+
       IReadOnlyCollection<FieldType> fieldTypes = await FieldTypeRepository.LoadAsync(fieldTypeIds, cancellationToken);
-
-      // TODO(fpion): load content types having one or more field definitions referencing these field types
-
       foreach (FieldType fieldType in fieldTypes)
       {
         fieldType.Delete(actorId);

@@ -9,6 +9,7 @@ public interface IContentTypeQuerier
 {
   Task<ContentTypeId?> FindIdAsync(Identifier uniqueName, CancellationToken cancellationToken = default);
   Task<IReadOnlyCollection<ContentTypeId>> FindIdsAsync(FieldTypeId fieldTypeId, CancellationToken cancellationToken = default);
+  Task<IReadOnlyCollection<ContentTypeId>> FindIdsAsync(IEnumerable<FieldTypeId> fieldTypeIds, CancellationToken cancellationToken = default);
 
   Task<ContentTypeDto> ReadAsync(ContentType contentType, CancellationToken cancellationToken = default);
   Task<ContentTypeDto?> ReadAsync(ContentTypeId id, CancellationToken cancellationToken = default);
