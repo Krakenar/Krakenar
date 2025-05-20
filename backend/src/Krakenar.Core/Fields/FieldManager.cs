@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
+using Krakenar.Core.Contents;
 using Krakenar.Core.Fields.Events;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Settings;
+using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Fields;
 
@@ -14,12 +16,18 @@ public interface IFieldManager
 public class FieldManager : IFieldManager
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IContentTypeRepository ContentTypeRepository { get; }
   protected virtual IFieldTypeQuerier FieldTypeQuerier { get; }
   protected virtual IFieldTypeRepository FieldTypeRepository { get; }
 
-  public FieldManager(IApplicationContext applicationContext, IFieldTypeQuerier fieldTypeQuerier, IFieldTypeRepository fieldTypeRepository)
+  public FieldManager(
+    IApplicationContext applicationContext,
+    IContentTypeRepository contentTypeRepository,
+    IFieldTypeQuerier fieldTypeQuerier,
+    IFieldTypeRepository fieldTypeRepository)
   {
     ApplicationContext = applicationContext;
+    ContentTypeRepository = contentTypeRepository;
     FieldTypeQuerier = fieldTypeQuerier;
     FieldTypeRepository = fieldTypeRepository;
   }
@@ -57,7 +65,23 @@ public class FieldManager : IFieldManager
 
   public virtual async Task SaveAsync(FieldType fieldType, CancellationToken cancellationToken)
   {
-    bool hasUniqueNameChanged = fieldType.Changes.Any(change => change is FieldTypeCreated || change is FieldTypeUniqueNameChanged);
+    RealmId? realmId = ApplicationContext.RealmId;
+
+    bool hasUniqueNameChanged = false;
+    foreach (IEvent change in fieldType.Changes)
+    {
+      if (change is FieldTypeCreated || change is FieldTypeUniqueNameChanged)
+      {
+        hasUniqueNameChanged = true;
+      }
+      else if (change is FieldTypeRelatedContentSettingsChanged changed)
+      {
+        ContentTypeId contentTypeId = new(changed.Settings.ContentTypeId, realmId);
+        _ = await ContentTypeRepository.LoadAsync(contentTypeId, cancellationToken)
+          ?? throw new ContentTypeNotFoundException(contentTypeId.RealmId, contentTypeId.EntityId.ToString(), "RelatedContent.ContentTypeId");
+      }
+    }
+
     if (hasUniqueNameChanged)
     {
       FieldTypeId? conflictId = await FieldTypeQuerier.FindIdAsync(fieldType.UniqueName, cancellationToken);
