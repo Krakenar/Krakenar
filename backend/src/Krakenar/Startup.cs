@@ -30,6 +30,9 @@ internal class Startup : StartupBase
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational();
     services.AddKrakenarWeb(_configuration);
+
+    SwaggerSettings swaggerSettings = SwaggerSettings.Initialize(_configuration);
+    services.AddSingleton(swaggerSettings);
     services.AddKrakenarSwagger();
 
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
@@ -56,10 +59,11 @@ internal class Startup : StartupBase
   }
   public virtual void Configure(WebApplication application)
   {
-    //if (await featureManager.IsEnabledAsync(Features.UseSwaggerUI))
-    //{
-    //  application.UseKrakenarSwagger();
-    //}
+    SwaggerSettings swaggerSettings = application.Services.GetRequiredService<SwaggerSettings>();
+    if (swaggerSettings.Enabled)
+    {
+      application.UseKrakenarSwagger();
+    }
 
     application.UseHttpsRedirection();
     application.UseCors();
