@@ -30,6 +30,10 @@ public class FieldType : Aggregate, ISegregatedEntity
   public DataType DataType { get; private set; }
   public string? Settings { get; private set; }
 
+  public ContentType? RelatedContentType { get; private set; }
+  public int? RelatedContentTypeId { get; private set; }
+  public Guid? RelatedContentTypeUid { get; private set; }
+
   public List<FieldDefinition> FieldDefinitions { get; private set; } = [];
   public List<FieldIndex> FieldIndex { get; private set; } = [];
   public List<UniqueIndex> UniqueIndex { get; private set; } = [];
@@ -82,12 +86,16 @@ public class FieldType : Aggregate, ISegregatedEntity
     NumberSettings settings = new(@event.Settings);
     Settings = JsonSerializer.Serialize(settings);
   }
-  public void SetSettings(FieldTypeRelatedContentSettingsChanged @event)
+  public void SetSettings(ContentType relatedContentType, FieldTypeRelatedContentSettingsChanged @event)
   {
     Update(@event);
 
     RelatedContentSettings settings = new(@event.Settings);
     Settings = JsonSerializer.Serialize(settings);
+
+    RelatedContentType = relatedContentType;
+    RelatedContentTypeId = relatedContentType.ContentTypeId;
+    RelatedContentTypeUid = relatedContentType.Id;
   }
   public void SetSettings(FieldTypeRichTextSettingsChanged @event)
   {
