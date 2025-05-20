@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Constants;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using TemplateContent = Krakenar.Contracts.Templates.Content;
 
 namespace Krakenar.Extensions;
 
@@ -13,6 +14,11 @@ internal static class SwaggerExtensions
     services.AddSwaggerGen(config =>
     {
       config.AddSecurity();
+      config.MapType<TemplateContent>(() => new OpenApiSchema
+      {
+        Type = "object",
+        Title = "TemplateContent"
+      });
       config.OperationFilterDescriptors.Add(new FilterDescriptor
       {
         Arguments = [],
