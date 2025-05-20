@@ -1,14 +1,13 @@
-﻿using Krakenar.Constants;
-using Krakenar.Core;
+﻿using Krakenar.Core;
 using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Extensions;
 using Krakenar.Infrastructure;
+using Krakenar.Settings;
 using Krakenar.Web;
 using Krakenar.Web.Middlewares;
 using Krakenar.Web.Settings;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
-using Microsoft.FeatureManagement;
 
 namespace Krakenar;
 
@@ -26,7 +25,6 @@ internal class Startup : StartupBase
     base.ConfigureServices(services);
 
     services.AddApplicationInsightsTelemetry();
-    services.AddFeatureManagement();
 
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
@@ -35,6 +33,8 @@ internal class Startup : StartupBase
     services.AddKrakenarSwagger();
 
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
+    DatabaseSettings databaseSettings = DatabaseSettings.Initialize(_configuration);
+    services.AddSingleton(databaseSettings);
     DatabaseProvider databaseProvider = GetDatabaseProvider();
     switch (databaseProvider)
     {
@@ -61,17 +61,15 @@ internal class Startup : StartupBase
   {
     if (builder is WebApplication application)
     {
-      ConfigureAsync(application).Wait();
+      Configure(application);
     }
   }
-  public virtual async Task ConfigureAsync(WebApplication application)
+  public virtual void Configure(WebApplication application)
   {
-    IFeatureManager featureManager = application.Services.GetRequiredService<IFeatureManager>();
-
-    if (await featureManager.IsEnabledAsync(Features.UseSwaggerUI))
-    {
-      application.UseKrakenarSwagger();
-    }
+    //if (await featureManager.IsEnabledAsync(Features.UseSwaggerUI))
+    //{
+    //  application.UseKrakenarSwagger();
+    //}
 
     application.UseHttpsRedirection();
     application.UseCors();
