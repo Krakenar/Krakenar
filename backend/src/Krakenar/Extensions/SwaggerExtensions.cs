@@ -42,6 +42,7 @@ internal static class SwaggerExtensions
         Version = $"v{settings.Version}"
       });
     });
+    services.AddTransient<IProblemDetailsWriter, PlainTextProblemDetailsWriter>();
 
     return services;
   }
