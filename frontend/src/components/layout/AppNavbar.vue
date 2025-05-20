@@ -5,6 +5,7 @@ import { arrayUtils, parsingUtils, stringUtils } from "logitar-js";
 import { computed, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 
+import MessageIcon from "@/components/messages/MessageIcon.vue";
 import SenderIcon from "@/components/senders/SenderIcon.vue";
 import TemplateIcon from "@/components/templates/TemplateIcon.vue";
 import UserIcon from "@/components/users/UserIcon.vue";
@@ -74,58 +75,86 @@ watchEffect(() => {
           </li>
           <template v-if="user">
             <li class="nav-item">
-              <RouterLink :to="{ name: 'Configuration' }" class="nav-link"><font-awesome-icon icon="fas fa-gear" /> {{ t("configuration.title") }}</RouterLink>
-            </li>
-            <li class="nav-item">
               <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><font-awesome-icon icon="fas fa-chess-rook" /> {{ t("realms.title") }}</RouterLink>
             </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'RoleList' }" class="nav-link"><font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.title") }}</RouterLink>
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <font-awesome-icon icon="fas fa-users-line" /> {{ t("navbar.identity") }}
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <RouterLink :to="{ name: 'UserList' }" class="dropdown-item"><font-awesome-icon icon="fas fa-users" /> {{ t("users.title") }}</RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'RoleList' }" class="dropdown-item">
+                    <font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.title") }}
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'SessionList' }" class="dropdown-item">
+                    <font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'ApiKeyList' }" class="dropdown-item"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.title") }}</RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'Tokens' }" class="dropdown-item"> <font-awesome-icon icon="fas fa-id-card" /> {{ t("tokens.title") }} </RouterLink>
+                </li>
+              </ul>
             </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'UserList' }" class="nav-link"><font-awesome-icon icon="fas fa-users" /> {{ t("users.title") }}</RouterLink>
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <font-awesome-icon icon="fas fa-globe" /> {{ t("navbar.localization") }}
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <RouterLink :to="{ name: 'LanguageList' }" class="dropdown-item">
+                    <font-awesome-icon icon="fas fa-language" /> {{ t("languages.title") }}
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'DictionaryList' }" class="dropdown-item">
+                    <font-awesome-icon icon="fas fa-spell-check" /> {{ t("dictionaries.title") }}
+                  </RouterLink>
+                </li>
+              </ul>
             </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'SessionList' }" class="nav-link">
-                <font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}
-              </RouterLink>
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <font-awesome-icon icon="fas fa-message" /> {{ t("navbar.communication") }}
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <RouterLink :to="{ name: 'SenderList' }" class="dropdown-item"><SenderIcon /> {{ t("senders.title") }}</RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'TemplateList' }" class="dropdown-item"><TemplateIcon /> {{ t("templates.title") }}</RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'MessageList' }" class="dropdown-item"> <MessageIcon /> {{ t("messages.title") }} </RouterLink>
+                </li>
+              </ul>
             </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'ApiKeyList' }" class="nav-link"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.title") }}</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'Tokens' }" class="nav-link"> <font-awesome-icon icon="fas fa-id-card" /> {{ t("tokens.title") }} </RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'LanguageList' }" class="nav-link"><font-awesome-icon icon="fas fa-language" /> {{ t("languages.title") }}</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'DictionaryList' }" class="nav-link">
-                <font-awesome-icon icon="fas fa-spell-check" /> {{ t("dictionaries.title") }}
-              </RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'SenderList' }" class="nav-link"><SenderIcon /> {{ t("senders.title") }}</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'TemplateList' }" class="nav-link"><TemplateIcon /> {{ t("templates.title") }}</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'MessageList' }" class="nav-link"><font-awesome-icon icon="fas fa-envelope" /> {{ t("messages.title") }}</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'FieldTypeList' }" class="nav-link">
-                <font-awesome-icon icon="fas fa-keyboard" /> {{ t("fields.type.title") }}
-              </RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink :to="{ name: 'ContentTypeList' }" class="nav-link">
-                <font-awesome-icon icon="fas fa-list" /> {{ t("contents.type.title") }}
-              </RouterLink>
+            <li class="nav-item dropdown">
+              <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <font-awesome-icon icon="fas fa-book" /> {{ t("navbar.content") }}
+              </a>
+              <ul class="dropdown-menu">
+                <li>
+                  <RouterLink :to="{ name: 'FieldTypeList' }" class="dropdown-item">
+                    <font-awesome-icon icon="fas fa-keyboard" /> {{ t("fields.type.title") }}
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'ContentTypeList' }" class="dropdown-item">
+                    <font-awesome-icon icon="fas fa-list" /> {{ t("contents.type.title") }}
+                  </RouterLink>
+                </li>
+              </ul>
             </li>
           </template>
         </ul>
-
         <ul class="navbar-nav mb-2 mb-lg-0">
           <template v-if="i18n.locale">
             <li v-if="otherLocales.length > 1" class="nav-item dropdown">
@@ -141,6 +170,9 @@ watchEffect(() => {
             </li>
           </template>
           <template v-if="user">
+            <li class="nav-item">
+              <RouterLink :to="{ name: 'Configuration' }" class="nav-link"><font-awesome-icon icon="fas fa-gear" /> {{ t("configuration.title") }}</RouterLink>
+            </li>
             <li class="nav-item d-block d-lg-none">
               <RouterLink class="nav-link" :to="{ name: 'UserEdit', params: { id: user.id } }">
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
