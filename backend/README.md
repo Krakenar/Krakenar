@@ -8,6 +8,8 @@ All the following environment variables are optional.
 
 - `ADMIN_BASE_PATH`: the base path of the administration interface. Defaults to `admin`.
 - `ADMIN_ENABLE_SWAGGER`: a boolean value indicating whether or not to enable Swagger UI. Should not be enabled in Production environment for security purposes. Defaults to `false`.
+- `ADMIN_TITLE`: the title of the API, used for `/api` route and Swagger UI. Defaults to `Krakenar API`.
+- `ADMIN_VERSION`: the version of the API, used for `/api` route and Swagger UI. Defaults to current API version.
 - `AUTHENTICATION_ACCESS_TOKEN_LIFETIME_SECONDS`: the default lifetime of access tokens, in seconds. Defaults to `300` (5 minutes).
 - `AUTHENTICATION_ACCESS_TOKEN_TYPE`: the token type of access tokens. Defaults to `at+jwt`.
 - `AUTHENTICATION_ENABLE_BASIC`: a boolean value indicating whether or not to enable Basic authentication. API keys should be preferred in Production environment for security purposes. Defaults to `false`.

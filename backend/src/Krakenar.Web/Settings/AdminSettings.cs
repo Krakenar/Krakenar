@@ -8,6 +8,8 @@ public record AdminSettings
 
   public string BasePath { get; set; } = "admin";
   public bool EnableSwagger { get; set; }
+  public string Title { get; set; } = "Krakenar API";
+  public Version Version { get; set; } = new(0, 1, 0);
 
   public static AdminSettings Initialize(IConfiguration configuration)
   {
@@ -19,6 +21,14 @@ public record AdminSettings
     if (!string.IsNullOrWhiteSpace(enableSwaggerValue) && bool.TryParse(enableSwaggerValue, out bool enableSwagger))
     {
       settings.EnableSwagger = enableSwagger;
+    }
+
+    settings.Title = EnvironmentHelper.GetString("ADMIN_TITLE", settings.Title);
+
+    string? versionValue = Environment.GetEnvironmentVariable("ADMIN_VERSION");
+    if (!string.IsNullOrWhiteSpace(versionValue) && Version.TryParse(versionValue, out Version? version))
+    {
+      settings.Version = version;
     }
 
     return settings;

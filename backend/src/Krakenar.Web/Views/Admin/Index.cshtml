@@ -15,6 +15,7 @@
   <script>
     window.KRAKENAR_BASE_URL = "@(Admin.BasePath)";
     window.KRAKENAR_ENABLE_SWAGGER = @(Admin.EnableSwagger.ToString().ToLowerInvariant());
+    window.KRAKENAR_VERSION = "@(Admin.Version)";
   </script>
   <script type="module" crossorigin src="~/assets/index.js"></script>
 </body>

@@ -30,7 +30,7 @@ internal class Startup : StartupBase
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational();
     services.AddKrakenarWeb(_configuration);
-    services.AddKrakenarSwagger();
+    services.AddKrakenarSwagger(AdminSettings.Initialize(_configuration));
 
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
     DatabaseSettings databaseSettings = DatabaseSettings.Initialize(_configuration);
@@ -59,7 +59,7 @@ internal class Startup : StartupBase
     AdminSettings adminSettings = application.Services.GetRequiredService<AdminSettings>();
     if (adminSettings.EnableSwagger)
     {
-      application.UseKrakenarSwagger();
+      application.UseKrakenarSwagger(adminSettings);
     }
 
     application.UseHttpsRedirection();

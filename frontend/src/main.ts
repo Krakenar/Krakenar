@@ -14,6 +14,7 @@ declare global {
   interface Window {
     KRAKENAR_BASE_URL?: string;
     KRAKENAR_ENABLE_SWAGGER?: boolean;
+    KRAKENAR_VERSION?: string;
   }
 }
 
