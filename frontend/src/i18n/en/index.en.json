@@ -41,6 +41,12 @@
     "placeholder": "Select a locale"
   },
   "name": "Name",
+  "navbar": {
+    "communication": "Communications",
+    "content": "Content",
+    "identity": "Identity",
+    "localization": "Localization"
+  },
   "notFound": {
     "help": "The requested page could not be found.",
     "lead": "Page Not Found",

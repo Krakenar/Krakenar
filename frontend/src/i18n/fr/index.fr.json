@@ -41,6 +41,12 @@
     "placeholder": "Sélectionnez une langue"
   },
   "name": "Nom",
+  "navbar": {
+    "communication": "Communications",
+    "content": "Contenu",
+    "identity": "Identité",
+    "localization": "Localisation"
+  },
   "no": "Non",
   "notFound": {
     "help": "La page demandée n’a pu être trouvée.",

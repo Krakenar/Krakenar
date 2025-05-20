@@ -157,7 +157,7 @@ watch(
         <tbody>
           <tr v-for="realm in realms" :key="realm.id">
             <td>
-              <RouterLink :to="{ name: 'RealmEdit', params: { id: realm.id } }"><EditIcon />{{ realm.uniqueSlug }}</RouterLink>
+              <RouterLink :to="{ name: 'RealmEdit', params: { id: realm.id } }"><EditIcon /> {{ realm.uniqueSlug }}</RouterLink>
             </td>
             <td>
               <template v-if="realm.displayName">{{ realm.displayName }}</template>
