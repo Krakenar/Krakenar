@@ -1,4 +1,4 @@
-@inject Krakenar.Web.Settings.AdminSettings AdminSettings
+@inject Krakenar.Web.Settings.AdminSettings Admin
 
 <!DOCTYPE html>
 <html lang="en">
@@ -13,7 +13,8 @@
 <body>
   <div id="krakenar"></div>
   <script>
-    window.KRAKENAR_BASE_URL = "@(AdminSettings.BasePath)";
+    window.KRAKENAR_BASE_URL = "@(Admin.BasePath)";
+    window.KRAKENAR_ENABLE_SWAGGER = @(Admin.EnableSwagger.ToString().ToLowerInvariant());
   </script>
   <script type="module" crossorigin src="~/assets/index.js"></script>
 </body>

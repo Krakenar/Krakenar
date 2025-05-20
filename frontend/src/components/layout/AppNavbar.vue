@@ -24,7 +24,7 @@ const account = useAccountStore();
 const apiBaseUrl: string = import.meta.env.VITE_APP_API_BASE_URL ?? "";
 const environment = import.meta.env.MODE.toLowerCase();
 const i18n = useI18nStore();
-const isSwaggerEnabled: boolean = parseBoolean(import.meta.env.VITE_APP_ENABLE_SWAGGER) ?? false;
+const isSwaggerEnabled: boolean = window.KRAKENAR_ENABLE_SWAGGER ?? parseBoolean(import.meta.env.VITE_APP_ENABLE_SWAGGER) ?? false;
 const { availableLocales, locale, t } = useI18n();
 
 const otherLocales = computed<Locale[]>(() => {

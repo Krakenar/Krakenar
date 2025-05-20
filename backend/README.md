@@ -7,6 +7,7 @@ Krakenar is a tool suite aiming at handling non-business software requirements, 
 All the following environment variables are optional.
 
 - `ADMIN_BASE_PATH`: the base path of the administration interface. Defaults to `admin`.
+- `ADMIN_ENABLE_SWAGGER`: a boolean value indicating whether or not to enable Swagger UI. Should not be enabled in Production environment for security purposes. Defaults to `false`.
 - `AUTHENTICATION_ACCESS_TOKEN_LIFETIME_SECONDS`: the default lifetime of access tokens, in seconds. Defaults to `300` (5 minutes).
 - `AUTHENTICATION_ACCESS_TOKEN_TYPE`: the token type of access tokens. Defaults to `at+jwt`.
 - `AUTHENTICATION_ENABLE_BASIC`: a boolean value indicating whether or not to enable Basic authentication. API keys should be preferred in Production environment for security purposes. Defaults to `false`.
@@ -23,4 +24,3 @@ All the following environment variables are optional.
 - `PASSWORDS_PBKDF2_ITERATIONS`: the hashing iterations for PBKDF2 passwords. Defaults to 600000.
 - `PASSWORDS_PBKDF2_SALT_LENGTH`: the salt length (in bytes) for PBKDF2 passwords. Defaults to 32 (256 bits).
 - `SQLCONNSTR_Krakenar`: the Microsoft SQL Server connection string.
-- `SWAGGER_ENABLED`: a boolean value indicating whether or not to enable Swagger UI. Should not be enabled in Production environment for security purposes. Defaults to `false`.

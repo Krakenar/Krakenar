@@ -30,9 +30,6 @@ internal class Startup : StartupBase
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational();
     services.AddKrakenarWeb(_configuration);
-
-    SwaggerSettings swaggerSettings = SwaggerSettings.Initialize(_configuration);
-    services.AddSingleton(swaggerSettings);
     services.AddKrakenarSwagger();
 
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
@@ -59,8 +56,8 @@ internal class Startup : StartupBase
   }
   public virtual void Configure(WebApplication application)
   {
-    SwaggerSettings swaggerSettings = application.Services.GetRequiredService<SwaggerSettings>();
-    if (swaggerSettings.Enabled)
+    AdminSettings adminSettings = application.Services.GetRequiredService<AdminSettings>();
+    if (adminSettings.EnableSwagger)
     {
       application.UseKrakenarSwagger();
     }
@@ -78,10 +75,7 @@ internal class Startup : StartupBase
     application.UseMiddleware<ResolveUser>();
 
     application.MapControllers();
-
-    AdminSettings adminSettings = application.Services.GetRequiredService<AdminSettings>();
     application.MapControllerRoute(name: "Admin", pattern: $"{adminSettings.BasePath}/{{**anything}}", defaults: new { Controller = "Admin", Action = "Index" });
-
     application.MapHealthChecks("/health");
   }
 }
