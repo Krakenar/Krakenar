@@ -35,8 +35,7 @@ internal class Startup : StartupBase
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
     DatabaseSettings databaseSettings = DatabaseSettings.Initialize(_configuration);
     services.AddSingleton(databaseSettings);
-    DatabaseProvider databaseProvider = GetDatabaseProvider();
-    switch (databaseProvider)
+    switch (databaseSettings.Provider)
     {
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         services.AddKrakenarEntityFrameworkCoreSqlServer(_configuration);
@@ -44,17 +43,8 @@ internal class Startup : StartupBase
         healthChecks.AddDbContextCheck<KrakenarContext>();
         break;
       default:
-        throw new DatabaseProviderNotSupportedException(databaseProvider);
+        throw new DatabaseProviderNotSupportedException(databaseSettings.Provider);
     }
-  }
-  private DatabaseProvider GetDatabaseProvider()
-  {
-    string? value = Environment.GetEnvironmentVariable("DATABASE_PROVIDER");
-    if (!string.IsNullOrWhiteSpace(value) && Enum.TryParse(value, out DatabaseProvider databaseProvider) && Enum.IsDefined(databaseProvider))
-    {
-      return databaseProvider;
-    }
-    return _configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
   }
 
   public override void Configure(IApplicationBuilder builder)
