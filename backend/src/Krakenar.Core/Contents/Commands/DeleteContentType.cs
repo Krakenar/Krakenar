@@ -64,6 +64,11 @@ public class DeleteContentTypeHandler : ICommandHandler<DeleteContentType, Conte
       IReadOnlyCollection<ContentType> contentTypes = await ContentTypeRepository.LoadAsync(contentTypeIds, cancellationToken);
       foreach (ContentType relatedContentType in contentTypes)
       {
+        if (contentType.Id == relatedContentType.Id)
+        {
+          contentType = relatedContentType;
+        }
+
         FieldDefinition[] fields = [.. relatedContentType.Fields];
         foreach (FieldDefinition field in fields)
         {
