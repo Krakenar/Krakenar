@@ -21,12 +21,12 @@ public interface IOpenAuthenticationService
 
 public class OpenAuthenticationService : IOpenAuthenticationService
 {
-  protected virtual OpenAuthenticationSettings Settings { get; }
+  protected virtual AuthenticationSettings Settings { get; }
   protected virtual AccessTokenSettings AccessTokenSettings => Settings.AccessToken;
 
   protected virtual ITokenService TokenService { get; }
 
-  public OpenAuthenticationService(OpenAuthenticationSettings settings, ITokenService tokenService)
+  public OpenAuthenticationService(AuthenticationSettings settings, ITokenService tokenService)
   {
     Settings = settings;
     TokenService = tokenService;

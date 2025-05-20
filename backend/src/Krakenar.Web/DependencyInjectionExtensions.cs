@@ -25,18 +25,19 @@ public static class DependencyInjectionExtensions
     services.AddSingleton(CorsSettings.Initialize(configuration));
     services.AddCors();
 
-    string[] authenticationSchemes = configuration.GetKrakenarAuthenticationSchemes();
+    AuthenticationSettings authenticationSettings = AuthenticationSettings.Initialize(configuration);
+    services.AddSingleton(authenticationSettings);
+    string[] authenticationSchemes = authenticationSettings.GetKrakenarAuthenticationSchemes();
     AuthenticationBuilder authenticationBuilder = services.AddAuthentication()
       .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(Schemes.ApiKey, options => { })
       .AddScheme<BearerAuthenticationOptions, BearerAuthenticationHandler>(Schemes.Bearer, options => { })
       .AddScheme<SessionAuthenticationOptions, SessionAuthenticationHandler>(Schemes.Session, options => { });
-    if (authenticationSchemes.Contains(Schemes.Basic))
+    if (authenticationSettings.EnableBasic)
     {
       authenticationBuilder.AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(Schemes.Basic, options => { });
     }
+    services.AddTransient<IOpenAuthenticationService, OpenAuthenticationService>();
 
-    OpenAuthenticationSettings openAuthenticationSettings = OpenAuthenticationSettings.Initialize(configuration);
-    services.AddSingleton(openAuthenticationSettings);
     services.AddAuthorizationBuilder()
       .SetDefaultPolicy(new AuthorizationPolicyBuilder(authenticationSchemes).RequireAuthenticatedUser().Build())
       .AddPolicy(Policies.KrakenarAdmin, new AuthorizationPolicyBuilder(authenticationSchemes)
@@ -44,7 +45,6 @@ public static class DependencyInjectionExtensions
         .AddRequirements(new KrakenarAdminRequirement())
         .Build());
     services.AddSingleton<IAuthorizationHandler, KrakenarAdminHandler>();
-    services.AddTransient<IOpenAuthenticationService, OpenAuthenticationService>();
 
     CookiesSettings cookiesSettings = CookiesSettings.Initialize(configuration);
     services.AddSingleton(cookiesSettings);
@@ -62,7 +62,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton<IApplicationContext, HttpApplicationContext>();
   }
 
-  public static string[] GetKrakenarAuthenticationSchemes(this IConfiguration configuration)
+  public static string[] GetKrakenarAuthenticationSchemes(this AuthenticationSettings settings)
   {
     List<string> schemes = new(capacity: 4)
     {
@@ -71,12 +71,7 @@ public static class DependencyInjectionExtensions
       Schemes.Session
     };
 
-    string? enableBasicAuthentication = Environment.GetEnvironmentVariable("ENABLE_BASIC_AUTHENTICATION");
-    if (string.IsNullOrWhiteSpace(enableBasicAuthentication) || !bool.TryParse(enableBasicAuthentication, out bool isBasicAuthenticationEnabled))
-    {
-      isBasicAuthenticationEnabled = configuration.GetValue<bool>("EnableBasicAuthentication");
-    }
-    if (isBasicAuthenticationEnabled)
+    if (settings.EnableBasic)
     {
       schemes.Add(Schemes.Basic);
     }
