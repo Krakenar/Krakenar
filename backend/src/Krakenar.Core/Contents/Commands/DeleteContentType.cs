@@ -1,4 +1,5 @@
-﻿using Logitar.EventSourcing;
+﻿using Krakenar.Core.Fields;
+using Logitar.EventSourcing;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 
 namespace Krakenar.Core.Contents.Commands;
@@ -12,19 +13,25 @@ public class DeleteContentTypeHandler : ICommandHandler<DeleteContentType, Conte
   protected virtual IContentRepository ContentRepository { get; }
   protected virtual IContentTypeQuerier ContentTypeQuerier { get; }
   protected virtual IContentTypeRepository ContentTypeRepository { get; }
+  protected virtual IFieldTypeQuerier FieldTypeQuerier { get; }
+  protected virtual IFieldTypeRepository FieldTypeRepository { get; }
 
   public DeleteContentTypeHandler(
     IApplicationContext applicationContext,
     IContentQuerier contentQuerier,
     IContentRepository contentRepository,
     IContentTypeQuerier contentTypeQuerier,
-    IContentTypeRepository contentTypeRepository)
+    IContentTypeRepository contentTypeRepository,
+    IFieldTypeQuerier fieldTypeQuerier,
+    IFieldTypeRepository fieldTypeRepository)
   {
     ApplicationContext = applicationContext;
     ContentQuerier = contentQuerier;
     ContentRepository = contentRepository;
     ContentTypeQuerier = contentTypeQuerier;
     ContentTypeRepository = contentTypeRepository;
+    FieldTypeQuerier = fieldTypeQuerier;
+    FieldTypeRepository = fieldTypeRepository;
   }
 
   public virtual async Task<ContentTypeDto?> HandleAsync(DeleteContentType command, CancellationToken cancellationToken)
@@ -48,6 +55,20 @@ public class DeleteContentTypeHandler : ICommandHandler<DeleteContentType, Conte
         content.Delete(actorId);
       }
       await ContentRepository.SaveAsync(contents, cancellationToken);
+    }
+
+    HashSet<FieldTypeId> fieldTypeIds = (await FieldTypeQuerier.FindIdsAsync(contentType.Id, cancellationToken)).ToHashSet();
+    if (fieldTypeIds.Count > 0)
+    {
+      IReadOnlyCollection<FieldType> fieldTypes = await FieldTypeRepository.LoadAsync(fieldTypeIds, cancellationToken);
+
+      // TODO(fpion): load content types having one or more field definitions referencing these field types
+
+      foreach (FieldType fieldType in fieldTypes)
+      {
+        fieldType.Delete(actorId);
+      }
+      await FieldTypeRepository.SaveAsync(fieldTypes, cancellationToken);
     }
 
     contentType.Delete(actorId);
