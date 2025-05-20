@@ -6,6 +6,7 @@ using Krakenar.Models.Account;
 using Krakenar.Web;
 using Krakenar.Web.Authentication;
 using Krakenar.Web.Models.Authentication;
+using Krakenar.Web.Settings;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,21 +15,18 @@ namespace Krakenar.Controllers;
 [ApiController]
 public class AccountController : ControllerBase
 {
-  private readonly bool _exposeErrorDetail;
+  private readonly ErrorSettings _errorSettings;
   private readonly ILogger<AccountController> _logger;
   private readonly IOpenAuthenticationService _openAuthenticationService;
   private readonly ISessionService _sessionService;
 
   public AccountController(
-    IConfiguration configuration,
+    ErrorSettings errorSettings,
     ILogger<AccountController> logger,
     IOpenAuthenticationService openAuthenticationService,
     ISessionService sessionService)
   {
-    string? exposeErrorDetailValue = Environment.GetEnvironmentVariable("EXPOSE_ERROR_DETAIL");
-    _exposeErrorDetail = !string.IsNullOrWhiteSpace(exposeErrorDetailValue) && bool.TryParse(exposeErrorDetailValue, out bool exposeErrorDetail)
-      ? exposeErrorDetail : configuration.GetValue<bool>("ExposeErrorDetail");
-
+    _errorSettings = errorSettings;
     _logger = logger;
     _openAuthenticationService = openAuthenticationService;
     _sessionService = sessionService;
@@ -62,7 +60,7 @@ public class AccountController : ControllerBase
     }
     catch (InvalidCredentialsException exception)
     {
-      if (_exposeErrorDetail)
+      if (_errorSettings.ExposeDetail)
       {
         throw;
       }
@@ -95,7 +93,7 @@ public class AccountController : ControllerBase
     }
     catch (InvalidCredentialsException exception)
     {
-      if (_exposeErrorDetail)
+      if (_errorSettings.ExposeDetail)
       {
         throw;
       }

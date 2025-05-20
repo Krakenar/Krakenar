@@ -55,6 +55,9 @@ public static class DependencyInjectionExtensions
     });
     services.AddDistributedMemoryCache();
 
+    ErrorSettings settings = ErrorSettings.Initialize(configuration);
+    services.AddSingleton(settings);
+
     return services
       .AddExceptionHandler<ExceptionHandler>()
       .AddHttpContextAccessor()

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts;
 using Krakenar.Core;
+using Krakenar.Web.Settings;
 using Logitar;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,13 @@ namespace Krakenar.Web;
 
 public class ExceptionHandler : IExceptionHandler
 {
-  protected virtual bool ExposeErrorDetail { get; }
+  protected virtual ErrorSettings ErrorSettings { get; }
   protected virtual ProblemDetailsFactory ProblemDetailsFactory { get; }
   protected virtual IProblemDetailsService ProblemDetailsService { get; }
 
-  public ExceptionHandler(IConfiguration configuration, ProblemDetailsFactory problemDetailsFactory, IProblemDetailsService problemDetailsService)
+  public ExceptionHandler(ErrorSettings errorSettings, ProblemDetailsFactory problemDetailsFactory, IProblemDetailsService problemDetailsService)
   {
-    string? exposeErrorDetailValue = Environment.GetEnvironmentVariable("EXPOSE_ERROR_DETAIL");
-    ExposeErrorDetail = !string.IsNullOrWhiteSpace(exposeErrorDetailValue) && bool.TryParse(exposeErrorDetailValue, out bool exposeErrorDetail)
-      ? exposeErrorDetail : configuration.GetValue<bool>("ExposeErrorDetail");
-
+    ErrorSettings = errorSettings;
     ProblemDetailsFactory = problemDetailsFactory;
     ProblemDetailsService = problemDetailsService;
   }
@@ -40,7 +38,7 @@ public class ExceptionHandler : IExceptionHandler
     {
       statusCode = StatusCodes.Status409Conflict;
     }
-    else if (ExposeErrorDetail)
+    else if (ErrorSettings.ExposeDetail)
     {
       statusCode = StatusCodes.Status500InternalServerError;
     }
