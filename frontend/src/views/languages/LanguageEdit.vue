@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { TarButton } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import DefaultButton from "@/components/languages/DefaultButton.vue";
 import DeleteLanguage from "@/components/languages/DeleteLanguage.vue";
 import LocaleAlreadyUsed from "@/components/languages/LocaleAlreadyUsed.vue";
 import LocaleSelect from "@/components/shared/LocaleSelect.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Language } from "@/types/languages";
 import type { UpdateLanguagePayload } from "@/types/languages";
 import { ErrorCodes, StatusCodes, type ApiFailure } from "@/types/api";
@@ -29,6 +31,9 @@ const { t } = useI18n();
 const language = ref<Language>();
 const locale = ref<string>("");
 const localeAlreadyUsed = ref<boolean>(false);
+
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "LanguageList" }, text: t("languages.title") }]);
+const title = computed<string>(() => (language.value ? formatLocale(language.value.locale) : ""));
 
 function onDeleted(): void {
   toasts.success("languages.deleted");
@@ -90,7 +95,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="language">
-      <h1>{{ formatLocale(language.locale) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="language" />
       <div class="mb-3">
         <DeleteLanguage class="me-1" :disabled="language.isDefault" :language="language" @deleted="onDeleted" @error="handleError" />

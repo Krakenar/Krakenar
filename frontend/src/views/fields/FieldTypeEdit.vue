@@ -4,6 +4,7 @@ import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import DateTimeSettingsEdit from "@/components/fields/DateTimeSettingsEdit.vue";
 import DeleteFieldType from "@/components/fields/DeleteFieldType.vue";
 import FieldTypeGeneral from "@/components/fields/FieldTypeGeneral.vue";
@@ -13,6 +14,7 @@ import RichTextSettingsEdit from "@/components/fields/RichTextSettingsEdit.vue";
 import SelectSettingsEdit from "@/components/fields/SelectSettingsEdit.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import StringSettingsEdit from "@/components/fields/StringSettingsEdit.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Configuration } from "@/types/configuration";
 import type { FieldType } from "@/types/fields";
 import { StatusCodes, type ApiFailure } from "@/types/api";
@@ -31,7 +33,9 @@ const { t } = useI18n();
 const configuration = ref<Configuration>();
 const fieldType = ref<FieldType>();
 
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "FieldTypeList" }, text: t("fields.type.title") }]);
 const hasSettings = computed<boolean>(() => Boolean(fieldType.value && fieldType.value.dataType !== "Boolean" && fieldType.value.dataType !== "Tags"));
+const title = computed<string>(() => (fieldType.value ? formatFieldType(fieldType.value) : ""));
 
 function setMetadata(updated: FieldType): void {
   if (fieldType.value) {
@@ -92,7 +96,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="fieldType">
-      <h1>{{ formatFieldType(fieldType) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="fieldType" />
       <div class="mb-3">
         <DeleteFieldType :fieldType="fieldType" @deleted="onDeleted" @error="handleError" />

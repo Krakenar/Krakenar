@@ -4,6 +4,7 @@ import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import AuthenticationInformation from "@/components/users/AuthenticationInformation.vue";
 import ContactInformation from "@/components/users/ContactInformation.vue";
 import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
@@ -14,7 +15,9 @@ import StatusDetail from "@/components/shared/StatusDetail.vue";
 import ToggleUserStatus from "@/components/users/ToggleUserStatus.vue";
 import UserRoles from "@/components/users/UserRoles.vue";
 import UserSummary from "@/components/users/UserSummary.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Configuration } from "@/types/configuration";
+import type { CurrentUser } from "@/types/account";
 import type { CustomAttribute } from "@/types/custom";
 import type { UpdateUserPayload, User } from "@/types/users";
 import { StatusCodes, type ApiFailure } from "@/types/api";
@@ -24,7 +27,6 @@ import { readConfiguration } from "@/api/configuration";
 import { readUser, updateUser } from "@/api/users";
 import { useAccountStore } from "@/stores/account";
 import { useToastStore } from "@/stores/toast";
-import type { CurrentUser } from "@/types/account";
 
 const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -36,7 +38,9 @@ const { t } = useI18n();
 const configuration = ref<Configuration>();
 const user = ref<User>();
 
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "UserList" }, text: t("users.title") }]);
 const isCurrentUser = computed<boolean>(() => Boolean(user.value && user.value.id === account.currentUser?.id));
+const title = computed<string>(() => (user.value ? formatUser(user.value) : ""));
 
 function onDeleted(): void {
   toasts.success("users.deleted");
@@ -172,7 +176,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="user">
-      <h1>{{ formatUser(user) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="user" />
       <div class="mb-3">
         <DeleteUser class="me-1" :disabled="isCurrentUser" :user="user" @deleted="onDeleted" @error="handleError" />

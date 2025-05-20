@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import DeleteRealm from "@/components/realms/DeleteRealm.vue";
 import RealmGeneral from "@/components/realms/RealmGeneral.vue";
@@ -13,6 +14,7 @@ import SwitchButton from "@/components/realms/SwitchButton.vue";
 import type { CustomAttribute } from "@/types/custom";
 import type { Realm, UpdateRealmPayload } from "@/types/realms";
 import { StatusCodes, type ApiFailure } from "@/types/api";
+import { formatRealm } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readRealm, updateRealm } from "@/api/realms";
 import { useToastStore } from "@/stores/toast";
@@ -24,6 +26,8 @@ const toasts = useToastStore();
 const { t } = useI18n();
 
 const realm = ref<Realm>();
+
+const title = computed<string>(() => (realm.value ? formatRealm(realm.value) : ""));
 
 function onDeleted(): void {
   toasts.success("realms.deleted");
@@ -87,7 +91,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="realm">
-      <h1>{{ realm.displayName ?? realm.uniqueSlug }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" />
       <StatusDetail :aggregate="realm" />
       <div class="mb-3">
         <DeleteRealm class="me-1" :realm="realm" @deleted="onDeleted" @error="handleError" />

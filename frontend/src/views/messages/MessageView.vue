@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import MessageContents from "@/components/messages/MessageContents.vue";
 import MessageGeneral from "@/components/messages/MessageGeneral.vue";
 import MessageRecipients from "@/components/messages/MessageRecipients.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Message } from "@/types/messages";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
@@ -19,6 +21,8 @@ const router = useRouter();
 const { t } = useI18n();
 
 const message = ref<Message>();
+
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "MessageList" }, text: t("messages.title") }]);
 
 onMounted(async () => {
   try {
@@ -39,6 +43,7 @@ onMounted(async () => {
   <main class="container">
     <template v-if="message">
       <h1>{{ message.subject }}</h1>
+      <AppBreadcrumb :current="message.subject" :parent="breadcrumb" />
       <StatusDetail :aggregate="message" />
       <TarTabs>
         <TarTab active id="general" :title="t('general')">

@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import ApiKeyGeneral from "@/components/apiKeys/ApiKeyGeneral.vue";
 import ApiKeyRoles from "@/components/apiKeys/ApiKeyRoles.vue";
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import DeleteApiKey from "@/components/apiKeys/DeleteApiKey.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import XApiKey from "@/components/apiKeys/XApiKey.vue";
 import type { ApiKey, UpdateApiKeyPayload } from "@/types/apiKeys";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { CustomAttribute } from "@/types/custom";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
@@ -25,6 +27,8 @@ const { t } = useI18n();
 
 const apiKey = ref<ApiKey>();
 const xApiKey = ref<string>("");
+
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "ApiKeyList" }, text: t("apiKeys.title") }]);
 
 function setMetadata(updated: ApiKey): void {
   if (apiKey.value) {
@@ -94,6 +98,7 @@ onMounted(async () => {
   <main class="container">
     <template v-if="apiKey">
       <h1>{{ apiKey.name }}</h1>
+      <AppBreadcrumb :current="apiKey.name" :parent="breadcrumb" />
       <StatusDetail :aggregate="apiKey" />
       <XApiKey v-if="xApiKey" :value="xApiKey" />
       <div class="mb-3">

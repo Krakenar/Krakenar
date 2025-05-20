@@ -85,7 +85,7 @@ const router = createRouter({
       path: "/languages/:id",
       component: () => import("./views/languages/LanguageEdit.vue"),
     },
-    // Languages
+    // Messages
     {
       name: "MessageList",
       path: "/messages",

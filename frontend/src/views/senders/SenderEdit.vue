@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { TarTab, TarTabs } from "logitar-vue3-ui";
-import { inject, onMounted, ref } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import DefaultButton from "@/components/senders/DefaultButton.vue";
 import DeleteSender from "@/components/senders/DeleteSender.vue";
 import SendDemo from "@/components/messages/SendDemo.vue";
@@ -11,6 +12,7 @@ import SendGridSettingsEdit from "@/components/senders/SendGridSettingsEdit.vue"
 import SenderGeneral from "@/components/senders/SenderGeneral.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import TwilioSettingsEdit from "@/components/senders/TwilioSettingsEdit.vue";
+import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Sender } from "@/types/senders";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatSender } from "@/helpers/format";
@@ -25,6 +27,9 @@ const toasts = useToastStore();
 const { t } = useI18n();
 
 const sender = ref<Sender>();
+
+const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "SenderList" }, text: t("senders.title") }]);
+const title = computed<string>(() => (sender.value ? formatSender(sender.value) : ""));
 
 function setMetadata(updated: Sender): void {
   if (sender.value) {
@@ -97,7 +102,8 @@ onMounted(async () => {
 <template>
   <main class="container">
     <template v-if="sender">
-      <h1>{{ formatSender(sender) }}</h1>
+      <h1>{{ title }}</h1>
+      <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="sender" />
       <div class="mb-3">
         <DeleteSender class="me-1" :sender="sender" @deleted="onDeleted" @error="handleError" />

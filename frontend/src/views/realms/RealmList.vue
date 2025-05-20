@@ -6,6 +6,7 @@ import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
+import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateRealm from "@/components/realms/CreateRealm.vue";
@@ -130,6 +131,7 @@ watch(
 <template>
   <main class="container">
     <h1>{{ t("realms.title") }}</h1>
+    <AppBreadcrumb :current="t('realms.title')" />
     <div class="my-3">
       <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateRealm class="ms-1" @created="onCreated" @error="handleError" />
