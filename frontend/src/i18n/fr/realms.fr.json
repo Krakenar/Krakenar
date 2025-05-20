@@ -7,6 +7,7 @@
   },
   "deleted": "Le royaume a été supprimé.",
   "empty": "Cette liste est vide.",
+  "none": "Krakenar (aucun royaume)",
   "sort": {
     "options": {
       "CreatedOn": "Date de création",

@@ -1,6 +1,7 @@
 import type { ContentType } from "@/types/contents";
 import type { FieldType } from "@/types/fields";
 import type { Locale } from "@/types/i18n";
+import type { Realm } from "@/types/realms";
 import type { Role } from "@/types/roles";
 import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
@@ -16,6 +17,10 @@ export function formatFieldType(fieldType: FieldType): string {
 
 export function formatLocale(locale: Locale): string {
   return `${locale.displayName} (${locale.code})`;
+}
+
+export function formatRealm(realm: Realm): string {
+  return realm.displayName ? `${realm.displayName} (${realm.uniqueSlug})` : realm.uniqueSlug;
 }
 
 export function formatRole(role: Role): string {

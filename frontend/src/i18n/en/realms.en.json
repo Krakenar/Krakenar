@@ -7,6 +7,7 @@
   },
   "deleted": "The realm has been deleted.",
   "empty": "This list is empty.",
+  "none": "Krakenar (no realm)",
   "sort": {
     "options": {
       "CreatedOn": "Created on",
