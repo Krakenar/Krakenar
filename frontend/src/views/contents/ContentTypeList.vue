@@ -166,6 +166,7 @@ watch(
             <th scope="col">{{ t("contents.type.sort.options.UniqueName") }}</th>
             <th scope="col">{{ t("contents.type.sort.options.DisplayName") }}</th>
             <th scope="col">{{ t("contents.type.invariant.label") }}</th>
+            <th scope="col">{{ t("contents.type.fieldCount") }}</th>
             <th scope="col">{{ t("contents.type.sort.options.UpdatedOn") }}</th>
           </tr>
         </thead>
@@ -182,6 +183,7 @@ watch(
               <template v-if="contentType.isInvariant"><font-awesome-icon icon="fas fa-check" /> {{ t("yes") }}</template>
               <template v-else><font-awesome-icon icon="fas fa-times" /> {{ t("no") }}</template>
             </td>
+            <td>{{ contentType.fieldCount }}</td>
             <td><StatusBlock :actor="contentType.updatedBy" :date="contentType.updatedOn" /></td>
           </tr>
         </tbody>

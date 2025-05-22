@@ -7,6 +7,7 @@ const { t } = useI18n();
 
 withDefaults(
   defineProps<{
+    help?: string;
     id?: string;
     label?: string;
     max?: number | string;
@@ -26,5 +27,17 @@ defineEmits<{
 </script>
 
 <template>
-  <FormInput :id="id" :label="t(label)" :max="max" :model-value="modelValue" :required="required" @update:model-value="$emit('update:model-value', $event)" />
+  <FormInput
+    :described-by="help ? `${id}-help` : undefined"
+    :id="id"
+    :label="t(label)"
+    :max="max"
+    :model-value="modelValue"
+    :required="required"
+    @update:model-value="$emit('update:model-value', $event)"
+  >
+    <template v-if="help" #after>
+      <div :id="`${id}-help`" class="form-text">{{ t(help) }}</div>
+    </template>
+  </FormInput>
 </template>

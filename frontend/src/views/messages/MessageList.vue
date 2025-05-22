@@ -24,7 +24,7 @@ import ViewIcon from "@/components/shared/ViewIcon.vue";
 import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { Message, MessageSort, MessageStatus, SearchMessagesPayload } from "@/types/messages";
 import type { SearchResults } from "@/types/search";
-import { formatSender, formatTemplate } from "@/helpers/format";
+import { formatSender } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { searchMessages } from "@/api/messages";
 
@@ -202,9 +202,21 @@ watch(
             </td>
             <td>
               <RouterLink v-if="message.template.version > 0" :to="{ name: 'TemplateEdit', params: { id: message.template.id } }" target="_blank">
-                <TemplateIcon /> {{ formatTemplate(message.template) }}
+                <TemplateIcon class="me-1" />
+                <template v-if="message.template.displayName">
+                  {{ message.template.displayName }}
+                  <br />
+                </template>
+                {{ message.template.uniqueName }}
               </RouterLink>
-              <span v-else class="text-muted"><TemplateIcon /> {{ formatTemplate(message.template) }}</span>
+              <span v-else class="text-muted">
+                <TemplateIcon class="me-1" />
+                <template v-if="message.template.displayName">
+                  {{ message.template.displayName }}
+                  <br />
+                </template>
+                {{ message.template.uniqueName }}
+              </span>
             </td>
             <td><StatusBadge :message="message" /></td>
             <td><StatusBlock :actor="message.updatedBy" :date="message.updatedOn" /></td>

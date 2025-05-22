@@ -1,5 +1,6 @@
 import type { Aggregate } from "./aggregate";
 import type { Change } from "./change";
+import type { FieldDefinition } from "./fields";
 import type { Realm } from "./realms";
 import type { SearchPayload, SortOption } from "./search";
 
@@ -9,6 +10,8 @@ export type ContentType = Aggregate & {
   uniqueName: string;
   displayName?: string | null;
   description?: string | null;
+  fieldCount: number;
+  fields: FieldDefinition[];
 };
 
 export type ContentTypeSort = "CreatedOn" | "DisplayName" | "UniqueName" | "UpdatedOn";

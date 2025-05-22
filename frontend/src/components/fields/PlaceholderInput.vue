@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 
-import FormTextarea from "@/components/forms/FormTextarea.vue";
+import FormInput from "@/components/forms/FormInput.vue";
 
 const { t } = useI18n();
 
 withDefaults(
   defineProps<{
-    help?: string;
     id?: string;
     label?: string;
+    max?: number | string;
     modelValue?: string;
-    rows?: number | string;
+    required?: boolean | string;
   }>(),
   {
-    id: "description",
-    label: "description",
-    rows: 15,
+    id: "placeholder",
+    label: "fields.definition.placeholder.label",
+    max: 255,
   },
 );
 
@@ -26,16 +26,17 @@ defineEmits<{
 </script>
 
 <template>
-  <FormTextarea
-    :described-by="help ? `${id}-help` : undefined"
+  <FormInput
+    :described-by="`${id}-help`"
     :id="id"
     :label="t(label)"
+    :max="max"
     :model-value="modelValue"
-    :rows="rows"
+    :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   >
-    <template v-if="help" #after>
-      <div :id="`${id}-help`" class="form-text">{{ t(help) }}</div>
+    <template #after>
+      <div :id="`${id}-help`" class="form-text">{{ t("fields.definition.placeholder.help") }}</div>
     </template>
-  </FormTextarea>
+  </FormInput>
 </template>
