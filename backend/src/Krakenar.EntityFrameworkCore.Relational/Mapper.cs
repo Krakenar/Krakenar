@@ -182,7 +182,8 @@ public sealed class Mapper
       IsInvariant = source.IsInvariant,
       UniqueName = source.UniqueName,
       DisplayName = source.DisplayName,
-      Description = source.Description
+      Description = source.Description,
+      FieldCount = source.FieldCount
     };
 
     foreach (Entities.FieldDefinition field in source.FieldDefinitions)

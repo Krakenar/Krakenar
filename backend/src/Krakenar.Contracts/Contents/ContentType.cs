@@ -13,6 +13,7 @@ public class ContentType : Aggregate
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
 
+  public int FieldCount { get; set; }
   public List<FieldDefinition> Fields { get; set; } = [];
 
   public ContentType() : this(string.Empty)
