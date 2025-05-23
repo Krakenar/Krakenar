@@ -43,6 +43,12 @@ const router = createRouter({
       path: "/api-keys/:id",
       component: () => import("./views/apiKeys/ApiKeyEdit.vue"),
     },
+    // Contents
+    {
+      name: "ContentList",
+      path: "/contents",
+      component: () => import("./views/contents/ContentList.vue"),
+    },
     // Content Types
     {
       name: "ContentTypeList",
