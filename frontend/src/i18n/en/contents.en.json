@@ -16,8 +16,9 @@
     },
     "deleted": "The content type has been deleted.",
     "empty": "This list is empty.",
+    "fieldCount": "Field Count",
     "invariant": {
-      "help": "When enabled, translations of contents this type will be disabled.",
+      "help": "When enabled, translation of contents this type will be disabled.",
       "label": "Invariant"
     },
     "select": {

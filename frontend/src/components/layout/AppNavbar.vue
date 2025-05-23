@@ -5,6 +5,8 @@ import { arrayUtils, parsingUtils, stringUtils } from "logitar-js";
 import { computed, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 
+import ContentTypeIcon from "@/components/contents/ContentTypeIcon.vue";
+import FieldTypeIcon from "@/components/fields/FieldTypeIcon.vue";
 import MessageIcon from "@/components/messages/MessageIcon.vue";
 import SenderIcon from "@/components/senders/SenderIcon.vue";
 import SwitchSelect from "@/components/realms/SwitchSelect.vue";
@@ -143,14 +145,10 @@ watchEffect(() => {
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <RouterLink :to="{ name: 'FieldTypeList' }" class="dropdown-item">
-                    <font-awesome-icon icon="fas fa-keyboard" /> {{ t("fields.type.title") }}
-                  </RouterLink>
+                  <RouterLink :to="{ name: 'FieldTypeList' }" class="dropdown-item"> <FieldTypeIcon /> {{ t("fields.type.title") }} </RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'ContentTypeList' }" class="dropdown-item">
-                    <font-awesome-icon icon="fas fa-list" /> {{ t("contents.type.title") }}
-                  </RouterLink>
+                  <RouterLink :to="{ name: 'ContentTypeList' }" class="dropdown-item"> <ContentTypeIcon /> {{ t("contents.type.title") }} </RouterLink>
                 </li>
               </ul>
             </li>

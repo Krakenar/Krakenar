@@ -3,14 +3,24 @@ import { nanoid } from "nanoid";
 
 import type { Actor } from "@/types/actor";
 import type { ContentType } from "@/types/contents";
-import type { FieldType } from "@/types/fields";
+import type { FieldDefinition, FieldType } from "@/types/fields";
 import type { Locale } from "@/types/i18n";
 import type { Realm } from "@/types/realms";
 import type { Role } from "@/types/roles";
 import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
 import type { User } from "@/types/users";
-import { formatContentType, formatFieldType, formatLocale, formatRealm, formatRole, formatSender, formatTemplate, formatUser } from "../format";
+import {
+  formatContentType,
+  formatFieldDefinition,
+  formatFieldType,
+  formatLocale,
+  formatRealm,
+  formatRole,
+  formatSender,
+  formatTemplate,
+  formatUser,
+} from "../format";
 
 const actor: Actor = {
   type: "User",
@@ -20,65 +30,73 @@ const actor: Actor = {
 };
 const now: string = new Date().toISOString();
 
+const contentType: ContentType = {
+  id: nanoid(),
+  version: 0,
+  createdBy: actor,
+  createdOn: now,
+  updatedBy: actor,
+  updatedOn: now,
+  isInvariant: false,
+  uniqueName: "BlogArticle",
+  fieldCount: 0,
+  fields: [],
+};
+const fieldType: FieldType = {
+  id: nanoid(),
+  version: 0,
+  createdBy: actor,
+  createdOn: now,
+  updatedBy: actor,
+  updatedOn: now,
+  uniqueName: "ArticleTitle",
+  dataType: "RichText",
+};
+const fieldDefinition: FieldDefinition = {
+  id: nanoid(),
+  order: 0,
+  fieldType,
+  isInvariant: false,
+  isRequired: false,
+  isIndexed: false,
+  isUnique: false,
+  uniqueName: "Keywords",
+  createdBy: actor,
+  createdOn: now,
+  updatedBy: actor,
+  updatedOn: now,
+};
+
 describe("formatContentType", () => {
   it.concurrent("should format the content type with display name correctly", () => {
-    const contentType: ContentType = {
-      id: nanoid(),
-      version: 0,
-      createdBy: actor,
-      createdOn: now,
-      updatedBy: actor,
-      updatedOn: now,
-      isInvariant: false,
-      uniqueName: "BlogArticle",
-      displayName: "Blog Article",
-    };
-    expect(formatContentType(contentType)).toBe("Blog Article (BlogArticle)");
+    const subject: ContentType = { ...contentType, displayName: "Blog Article" };
+    expect(formatContentType(subject)).toBe("Blog Article (BlogArticle)");
   });
 
   it.concurrent("should format the content type without display name correctly", () => {
-    const contentType: ContentType = {
-      id: nanoid(),
-      version: 0,
-      createdBy: actor,
-      createdOn: now,
-      updatedBy: actor,
-      updatedOn: now,
-      isInvariant: true,
-      uniqueName: "BlogCategory",
-    };
-    expect(formatContentType(contentType)).toBe("BlogCategory");
+    expect(formatContentType(contentType)).toBe("BlogArticle");
+  });
+});
+
+describe("formatFieldDefinition", () => {
+  it.concurrent("should format the field definition with display name correctly", () => {
+    const subject: FieldDefinition = { ...fieldDefinition, displayName: "Meta Keywords" };
+    expect(formatFieldDefinition(subject)).toBe("Meta Keywords (Keywords)");
+  });
+
+  it.concurrent("should format the field definition without display name correctly", () => {
+    expect(formatFieldDefinition(fieldDefinition)).toBe("Keywords");
   });
 });
 
 describe("formatFieldType", () => {
   it.concurrent("should format the field type with display name correctly", () => {
-    const fieldType: FieldType = {
-      id: nanoid(),
-      version: 0,
-      createdBy: actor,
-      createdOn: now,
-      updatedBy: actor,
-      updatedOn: now,
-      uniqueName: "ArticleTitle",
-      displayName: "Article Title",
-      dataType: "String",
-    };
-    expect(formatFieldType(fieldType)).toBe("Article Title (ArticleTitle)");
+    const subject: FieldType = { ...fieldType, displayName: "Article Title" };
+    expect(formatFieldType(subject)).toBe("Article Title (ArticleTitle)");
   });
 
   it.concurrent("should format the field type without display name correctly", () => {
-    const fieldType: FieldType = {
-      id: nanoid(),
-      version: 0,
-      createdBy: actor,
-      createdOn: now,
-      updatedBy: actor,
-      updatedOn: now,
-      uniqueName: "Contents",
-      dataType: "RichText",
-    };
-    expect(formatFieldType(fieldType)).toBe("Contents");
+    expect(formatFieldType(fieldType)).toBe("ArticleTitle");
   });
 });
 

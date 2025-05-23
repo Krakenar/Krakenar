@@ -1,3 +1,4 @@
+import type { Actor } from "./actor";
 import type { Aggregate } from "./aggregate";
 import type { Change } from "./change";
 import type { MediaType } from "./contents";
@@ -5,6 +6,18 @@ import type { Realm } from "./realms";
 import type { SearchPayload, SortOption } from "./search";
 
 export type BooleanSettings = {};
+
+export type CreateOrReplaceFieldDefinitionPayload = {
+  fieldType: string;
+  isInvariant: boolean;
+  isRequired: boolean;
+  isIndexed: boolean;
+  isUnique: boolean;
+  uniqueName: string;
+  displayName?: string;
+  description?: string;
+  placeholder?: string;
+};
 
 export type CreateOrReplaceFieldTypePayload = {
   uniqueName: string;
@@ -25,6 +38,24 @@ export type DataType = "Boolean" | "DateTime" | "Number" | "RelatedContent" | "R
 export type DateTimeSettings = {
   minimumValue?: string | null;
   maximumValue?: string | null;
+};
+
+export type FieldDefinition = {
+  id: string;
+  order: number;
+  fieldType: FieldType;
+  isInvariant: boolean;
+  isRequired: boolean;
+  isIndexed: boolean;
+  isUnique: boolean;
+  uniqueName: string;
+  displayName?: string | null;
+  description?: string | null;
+  placeholder?: string | null;
+  createdBy: Actor;
+  createdOn: string;
+  updatedBy: Actor;
+  updatedOn: string;
 };
 
 export type FieldType = Aggregate & {
@@ -90,6 +121,17 @@ export type StringSettings = {
 };
 
 export type TagsSettings = {};
+
+export type UpdateFieldDefinitionPayload = {
+  isInvariant?: boolean;
+  isRequired?: boolean;
+  isIndexed?: boolean;
+  isUnique?: boolean;
+  uniqueName?: string;
+  displayName?: Change<string>;
+  description?: Change<string>;
+  placeholder?: Change<string>;
+};
 
 export type UpdateFieldTypePayload = {
   uniqueName?: string;

@@ -7,6 +7,7 @@ import { useRoute, useRouter } from "vue-router";
 import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import ContentTypeGeneral from "@/components/contents/ContentTypeGeneral.vue";
 import DeleteContentType from "@/components/contents/DeleteContentType.vue";
+import FieldDefinitionList from "@/components/fields/FieldDefinitionList.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Breadcrumb } from "@/types/breadcrumb";
 import type { ContentType } from "@/types/contents";
@@ -51,6 +52,28 @@ function onGeneralUpdated(updated: ContentType): void {
   toasts.success("contents.type.updated");
 }
 
+function onFieldCreated(updated: ContentType): void {
+  if (contentType.value) {
+    setMetadata(updated);
+    contentType.value.fields = [...updated.fields];
+  }
+  toasts.success("fields.definition.created");
+}
+function onFieldDeleted(updated: ContentType): void {
+  if (contentType.value) {
+    setMetadata(updated);
+    contentType.value.fields = [...updated.fields];
+  }
+  toasts.success("fields.definition.deleted");
+}
+function onFieldUpdated(updated: ContentType): void {
+  if (contentType.value) {
+    setMetadata(updated);
+    contentType.value.fields = [...updated.fields];
+  }
+  toasts.success("fields.definition.updated");
+}
+
 onMounted(async () => {
   try {
     const id = route.params.id as string;
@@ -76,8 +99,11 @@ onMounted(async () => {
         <DeleteContentType :contentType="contentType" @deleted="onDeleted" @error="handleError" />
       </div>
       <TarTabs>
-        <TarTab active id="general" :title="t('general')">
+        <TarTab id="general" :title="t('general')">
           <ContentTypeGeneral :content-type="contentType" @error="handleError" @updated="onGeneralUpdated" />
+        </TarTab>
+        <TarTab active id="fields" :title="t('fields.definition.title')">
+          <FieldDefinitionList :content-type="contentType" @error="handleError" @created="onFieldCreated" @deleted="onFieldDeleted" @updated="onFieldUpdated" />
         </TarTab>
       </TarTabs>
     </template>

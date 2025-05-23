@@ -16,8 +16,9 @@
     },
     "deleted": "Le type de contenu a été supprimé.",
     "empty": "Cette liste est vide.",
+    "fieldCount": "Nombre de champs",
     "invariant": {
-      "help": "Lorsque activé, les traductions des contenus de ce type seront désactivées.",
+      "help": "Lorsque activé, la traduction des contenus de ce type sera désactivée.",
       "label": "Invariant"
     },
     "select": {
