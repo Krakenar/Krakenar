@@ -37,6 +37,11 @@ export async function createFieldType(payload: CreateOrReplaceFieldTypePayload):
   return (await post<CreateOrReplaceFieldTypePayload, FieldType>(url, payload)).data;
 }
 
+export async function deleteFieldDefinition(contentTypeId: string, fieldId: string): Promise<ContentType> {
+  const url: string = createDefinitionUrlBuilder(contentTypeId, fieldId).buildRelative();
+  return (await _delete<ContentType>(url)).data;
+}
+
 export async function deleteFieldType(id: string): Promise<FieldType> {
   const url: string = createTypeUrlBuilder(id).buildRelative();
   return (await _delete<FieldType>(url)).data;

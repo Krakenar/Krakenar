@@ -3,6 +3,7 @@ import { arrayUtils } from "logitar-js";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
+import DeleteFieldDefinition from "./DeleteFieldDefinition.vue";
 import FieldDefinitionEdit from "./FieldDefinitionEdit.vue";
 import FieldTypeIcon from "./FieldTypeIcon.vue";
 import IndexedBadge from "./IndexedBadge.vue";
@@ -25,6 +26,7 @@ const fields = computed<FieldDefinition[]>(() => orderBy(props.contentType.field
 
 defineEmits<{
   (e: "created", value: ContentType): void;
+  (e: "deleted", value: ContentType): void;
   (e: "error", value: unknown): void;
   (e: "updated", value: ContentType): void;
 }>();
@@ -63,8 +65,14 @@ defineEmits<{
           </td>
           <td><StatusBlock :actor="field.updatedBy" :date="field.updatedOn" /></td>
           <td>
-            <FieldDefinitionEdit :content-type="contentType" :field="field" @error="$emit('error', $event)" @saved="$emit('updated', $event)" />
-            <!-- TODO(fpion): FieldDefinitionDelete -->
+            <FieldDefinitionEdit class="me-1" :content-type="contentType" :field="field" @error="$emit('error', $event)" @saved="$emit('updated', $event)" />
+            <DeleteFieldDefinition
+              class="ms-1"
+              :content-type="contentType"
+              :field="field"
+              @error="$emit('error', $event)"
+              @deleted="$emit('deleted', $event)"
+            />
           </td>
         </tr>
       </tbody>
