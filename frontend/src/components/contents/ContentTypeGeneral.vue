@@ -11,7 +11,7 @@ import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import type { ContentType, UpdateContentTypePayload } from "@/types/contents";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { isError } from "@/helpers/error";
-import { updateContentType } from "@/api/contents";
+import { updateContentType } from "@/api/contents/types";
 import { useForm } from "@/forms";
 
 const { t } = useI18n();

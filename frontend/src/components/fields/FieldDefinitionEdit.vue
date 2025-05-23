@@ -17,7 +17,7 @@ import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import type { ContentType } from "@/types/contents";
 import type { CreateOrReplaceFieldDefinitionPayload, FieldDefinition, FieldType } from "@/types/fields";
 import { ErrorCodes, StatusCodes } from "@/types/api";
-import { createFieldDefinition, replaceFieldDefinition } from "@/api/fields";
+import { createFieldDefinition, replaceFieldDefinition } from "@/api/fields/definitions";
 import { isError } from "@/helpers/error";
 import { useForm } from "@/forms";
 

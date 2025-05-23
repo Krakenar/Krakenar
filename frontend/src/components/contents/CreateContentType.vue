@@ -8,7 +8,7 @@ import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import type { ContentType, CreateOrReplaceContentTypePayload } from "@/types/contents";
 import { ErrorCodes, StatusCodes } from "@/types/api";
-import { createContentType } from "@/api/contents";
+import { createContentType } from "@/api/contents/types";
 import { isError } from "@/helpers/error";
 import { useForm } from "@/forms";
 

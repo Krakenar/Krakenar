@@ -11,7 +11,7 @@ import type { Configuration } from "@/types/configuration";
 import type { ContentType } from "@/types/contents";
 import type { FieldType, CreateOrReplaceFieldTypePayload, DataType } from "@/types/fields";
 import { ErrorCodes, StatusCodes } from "@/types/api";
-import { createFieldType } from "@/api/fields";
+import { createFieldType } from "@/api/fields/types";
 import { isError } from "@/helpers/error";
 import { readConfiguration } from "@/api/configuration";
 import { useForm } from "@/forms";

@@ -7,7 +7,7 @@ import MediaTypeFormSelect from "@/components/contents/MediaTypeFormSelect.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import type { FieldType, RichTextSettings, UpdateFieldTypePayload } from "@/types/fields";
 import type { MediaType } from "@/types/contents";
-import { updateFieldType } from "@/api/fields";
+import { updateFieldType } from "@/api/fields/types";
 import { useForm } from "@/forms";
 
 const { t } = useI18n();

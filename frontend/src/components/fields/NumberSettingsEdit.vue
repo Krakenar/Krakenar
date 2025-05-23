@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 
 import NumberInput from "@/components/shared/NumberInput.vue";
 import type { FieldType, NumberSettings, UpdateFieldTypePayload } from "@/types/fields";
-import { updateFieldType } from "@/api/fields";
+import { updateFieldType } from "@/api/fields/types";
 import { useForm } from "@/forms";
 
 const { t } = useI18n();
