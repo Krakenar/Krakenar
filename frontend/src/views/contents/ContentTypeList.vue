@@ -19,7 +19,7 @@ import YesNoSelect from "@/components/shared/YesNoSelect.vue";
 import type { ContentType, ContentTypeSort, SearchContentTypesPayload } from "@/types/contents";
 import type { SearchResults } from "@/types/search";
 import { handleErrorKey } from "@/inject/App";
-import { searchContentTypes } from "@/api/contents";
+import { searchContentTypes } from "@/api/contents/types";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;

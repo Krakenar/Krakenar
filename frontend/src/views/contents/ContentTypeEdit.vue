@@ -14,7 +14,7 @@ import type { ContentType } from "@/types/contents";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatContentType } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
-import { readContentType } from "@/api/contents";
+import { readContentType } from "@/api/contents/types";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;

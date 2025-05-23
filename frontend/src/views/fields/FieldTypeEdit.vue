@@ -21,7 +21,7 @@ import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatFieldType } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
-import { readFieldType } from "@/api/fields";
+import { readFieldType } from "@/api/fields/types";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
