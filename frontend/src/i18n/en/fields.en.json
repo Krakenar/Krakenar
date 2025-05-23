@@ -1,4 +1,44 @@
 {
+  "definition": {
+    "create": "New Field Definition",
+    "created": "The field definition has been created.",
+    "delete": {
+      "confirm": "To delete the field definition, enter its name in the field below.",
+      "title": "Delete Field Definition"
+    },
+    "deleted": "The field definition has been deleted.",
+    "edit": "Edit Field Definition",
+    "empty": "This list is empty.",
+    "help": {
+      "description": "This text is used to describe and provide indications about this field to the user.",
+      "displayName": "This text is used as field label.",
+      "uniqueName": "This text is used to identify the field."
+    },
+    "indexed": {
+      "help": "When enabled, field values will be indexed into the database.",
+      "label": "Indexed"
+    },
+    "invariant": {
+      "help": "When enabled, translation of this field values will be disabled.",
+      "label": "Invariant"
+    },
+    "names": "Names",
+    "placeholder": {
+      "help": "This text is used into empty fields.",
+      "label": "Placeholder"
+    },
+    "required": {
+      "help": "When enabled, field values will be required to publish contents.",
+      "label": "Required"
+    },
+    "unique": {
+      "help": "When enabled, field values must be unique for each content.",
+      "label": "Unique"
+    },
+    "title": "Fields",
+    "updated": "The field definition has been updated.",
+    "updatedOn": "Updated On"
+  },
   "type": {
     "create": "New Field Type",
     "created": "The field type has been created.",
@@ -43,13 +83,16 @@
       }
     },
     "select": {
+      "help": "The field type cannot be changed after field creation.",
+      "label": "Type",
       "option": {
         "disabled": "Disabled",
         "label": "Label",
         "text": "Text",
         "title": "Options",
         "value": "Value"
-      }
+      },
+      "placeholder": "Select a field type"
     },
     "sort": {
       "options": {

@@ -1,4 +1,44 @@
 {
+  "definition": {
+    "create": "Nouvelle définition de champs",
+    "created": "La définition de champs a été créée.",
+    "delete": {
+      "confirm": "Afin de supprimer la définition de champs, veuillez entrer son nom dans le champs suivant.",
+      "title": "Supprimer la définition de champs"
+    },
+    "deleted": "La définition de champs a été supprimée.",
+    "edit": "Éditer la définition de champs",
+    "empty": "Cette liste est vide.",
+    "help": {
+      "description": "Ce texte est utilisé afin de décrire et de fournir des indications à l’utilisateur à propos de ce champs.",
+      "displayName": "Ce texte est utilisé comme étiquette de champs.",
+      "uniqueName": "Ce texte est utilisé afin d’identifier le champs."
+    },
+    "indexed": {
+      "help": "Lorsque activé, les valeurs de ce champs seront indexées dans la base de données.",
+      "label": "Indexé"
+    },
+    "invariant": {
+      "help": "Lorsque activé, la traduction des valeurs de ce champs sera désactivée.",
+      "label": "Invariant"
+    },
+    "names": "Noms",
+    "placeholder": {
+      "help": "Ce texte est affiché à l’intérieur des champs vides.",
+      "label": "Espace réservé (placeholder)"
+    },
+    "required": {
+      "help": "Lorsque activé, les valeurs de ce champs seront requises afin de publier un contenu.",
+      "label": "Requis"
+    },
+    "unique": {
+      "help": "Lorsque activé, les valeurs de champs devront être uniques pour chaque contenu.",
+      "label": "Unique"
+    },
+    "title": "Champs",
+    "updated": "La définition de champs a été mise à jour.",
+    "updatedOn": "Dernière modification"
+  },
   "type": {
     "create": "Nouveau type de champs",
     "created": "Le type de champs a été créé.",
@@ -43,13 +83,16 @@
       }
     },
     "select": {
+      "help": "Le type de champs ne peut être changé après la création du champs.",
+      "label": "Type de champs",
       "option": {
         "disabled": "Désactivée",
         "label": "Étiquette",
         "text": "Texte",
         "title": "Options",
         "value": "Valeur"
-      }
+      },
+      "placeholder": "Sélectionnez un type de champs"
     },
     "sort": {
       "options": {
