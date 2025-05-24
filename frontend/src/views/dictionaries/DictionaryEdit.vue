@@ -8,7 +8,7 @@ import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import DeleteDictionary from "@/components/dictionaries/DeleteDictionary.vue";
 import DictionaryEntryList from "@/components/dictionaries/DictionaryEntryList.vue";
 import LanguageAlreadyUsed from "@/components/languages/LanguageAlreadyUsed.vue";
-import LanguageSelect from "@/components/languages/LanguageSelect.vue";
+import LanguageFormSelect from "@/components/languages/LanguageFormSelect.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import type { Breadcrumb } from "@/types/breadcrumb";
 import type { CreateOrReplaceDictionaryPayload, Dictionary, DictionaryEntry } from "@/types/dictionaries";
@@ -97,7 +97,7 @@ onMounted(async () => {
       </div>
       <form @submit.prevent="handleSubmit(submit)">
         <LanguageAlreadyUsed v-model="languageAlreadyUsed" />
-        <LanguageSelect :model-value="language?.id" required @selected="language = $event" />
+        <LanguageFormSelect :model-value="language?.id" required @selected="language = $event" />
         <DictionaryEntryList v-model="entries" />
         <div class="mb-3">
           <TarButton

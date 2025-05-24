@@ -1,25 +1,31 @@
 <script setup lang="ts">
-import { TarSelect, type SelectOption } from "logitar-vue3-ui";
-import { arrayUtils } from "logitar-js";
+import type { SelectOption } from "logitar-vue3-ui";
+import { arrayUtils, parsingUtils } from "logitar-js";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import FormSelect from "@/components/forms/FormSelect.vue";
 import type { Language, SearchLanguagesPayload } from "@/types/languages";
 import type { SearchResults } from "@/types/search";
 import { formatLocale } from "@/helpers/format";
 import { searchLanguages } from "@/api/languages";
 
 const { orderBy } = arrayUtils;
+const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    disabled?: boolean | string;
+    exclude?: string[];
     id?: string;
     label?: string;
     modelValue?: string;
     placeholder?: string;
+    required?: boolean | string;
   }>(),
   {
+    exclude: () => [],
     id: "language",
     label: "languages.select.label",
     placeholder: "languages.select.placeholder",
@@ -28,9 +34,10 @@ withDefaults(
 
 const languages = ref<Language[]>([]);
 
+const isDisabled = computed<boolean>(() => parseBoolean(props.disabled) || options.value.length === 0);
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    languages.value.map((language) => ({ text: formatLocale(language.locale), value: language.id })),
+    languages.value.filter(({ id }) => !props.exclude.includes(id)).map((language) => ({ text: formatLocale(language.locale), value: language.id })),
     "text",
   ),
 );
@@ -66,17 +73,18 @@ onMounted(async () => {
 </script>
 
 <template>
-  <TarSelect
-    floating
+  <FormSelect
+    :disabled="isDisabled"
     :id="id"
     :label="t(label)"
     :model-value="modelValue"
     :options="options"
     :placeholder="t(placeholder ?? label)"
+    :required="required"
     @update:modelValue="onModelValueUpdate"
   >
     <template #append>
       <slot name="append"></slot>
     </template>
-  </TarSelect>
+  </FormSelect>
 </template>

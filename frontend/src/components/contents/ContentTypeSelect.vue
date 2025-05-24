@@ -4,10 +4,10 @@ import { arrayUtils } from "logitar-js";
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { Language, SearchLanguagesPayload } from "@/types/languages";
+import type { ContentType, SearchContentTypesPayload } from "@/types/contents";
 import type { SearchResults } from "@/types/search";
-import { formatLocale } from "@/helpers/format";
-import { searchLanguages } from "@/api/languages";
+import { formatContentType } from "@/helpers/format";
+import { searchContentTypes } from "@/api/contents/types";
 
 const { orderBy } = arrayUtils;
 const { t } = useI18n();
@@ -20,45 +20,45 @@ withDefaults(
     placeholder?: string;
   }>(),
   {
-    id: "language",
-    label: "languages.select.label",
-    placeholder: "languages.select.placeholder",
+    id: "content-type",
+    label: "contents.type.select.label",
+    placeholder: "contents.type.select.placeholder",
   },
 );
 
-const languages = ref<Language[]>([]);
+const contentTypes = ref<ContentType[]>([]);
 
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    languages.value.map((language) => ({ text: formatLocale(language.locale), value: language.id })),
+    contentTypes.value.map((contentType) => ({ text: formatContentType(contentType), value: contentType.id })),
     "text",
   ),
 );
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
-  (e: "selected", value: Language | undefined): void;
+  (e: "selected", value: ContentType | undefined): void;
   (e: "update:modelValue", value: string): void;
 }>();
 
 function onModelValueUpdate(id: string): void {
   emit("update:modelValue", id);
 
-  const language: Language | undefined = languages.value.find((language) => language.id === id);
-  emit("selected", language);
+  const contentType: ContentType | undefined = contentTypes.value.find((contentType) => contentType.id === id);
+  emit("selected", contentType);
 }
 
 onMounted(async () => {
   try {
-    const payload: SearchLanguagesPayload = {
+    const payload: SearchContentTypesPayload = {
       ids: [],
       search: { terms: [], operator: "And" },
       sort: [],
       skip: 0,
       limit: 0,
     };
-    const results: SearchResults<Language> = await searchLanguages(payload);
-    languages.value = results.items;
+    const results: SearchResults<ContentType> = await searchContentTypes(payload);
+    contentTypes.value = results.items;
   } catch (e: unknown) {
     emit("error", e);
   }
@@ -67,6 +67,7 @@ onMounted(async () => {
 
 <template>
   <TarSelect
+    :disabled="options.length < 1"
     floating
     :id="id"
     :label="t(label)"
@@ -74,9 +75,5 @@ onMounted(async () => {
     :options="options"
     :placeholder="t(placeholder ?? label)"
     @update:modelValue="onModelValueUpdate"
-  >
-    <template #append>
-      <slot name="append"></slot>
-    </template>
-  </TarSelect>
+  />
 </template>

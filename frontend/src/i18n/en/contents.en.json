@@ -1,4 +1,28 @@
 {
+  "item": {
+    "create": "New Content",
+    "created": "The content has been created.",
+    "delete": {
+      "confirm": "To delete the content, enter its name in the field below.",
+      "title": "Delete Content"
+    },
+    "deleted": "The content has been deleted.",
+    "empty": "This list is empty.",
+    "invariant": "Invariant",
+    "name": "Name",
+    "sort": {
+      "options": {
+        "CreatedOn": "Created on",
+        "DisplayName": "Display Name",
+        "PublishedOn": "Published on",
+        "UniqueName": "Unique Name",
+        "UpdatedOn": "Updated on"
+      }
+    },
+    "title": "Contents",
+    "unpublished": "Unpublished",
+    "updated": "The content has been updated."
+  },
   "media": {
     "label": "Type",
     "options": {

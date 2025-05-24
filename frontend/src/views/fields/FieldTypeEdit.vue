@@ -102,7 +102,7 @@ onMounted(async () => {
       <div class="mb-3">
         <DeleteFieldType :fieldType="fieldType" @deleted="onDeleted" @error="handleError" />
       </div>
-      <TarTabs>
+      <TarTabs v-if="hasSettings">
         <TarTab active id="general" :title="t('general')">
           <FieldTypeGeneral :configuration="configuration" :field-type="fieldType" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
@@ -121,6 +121,7 @@ onMounted(async () => {
           <StringSettingsEdit v-if="fieldType.string" :id="fieldType.id" :settings="fieldType.string" @error="handleError" @updated="onSettingsUpdated" />
         </TarTab>
       </TarTabs>
+      <FieldTypeGeneral v-else :configuration="configuration" :field-type="fieldType" @error="handleError" @updated="onGeneralUpdated" />
     </template>
   </main>
 </template>

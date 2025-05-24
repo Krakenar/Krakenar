@@ -7,6 +7,7 @@ import { useI18n } from "vue-i18n";
 
 import ContentTypeIcon from "@/components/contents/ContentTypeIcon.vue";
 import FieldTypeIcon from "@/components/fields/FieldTypeIcon.vue";
+import LanguageIcon from "@/components/languages/LanguageIcon.vue";
 import MessageIcon from "@/components/messages/MessageIcon.vue";
 import SenderIcon from "@/components/senders/SenderIcon.vue";
 import SwitchSelect from "@/components/realms/SwitchSelect.vue";
@@ -112,9 +113,7 @@ watchEffect(() => {
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <RouterLink :to="{ name: 'LanguageList' }" class="dropdown-item">
-                    <font-awesome-icon icon="fas fa-language" /> {{ t("languages.title") }}
-                  </RouterLink>
+                  <RouterLink :to="{ name: 'LanguageList' }" class="dropdown-item"><LanguageIcon /> {{ t("languages.title") }}</RouterLink>
                 </li>
                 <li>
                   <RouterLink :to="{ name: 'DictionaryList' }" class="dropdown-item">
@@ -135,7 +134,7 @@ watchEffect(() => {
                   <RouterLink :to="{ name: 'TemplateList' }" class="dropdown-item"><TemplateIcon /> {{ t("templates.title") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'MessageList' }" class="dropdown-item"> <MessageIcon /> {{ t("messages.title") }} </RouterLink>
+                  <RouterLink :to="{ name: 'MessageList' }" class="dropdown-item"><MessageIcon /> {{ t("messages.title") }}</RouterLink>
                 </li>
               </ul>
             </li>
@@ -145,10 +144,13 @@ watchEffect(() => {
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <RouterLink :to="{ name: 'FieldTypeList' }" class="dropdown-item"> <FieldTypeIcon /> {{ t("fields.type.title") }} </RouterLink>
+                  <RouterLink :to="{ name: 'FieldTypeList' }" class="dropdown-item"><FieldTypeIcon /> {{ t("fields.type.title") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'ContentTypeList' }" class="dropdown-item"> <ContentTypeIcon /> {{ t("contents.type.title") }} </RouterLink>
+                  <RouterLink :to="{ name: 'ContentTypeList' }" class="dropdown-item"><ContentTypeIcon /> {{ t("contents.type.title") }}</RouterLink>
+                </li>
+                <li>
+                  <RouterLink :to="{ name: 'ContentList' }" class="dropdown-item">{{ t("contents.item.title") }}</RouterLink>
                 </li>
               </ul>
             </li>

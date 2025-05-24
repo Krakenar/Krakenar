@@ -1,4 +1,28 @@
 {
+  "item": {
+    "create": "Nouveau contenu",
+    "created": "Le contenu a été créé.",
+    "delete": {
+      "confirm": "Afin de supprimer le contenu, veuillez entrer son nom dans le champs suivant.",
+      "title": "Supprimer le contenu"
+    },
+    "deleted": "Le contenu a été supprimé.",
+    "empty": "Cette liste est vide.",
+    "invariant": "Invariant",
+    "name": "Nom",
+    "sort": {
+      "options": {
+        "CreatedOn": "Date de création",
+        "DisplayName": "Nom d’affichage",
+        "PublishedOn": "Date de publication",
+        "UniqueName": "Nom unique",
+        "UpdatedOn": "Dernière modification"
+      }
+    },
+    "title": "Contenus",
+    "unpublished": "Non publié",
+    "updated": "Le contenu a été mis à jour."
+  },
   "media": {
     "label": "Type",
     "options": {

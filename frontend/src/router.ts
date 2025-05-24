@@ -49,6 +49,11 @@ const router = createRouter({
       path: "/contents",
       component: () => import("./views/contents/ContentList.vue"),
     },
+    {
+      name: "ContentEdit",
+      path: "/contents/:id",
+      component: () => import("./views/contents/ContentEdit.vue"),
+    },
     // Content Types
     {
       name: "ContentTypeList",

@@ -8,9 +8,13 @@ import { useRoute, useRouter } from "vue-router";
 
 import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import AppPagination from "@/components/shared/AppPagination.vue";
+import ContentTypeIcon from "@/components/contents/ContentTypeIcon.vue";
+import ContentTypeSelect from "@/components/contents/ContentTypeSelect.vue";
 import CountSelect from "@/components/shared/CountSelect.vue";
 import CreateContent from "@/components/contents/CreateContent.vue";
 import EditIcon from "@/components/shared/EditIcon.vue";
+import LanguageIcon from "@/components/languages/LanguageIcon.vue";
+import LanguageSelect from "@/components/languages/LanguageSelect.vue";
 import RefreshButton from "@/components/shared/RefreshButton.vue";
 import SearchInput from "@/components/shared/SearchInput.vue";
 import SortSelect from "@/components/shared/SortSelect.vue";
@@ -137,11 +141,15 @@ watch(
 
 <template>
   <main class="container">
-    <h1>{{ t("contents.type.title") }}</h1>
-    <AppBreadcrumb :current="t('contents.type.title')" />
+    <h1>{{ t("contents.item.title") }}</h1>
+    <AppBreadcrumb :current="t('contents.item.title')" />
     <div class="my-3">
       <RefreshButton class="me-1" :disabled="isLoading" :loading="isLoading" @click="refresh()" />
       <CreateContent class="ms-1" @created="onCreated" @error="handleError" />
+    </div>
+    <div class="mb-3 row">
+      <ContentTypeSelect class="col" :model-value="contentTypeId" @update:model-value="setQuery('type', $event)" />
+      <LanguageSelect class="col" :model-value="languageId" placeholder="contents.item.invariant" @update:model-value="setQuery('language', $event)" />
     </div>
     <div class="mb-3 row">
       <SearchInput class="col" :model-value="search" @update:model-value="setQuery('search', $event)" />
@@ -159,22 +167,46 @@ watch(
       <table class="table table-striped">
         <thead>
           <tr>
-            <th scope="col">{{ t("contents.type.sort.options.UniqueName") }}</th>
-            <th scope="col">{{ t("contents.type.sort.options.DisplayName") }}</th>
-            <th scope="col">{{ t("contents.type.sort.options.UpdatedOn") }}</th>
-            <!-- TODO(fpion): ContentType -->
-            <!-- TODO(fpion): Language -->
-            <!-- TODO(fpion): Published -->
+            <th scope="col">{{ t("contents.item.name") }}</th>
+            <th scope="col">{{ t("contents.type.select.label") }}</th>
+            <th scope="col">{{ t("languages.select.label") }}</th>
+            <th scope="col">{{ t("contents.item.sort.options.PublishedOn") }}</th>
+            <th scope="col">{{ t("contents.item.sort.options.UpdatedOn") }}</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="locale in locales" :key="locale.content?.id">
             <td>
-              <RouterLink :to="{ name: 'ContentEdit', params: { id: locale.content?.id } }"><EditIcon /> {{ locale.uniqueName }}</RouterLink>
+              <RouterLink v-if="locale.content" :to="{ name: 'ContentEdit', params: { id: locale.content.id } }">
+                <EditIcon /> {{ locale.displayName ?? locale.uniqueName }}
+                <template v-if="locale.displayName">
+                  <br />
+                  {{ locale.uniqueName }}
+                </template>
+              </RouterLink>
             </td>
             <td>
-              <template v-if="locale.displayName">{{ locale.displayName }}</template>
-              <span v-else class="text-muted">{{ "—" }}</span>
+              <RouterLink v-if="locale.content?.contentType" :to="{ name: 'ContentTypeEdit', params: { id: locale.content.contentType.id } }" target="_blank">
+                <ContentTypeIcon /> {{ locale.content.contentType.displayName ?? locale.content?.contentType.uniqueName }}
+                <template v-if="locale.content.contentType.displayName">
+                  <br />
+                  {{ locale.content.contentType.uniqueName }}
+                </template>
+              </RouterLink>
+            </td>
+            <td>
+              <RouterLink v-if="locale.language" :to="{ name: 'LanguageEdit', params: { id: locale.language.id } }" target="_blank">
+                <LanguageIcon /> {{ locale.language.locale.code }}
+                <template v-if="locale.language.id">
+                  <br />
+                  {{ locale.language.locale.displayName }}
+                </template>
+              </RouterLink>
+              <span v-else class="text-muted">{{ t("contents.item.invariant") }}</span>
+            </td>
+            <td>
+              <StatusBlock v-if="locale.publishedBy && locale.publishedOn" :actor="locale.publishedBy" :date="locale.publishedOn" />
+              <span class="text-muted">{{ t("contents.item.unpublished") }}</span>
             </td>
             <td><StatusBlock :actor="locale.updatedBy" :date="locale.updatedOn" /></td>
           </tr>
@@ -182,6 +214,6 @@ watch(
       </table>
       <AppPagination :count="count" :model-value="page" :total="total" @update:model-value="setQuery('page', $event.toString())" />
     </template>
-    <p v-else>{{ t("contents.type.empty") }}</p>
+    <p v-else>{{ t("contents.item.empty") }}</p>
   </main>
 </template>
