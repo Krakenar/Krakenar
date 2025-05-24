@@ -60,7 +60,7 @@ public class CreateOrReplaceFieldDefinitionHandler : ICommandHandler<CreateOrRep
       payload.IsInvariant,
       payload.IsRequired,
       payload.IsIndexed,
-      payload.IsRequired,
+      payload.IsUnique,
       new Identifier(payload.UniqueName),
       DisplayName.TryCreate(payload.DisplayName),
       Description.TryCreate(payload.Description),
