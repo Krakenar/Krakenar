@@ -10,7 +10,10 @@
     "empty": "Cette liste est vide.",
     "invariant": "Invariant",
     "name": "Nom",
-    "published": "Le contenu a été publié.",
+    "published": {
+      "format": "Publié le {date} par",
+      "success": "Le contenu a été publié."
+    },
     "sort": {
       "options": {
         "CreatedOn": "Date de création",
