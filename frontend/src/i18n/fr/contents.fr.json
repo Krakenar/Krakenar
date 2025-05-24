@@ -10,6 +10,7 @@
     "empty": "Cette liste est vide.",
     "invariant": "Invariant",
     "name": "Nom",
+    "published": "Le contenu a été publié.",
     "sort": {
       "options": {
         "CreatedOn": "Date de création",
@@ -20,7 +21,10 @@
       }
     },
     "title": "Contenus",
-    "unpublished": "Non publié",
+    "unpublished": {
+      "label": "Non publié",
+      "success": "Le contenu a été dépublié."
+    },
     "updated": "Le contenu a été mis à jour."
   },
   "media": {

@@ -51,12 +51,12 @@ function onContentTypeSelected(selected: ContentType | undefined) {
 
 const { hasChanges, isSubmitting, handleSubmit, reset } = useForm();
 async function submit(): Promise<void> {
-  if (contentType.value && language.value) {
+  if (contentType.value) {
     uniqueNameAlreadyUsed.value = false;
     try {
       const payload: CreateContentPayload = {
         contentType: contentType.value.id,
-        language: language.value.id,
+        language: language.value?.id,
         uniqueName: uniqueName.value,
         fieldValues: [],
       };

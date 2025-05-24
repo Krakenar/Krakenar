@@ -10,6 +10,7 @@
     "empty": "This list is empty.",
     "invariant": "Invariant",
     "name": "Name",
+    "published": "The content has been published.",
     "sort": {
       "options": {
         "CreatedOn": "Created on",
@@ -20,7 +21,10 @@
       }
     },
     "title": "Contents",
-    "unpublished": "Unpublished",
+    "unpublished": {
+      "label": "Unpublished",
+      "success": "The content has been unpublished."
+    },
     "updated": "The content has been updated."
   },
   "media": {

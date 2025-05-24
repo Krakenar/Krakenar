@@ -70,6 +70,13 @@ export type CreateOrReplaceContentTypePayload = {
 
 export type MediaType = "text/html" | "text/plain";
 
+export type SaveContentLocalePayload = {
+  uniqueName: string;
+  displayName?: string;
+  description?: string;
+  fieldValues: FieldValuePayload[];
+};
+
 export type SearchContentLocalesPayload = SearchPayload & {
   contentTypeId?: string;
   languageId?: string;

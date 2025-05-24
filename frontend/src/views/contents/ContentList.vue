@@ -206,7 +206,7 @@ watch(
             </td>
             <td>
               <StatusBlock v-if="locale.publishedBy && locale.publishedOn" :actor="locale.publishedBy" :date="locale.publishedOn" />
-              <span class="text-muted">{{ t("contents.item.unpublished") }}</span>
+              <span v-else class="text-muted">{{ t("contents.item.unpublished.label") }}</span>
             </td>
             <td><StatusBlock :actor="locale.updatedBy" :date="locale.updatedOn" /></td>
           </tr>

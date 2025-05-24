@@ -67,7 +67,6 @@ onMounted(async () => {
 
 <template>
   <TarSelect
-    :disabled="options.length < 1"
     floating
     :id="id"
     :label="t(label)"
