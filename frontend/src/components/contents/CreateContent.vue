@@ -65,7 +65,7 @@ async function submit(): Promise<void> {
       onReset();
       hide();
     } catch (e: unknown) {
-      if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueNameAlreadyUsed)) {
+      if (isError(e, StatusCodes.Conflict, ErrorCodes.ContentUniqueNameAlreadyUsed)) {
         uniqueNameAlreadyUsed.value = true;
       } else {
         emit("error", e);
