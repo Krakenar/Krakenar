@@ -5,14 +5,22 @@ import { arrayUtils, parsingUtils, stringUtils } from "logitar-js";
 import { computed, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
 
+import ApiKeyIcon from "@/components/apiKeys/ApiKeyIcon.vue";
+import ContentIcon from "@/components/contents/ContentIcon.vue";
 import ContentTypeIcon from "@/components/contents/ContentTypeIcon.vue";
+import DictionaryIcon from "@/components/dictionaries/DictionaryIcon.vue";
 import FieldTypeIcon from "@/components/fields/FieldTypeIcon.vue";
 import LanguageIcon from "@/components/languages/LanguageIcon.vue";
 import MessageIcon from "@/components/messages/MessageIcon.vue";
+import RealmIcon from "@/components/realms/RealmIcon.vue";
+import RoleIcon from "@/components/roles/RoleIcon.vue";
 import SenderIcon from "@/components/senders/SenderIcon.vue";
+import SessionIcon from "@/components/sessions/SessionIcon.vue";
 import SwitchSelect from "@/components/realms/SwitchSelect.vue";
 import TemplateIcon from "@/components/templates/TemplateIcon.vue";
+import TokenIcon from "@/components/tokens/TokenIcon.vue";
 import UserIcon from "@/components/users/UserIcon.vue";
+import UsersIcon from "@/components/users/UsersIcon.vue";
 import locales from "@/resources/locales.json";
 import type { CurrentUser } from "@/types/account";
 import type { Locale } from "@/types/i18n";
@@ -75,11 +83,11 @@ watchEffect(() => {
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li v-if="swaggerUrl" class="nav-item">
-            <a class="nav-link" :href="swaggerUrl" target="_blank"> <font-awesome-icon icon="fas fa-vial" /> Swagger</a>
+            <a class="nav-link" :href="swaggerUrl" target="_blank"><font-awesome-icon icon="fas fa-vial" /> Swagger</a>
           </li>
           <template v-if="user">
             <li class="nav-item">
-              <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><font-awesome-icon icon="fas fa-chess-rook" /> {{ t("realms.title") }}</RouterLink>
+              <RouterLink :to="{ name: 'RealmList' }" class="nav-link"><RealmIcon /> {{ t("realms.title") }}</RouterLink>
             </li>
             <li class="nav-item dropdown">
               <a href="#" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -87,23 +95,19 @@ watchEffect(() => {
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <RouterLink :to="{ name: 'UserList' }" class="dropdown-item"><font-awesome-icon icon="fas fa-users" /> {{ t("users.title") }}</RouterLink>
+                  <RouterLink :to="{ name: 'UserList' }" class="dropdown-item"><UsersIcon /> {{ t("users.title") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'RoleList' }" class="dropdown-item">
-                    <font-awesome-icon icon="fas fa-users-gear" /> {{ t("roles.title") }}
-                  </RouterLink>
+                  <RouterLink :to="{ name: 'RoleList' }" class="dropdown-item"><RoleIcon /> {{ t("roles.title") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'SessionList' }" class="dropdown-item">
-                    <font-awesome-icon icon="fas fa-user-clock" /> {{ t("sessions.title.list") }}
-                  </RouterLink>
+                  <RouterLink :to="{ name: 'SessionList' }" class="dropdown-item"><SessionIcon /> {{ t("sessions.title.list") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'ApiKeyList' }" class="dropdown-item"><font-awesome-icon icon="fas fa-key" /> {{ t("apiKeys.title") }}</RouterLink>
+                  <RouterLink :to="{ name: 'ApiKeyList' }" class="dropdown-item"><ApiKeyIcon /> {{ t("apiKeys.title") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'Tokens' }" class="dropdown-item"> <font-awesome-icon icon="fas fa-id-card" /> {{ t("tokens.title") }} </RouterLink>
+                  <RouterLink :to="{ name: 'Tokens' }" class="dropdown-item"><TokenIcon /> {{ t("tokens.title") }}</RouterLink>
                 </li>
               </ul>
             </li>
@@ -116,9 +120,7 @@ watchEffect(() => {
                   <RouterLink :to="{ name: 'LanguageList' }" class="dropdown-item"><LanguageIcon /> {{ t("languages.title") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'DictionaryList' }" class="dropdown-item">
-                    <font-awesome-icon icon="fas fa-spell-check" /> {{ t("dictionaries.title") }}
-                  </RouterLink>
+                  <RouterLink :to="{ name: 'DictionaryList' }" class="dropdown-item"><DictionaryIcon /> {{ t("dictionaries.title") }}</RouterLink>
                 </li>
               </ul>
             </li>
@@ -150,7 +152,7 @@ watchEffect(() => {
                   <RouterLink :to="{ name: 'ContentTypeList' }" class="dropdown-item"><ContentTypeIcon /> {{ t("contents.type.title") }}</RouterLink>
                 </li>
                 <li>
-                  <RouterLink :to="{ name: 'ContentList' }" class="dropdown-item">{{ t("contents.item.title") }}</RouterLink>
+                  <RouterLink :to="{ name: 'ContentList' }" class="dropdown-item"><ContentIcon /> {{ t("contents.item.title") }}</RouterLink>
                 </li>
               </ul>
             </li>

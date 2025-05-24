@@ -4,7 +4,7 @@ import type { CreateOrReplaceFieldDefinitionPayload } from "@/types/fields";
 import { _delete, post, put } from "..";
 import type { ContentType } from "@/types/contents";
 
-function createDefinitionUrlBuilder(contentTypeId: string, fieldId?: string): urlUtils.IUrlBuilder {
+function createUrlBuilder(contentTypeId: string, fieldId?: string): urlUtils.IUrlBuilder {
   if (fieldId) {
     return new urlUtils.UrlBuilder({ path: "/api/contents/types/{contentTypeId}/fields/{fieldId}" })
       .setParameter("contentTypeId", contentTypeId)
@@ -14,16 +14,16 @@ function createDefinitionUrlBuilder(contentTypeId: string, fieldId?: string): ur
 }
 
 export async function createFieldDefinition(contentTypeId: string, payload: CreateOrReplaceFieldDefinitionPayload): Promise<ContentType> {
-  const url: string = createDefinitionUrlBuilder(contentTypeId).buildRelative();
+  const url: string = createUrlBuilder(contentTypeId).buildRelative();
   return (await post<CreateOrReplaceFieldDefinitionPayload, ContentType>(url, payload)).data;
 }
 
 export async function deleteFieldDefinition(contentTypeId: string, fieldId: string): Promise<ContentType> {
-  const url: string = createDefinitionUrlBuilder(contentTypeId, fieldId).buildRelative();
+  const url: string = createUrlBuilder(contentTypeId, fieldId).buildRelative();
   return (await _delete<ContentType>(url)).data;
 }
 
 export async function replaceFieldDefinition(contentTypeId: string, fieldId: string, payload: CreateOrReplaceFieldDefinitionPayload): Promise<ContentType> {
-  const url: string = createDefinitionUrlBuilder(contentTypeId, fieldId).buildRelative();
+  const url: string = createUrlBuilder(contentTypeId, fieldId).buildRelative();
   return (await put<CreateOrReplaceFieldDefinitionPayload, ContentType>(url, payload)).data;
 }
