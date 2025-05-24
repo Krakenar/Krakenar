@@ -5,7 +5,7 @@ import { useI18n } from "vue-i18n";
 
 import type { ContentType } from "@/types/contents";
 import type { FieldDefinition } from "@/types/fields";
-import { deleteFieldDefinition } from "@/api/fields";
+import { deleteFieldDefinition } from "@/api/fields/definitions";
 
 const { t } = useI18n();
 

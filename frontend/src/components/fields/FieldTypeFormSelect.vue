@@ -8,7 +8,7 @@ import FormSelect from "@/components/forms/FormSelect.vue";
 import type { FieldType, SearchFieldTypesPayload } from "@/types/fields";
 import type { SearchResults } from "@/types/search";
 import { formatFieldType } from "@/helpers/format";
-import { searchFieldTypes } from "@/api/fields";
+import { searchFieldTypes } from "@/api/fields/types";
 
 const { orderBy } = arrayUtils;
 const { t } = useI18n();

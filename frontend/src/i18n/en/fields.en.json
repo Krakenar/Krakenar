@@ -22,7 +22,7 @@
       "help": "When enabled, translation of this field values will be disabled.",
       "label": "Invariant"
     },
-    "names": "Names",
+    "name": "Name",
     "placeholder": {
       "help": "This text is used into empty fields.",
       "label": "Placeholder"

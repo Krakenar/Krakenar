@@ -11,7 +11,7 @@ import type { Configuration } from "@/types/configuration";
 import type { FieldType, UpdateFieldTypePayload } from "@/types/fields";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { isError } from "@/helpers/error";
-import { updateFieldType } from "@/api/fields";
+import { updateFieldType } from "@/api/fields/types";
 import { useForm } from "@/forms";
 import type { UniqueNameSettings } from "@/types/settings";
 

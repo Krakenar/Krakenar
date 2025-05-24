@@ -1,30 +1,35 @@
 <script setup lang="ts">
 import { TarButton, TarModal } from "logitar-vue3-ui";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import InvariantCheckbox from "./InvariantCheckbox.vue";
+import ContentTypeFormSelect from "./ContentTypeFormSelect.vue";
+import LanguageFormSelect from "@/components/languages/LanguageFormSelect.vue";
 import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
-import type { ContentType, CreateOrReplaceContentTypePayload } from "@/types/contents";
+import type { Content, ContentType, CreateContentPayload } from "@/types/contents";
+import type { Language } from "@/types/languages";
 import { ErrorCodes, StatusCodes } from "@/types/api";
-import { createContentType } from "@/api/contents/types";
+import { createContent } from "@/api/contents/items";
 import { isError } from "@/helpers/error";
 import { useForm } from "@/forms";
 
 const { t } = useI18n();
 
-const isInvariant = ref<boolean>(false);
+const contentType = ref<ContentType>();
+const language = ref<Language>();
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
+
+const isInvariant = computed<boolean>(() => contentType.value?.isInvariant ?? false);
 
 function hide(): void {
   modalRef.value?.hide();
 }
 
 const emit = defineEmits<{
-  (e: "created", value: ContentType): void;
+  (e: "created", value: Content): void;
   (e: "error", value: unknown): void;
 }>();
 
@@ -37,23 +42,34 @@ function onReset(): void {
   reset();
 }
 
+function onContentTypeSelected(selected: ContentType | undefined) {
+  contentType.value = selected;
+  if (!isInvariant.value) {
+    language.value = undefined;
+  }
+}
+
 const { hasChanges, isSubmitting, handleSubmit, reset } = useForm();
 async function submit(): Promise<void> {
-  uniqueNameAlreadyUsed.value = false;
-  try {
-    const payload: CreateOrReplaceContentTypePayload = {
-      isInvariant: isInvariant.value,
-      uniqueName: uniqueName.value,
-    };
-    const contentType: ContentType = await createContentType(payload);
-    emit("created", contentType);
-    onReset();
-    hide();
-  } catch (e: unknown) {
-    if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueNameAlreadyUsed)) {
-      uniqueNameAlreadyUsed.value = true;
-    } else {
-      emit("error", e);
+  if (contentType.value) {
+    uniqueNameAlreadyUsed.value = false;
+    try {
+      const payload: CreateContentPayload = {
+        contentType: contentType.value.id,
+        language: language.value?.id,
+        uniqueName: uniqueName.value,
+        fieldValues: [],
+      };
+      const content: Content = await createContent(payload);
+      emit("created", content);
+      onReset();
+      hide();
+    } catch (e: unknown) {
+      if (isError(e, StatusCodes.Conflict, ErrorCodes.UniqueNameAlreadyUsed)) {
+        uniqueNameAlreadyUsed.value = true;
+      } else {
+        emit("error", e);
+      }
     }
   }
 }
@@ -65,7 +81,8 @@ async function submit(): Promise<void> {
     <TarModal :close="t('actions.close')" id="create-content-type" ref="modalRef" :title="t('contents.type.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <InvariantCheckbox v-model="isInvariant" />
+        <ContentTypeFormSelect :model-value="contentType?.id" required @selected="onContentTypeSelected" />
+        <LanguageFormSelect :disabled="isInvariant" :model-value="language?.id" :required="!isInvariant" @selected="language = $event" />
         <UniqueNameInput identifier required v-model="uniqueName" />
       </form>
       <template #footer>

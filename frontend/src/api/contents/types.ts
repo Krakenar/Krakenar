@@ -2,7 +2,7 @@ import { urlUtils } from "logitar-js";
 
 import type { ContentType, CreateOrReplaceContentTypePayload, SearchContentTypesPayload, UpdateContentTypePayload } from "@/types/contents";
 import type { SearchResults } from "@/types/search";
-import { _delete, get, patch, post } from ".";
+import { _delete, get, patch, post } from "..";
 
 function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
   if (id) {

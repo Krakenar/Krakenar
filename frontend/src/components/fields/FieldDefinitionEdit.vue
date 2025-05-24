@@ -17,7 +17,7 @@ import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import type { ContentType } from "@/types/contents";
 import type { CreateOrReplaceFieldDefinitionPayload, FieldDefinition, FieldType } from "@/types/fields";
 import { ErrorCodes, StatusCodes } from "@/types/api";
-import { createFieldDefinition, replaceFieldDefinition } from "@/api/fields";
+import { createFieldDefinition, replaceFieldDefinition } from "@/api/fields/definitions";
 import { isError } from "@/helpers/error";
 import { useForm } from "@/forms";
 
@@ -40,6 +40,14 @@ const placeholder = ref<string>("");
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
 
+const hasChanges = computed<boolean>(
+  () =>
+    hasFormChanges.value ||
+    (props.field?.isInvariant ?? false) !== isInvariant.value ||
+    (props.field?.isRequired ?? false) !== isRequired.value ||
+    (props.field?.isIndexed ?? false) !== isIndexed.value ||
+    (props.field?.isUnique ?? false) !== isUnique.value,
+);
 const id = computed<string>(() => props.field?.id ?? "create-field-definition");
 const variant = computed<ButtonVariant>(() => (props.field ? "primary" : "success"));
 
@@ -74,7 +82,7 @@ const emit = defineEmits<{
   (e: "saved", value: ContentType): void;
 }>();
 
-const { hasChanges, isSubmitting, handleSubmit, reset } = useForm();
+const { hasChanges: hasFormChanges, isSubmitting, handleSubmit, reset } = useForm();
 async function submit(): Promise<void> {
   if (fieldType.value) {
     uniqueNameAlreadyUsed.value = false;

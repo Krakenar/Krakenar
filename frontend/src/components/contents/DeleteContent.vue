@@ -3,20 +3,20 @@ import { TarButton, TarInput, TarModal, type InputStatus } from "logitar-vue3-ui
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import type { FieldType } from "@/types/fields";
-import { deleteFieldType } from "@/api/fields/types";
+import type { Content } from "@/types/contents";
+import { deleteContent } from "@/api/contents/items";
 
 const { t } = useI18n();
 
 const props = defineProps<{
-  fieldType: FieldType;
+  content: Content;
 }>();
 
 const isDeleting = ref<boolean>(false);
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const name = ref<string>("");
 
-const expectedName = computed<string>(() => props.fieldType.displayName ?? props.fieldType.uniqueName);
+const expectedName = computed<string>(() => props.content.invariant.displayName ?? props.content.invariant.uniqueName);
 const status = computed<InputStatus | undefined>(() => {
   if (!name.value) {
     return undefined;
@@ -34,7 +34,7 @@ function hide(): void {
 }
 
 const emit = defineEmits<{
-  (e: "deleted", value: FieldType): void;
+  (e: "deleted", value: Content): void;
   (e: "error", value: unknown): void;
 }>();
 
@@ -42,8 +42,8 @@ async function doDelete(): Promise<void> {
   if (!isDeleting.value) {
     isDeleting.value = true;
     try {
-      const fieldType: FieldType = await deleteFieldType(props.fieldType.id);
-      emit("deleted", fieldType);
+      const content: Content = await deleteContent(props.content.id);
+      emit("deleted", content);
       hide();
     } catch (e: unknown) {
       emit("error", e);
@@ -56,14 +56,14 @@ async function doDelete(): Promise<void> {
 
 <template>
   <span>
-    <TarButton icon="fas fa-trash" :text="t('actions.delete')" variant="danger" data-bs-toggle="modal" data-bs-target="#delete-field-type" />
-    <TarModal :close="t('actions.close')" id="delete-field-type" ref="modalRef" :title="t('fields.type.delete.title')">
+    <TarButton icon="fas fa-trash" :text="t('actions.delete')" variant="danger" data-bs-toggle="modal" data-bs-target="#delete-content-type" />
+    <TarModal :close="t('actions.close')" id="delete-content-type" ref="modalRef" :title="t('contents.item.delete.title')">
       <p>
-        {{ t("fields.type.delete.confirm") }}
+        {{ t("contents.item.delete.confirm") }}
         <br />
         <span class="text-danger">{{ expectedName }}</span>
       </p>
-      <TarInput floating id="delete-field-type-name" :label="t('name')" :placeholder="t('name')" required :status="status" v-model="name" />
+      <TarInput floating id="delete-content-type-name" :label="t('name')" :placeholder="t('name')" required :status="status" v-model="name" />
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="cancel" />
         <TarButton

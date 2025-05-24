@@ -17,9 +17,9 @@ onMounted(async () => {
   const currentUser: CurrentUser | undefined = account.currentUser;
   if (currentUser) {
     try {
+      realm.exit();
       await signOutSession(currentUser.sessionId);
       account.signOut();
-      realm.exit();
     } catch (e: unknown) {
       handleError(e);
     }

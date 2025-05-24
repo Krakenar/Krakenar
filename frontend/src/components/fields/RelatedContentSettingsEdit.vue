@@ -6,7 +6,7 @@ import { useI18n } from "vue-i18n";
 import ContentTypeFormSelect from "@/components/contents/ContentTypeFormSelect.vue";
 import MultipleCheckbox from "./MultipleCheckbox.vue";
 import type { FieldType, RelatedContentSettings, UpdateFieldTypePayload } from "@/types/fields";
-import { updateFieldType } from "@/api/fields";
+import { updateFieldType } from "@/api/fields/types";
 import { useForm } from "@/forms";
 
 const { t } = useI18n();

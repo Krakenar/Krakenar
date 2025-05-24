@@ -4,7 +4,7 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import LanguageAlreadyUsed from "@/components/languages/LanguageAlreadyUsed.vue";
-import LanguageSelect from "@/components/languages/LanguageSelect.vue";
+import LanguageFormSelect from "@/components/languages/LanguageFormSelect.vue";
 import type { CreateOrReplaceDictionaryPayload, Dictionary } from "@/types/dictionaries";
 import type { Language } from "@/types/languages";
 import { ErrorCodes, StatusCodes } from "@/types/api";
@@ -66,7 +66,7 @@ async function submit(): Promise<void> {
     <TarModal :close="t('actions.close')" id="create-dictionary" ref="modalRef" :title="t('dictionaries.create')">
       <LanguageAlreadyUsed v-model="languageAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <LanguageSelect :model-value="language?.id" required @selected="language = $event" />
+        <LanguageFormSelect :model-value="language?.id" required @selected="language = $event" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />

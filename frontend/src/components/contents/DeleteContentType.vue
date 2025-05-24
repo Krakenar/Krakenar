@@ -4,7 +4,7 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import type { ContentType } from "@/types/contents";
-import { deleteContentType } from "@/api/contents";
+import { deleteContentType } from "@/api/contents/types";
 
 const { t } = useI18n();
 

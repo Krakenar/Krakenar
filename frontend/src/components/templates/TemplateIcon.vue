@@ -1,3 +1,3 @@
 <template>
-  <font-awesome-icon icon="fas fa-file" />
+  <font-awesome-icon icon="fas fa-square-envelope" />
 </template>

@@ -40,7 +40,7 @@ defineEmits<{
     <table v-if="fields.length > 0" class="table table-striped">
       <thead>
         <tr>
-          <th scope="col">{{ t("fields.definition.names") }}</th>
+          <th scope="col">{{ t("fields.definition.name") }}</th>
           <th scope="col">{{ t("fields.type.select.label") }}</th>
           <th scope="col">{{ t("fields.definition.updatedOn") }}</th>
           <th scope="col"></th>

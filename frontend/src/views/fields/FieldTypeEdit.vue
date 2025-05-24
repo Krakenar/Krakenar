@@ -21,7 +21,7 @@ import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatFieldType } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
-import { readFieldType } from "@/api/fields";
+import { readFieldType } from "@/api/fields/types";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -102,7 +102,7 @@ onMounted(async () => {
       <div class="mb-3">
         <DeleteFieldType :fieldType="fieldType" @deleted="onDeleted" @error="handleError" />
       </div>
-      <TarTabs>
+      <TarTabs v-if="hasSettings">
         <TarTab active id="general" :title="t('general')">
           <FieldTypeGeneral :configuration="configuration" :field-type="fieldType" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
@@ -121,6 +121,7 @@ onMounted(async () => {
           <StringSettingsEdit v-if="fieldType.string" :id="fieldType.id" :settings="fieldType.string" @error="handleError" @updated="onSettingsUpdated" />
         </TarTab>
       </TarTabs>
+      <FieldTypeGeneral v-else :configuration="configuration" :field-type="fieldType" @error="handleError" @updated="onGeneralUpdated" />
     </template>
   </main>
 </template>

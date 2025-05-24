@@ -12,11 +12,13 @@
     "enter": "Enter",
     "exit": "Exit",
     "go": "Go",
+    "publish": "Publish",
     "refresh": "Refresh",
     "remove": "Remove",
     "restore": "Restore",
     "save": "Save",
     "send": "Send",
+    "unpublish": "Unpublish",
     "validate": "Validate",
     "view": "View"
   },

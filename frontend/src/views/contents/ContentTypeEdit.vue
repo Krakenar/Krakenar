@@ -14,7 +14,7 @@ import type { ContentType } from "@/types/contents";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatContentType } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
-import { readContentType } from "@/api/contents";
+import { readContentType } from "@/api/contents/types";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
@@ -99,10 +99,10 @@ onMounted(async () => {
         <DeleteContentType :contentType="contentType" @deleted="onDeleted" @error="handleError" />
       </div>
       <TarTabs>
-        <TarTab id="general" :title="t('general')">
+        <TarTab active id="general" :title="t('general')">
           <ContentTypeGeneral :content-type="contentType" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
-        <TarTab active id="fields" :title="t('fields.definition.title')">
+        <TarTab id="fields" :title="t('fields.definition.title')">
           <FieldDefinitionList :content-type="contentType" @error="handleError" @created="onFieldCreated" @deleted="onFieldDeleted" @updated="onFieldUpdated" />
         </TarTab>
       </TarTabs>

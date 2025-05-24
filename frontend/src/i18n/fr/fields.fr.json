@@ -22,7 +22,7 @@
       "help": "Lorsque activé, la traduction des valeurs de ce champs sera désactivée.",
       "label": "Invariant"
     },
-    "names": "Noms",
+    "name": "Nom",
     "placeholder": {
       "help": "Ce texte est affiché à l’intérieur des champs vides.",
       "label": "Espace réservé (placeholder)"

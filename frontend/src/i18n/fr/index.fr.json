@@ -12,11 +12,13 @@
     "enter": "Entrer",
     "exit": "Sortir",
     "go": "Aller",
+    "publish": "Publier",
     "refresh": "Rafraîchir",
     "remove": "Retirer",
     "restore": "Restaurer",
     "save": "Enregistrer",
     "send": "Envoyer",
+    "unpublish": "Dépublier",
     "validate": "Valider",
     "view": "Voir"
   },
