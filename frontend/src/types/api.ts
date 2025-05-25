@@ -21,6 +21,7 @@ export type ApiVersion = {
 
 export enum ErrorCodes {
   CannotDeleteDefaultSender = "CannotDeleteDefaultSender",
+  ContentUniqueNameAlreadyUsed = "ContentUniqueNameAlreadyUsed",
   CustomIdentifierAlreadyUsed = "CustomIdentifierAlreadyUsed",
   FieldUniqueNameAlreadyUsed = "FieldUniqueNameAlreadyUsed",
   IncorrectUserPassword = "IncorrectUserPassword",

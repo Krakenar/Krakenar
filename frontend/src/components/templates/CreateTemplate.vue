@@ -12,10 +12,12 @@ import { createTemplate } from "@/api/templates";
 import { isError } from "@/helpers/error";
 import { readConfiguration } from "@/api/configuration";
 import { useForm } from "@/forms";
+import { useRealmStore } from "@/stores/realm";
 
+const realm = useRealmStore();
 const { t } = useI18n();
 
-const configuration = ref<Configuration>(); // TODO(fpion): get unique name settings from realm (if realm)
+const configuration = ref<Configuration>();
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
@@ -65,7 +67,9 @@ async function submit(): Promise<void> {
 
 onMounted(async () => {
   try {
-    configuration.value = await readConfiguration();
+    if (!realm.currentRealm) {
+      configuration.value = await readConfiguration();
+    }
   } catch (e: unknown) {
     emit("error", e);
   }
@@ -78,7 +82,7 @@ onMounted(async () => {
     <TarModal :close="t('actions.close')" id="create-template" ref="modalRef" :title="t('templates.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <UniqueNameInput required :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />
+        <UniqueNameInput required :settings="realm.currentRealm?.uniqueNameSettings ?? configuration?.uniqueNameSettings" v-model="uniqueName" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />

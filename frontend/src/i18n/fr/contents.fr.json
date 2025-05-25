@@ -6,11 +6,17 @@
       "confirm": "Afin de supprimer le contenu, veuillez entrer son nom dans le champs suivant.",
       "title": "Supprimer le contenu"
     },
-    "deleted": "Le contenu a été supprimé.",
+    "deleted": {
+      "item": "Le contenu a été supprimé.",
+      "locale": "La traduction a été supprimée."
+    },
     "empty": "Cette liste est vide.",
     "invariant": "Invariant",
     "name": "Nom",
-    "published": "Le contenu a été publié.",
+    "published": {
+      "format": "Publié le {date} par",
+      "success": "Le contenu a été publié."
+    },
     "sort": {
       "options": {
         "CreatedOn": "Date de création",
