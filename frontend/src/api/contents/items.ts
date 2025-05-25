@@ -28,8 +28,11 @@ export async function publishAllContent(id: string): Promise<Content> {
   return (await patch<void, Content>(url)).data;
 }
 
-export async function publishContent(id: string): Promise<Content> {
-  const url: string = new urlUtils.UrlBuilder({ path: "/api/contents/{id}/publish" }).setParameter("id", id).buildRelative();
+export async function publishContent(id: string, language?: string): Promise<Content> {
+  const url: string = new urlUtils.UrlBuilder({ path: "/api/contents/{id}/publish" })
+    .setParameter("id", id)
+    .setQuery("language", language ?? "")
+    .buildRelative();
   return (await patch<void, Content>(url)).data;
 }
 
@@ -70,7 +73,10 @@ export async function unpublishAllContent(id: string): Promise<Content> {
   return (await patch<void, Content>(url)).data;
 }
 
-export async function unpublishContent(id: string): Promise<Content> {
-  const url: string = new urlUtils.UrlBuilder({ path: "/api/contents/{id}/unpublish" }).setParameter("id", id).buildRelative();
+export async function unpublishContent(id: string, language?: string): Promise<Content> {
+  const url: string = new urlUtils.UrlBuilder({ path: "/api/contents/{id}/unpublish" })
+    .setParameter("id", id)
+    .setQuery("language", language ?? "")
+    .buildRelative();
   return (await patch<void, Content>(url)).data;
 }

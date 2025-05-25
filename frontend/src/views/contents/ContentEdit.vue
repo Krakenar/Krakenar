@@ -154,8 +154,8 @@ onMounted(async () => {
       </StatusDetail>
       <div class="mb-3">
         <DeleteContent class="me-1" :content="content" @deleted="onDeleted" @error="handleError" />
-        <PublishButton class="mx-1" :content="content" @error="handleError" @published="onPublished" />
-        <UnpublishButton class="ms-1" :content="content" @error="handleError" @unpublished="onUnpublished" />
+        <PublishButton all class="mx-1" :content="content" @error="handleError" @published="onPublished" />
+        <UnpublishButton all class="ms-1" :content="content" @error="handleError" @unpublished="onUnpublished" />
       </div>
       <div class="row">
         <ContentTypeInput class="col" :content-type="content.contentType" />
@@ -182,7 +182,9 @@ onMounted(async () => {
             :content="content"
             :locale="content.invariant"
             @error="handleError"
+            @published="onPublished"
             @saved="onSaved"
+            @unpublished="onUnpublished"
           />
         </TarTab>
         <TarTab v-for="locale in content.locales" :id="locale.language?.id" :key="locale.language?.id" :title="locale.language?.locale.displayName">

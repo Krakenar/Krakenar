@@ -92,8 +92,9 @@ watch(
       <br />
       <PublishedInfo :locale="locale" />
     </p>
-    <div v-if="locale.language" class="mb-3">
+    <div v-if="!isTypeInvariant" class="mb-3">
       <DeleteContent
+        v-if="locale.language"
         class="me-1"
         :content="content"
         :language="locale.language ?? undefined"

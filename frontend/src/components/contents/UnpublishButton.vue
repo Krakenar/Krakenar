@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { TarButton, type ButtonVariant } from "logitar-vue3-ui";
 import { computed, ref } from "vue";
+import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
-import type { Content } from "@/types/contents";
-import { unpublishAllContent } from "@/api/contents/items";
+import type { Content, ContentLocale } from "@/types/contents";
+import type { Language } from "@/types/languages";
+import { unpublishAllContent, unpublishContent } from "@/api/contents/items";
 
+const { parseBoolean } = parsingUtils;
 const { t } = useI18n();
 
 const props = withDefaults(
   defineProps<{
+    all?: boolean | string;
     content: Content;
     icon?: string;
+    language?: Language;
     text?: string;
     variant?: ButtonVariant;
   }>(),
@@ -24,7 +29,15 @@ const props = withDefaults(
 
 const isLoading = ref<boolean>(false);
 
-const isDisabled = computed<boolean>(() => !props.content.invariant.isPublished && props.content.locales.every((locale) => !locale.isPublished));
+const isAll = computed<boolean>(() => parseBoolean(props.all) ?? false);
+const isDisabled = computed<boolean>(() => {
+  if (isAll.value) {
+    return !props.content.invariant.isPublished && props.content.locales.every((locale) => !locale.isPublished);
+  }
+  const locale: ContentLocale =
+    (props.language ? props.content.locales.find((locale) => locale.language?.id === props.language?.id) : undefined) ?? props.content.invariant;
+  return !locale.isPublished;
+});
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
@@ -35,7 +48,7 @@ async function onClick(): Promise<void> {
   if (!isLoading.value) {
     isLoading.value = true;
     try {
-      const content: Content = await unpublishAllContent(props.content.id);
+      const content: Content = isAll.value ? await unpublishAllContent(props.content.id) : await unpublishContent(props.content.id, props.language?.id);
       emit("unpublished", content);
     } catch (e: unknown) {
       emit("error", e);
