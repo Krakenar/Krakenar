@@ -16,12 +16,13 @@ import UnpublishButton from "@/components/contents/UnpublishButton.vue";
 import type { Actor } from "@/types/actor";
 import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Configuration } from "@/types/configuration";
-import type { Content, ContentLocale } from "@/types/contents";
+import type { Content, ContentLocale, ContentType } from "@/types/contents";
 import type { Language } from "@/types/languages";
 import { StatusCodes, type ApiFailure } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
 import { readContent } from "@/api/contents/items";
+import { readContentType } from "@/api/contents/types";
 import { useAccountStore } from "@/stores/account";
 import { useToastStore } from "@/stores/toast";
 
@@ -34,6 +35,7 @@ const { t } = useI18n();
 
 const configuration = ref<Configuration>();
 const content = ref<Content>();
+const contentType = ref<ContentType>();
 const language = ref<Language>();
 
 const breadcrumb = computed<Breadcrumb[]>(() => [{ route: { name: "ContentList" }, text: t("contents.item.title") }]);
@@ -148,6 +150,7 @@ onMounted(async () => {
   try {
     const id = route.params.id as string;
     content.value = await readContent(id);
+    contentType.value = await readContentType(content.value.contentType.id);
     if (!content.value.contentType.realm) {
       configuration.value = await readConfiguration();
     }
@@ -164,7 +167,7 @@ onMounted(async () => {
 
 <template>
   <main class="container">
-    <template v-if="content">
+    <template v-if="content && contentType">
       <h1>{{ title }}</h1>
       <AppBreadcrumb :current="title" :parent="breadcrumb" />
       <StatusDetail :aggregate="content">
@@ -179,7 +182,7 @@ onMounted(async () => {
         <UnpublishButton all class="ms-1" :content="content" @error="handleError" @unpublished="onAllUnpublished" />
       </div>
       <div class="row">
-        <ContentTypeInput class="col" :content-type="content.contentType" />
+        <ContentTypeInput class="col" :content-type="contentType" />
         <LanguageSelect v-if="!isTypeInvariant" class="col" :exclude="languages" :model-value="language?.id" @selected="language = $event">
           <template #append>
             <TarButton :disabled="!language" icon="fas fa-plus" :text="t('actions.add')" variant="success" @click="addLocale" />
@@ -189,7 +192,7 @@ onMounted(async () => {
       <ContentLocaleEdit
         v-if="isTypeInvariant"
         :configuration="configuration"
-        :content-type="content.contentType"
+        :content-type="contentType"
         :content="content"
         :locale="content.invariant"
         @error="handleError"
@@ -199,7 +202,7 @@ onMounted(async () => {
         <TarTab active id="invariant" :title="t('contents.item.invariant')">
           <ContentLocaleEdit
             :configuration="configuration"
-            :content-type="content.contentType"
+            :content-type="contentType"
             :content="content"
             :locale="content.invariant"
             @error="handleError"
@@ -211,7 +214,7 @@ onMounted(async () => {
         <TarTab v-for="locale in content.locales" :id="locale.language?.id" :key="locale.language?.id" :title="locale.language?.locale.displayName">
           <ContentLocaleEdit
             :configuration="configuration"
-            :content-type="content.contentType"
+            :content-type="contentType"
             :content="content"
             :locale="locale"
             @deleted="onDeleted($event, locale.language ?? undefined)"
