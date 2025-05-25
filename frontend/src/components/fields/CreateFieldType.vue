@@ -15,10 +15,12 @@ import { createFieldType } from "@/api/fields/types";
 import { isError } from "@/helpers/error";
 import { readConfiguration } from "@/api/configuration";
 import { useForm } from "@/forms";
+import { useRealmStore } from "@/stores/realm";
 
+const realm = useRealmStore();
 const { t } = useI18n();
 
-const configuration = ref<Configuration>(); // TODO(fpion): get unique name settings from realm (if realm)
+const configuration = ref<Configuration>();
 const contentType = ref<ContentType>();
 const dataType = ref<string>("");
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
@@ -95,7 +97,9 @@ async function submit(): Promise<void> {
 
 onMounted(async () => {
   try {
-    configuration.value = await readConfiguration();
+    if (!realm.currentRealm) {
+      configuration.value = await readConfiguration();
+    }
   } catch (e: unknown) {
     emit("error", e);
   }
@@ -108,7 +112,7 @@ onMounted(async () => {
     <TarModal :close="t('actions.close')" id="create-field-type" size="large" ref="modalRef" :title="t('fields.type.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <UniqueNameInput required :settings="configuration?.uniqueNameSettings" v-model="uniqueName" />
+        <UniqueNameInput required :settings="realm.currentRealm?.uniqueNameSettings ?? configuration?.uniqueNameSettings" v-model="uniqueName" />
         <DataTypeFormSelect required v-model="dataType" />
         <ContentTypeFormSelect v-if="dataType === 'RelatedContent'" :model-value="contentType?.id" required @selected="contentType = $event" />
       </form>
