@@ -9,46 +9,50 @@ import PublishedInfo from "./PublishedInfo.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import type { Configuration } from "@/types/configuration";
-import type { ContentLocale, ContentType } from "@/types/contents";
+import type { Content, ContentLocale, SaveContentLocalePayload } from "@/types/contents";
+import type { FieldValuePayload } from "@/types/fields";
 import type { UniqueNameSettings } from "@/types/settings";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { isError } from "@/helpers/error";
+import { saveContentLocale } from "@/api/contents/items";
 import { useForm } from "@/forms";
 
 const { t } = useI18n();
 
 const props = defineProps<{
   configuration?: Configuration;
-  contentType: ContentType;
+  content: Content;
   locale: ContentLocale;
 }>();
 
 const description = ref<string>("");
 const displayName = ref<string>("");
+const fieldValues = ref<FieldValuePayload[]>([]);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
 
-const isTypeInvariant = computed<boolean>(() => props.contentType.isInvariant ?? false);
+const isTypeInvariant = computed<boolean>(() => props.content.contentType.isInvariant ?? false);
 const uniqueNameSettings = computed<UniqueNameSettings | undefined>(
-  () => props.contentType.realm?.uniqueNameSettings ?? props.configuration?.uniqueNameSettings,
+  () => props.content.contentType.realm?.uniqueNameSettings ?? props.configuration?.uniqueNameSettings,
 );
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
+  (e: "saved", value: Content): void;
 }>();
 
 const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   uniqueNameAlreadyUsed.value = false;
   try {
-    // const payload: UpdateRolePayload = {
-    //   uniqueName: props.role.uniqueName !== uniqueName.value ? uniqueName.value : undefined,
-    //   displayName: (props.role.displayName ?? "") !== displayName.value ? { value: displayName.value } : undefined,
-    //   description: (props.role.description ?? "") !== description.value ? { value: description.value } : undefined,
-    //   customAttributes: [],
-    // };
-    // const role: Role = await updateRole(props.role.id, payload);
-    // emit("updated", role); // TODO(fpion): save
+    const payload: SaveContentLocalePayload = {
+      uniqueName: uniqueName.value,
+      displayName: displayName.value,
+      description: description.value,
+      fieldValues: fieldValues.value,
+    };
+    const content: Content = await saveContentLocale(props.content.id, payload, props.locale.language?.id);
+    emit("saved", content);
   } catch (e: unknown) {
     if (isError(e, StatusCodes.Conflict, ErrorCodes.ContentUniqueNameAlreadyUsed)) {
       uniqueNameAlreadyUsed.value = true;
@@ -64,6 +68,10 @@ watch(
     uniqueName.value = locale.uniqueName;
     displayName.value = locale.displayName ?? "";
     description.value = locale.description ?? "";
+    fieldValues.value = locale.fieldValues.map(({ id, value }) => ({
+      field: id,
+      value,
+    }));
   },
   { deep: true, immediate: true },
 );
@@ -78,7 +86,7 @@ watch(
       <br />
       <PublishedInfo :locale="locale" />
     </p>
-    <form @submit="handleSubmit(submit)">
+    <form @submit.prevent="handleSubmit(submit)">
       <div v-if="!isTypeInvariant" class="mb-3">
         <!-- TODO(fpion): Delete button -->
         <!-- TODO(fpion): Publish button -->

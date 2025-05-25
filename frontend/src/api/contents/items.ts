@@ -1,8 +1,8 @@
 import { urlUtils } from "logitar-js";
 
-import type { Content, ContentLocale, CreateContentPayload, SearchContentLocalesPayload } from "@/types/contents";
+import type { Content, ContentLocale, CreateContentPayload, SaveContentLocalePayload, SearchContentLocalesPayload } from "@/types/contents";
 import type { SearchResults } from "@/types/search";
-import { _delete, get, patch, post } from "..";
+import { _delete, get, patch, post, put } from "..";
 
 function createUrlBuilder(id?: string): urlUtils.IUrlBuilder {
   if (id) {
@@ -34,6 +34,13 @@ export async function publishContent(id: string): Promise<Content> {
 export async function readContent(id: string): Promise<Content> {
   const url: string = createUrlBuilder(id).buildRelative();
   return (await get<Content>(url)).data;
+}
+
+export async function saveContentLocale(id: string, payload: SaveContentLocalePayload, language?: string): Promise<Content> {
+  const url: string = createUrlBuilder(id)
+    .setQuery("language", language ?? "")
+    .buildRelative();
+  return (await put<SaveContentLocalePayload, Content>(url, payload)).data;
 }
 
 export async function searchContentLocales(payload: SearchContentLocalesPayload): Promise<SearchResults<ContentLocale>> {

@@ -12,8 +12,9 @@ import { searchLanguages } from "@/api/languages";
 const { orderBy } = arrayUtils;
 const { t } = useI18n();
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    exclude?: string[];
     id?: string;
     label?: string;
     modelValue?: string;
@@ -30,7 +31,9 @@ const languages = ref<Language[]>([]);
 
 const options = computed<SelectOption[]>(() =>
   orderBy(
-    languages.value.map((language) => ({ text: formatLocale(language.locale), value: language.id })),
+    languages.value
+      .filter((language) => !props.exclude || !props.exclude.includes(language.id))
+      .map((language) => ({ text: formatLocale(language.locale), value: language.id })),
     "text",
   ),
 );
@@ -67,6 +70,7 @@ onMounted(async () => {
 
 <template>
   <TarSelect
+    :disabled="options.length < 1"
     floating
     :id="id"
     :label="t(label)"
