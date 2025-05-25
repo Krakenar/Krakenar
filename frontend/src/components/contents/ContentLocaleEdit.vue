@@ -113,7 +113,7 @@ watch(
         :content="content"
         :language="locale.language ?? undefined"
         @deleted="emit('deleted', $event)"
-        @published="emit('unpublished', $event)"
+        @unpublished="emit('unpublished', $event)"
       />
     </div>
     <form @submit.prevent="handleSubmit(submit)">

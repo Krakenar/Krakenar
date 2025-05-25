@@ -84,24 +84,49 @@ function onDeleted(saved: Content, language?: Language): void {
   }
 }
 
-function onPublished(value: Content, language?: Language): void {
-  if (language) {
-    // TODO(fpion): implement
-  } else {
-    // TODO(fpion): implement
-  }
-  console.log(value); // TODO(fpion): implement
-  console.log(language); // TODO(fpion): implement
+function onAllPublished(published: Content): void {
+  content.value = published;
   toasts.success("contents.item.published.success");
 }
-function onUnpublished(value: Content, language?: Language): void {
-  if (language) {
-    // TODO(fpion): implement
-  } else {
-    // TODO(fpion): implement
+function onAllUnpublished(unpublished: Content): void {
+  content.value = unpublished;
+  toasts.success("contents.item.unpublished.success");
+}
+
+function replaceInvariant(replacement: Content): void {
+  if (content.value) {
+    content.value.invariant = { ...replacement.invariant };
   }
-  console.log(value); // TODO(fpion): implement
-  console.log(language); // TODO(fpion): implement
+}
+function replaceLocale(replacement: Content, language: Language): void {
+  if (content.value) {
+    const locale: ContentLocale | undefined = replacement.locales.find((locale) => locale.language?.id === language.id);
+    const index: number = content.value.locales.findIndex((locale) => locale.language?.id === language.id);
+    if (locale && index >= 0) {
+      content.value.locales.splice(index, 1, locale);
+    }
+  }
+}
+
+function onPublished(published: Content, language?: Language): void {
+  if (content.value) {
+    if (language) {
+      replaceLocale(published, language);
+    } else {
+      replaceInvariant(published);
+    }
+  }
+  toasts.success("contents.item.published.success");
+}
+function onUnpublished(unpublished: Content, language?: Language): void {
+  console.log("onUnpublished " + typeof language);
+  if (content.value) {
+    if (language) {
+      replaceLocale(unpublished, language);
+    } else {
+      replaceInvariant(unpublished);
+    }
+  }
   toasts.success("contents.item.unpublished.success");
 }
 
@@ -111,13 +136,9 @@ function onSaved(saved: Content, language?: Language | null): void {
     content.value.updatedBy = saved.updatedBy;
     content.value.updatedOn = saved.updatedOn;
     if (language) {
-      const locale: ContentLocale | undefined = saved.locales.find((locale) => locale.language?.id === language.id);
-      const index: number = content.value.locales.findIndex((locale) => locale.language?.id === language.id);
-      if (locale && index >= 0) {
-        content.value.locales.splice(index, 1, locale);
-      }
+      replaceLocale(saved, language);
     } else {
-      content.value.invariant = { ...saved.invariant };
+      replaceInvariant(saved);
     }
   }
   toasts.success("contents.item.updated");
@@ -154,8 +175,8 @@ onMounted(async () => {
       </StatusDetail>
       <div class="mb-3">
         <DeleteContent class="me-1" :content="content" @deleted="onDeleted" @error="handleError" />
-        <PublishButton all class="mx-1" :content="content" @error="handleError" @published="onPublished" />
-        <UnpublishButton all class="ms-1" :content="content" @error="handleError" @unpublished="onUnpublished" />
+        <PublishButton all class="mx-1" :content="content" @error="handleError" @published="onAllPublished" />
+        <UnpublishButton all class="ms-1" :content="content" @error="handleError" @unpublished="onAllUnpublished" />
       </div>
       <div class="row">
         <ContentTypeInput class="col" :content-type="content.contentType" />
