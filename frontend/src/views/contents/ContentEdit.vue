@@ -13,6 +13,7 @@ import PublishButton from "@/components/contents/PublishButton.vue";
 import PublishedInfo from "@/components/contents/PublishedInfo.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import UnpublishButton from "@/components/contents/UnpublishButton.vue";
+import type { Actor } from "@/types/actor";
 import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Configuration } from "@/types/configuration";
 import type { Content, ContentLocale } from "@/types/contents";
@@ -23,7 +24,6 @@ import { readConfiguration } from "@/api/configuration";
 import { readContent } from "@/api/contents/items";
 import { useAccountStore } from "@/stores/account";
 import { useToastStore } from "@/stores/toast";
-import type { Actor } from "@/types/actor";
 
 const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
