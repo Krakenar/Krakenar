@@ -3,11 +3,14 @@ import { TarButton } from "logitar-vue3-ui";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
+import DeleteContent from "./DeleteContent.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
+import PublishButton from "./PublishButton.vue";
 import PublishedInfo from "./PublishedInfo.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
+import UnpublishButton from "./UnpublishButton.vue";
 import type { Configuration } from "@/types/configuration";
 import type { Content, ContentLocale, SaveContentLocalePayload } from "@/types/contents";
 import type { FieldValuePayload } from "@/types/fields";
@@ -37,8 +40,11 @@ const uniqueNameSettings = computed<UniqueNameSettings | undefined>(
 );
 
 const emit = defineEmits<{
+  (e: "deleted", value: Content): void;
   (e: "error", value: unknown): void;
+  (e: "published", value: Content): void;
   (e: "saved", value: Content): void;
+  (e: "unpublished", value: Content): void;
 }>();
 
 const { hasChanges, isSubmitting, handleSubmit } = useForm();
@@ -86,12 +92,30 @@ watch(
       <br />
       <PublishedInfo :locale="locale" />
     </p>
+    <div v-if="locale.language" class="mb-3">
+      <DeleteContent
+        class="me-1"
+        :content="content"
+        :language="locale.language ?? undefined"
+        @deleted="emit('deleted', $event)"
+        @error="emit('error', $event)"
+      />
+      <PublishButton
+        class="mx-1"
+        :content="content"
+        :language="locale.language ?? undefined"
+        @deleted="emit('deleted', $event)"
+        @published="emit('published', $event)"
+      />
+      <UnpublishButton
+        class="ms-1"
+        :content="content"
+        :language="locale.language ?? undefined"
+        @deleted="emit('deleted', $event)"
+        @published="emit('unpublished', $event)"
+      />
+    </div>
     <form @submit.prevent="handleSubmit(submit)">
-      <div v-if="!isTypeInvariant" class="mb-3">
-        <!-- TODO(fpion): Delete button -->
-        <!-- TODO(fpion): Publish button -->
-        <!-- TODO(fpion): Unpublished button -->
-      </div>
       <div class="row">
         <UniqueNameInput class="col" required :settings="uniqueNameSettings" v-model="uniqueName" />
         <DisplayNameInput class="col" v-model="displayName" />

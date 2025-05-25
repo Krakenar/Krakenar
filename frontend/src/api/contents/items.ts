@@ -16,8 +16,10 @@ export async function createContent(payload: CreateContentPayload): Promise<Cont
   return (await post<CreateContentPayload, Content>(url, payload)).data;
 }
 
-export async function deleteContent(id: string): Promise<Content> {
-  const url: string = createUrlBuilder(id).buildRelative();
+export async function deleteContent(id: string, language?: string): Promise<Content> {
+  const url: string = createUrlBuilder(id)
+    .setQuery("language", language ?? "")
+    .buildRelative();
   return (await _delete<Content>(url)).data;
 }
 

@@ -66,17 +66,42 @@ function addLocale(): void {
   }
 }
 
-function onDeleted(): void {
-  toasts.success("contents.item.deleted");
-  router.push({ name: "ContentList" });
+function onDeleted(saved: Content, language?: Language): void {
+  if (language) {
+    if (content.value) {
+      content.value.version = saved.version;
+      content.value.updatedBy = saved.updatedBy;
+      content.value.updatedOn = saved.updatedOn;
+      const index: number = content.value.locales.findIndex((locale) => locale.language?.id === language.id);
+      if (index >= 0) {
+        content.value.locales.splice(index, 1);
+      }
+    }
+    toasts.success("contents.item.deleted.locale");
+  } else {
+    toasts.success("contents.item.deleted.item");
+    router.push({ name: "ContentList" });
+  }
 }
 
-function onPublished(value: Content): void {
-  content.value = value;
+function onPublished(value: Content, language?: Language): void {
+  if (language) {
+    // TODO(fpion): implement
+  } else {
+    // TODO(fpion): implement
+  }
+  console.log(value); // TODO(fpion): implement
+  console.log(language); // TODO(fpion): implement
   toasts.success("contents.item.published.success");
 }
-function onUnpublished(value: Content): void {
-  content.value = value;
+function onUnpublished(value: Content, language?: Language): void {
+  if (language) {
+    // TODO(fpion): implement
+  } else {
+    // TODO(fpion): implement
+  }
+  console.log(value); // TODO(fpion): implement
+  console.log(language); // TODO(fpion): implement
   toasts.success("contents.item.unpublished.success");
 }
 
@@ -166,8 +191,11 @@ onMounted(async () => {
             :content-type="content.contentType"
             :content="content"
             :locale="locale"
+            @deleted="onDeleted($event, locale.language ?? undefined)"
             @error="handleError"
+            @published="onPublished($event, locale.language ?? undefined)"
             @saved="onSaved($event, locale.language)"
+            @unpublished="onUnpublished($event, locale.language ?? undefined)"
           />
         </TarTab>
       </TarTabs>

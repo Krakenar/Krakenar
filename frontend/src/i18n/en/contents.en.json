@@ -6,7 +6,10 @@
       "confirm": "To delete the content, enter its name in the field below.",
       "title": "Delete Content"
     },
-    "deleted": "The content has been deleted.",
+    "deleted": {
+      "item": "The content has been deleted.",
+      "locale": "The locale has been deleted."
+    },
     "empty": "This list is empty.",
     "invariant": "Invariant",
     "name": "Name",
