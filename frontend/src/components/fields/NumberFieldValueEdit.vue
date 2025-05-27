@@ -34,7 +34,6 @@ function onModelValueUpdate(value: number | undefined): void {
     :model-value="numberValue"
     :name="field.uniqueName"
     :placeholder="field.placeholder ?? field.displayName ?? field.uniqueName"
-    :required="field.isRequired"
     :step="fieldType.number?.step ?? undefined"
     @update:model-value="onModelValueUpdate"
   >

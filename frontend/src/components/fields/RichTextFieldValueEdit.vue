@@ -32,7 +32,6 @@ defineEmits<{
     :model-value="modelValue"
     :name="field.uniqueName"
     :placeholder="field.placeholder ?? field.displayName ?? field.uniqueName"
-    :required="field.isRequired"
     :rows="rows"
     @update:model-value="$emit('update:model-value', $event)"
   >

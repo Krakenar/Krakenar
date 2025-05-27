@@ -32,7 +32,6 @@ function onModelValueUpdate(value: Date | undefined): void {
     :min="minDate"
     :model-value="dateValue"
     :name="field.uniqueName"
-    :required="field.isRequired"
     @update:model-value="onModelValueUpdate"
   >
     <template v-if="field.description" #after>

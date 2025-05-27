@@ -27,7 +27,6 @@ defineEmits<{
     :name="field.uniqueName"
     :pattern="fieldType.string?.pattern ?? undefined"
     :placeholder="field.placeholder ?? field.displayName ?? field.uniqueName"
-    :required="field.isRequired"
     @update:model-value="$emit('update:model-value', $event)"
   >
     <template v-if="field.description" #after>

@@ -4,6 +4,7 @@ import DateTimeFieldValueEdit from "./DateTimeFieldValueEdit.vue";
 import NumberFieldValueEdit from "./NumberFieldValueEdit.vue";
 import RichTextFieldValueEdit from "./RichTextFieldValueEdit.vue";
 import StringFieldValueEdit from "./StringFieldValueEdit.vue";
+import TagsFieldValueEdit from "./TagsFieldValueEdit.vue";
 import type { FieldDefinition } from "@/types/fields";
 
 defineProps<{
@@ -44,6 +45,12 @@ defineEmits<{
     />
     <StringFieldValueEdit
       v-else-if="field.fieldType.dataType === 'String'"
+      :field="field"
+      :model-value="modelValue"
+      @update:model-value="$emit('update:model-value', $event)"
+    />
+    <TagsFieldValueEdit
+      v-else-if="field.fieldType.dataType === 'Tags'"
       :field="field"
       :model-value="modelValue"
       @update:model-value="$emit('update:model-value', $event)"
