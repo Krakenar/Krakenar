@@ -3,6 +3,7 @@ import BooleanFieldValueEdit from "./BooleanFieldValueEdit.vue";
 import DateTimeFieldValueEdit from "./DateTimeFieldValueEdit.vue";
 import NumberFieldValueEdit from "./NumberFieldValueEdit.vue";
 import RichTextFieldValueEdit from "./RichTextFieldValueEdit.vue";
+import SelectFieldValueEdit from "./SelectFieldValueEdit.vue";
 import StringFieldValueEdit from "./StringFieldValueEdit.vue";
 import TagsFieldValueEdit from "./TagsFieldValueEdit.vue";
 import type { FieldDefinition } from "@/types/fields";
@@ -39,6 +40,12 @@ defineEmits<{
     />
     <RichTextFieldValueEdit
       v-else-if="field.fieldType.dataType === 'RichText'"
+      :field="field"
+      :model-value="modelValue"
+      @update:model-value="$emit('update:model-value', $event)"
+    />
+    <SelectFieldValueEdit
+      v-else-if="field.fieldType.dataType === 'Select'"
       :field="field"
       :model-value="modelValue"
       @update:model-value="$emit('update:model-value', $event)"
