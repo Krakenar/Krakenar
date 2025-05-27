@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { nanoid } from "nanoid";
 
 import type { Actor } from "@/types/actor";
-import type { ContentType } from "@/types/contents";
+import type { ContentLocale, ContentType } from "@/types/contents";
 import type { FieldDefinition, FieldType } from "@/types/fields";
 import type { Locale } from "@/types/i18n";
 import type { Realm } from "@/types/realms";
@@ -11,6 +11,7 @@ import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
 import type { User } from "@/types/users";
 import {
+  formatContentLocale,
   formatContentType,
   formatFieldDefinition,
   formatFieldType,
@@ -42,6 +43,15 @@ const contentType: ContentType = {
   fieldCount: 0,
   fields: [],
 };
+const contentLocale: ContentLocale = {
+  uniqueName: "acura-tlx",
+  fieldValues: [],
+  createdBy: actor,
+  createdOn: now,
+  updatedBy: actor,
+  updatedOn: now,
+  isPublished: false,
+};
 const fieldType: FieldType = {
   id: nanoid(),
   version: 0,
@@ -66,6 +76,17 @@ const fieldDefinition: FieldDefinition = {
   updatedBy: actor,
   updatedOn: now,
 };
+
+describe("formatContentLocale", () => {
+  it.concurrent("should format the content locale with display name correctly", () => {
+    const subject: ContentLocale = { ...contentLocale, displayName: "Acura TLX" };
+    expect(formatContentLocale(subject)).toBe("Acura TLX (acura-tlx)");
+  });
+
+  it.concurrent("should format the content locale without display name correctly", () => {
+    expect(formatContentLocale(contentLocale)).toBe("acura-tlx");
+  });
+});
 
 describe("formatContentType", () => {
   it.concurrent("should format the content type with display name correctly", () => {

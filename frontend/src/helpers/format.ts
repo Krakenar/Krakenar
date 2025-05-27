@@ -1,4 +1,4 @@
-import type { ContentType } from "@/types/contents";
+import type { ContentLocale, ContentType } from "@/types/contents";
 import type { FieldDefinition, FieldType } from "@/types/fields";
 import type { Locale } from "@/types/i18n";
 import type { Realm } from "@/types/realms";
@@ -6,6 +6,10 @@ import type { Role } from "@/types/roles";
 import type { Sender } from "@/types/senders";
 import type { Template } from "@/types/templates";
 import type { User } from "@/types/users";
+
+export function formatContentLocale(locale: ContentLocale): string {
+  return locale.displayName ? `${locale.displayName} (${locale.uniqueName})` : locale.uniqueName;
+}
 
 export function formatContentType(contentType: ContentType): string {
   return contentType.displayName ? `${contentType.displayName} (${contentType.uniqueName})` : contentType.uniqueName;
