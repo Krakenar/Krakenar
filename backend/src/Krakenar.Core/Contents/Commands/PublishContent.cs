@@ -47,7 +47,7 @@ public class PublishContentHandler : ICommandHandler<PublishContent, ContentDto?
 
   public virtual async Task<ContentDto?> HandleAsync(PublishContent command, CancellationToken cancellationToken)
   {
-    ContentId contentId = new(command.ContentId);
+    ContentId contentId = new(command.ContentId, ApplicationContext.RealmId);
     Content? content = await ContentRepository.LoadAsync(contentId, cancellationToken);
     if (content is null)
     {
