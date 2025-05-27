@@ -146,14 +146,16 @@ public class ContentManager : IContentManager
     List<ValidationFailure> failures = [];
     string propertyName = nameof(locale.FieldValues);
 
+    bool isInvariant = !languageId.HasValue;
     if (isPublished)
     {
       foreach (FieldDefinition fieldDefinition in contentType.Fields)
       {
-        if (fieldDefinition.IsRequired && !locale.FieldValues.ContainsKey(fieldDefinition.Id))
+        if (fieldDefinition.IsRequired && fieldDefinition.IsInvariant == isInvariant && !locale.FieldValues.ContainsKey(fieldDefinition.Id))
         {
           ValidationFailure failure = new(propertyName, "The specified field is missing.", fieldDefinition.Id)
           {
+            CustomState = new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value },
             ErrorCode = "RequiredFieldValidator"
           };
           failures.Add(failure);
@@ -161,7 +163,6 @@ public class ContentManager : IContentManager
       }
     }
 
-    bool isInvariant = !languageId.HasValue;
     Dictionary<Guid, FieldValue> uniqueValues = new(capacity: locale.FieldValues.Count);
     foreach (KeyValuePair<Guid, FieldValue> fieldValue in locale.FieldValues)
     {
@@ -182,6 +183,7 @@ public class ContentManager : IContentManager
           : "The field is defined as localized, but saved in an invariant content.";
         ValidationFailure failure = new(propertyName, errorMessage, fieldValue.Key)
         {
+          CustomState = new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value },
           ErrorCode = "InvariantValidator"
         };
         failures.Add(failure);
