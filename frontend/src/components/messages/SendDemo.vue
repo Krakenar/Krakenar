@@ -55,7 +55,7 @@ async function submit(): Promise<void> {
     const payload: SendMessagePayload = {
       sender: props.sender?.id ?? selectedSender.value?.id ?? "",
       template: props.template?.id ?? selectedTemplate.value?.id ?? "",
-      recipients: [{ type: "To", userId: account.currentUser?.id }], // TODO(fpion): will not work inside a realm
+      recipients: [{ type: "To", userId: account.currentUser?.id }],
       ignoreUserLocale: ignoreUserLocale.value,
       locale: selectedLocale.value?.code,
       variables: variables.value,
