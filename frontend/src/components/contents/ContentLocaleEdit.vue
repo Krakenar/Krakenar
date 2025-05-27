@@ -134,6 +134,7 @@ watch(
         v-for="field in fields"
         :key="field.id"
         :field="field"
+        :language="locale.language ?? undefined"
         :model-value="fieldValues.get(field.id)"
         @update:model-value="fieldValues.set(field.id, $event)"
       />
