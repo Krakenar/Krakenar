@@ -94,6 +94,17 @@ public class ContentManager : IContentManager
           languageIds.Add(null);
         }
       }
+      else if (@event is ContentLocalePublished published)
+      {
+        if (published.LanguageId.HasValue)
+        {
+          languageIds.Add(published.LanguageId.Value);
+        }
+        else
+        {
+          languageIds.Add(null);
+        }
+    }
     }
 
     if (languageIds.Count > 0)
