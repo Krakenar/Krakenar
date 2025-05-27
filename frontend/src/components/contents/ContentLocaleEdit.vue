@@ -1,42 +1,52 @@
 <script setup lang="ts">
 import { TarButton } from "logitar-vue3-ui";
+import { arrayUtils } from "logitar-js";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 import DeleteContent from "./DeleteContent.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
+import FieldValueEdit from "@/components/fields/FieldValueEdit.vue";
 import PublishButton from "./PublishButton.vue";
 import PublishedInfo from "./PublishedInfo.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import UnpublishButton from "./UnpublishButton.vue";
 import type { Configuration } from "@/types/configuration";
-import type { Content, ContentLocale, SaveContentLocalePayload } from "@/types/contents";
-import type { FieldValuePayload } from "@/types/fields";
+import type { Content, ContentLocale, ContentType, SaveContentLocalePayload } from "@/types/contents";
+import type { FieldDefinition, FieldValuePayload } from "@/types/fields";
 import type { UniqueNameSettings } from "@/types/settings";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { isError } from "@/helpers/error";
 import { saveContentLocale } from "@/api/contents/items";
 import { useForm } from "@/forms";
 
+const { orderBy } = arrayUtils;
 const { t } = useI18n();
 
 const props = defineProps<{
   configuration?: Configuration;
   content: Content;
+  contentType: ContentType;
   locale: ContentLocale;
 }>();
 
 const description = ref<string>("");
 const displayName = ref<string>("");
-const fieldValues = ref<FieldValuePayload[]>([]);
+const fieldValues = ref<Map<string, string>>(new Map());
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
 
-const isTypeInvariant = computed<boolean>(() => props.content.contentType.isInvariant ?? false);
+const fields = computed<FieldDefinition[]>(() =>
+  orderBy(
+    props.contentType.fields.filter((field) => field.isInvariant === !props.locale.language),
+    "order",
+  ),
+);
+const isTypeInvariant = computed<boolean>(() => props.contentType.isInvariant ?? false);
 const uniqueNameSettings = computed<UniqueNameSettings | undefined>(
-  () => props.content.contentType.realm?.uniqueNameSettings ?? props.configuration?.uniqueNameSettings,
+  () => props.contentType.realm?.uniqueNameSettings ?? props.configuration?.uniqueNameSettings,
 );
 
 const emit = defineEmits<{
@@ -55,7 +65,7 @@ async function submit(): Promise<void> {
       uniqueName: uniqueName.value,
       displayName: displayName.value,
       description: description.value,
-      fieldValues: fieldValues.value,
+      fieldValues: [...fieldValues.value.entries()].map(([field, value]) => ({ field, value }) as FieldValuePayload),
     };
     const content: Content = await saveContentLocale(props.content.id, payload, props.locale.language?.id);
     emit("saved", content);
@@ -74,10 +84,8 @@ watch(
     uniqueName.value = locale.uniqueName;
     displayName.value = locale.displayName ?? "";
     description.value = locale.description ?? "";
-    fieldValues.value = locale.fieldValues.map(({ id, value }) => ({
-      field: id,
-      value,
-    }));
+    fieldValues.value.clear();
+    locale.fieldValues.forEach((fieldValue) => fieldValues.value.set(fieldValue.id, fieldValue.value));
   },
   { deep: true, immediate: true },
 );
@@ -122,7 +130,13 @@ watch(
         <DisplayNameInput class="col" v-model="displayName" />
       </div>
       <DescriptionTextarea v-model="description" />
-      <!-- TODO(fpion): FieldValues -->
+      <FieldValueEdit
+        v-for="field in fields"
+        :key="field.id"
+        :field="field"
+        :model-value="fieldValues.get(field.id)"
+        @update:model-value="fieldValues.set(field.id, $event)"
+      />
       <div class="mb-3">
         <TarButton
           :disabled="isSubmitting || !hasChanges"

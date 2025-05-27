@@ -38,6 +38,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
     if (content is null)
     {
       ContentTypeEntity contentType = await Context.ContentTypes
+        .Include(x => x.FieldDefinitions).ThenInclude(x => x.FieldType)
         .Include(x => x.Realm)
         .SingleOrDefaultAsync(x => x.StreamId == @event.ContentTypeId.Value, cancellationToken)
         ?? throw new InvalidOperationException($"The content type entity 'StreamId={@event.ContentTypeId}' could not be found.");
@@ -78,8 +79,9 @@ public class ContentEvents : IEventHandler<ContentCreated>,
   public virtual async Task HandleAsync(ContentLocaleChanged @event, CancellationToken cancellationToken)
   {
     ContentEntity? content = await Context.Contents
+      .Include(x => x.ContentType).ThenInclude(x => x!.FieldDefinitions).ThenInclude(x => x.FieldType)
       .Include(x => x.ContentType).ThenInclude(x => x!.Realm)
-      .Include(x => x.Locales)
+      .Include(x => x.Locales).ThenInclude(x => x.Language)
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
     if (content is null || content.Version != (@event.Version - 1))
     {
@@ -136,7 +138,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
   public virtual async Task HandleAsync(ContentLocaleRemoved @event, CancellationToken cancellationToken)
   {
     ContentEntity? content = await Context.Contents
-      .Include(x => x.Locales)
+      .Include(x => x.Locales).ThenInclude(x => x.Language)
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
     if (content is null || content.Version != (@event.Version - 1))
     {
@@ -159,6 +161,7 @@ public class ContentEvents : IEventHandler<ContentCreated>,
   {
     ContentEntity? content = await Context.Contents
       .Include(x => x.ContentType).ThenInclude(x => x!.FieldDefinitions).ThenInclude(x => x.FieldType)
+      .Include(x => x.ContentType).ThenInclude(x => x!.Realm)
       .Include(x => x.Locales).ThenInclude(x => x.Language)
       .Include(x => x.Locales).ThenInclude(x => x.PublishedContent)
       .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);

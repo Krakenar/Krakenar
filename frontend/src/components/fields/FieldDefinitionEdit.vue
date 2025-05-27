@@ -89,7 +89,7 @@ async function submit(): Promise<void> {
     try {
       const payload: CreateOrReplaceFieldDefinitionPayload = {
         fieldType: fieldType.value?.id,
-        isInvariant: isInvariant.value,
+        isInvariant: props.contentType.isInvariant ? true : isInvariant.value,
         isRequired: isRequired.value,
         isIndexed: isIndexed.value,
         isUnique: isUnique.value,
@@ -131,7 +131,7 @@ watch(() => props.field, setModel, { deep: true, immediate: true });
       <form @submit.prevent="handleSubmit(submit)">
         <FieldTypeFormSelect v-if="!field" :model-value="fieldType?.id" required @selected="fieldType = $event" />
         <FieldTypeInput v-else-if="fieldType" :field-type="fieldType" :id="`${field.id}-type`" />
-        <InvariantCheckbox :id="`${id}-invariant`" v-model="isInvariant" />
+        <InvariantCheckbox v-if="!contentType.isInvariant" :id="`${id}-invariant`" v-model="isInvariant" />
         <RequiredCheckbox :id="`${id}-required`" v-model="isRequired" />
         <IndexedCheckbox :id="`${id}-indexed`" v-model="isIndexed" />
         <UniqueCheckbox :id="`${id}-unique`" v-model="isUnique" />
