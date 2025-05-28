@@ -143,8 +143,8 @@ public class ContentManager : IContentManager
     ContentLocale locale,
     CancellationToken cancellationToken)
   {
+    const string propertyName = nameof(locale.FieldValues);
     List<ValidationFailure> failures = [];
-    string propertyName = nameof(locale.FieldValues);
 
     bool isInvariant = !languageId.HasValue;
     if (isPublishing)
@@ -212,7 +212,22 @@ public class ContentManager : IContentManager
       IReadOnlyDictionary<Guid, ContentId> conflicts = await ContentQuerier.FindConflictsAsync(contentType.Id, languageId, status, uniqueValues, contentId, cancellationToken);
       if (conflicts.Count > 0)
       {
-        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName); // ISSUE #139: https://github.com/Krakenar/Krakenar/issues/139
+        List<ValidationFailure> conflictFailures = new(capacity: conflicts.Count);
+        foreach (KeyValuePair<Guid, ContentId> conflict in conflicts)
+        {
+          FieldDefinition fieldDefinition = contentType.FindField(conflict.Key);
+          ValidationFailure failure = new(propertyName, "The field value is already used.", locale.FieldValues[conflict.Key].Value)
+          {
+            CustomState = new
+            {
+              ConflictId = conflict.Value.EntityId,
+              Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value
+            },
+            ErrorCode = "UniqueValidator"
+          };
+          conflictFailures.Add(failure);
+        }
+        throw new ContentFieldValueConflictException(contentId, languageId, conflictFailures, propertyName);
       }
     }
 
