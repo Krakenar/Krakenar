@@ -20,6 +20,16 @@ function onAdd(): void {
   const options: SelectOption[] = [...props.modelValue, option];
   emit("update:model-value", options);
 }
+function onMove(index: number, direction: -1 | 1): void {
+  // NOTE(fpion): -1 moves up the option, +1 moves down the option.
+  const options: SelectOption[] = [...props.modelValue];
+  const option: SelectOption | undefined = options[index];
+  if (option) {
+    options.splice(index, 1);
+    options.splice(index + direction, 0, option);
+    emit("update:model-value", options);
+  }
+}
 function onRemove(index: number): void {
   const options: SelectOption[] = [...props.modelValue];
   const option: SelectOption | undefined = options[index];
@@ -44,9 +54,13 @@ function onUpdate(index: number, option: SelectOption): void {
     <SelectOptionEdit
       v-for="(option, index) in modelValue"
       :key="index"
+      :first="index === 0"
       :id="`option-${index}`"
+      :last="index === modelValue.length - 1"
       :model-value="option"
+      @down="onMove(index, +1)"
       @removed="onRemove(index)"
+      @up="onMove(index, -1)"
       @update:model-value="onUpdate(index, $event)"
     />
   </div>
