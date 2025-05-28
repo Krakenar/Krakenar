@@ -192,7 +192,7 @@ public class ContentManager : IContentManager
       {
         FieldType fieldType = fieldTypes[fieldDefinition.FieldTypeId];
         IFieldValueValidator validator = FieldValueValidatorFactory.Create(fieldType);
-        ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken); // TODO(fpion): add FieldName with FieldId in validation results
+        ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
         failures.AddRange(result.Errors);
 
         if (fieldDefinition.IsUnique)
@@ -208,7 +208,7 @@ public class ContentManager : IContentManager
       IReadOnlyDictionary<Guid, ContentId> conflicts = await ContentQuerier.FindConflictsAsync(contentType.Id, languageId, status, uniqueValues, contentId, cancellationToken);
       if (conflicts.Count > 0)
       {
-        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName); // TODO(fpion): add FieldName with FieldId in validation results
+        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName);
       }
     }
 
