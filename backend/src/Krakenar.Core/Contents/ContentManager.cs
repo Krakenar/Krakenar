@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Krakenar.Contracts;
 using Krakenar.Core.Contents.Events;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Validators;
@@ -144,7 +145,7 @@ public class ContentManager : IContentManager
     CancellationToken cancellationToken)
   {
     const string propertyName = nameof(locale.FieldValues);
-    List<ValidationFailure> failures = [];
+    List<Error> errors = [];
 
     bool isInvariant = !languageId.HasValue;
     if (isPublishing)
@@ -153,40 +154,36 @@ public class ContentManager : IContentManager
       {
         if (fieldDefinition.IsRequired && fieldDefinition.IsInvariant == isInvariant && !locale.FieldValues.ContainsKey(fieldDefinition.Id))
         {
-          ValidationFailure failure = new(propertyName, "The specified field is missing.", fieldDefinition.Id)
-          {
-            CustomState = new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value },
-            ErrorCode = "RequiredFieldValidator"
-          };
-          failures.Add(failure);
+          Error error = new("RequiredFieldValidator", "The specified field is missing.");
+          error.Data["Id"] = fieldDefinition.Id;
+          error.Data["Name"] = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value;
+          errors.Add(error);
         }
       }
     }
 
     Dictionary<Guid, FieldValue> uniqueValues = new(capacity: locale.FieldValues.Count);
+    List<ValidationFailure> failures = [];
     foreach (KeyValuePair<Guid, FieldValue> fieldValue in locale.FieldValues)
     {
       FieldDefinition? fieldDefinition = contentType.TryGetField(fieldValue.Key);
       if (fieldDefinition is null)
       {
-        string errorMessage = $"The field is not defined on content type '{contentType.DisplayName?.Value ?? contentType.UniqueName.Value}'.";
-        ValidationFailure failure = new(propertyName, errorMessage, fieldValue.Key)
-        {
-          ErrorCode = "FieldDefinitionValidator"
-        };
-        failures.Add(failure);
+        Error error = new("FieldDefinitionValidator", $"The field is not defined on content type '{contentType.DisplayName?.Value ?? contentType.UniqueName.Value}'.");
+        error.Data["Id"] = fieldValue.Key;
+        error.Data["Value"] = fieldValue.Value.Value;
+        errors.Add(error);
       }
       else if (fieldDefinition.IsInvariant != isInvariant)
       {
         string errorMessage = fieldDefinition.IsInvariant
           ? "The field is defined as invariant, but saved in a localized content."
           : "The field is defined as localized, but saved in an invariant content.";
-        ValidationFailure failure = new(propertyName, errorMessage, fieldValue.Key)
-        {
-          CustomState = new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value },
-          ErrorCode = "InvariantValidator"
-        };
-        failures.Add(failure);
+        Error error = new("InvariantFieldValidator", errorMessage);
+        error.Data["Id"] = fieldValue.Key;
+        error.Data["Name"] = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value;
+        error.Data["Value"] = fieldValue.Value.Value;
+        errors.Add(error);
       }
       else
       {
@@ -195,7 +192,6 @@ public class ContentManager : IContentManager
         ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
         foreach (ValidationFailure failure in result.Errors)
         {
-          failure.CustomState ??= new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value };
           failures.Add(failure);
         }
 
@@ -204,6 +200,15 @@ public class ContentManager : IContentManager
           uniqueValues[fieldDefinition.Id] = fieldValue.Value;
         }
       }
+    }
+
+    if (errors.Count > 0)
+    {
+      throw new InvalidFieldValuesException(contentId, languageId, errors);
+    }
+    if (failures.Count > 0)
+    {
+      throw new ValidationException(failures);
     }
 
     if (uniqueValues.Count > 0)
@@ -223,17 +228,12 @@ public class ContentManager : IContentManager
               ConflictId = conflict.Value.EntityId,
               Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value
             },
-            ErrorCode = "UniqueValidator"
+            ErrorCode = "UniqueFieldValidator"
           };
           conflictFailures.Add(failure);
         }
         throw new ContentFieldValueConflictException(contentId, languageId, conflictFailures, propertyName);
       }
-    }
-
-    if (failures.Count > 0)
-    {
-      throw new ValidationException(failures);
     }
   }
 
