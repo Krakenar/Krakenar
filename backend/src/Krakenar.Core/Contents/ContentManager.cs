@@ -193,7 +193,11 @@ public class ContentManager : IContentManager
         FieldType fieldType = fieldTypes[fieldDefinition.FieldTypeId];
         IFieldValueValidator validator = FieldValueValidatorFactory.Create(fieldType);
         ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
-        failures.AddRange(result.Errors);
+        foreach (ValidationFailure failure in result.Errors)
+        {
+          failure.CustomState ??= new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value };
+          failures.Add(failure);
+        }
 
         if (fieldDefinition.IsUnique)
         {
@@ -208,7 +212,7 @@ public class ContentManager : IContentManager
       IReadOnlyDictionary<Guid, ContentId> conflicts = await ContentQuerier.FindConflictsAsync(contentType.Id, languageId, status, uniqueValues, contentId, cancellationToken);
       if (conflicts.Count > 0)
       {
-        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName);
+        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName); // ISSUE #139: https://github.com/Krakenar/Krakenar/issues/139
       }
     }
 
