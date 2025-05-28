@@ -53,6 +53,11 @@ public class Content : AggregateRoot
   public ContentLocale FindLocale(Language language) => FindLocale(language.Id);
   public ContentLocale FindLocale(LanguageId languageId) => TryGetLocale(languageId) ?? throw new InvalidOperationException($"The content locale 'LanguageId={languageId}' could not be found.");
 
+  public ContentStatus? GetInvariantStatus() => _invariantStatus;
+  public ContentStatus? GetLocaleStatus(Language language) => GetLocaleStatus(language.Id);
+  public ContentStatus? GetLocaleStatus(LanguageId languageId) => _localeStatuses.TryGetValue(languageId, out ContentStatus status) ? status : null;
+  public ContentStatus? GetStatus(LanguageId? languageId) => languageId.HasValue ? GetLocaleStatus(languageId.Value) : GetInvariantStatus();
+
   public bool HasLocale(Language language) => HasLocale(language.Id);
   public bool HasLocale(LanguageId languageId) => _locales.ContainsKey(languageId);
 

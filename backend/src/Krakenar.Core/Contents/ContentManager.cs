@@ -104,7 +104,7 @@ public class ContentManager : IContentManager
         {
           languageIds.Add(null);
         }
-    }
+      }
     }
 
     if (languageIds.Count > 0)
@@ -127,8 +127,8 @@ public class ContentManager : IContentManager
           throw new ContentUniqueNameAlreadyUsedException(content, languageId, conflictId.Value, uniqueName);
         }
 
-        bool isPublished = content.IsPublished(languageId);
-        await ValidateAsync(contentType, fieldTypes, content.Id, languageId, isPublished, locale, cancellationToken);
+        bool isPublishing = content.GetStatus(languageId) == ContentStatus.Latest; // NOTE(fpion): we only check Required fields when publishing content, not when saving drafts.
+        await ValidateAsync(contentType, fieldTypes, content.Id, languageId, isPublishing, locale, cancellationToken);
       }
     }
 
@@ -139,7 +139,7 @@ public class ContentManager : IContentManager
     IReadOnlyDictionary<FieldTypeId, FieldType> fieldTypes,
     ContentId contentId,
     LanguageId? languageId,
-    bool isPublished,
+    bool isPublishing,
     ContentLocale locale,
     CancellationToken cancellationToken)
   {
@@ -147,7 +147,7 @@ public class ContentManager : IContentManager
     string propertyName = nameof(locale.FieldValues);
 
     bool isInvariant = !languageId.HasValue;
-    if (isPublished)
+    if (isPublishing)
     {
       foreach (FieldDefinition fieldDefinition in contentType.Fields)
       {
@@ -192,7 +192,7 @@ public class ContentManager : IContentManager
       {
         FieldType fieldType = fieldTypes[fieldDefinition.FieldTypeId];
         IFieldValueValidator validator = FieldValueValidatorFactory.Create(fieldType);
-        ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
+        ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken); // TODO(fpion): add FieldName with FieldId in validation results
         failures.AddRange(result.Errors);
 
         if (fieldDefinition.IsUnique)
@@ -204,11 +204,11 @@ public class ContentManager : IContentManager
 
     if (uniqueValues.Count > 0)
     {
-      ContentStatus status = isPublished ? ContentStatus.Published : ContentStatus.Latest;
+      ContentStatus status = isPublishing ? ContentStatus.Published : ContentStatus.Latest;
       IReadOnlyDictionary<Guid, ContentId> conflicts = await ContentQuerier.FindConflictsAsync(contentType.Id, languageId, status, uniqueValues, contentId, cancellationToken);
       if (conflicts.Count > 0)
       {
-        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName);
+        throw new ContentFieldValueConflictException(contentId, languageId, conflicts, propertyName); // TODO(fpion): add FieldName with FieldId in validation results
       }
     }
 
