@@ -92,7 +92,7 @@ function toggle(option: SelectOption): void {
         :class="{ active: isSelected(option), disabled: option.disabled, 'dropdown-item': true }"
         @click.prevent="toggle(option)"
       >
-        <font-awesome-icon v-if="isSelected(option)" icon="fas fa-check" /> {{ option.text }}
+        <font-awesome-icon v-if="isSelected(option)" icon="fas fa-check" /> {{ option.label ?? option.text }}
       </li>
     </ul>
   </div>
