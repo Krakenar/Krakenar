@@ -71,7 +71,7 @@ public class InvalidFieldValuesException : BadRequestException
     message.Append(nameof(Errors)).Append(':').AppendLine();
     foreach (Error error in errors)
     {
-      message.Append(" - ").Append(error.Code).Append(": ").AppendLine(error.Message);
+      message.Append(" - ").AppendLine(JsonSerializer.Serialize(error));
     }
 
     return message.ToString();
