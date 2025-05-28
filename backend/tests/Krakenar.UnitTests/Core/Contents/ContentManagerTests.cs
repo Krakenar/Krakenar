@@ -37,6 +37,61 @@ public class ContentManagerTests
       _fieldValueValidatorFactory);
   }
 
+  [Fact(DisplayName = "It should throw ContentFieldValueConflictException when there are field value conflicts.")]
+  public async Task Given_ConflictingValues_When_SavingContent_Then_ContentFieldValueConflictException()
+  {
+    Language language = new(new Locale("en"), isDefault: true);
+
+    UniqueNameSettings uniqueNameSettings = new();
+    FieldType skuType = new(new UniqueName(uniqueNameSettings, "StockKeepingUnit"), new StringSettings(minimumLength: 3, maximumLength: 32, pattern: null));
+
+    ContentType contentType = new(new Identifier("Product"));
+    FieldDefinition sku = new(Guid.NewGuid(), skuType.Id, false, true, true, true, new Identifier("Sku"), null, null, null);
+    contentType.SetField(sku);
+
+    FieldValue fieldValue = new("20834");
+    ContentLocale invariant = new(new UniqueName(uniqueNameSettings, "shure-sm57"));
+    Content content = new(contentType, invariant);
+
+    content.ClearChanges();
+    ContentLocale locale = new(invariant.UniqueName, invariant.DisplayName, invariant.Description, new Dictionary<Guid, FieldValue>
+    {
+      [sku.Id] = fieldValue
+    });
+    content.SetLocale(language, locale);
+
+    _fieldTypeRepository.Setup(x => x.LoadAsync(
+      It.Is<IEnumerable<FieldTypeId>>(y => y.SequenceEqual(new FieldTypeId[] { skuType.Id })),
+      _cancellationToken)).ReturnsAsync([skuType]);
+
+    ContentId conflictId = ContentId.NewId();
+    _contentQuerier.Setup(x => x.FindConflictsAsync(
+      contentType.Id,
+      language.Id,
+      ContentStatus.Latest,
+      It.Is<IReadOnlyDictionary<Guid, FieldValue>>(y => y.SequenceEqual(locale.FieldValues)),
+      content.Id,
+      _cancellationToken)).ReturnsAsync(new Dictionary<Guid, ContentId> { [sku.Id] = conflictId });
+
+    var exception = await Assert.ThrowsAsync<ContentFieldValueConflictException>(async () => await _manager.SaveAsync(content, contentType, _cancellationToken));
+    Assert.Equal(content.RealmId?.ToGuid(), exception.RealmId);
+    Assert.Equal(content.EntityId, exception.ContentId);
+    Assert.Equal(language.EntityId, exception.LanguageId);
+    Assert.Equal("FieldValues", exception.PropertyName);
+
+    Error error = Assert.Single(exception.Errors);
+    Assert.Equal("UniqueFieldValidator", error.Code);
+    Assert.Equal("The field value is already used.", error.Message);
+    Assert.Equal(4, error.Data.Count);
+    Assert.Contains(error.Data, d => d.Key == "Id" && d.Value is Guid id && id == sku.Id);
+    Assert.Contains(error.Data, d => d.Key == "Name" && d.Value is string name && name == sku.UniqueName.Value);
+    Assert.Contains(error.Data, d => d.Key == "Value" && d.Value is string value && value == fieldValue.Value);
+    Assert.Contains(error.Data, d => d.Key == "ConflictId" && d.Value is Guid conflict && conflict == conflictId.EntityId);
+
+    _contentTypeRepository.Verify(x => x.LoadAsync(It.IsAny<ContentTypeId>(), It.IsAny<CancellationToken>()), Times.Never);
+    _contentRepository.Verify(x => x.SaveAsync(It.IsAny<Content>(), It.IsAny<CancellationToken>()), Times.Never);
+  }
+
   [Fact(DisplayName = "It should throw InvalidFieldValuesException when publishing contents with missing fields.")]
   public async Task Given_MissingFields_When_PublishingContent_Then_InvalidFieldValuesException()
   {

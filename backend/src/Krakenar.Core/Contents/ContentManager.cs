@@ -220,7 +220,7 @@ public class ContentManager : IContentManager
 
     if (errors.Count > 0)
     {
-      throw new InvalidFieldValuesException(contentId, languageId, errors);
+      throw new InvalidFieldValuesException(contentId, languageId, errors, propertyName);
     }
 
     if (uniqueValues.Count > 0)
@@ -229,22 +229,19 @@ public class ContentManager : IContentManager
       IReadOnlyDictionary<Guid, ContentId> conflicts = await ContentQuerier.FindConflictsAsync(contentType.Id, languageId, status, uniqueValues, contentId, cancellationToken);
       if (conflicts.Count > 0)
       {
-        List<ValidationFailure> conflictFailures = new(capacity: conflicts.Count);
         foreach (KeyValuePair<Guid, ContentId> conflict in conflicts)
         {
           FieldDefinition fieldDefinition = contentType.FindField(conflict.Key);
-          ValidationFailure failure = new(propertyName, "The field value is already used.", locale.FieldValues[conflict.Key].Value)
-          {
-            CustomState = new
-            {
-              ConflictId = conflict.Value.EntityId,
-              Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value
-            },
-            ErrorCode = "UniqueFieldValidator"
-          };
-          conflictFailures.Add(failure);
+          FieldValue fieldValue = locale.FieldValues[fieldDefinition.Id];
+
+          Error error = new("UniqueFieldValidator", "The field value is already used.");
+          error.Data["Id"] = fieldDefinition.Id;
+          error.Data["Name"] = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value;
+          error.Data["Value"] = fieldValue.Value;
+          error.Data["ConflictId"] = conflict.Value.EntityId;
+          errors.Add(error);
         }
-        throw new ContentFieldValueConflictException(contentId, languageId, conflictFailures, propertyName);
+        throw new ContentFieldValueConflictException(contentId, languageId, errors, propertyName);
       }
     }
   }

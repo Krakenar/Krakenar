@@ -48,17 +48,17 @@ public class InvalidFieldValuesException : BadRequestException
     }
   }
 
-  public InvalidFieldValuesException(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors)
-    : base(BuildMessage(contentId, languageId, errors))
+  public InvalidFieldValuesException(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors, string propertyName)
+    : base(BuildMessage(contentId, languageId, errors, propertyName))
   {
     RealmId = contentId.RealmId?.ToGuid();
     ContentId = contentId.EntityId;
     LanguageId = languageId?.EntityId;
     Errors = errors.ToList().AsReadOnly();
-    PropertyName = nameof(ContentLocale.FieldValues);
+    PropertyName = propertyName;
   }
 
-  private static string BuildMessage(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors)
+  private static string BuildMessage(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors, string propertyName)
   {
     StringBuilder message = new();
 
@@ -66,8 +66,9 @@ public class InvalidFieldValuesException : BadRequestException
     message.Append(nameof(RealmId)).Append(": ").AppendLine(contentId.RealmId?.ToGuid().ToString() ?? "<null>");
     message.Append(nameof(ContentId)).Append(": ").Append(contentId.EntityId).AppendLine();
     message.Append(nameof(LanguageId)).Append(": ").AppendLine(languageId?.EntityId.ToString() ?? "<null>");
-    message.Append(nameof(PropertyName)).Append(": ").AppendLine(nameof(ContentLocale.FieldValues));
+    message.Append(nameof(PropertyName)).Append(": ").AppendLine(propertyName);
 
+    message.Append(nameof(Errors)).Append(':').AppendLine();
     foreach (Error error in errors)
     {
       message.Append(" - ").Append(error.Code).Append(": ").AppendLine(error.Message);

@@ -1,5 +1,4 @@
-﻿using FluentValidation.Results;
-using Krakenar.Contracts;
+﻿using Krakenar.Contracts;
 using Krakenar.Core.Localization;
 using Logitar;
 
@@ -11,7 +10,7 @@ public class ContentFieldValueConflictException : ConflictException
 
   public Guid? RealmId
   {
-    get => (Guid?)Data[nameof(RealmId)]!;
+    get => (Guid?)Data[nameof(RealmId)];
     private set => Data[nameof(RealmId)] = value;
   }
   public Guid ContentId
@@ -21,13 +20,13 @@ public class ContentFieldValueConflictException : ConflictException
   }
   public Guid? LanguageId
   {
-    get => (Guid?)Data[nameof(LanguageId)]!;
+    get => (Guid?)Data[nameof(LanguageId)];
     private set => Data[nameof(LanguageId)] = value;
   }
-  public IReadOnlyCollection<ValidationFailure> Conflicts
+  public IReadOnlyCollection<Error> Errors
   {
-    get => (IReadOnlyCollection<ValidationFailure>)Data[nameof(Conflicts)]!;
-    private set => Data[nameof(Conflicts)] = value;
+    get => (IReadOnlyCollection<Error>)Data[nameof(Errors)]!;
+    private set => Data[nameof(Errors)] = value;
   }
   public string PropertyName
   {
@@ -43,23 +42,23 @@ public class ContentFieldValueConflictException : ConflictException
       error.Data[nameof(RealmId)] = RealmId;
       error.Data[nameof(ContentId)] = ContentId;
       error.Data[nameof(LanguageId)] = LanguageId;
-      error.Data[nameof(Conflicts)] = Conflicts;
+      error.Data[nameof(Errors)] = Errors;
       error.Data[nameof(PropertyName)] = PropertyName;
       return error;
     }
   }
 
-  public ContentFieldValueConflictException(ContentId contentId, LanguageId? languageId, IEnumerable<ValidationFailure> conflicts, string propertyName)
-    : base(BuildMessage(contentId, languageId, conflicts, propertyName))
+  public ContentFieldValueConflictException(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors, string propertyName)
+    : base(BuildMessage(contentId, languageId, errors, propertyName))
   {
     RealmId = contentId.RealmId?.ToGuid();
     ContentId = contentId.EntityId;
     LanguageId = languageId?.EntityId;
-    Conflicts = conflicts.ToList().AsReadOnly();
+    Errors = errors.ToList().AsReadOnly();
     PropertyName = propertyName;
   }
 
-  private static string BuildMessage(ContentId contentId, LanguageId? languageId, IEnumerable<ValidationFailure> conflicts, string propertyName)
+  private static string BuildMessage(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors, string propertyName)
   {
     StringBuilder message = new();
 
@@ -69,11 +68,10 @@ public class ContentFieldValueConflictException : ConflictException
     message.Append(nameof(LanguageId)).Append(": ").AppendLine(languageId?.EntityId.ToString() ?? "<null>");
     message.Append(nameof(PropertyName)).Append(": ").AppendLine(propertyName);
 
-    message.Append(nameof(Conflicts)).Append(':').AppendLine();
-    foreach (ValidationFailure conflict in conflicts)
+    message.Append(nameof(Errors)).Append(':').AppendLine();
+    foreach (Error error in errors)
     {
-      string formatted = string.Join(" | ", conflict.PropertyName, conflict.ErrorCode, conflict.ErrorMessage, conflict.AttemptedValue);
-      message.Append(" - ").AppendLine(formatted);
+      message.Append(" - ").Append(error.Code).Append(": ").AppendLine(error.Message);
     }
 
     return message.ToString();
