@@ -47,7 +47,7 @@ public class UnpublishContentHandler : ICommandHandler<UnpublishContent, Content
 
   public virtual async Task<ContentDto?> HandleAsync(UnpublishContent command, CancellationToken cancellationToken)
   {
-    ContentId contentId = new(command.ContentId);
+    ContentId contentId = new(command.ContentId, ApplicationContext.RealmId);
     Content? content = await ContentRepository.LoadAsync(contentId, cancellationToken);
     if (content is null)
     {

@@ -31,6 +31,9 @@ const isLoading = ref<boolean>(false);
 
 const isAll = computed<boolean>(() => parseBoolean(props.all) ?? false);
 const isDisabled = computed<boolean>(() => {
+  if (isLoading.value) {
+    return true;
+  }
   if (isAll.value) {
     return props.content.invariant.isPublished && props.content.locales.every((locale) => locale.isPublished);
   }

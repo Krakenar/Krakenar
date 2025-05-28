@@ -94,6 +94,17 @@ public class ContentManager : IContentManager
           languageIds.Add(null);
         }
       }
+      else if (@event is ContentLocalePublished published)
+      {
+        if (published.LanguageId.HasValue)
+        {
+          languageIds.Add(published.LanguageId.Value);
+        }
+        else
+        {
+          languageIds.Add(null);
+        }
+      }
     }
 
     if (languageIds.Count > 0)
@@ -116,8 +127,8 @@ public class ContentManager : IContentManager
           throw new ContentUniqueNameAlreadyUsedException(content, languageId, conflictId.Value, uniqueName);
         }
 
-        bool isPublished = content.IsPublished(languageId);
-        await ValidateAsync(contentType, fieldTypes, content.Id, languageId, isPublished, locale, cancellationToken);
+        bool isPublishing = content.GetStatus(languageId) == ContentStatus.Latest; // NOTE(fpion): we only check Required fields when publishing content, not when saving drafts.
+        await ValidateAsync(contentType, fieldTypes, content.Id, languageId, isPublishing, locale, cancellationToken);
       }
     }
 
@@ -128,21 +139,23 @@ public class ContentManager : IContentManager
     IReadOnlyDictionary<FieldTypeId, FieldType> fieldTypes,
     ContentId contentId,
     LanguageId? languageId,
-    bool isPublished,
+    bool isPublishing,
     ContentLocale locale,
     CancellationToken cancellationToken)
   {
     List<ValidationFailure> failures = [];
     string propertyName = nameof(locale.FieldValues);
 
-    if (isPublished)
+    bool isInvariant = !languageId.HasValue;
+    if (isPublishing)
     {
       foreach (FieldDefinition fieldDefinition in contentType.Fields)
       {
-        if (fieldDefinition.IsRequired && !locale.FieldValues.ContainsKey(fieldDefinition.Id))
+        if (fieldDefinition.IsRequired && fieldDefinition.IsInvariant == isInvariant && !locale.FieldValues.ContainsKey(fieldDefinition.Id))
         {
           ValidationFailure failure = new(propertyName, "The specified field is missing.", fieldDefinition.Id)
           {
+            CustomState = new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value },
             ErrorCode = "RequiredFieldValidator"
           };
           failures.Add(failure);
@@ -150,7 +163,6 @@ public class ContentManager : IContentManager
       }
     }
 
-    bool isInvariant = !languageId.HasValue;
     Dictionary<Guid, FieldValue> uniqueValues = new(capacity: locale.FieldValues.Count);
     foreach (KeyValuePair<Guid, FieldValue> fieldValue in locale.FieldValues)
     {
@@ -171,6 +183,7 @@ public class ContentManager : IContentManager
           : "The field is defined as localized, but saved in an invariant content.";
         ValidationFailure failure = new(propertyName, errorMessage, fieldValue.Key)
         {
+          CustomState = new { Field = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value },
           ErrorCode = "InvariantValidator"
         };
         failures.Add(failure);
@@ -191,7 +204,7 @@ public class ContentManager : IContentManager
 
     if (uniqueValues.Count > 0)
     {
-      ContentStatus status = isPublished ? ContentStatus.Published : ContentStatus.Latest;
+      ContentStatus status = isPublishing ? ContentStatus.Published : ContentStatus.Latest;
       IReadOnlyDictionary<Guid, ContentId> conflicts = await ContentQuerier.FindConflictsAsync(contentType.Id, languageId, status, uniqueValues, contentId, cancellationToken);
       if (conflicts.Count > 0)
       {
