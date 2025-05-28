@@ -32,6 +32,7 @@
     <Using Include="System.Collections.Immutable" />
     <Using Include="System.Diagnostics.CodeAnalysis" />
     <Using Include="System.Globalization" />
+    <Using Include="System.Reflection" />
     <Using Include="System.Security.Claims" />
     <Using Include="System.Text" />
     <Using Include="System.Text.Json" />

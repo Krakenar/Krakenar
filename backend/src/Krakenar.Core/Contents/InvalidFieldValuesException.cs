@@ -4,9 +4,9 @@ using Logitar;
 
 namespace Krakenar.Core.Contents;
 
-public class ContentFieldValueConflictException : ConflictException
+public class InvalidFieldValuesException : BadRequestException
 {
-  private const string ErrorMessage = "The specified field values are already used.";
+  private const string ErrorMessage = "The content locale has invalid field values.";
 
   public Guid? RealmId
   {
@@ -48,7 +48,7 @@ public class ContentFieldValueConflictException : ConflictException
     }
   }
 
-  public ContentFieldValueConflictException(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors, string propertyName)
+  public InvalidFieldValuesException(ContentId contentId, LanguageId? languageId, IEnumerable<Error> errors, string propertyName)
     : base(BuildMessage(contentId, languageId, errors, propertyName))
   {
     RealmId = contentId.RealmId?.ToGuid();
