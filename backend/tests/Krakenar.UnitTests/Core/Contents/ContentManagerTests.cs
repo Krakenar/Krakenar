@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using Krakenar.Contracts;
+﻿using Krakenar.Contracts;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Settings;
 using Krakenar.Core.Fields.Validators;
@@ -89,19 +87,21 @@ public class ContentManagerTests
     _contentRepository.Verify(x => x.SaveAsync(It.IsAny<Content>(), It.IsAny<CancellationToken>()), Times.Never);
   }
 
-  [Fact(DisplayName = "It should throw ValidationException when saving contents with invalid field values.")]
-  public async Task Given_InvalidFieldValues_When_SavingContent_Then_ValidationException()
+  [Fact(DisplayName = "It should throw InvalidFieldValuesException when saving contents with invalid field values.")]
+  public async Task Given_InvalidFieldValues_When_SavingContent_Then_InvalidFieldValuesException()
   {
     UniqueNameSettings uniqueNameSettings = new();
-    FieldType priceType = new(new UniqueName(uniqueNameSettings, "Price"), new NumberSettings(0.01, 999999.99, 0.01));
+    NumberSettings settings = new(0.01, 999999.99, 0.01);
+    FieldType priceType = new(new UniqueName(uniqueNameSettings, "Price"), settings);
 
     ContentType contentType = new(new Identifier("Product"));
     FieldDefinition price = new(Guid.NewGuid(), priceType.Id, true, true, true, false, new Identifier("Price"), null, null, null);
     contentType.SetField(price);
 
+    FieldValue fieldValue = new("-139");
     ContentLocale invariant = new(new UniqueName(uniqueNameSettings, "shure-sm57"), null, null, new Dictionary<Guid, FieldValue>
     {
-      [price.Id] = new FieldValue("-139")
+      [price.Id] = fieldValue
     });
     Content content = new(contentType, invariant);
 
@@ -109,13 +109,20 @@ public class ContentManagerTests
       It.Is<IEnumerable<FieldTypeId>>(y => y.SequenceEqual(new FieldTypeId[] { priceType.Id })),
       _cancellationToken)).ReturnsAsync([priceType]);
 
-    var exception = await Assert.ThrowsAsync<ValidationException>(async () => await _manager.SaveAsync(content, contentType, _cancellationToken));
-    ValidationFailure failure = Assert.Single(exception.Errors);
-    Assert.Equal("GreaterThanOrEqualValidator", failure.ErrorCode);
-    Assert.Equal("The value must be greater than or equal to 0.01.", failure.ErrorMessage);
-    Assert.Equal("FieldValues", failure.PropertyName);
-    Assert.Equal(invariant.FieldValues.Single().Value.Value, failure.AttemptedValue);
-    Assert.NotNull(failure.CustomState);
+    var exception = await Assert.ThrowsAsync<InvalidFieldValuesException>(async () => await _manager.SaveAsync(content, contentType, _cancellationToken));
+    Assert.Equal(content.RealmId?.ToGuid(), exception.RealmId);
+    Assert.Equal(content.EntityId, exception.ContentId);
+    Assert.Null(exception.LanguageId);
+    Assert.Equal("FieldValues", exception.PropertyName);
+
+    Error error = Assert.Single(exception.Errors);
+    Assert.Equal("GreaterThanOrEqualValidator", error.Code);
+    Assert.Equal("The value must be greater than or equal to 0.01.", error.Message);
+    Assert.Equal(4, error.Data.Count);
+    Assert.Contains(error.Data, d => d.Key == "Id" && d.Value is Guid id && id == price.Id);
+    Assert.Contains(error.Data, d => d.Key == "Name" && d.Value is string name && name == price.UniqueName.Value);
+    Assert.Contains(error.Data, d => d.Key == "Value" && d.Value is string value && value == fieldValue.Value);
+    Assert.Contains(error.Data, d => d.Key == "MinimumValue" && d.Value is double minimumValue && minimumValue == settings.MinimumValue);
 
     _contentTypeRepository.Verify(x => x.LoadAsync(It.IsAny<ContentTypeId>(), It.IsAny<CancellationToken>()), Times.Never);
     _contentQuerier.Verify(x => x.FindConflictsAsync(

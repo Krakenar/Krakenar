@@ -163,7 +163,6 @@ public class ContentManager : IContentManager
     }
 
     Dictionary<Guid, FieldValue> uniqueValues = new(capacity: locale.FieldValues.Count);
-    List<ValidationFailure> failures = [];
     foreach (KeyValuePair<Guid, FieldValue> fieldValue in locale.FieldValues)
     {
       FieldDefinition? fieldDefinition = contentType.TryGetField(fieldValue.Key);
@@ -192,7 +191,24 @@ public class ContentManager : IContentManager
         ValidationResult result = await validator.ValidateAsync(fieldValue.Value, propertyName, cancellationToken);
         foreach (ValidationFailure failure in result.Errors)
         {
-          failures.Add(failure);
+          Error error = new(failure.ErrorCode, failure.ErrorMessage);
+          error.Data["Id"] = fieldValue.Key;
+          error.Data["Name"] = fieldDefinition.DisplayName?.Value ?? fieldDefinition.UniqueName.Value;
+          error.Data["Value"] = fieldValue.Value.Value;
+
+          if (failure.CustomState is not null)
+          {
+            PropertyInfo[] properties = failure.CustomState.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo property in properties)
+            {
+              if (property.CanRead)
+              {
+                error.Data[property.Name] = property.GetValue(failure.CustomState);
+              }
+            }
+          }
+
+          errors.Add(error);
         }
 
         if (fieldDefinition.IsUnique)
@@ -205,10 +221,6 @@ public class ContentManager : IContentManager
     if (errors.Count > 0)
     {
       throw new InvalidFieldValuesException(contentId, languageId, errors);
-    }
-    if (failures.Count > 0)
-    {
-      throw new ValidationException(failures);
     }
 
     if (uniqueValues.Count > 0)
