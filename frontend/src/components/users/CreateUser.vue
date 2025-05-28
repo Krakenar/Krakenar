@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { TarButton, TarModal } from "logitar-vue3-ui";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import type { Configuration } from "@/types/configuration";
 import type { CreateOrReplaceUserPayload, User } from "@/types/users";
+import type { UniqueNameSettings } from "@/types/settings";
 import { ErrorCodes, StatusCodes } from "@/types/api";
 import { createUser } from "@/api/users";
 import { isError } from "@/helpers/error";
@@ -21,6 +22,8 @@ const configuration = ref<Configuration>();
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
+
+const uniqueNameSettings = computed<UniqueNameSettings | undefined>(() => realm.currentRealm?.uniqueNameSettings ?? configuration.value?.uniqueNameSettings);
 
 function hide(): void {
   modalRef.value?.hide();
@@ -79,12 +82,12 @@ onMounted(async () => {
     <TarModal :close="t('actions.close')" id="create-user" ref="modalRef" size="large" :title="t('users.create')">
       <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <UniqueNameInput required :settings="realm.currentRealm?.uniqueNameSettings ?? configuration?.uniqueNameSettings" v-model="uniqueName" />
+        <UniqueNameInput required :settings="uniqueNameSettings" v-model="uniqueName" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="!configuration || isSubmitting || !hasChanges"
+          :disabled="!uniqueNameSettings || isSubmitting || !hasChanges"
           icon="fas fa-plus"
           :loading="isSubmitting"
           :status="t('loading')"

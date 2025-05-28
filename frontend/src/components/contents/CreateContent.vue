@@ -29,9 +29,7 @@ const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
 
 const isInvariant = computed<boolean>(() => contentType.value?.isInvariant ?? false);
-const uniqueNameSettings = computed<UniqueNameSettings | undefined>(
-  () => contentType.value?.realm?.uniqueNameSettings ?? configuration.value?.uniqueNameSettings,
-);
+const uniqueNameSettings = computed<UniqueNameSettings | undefined>(() => realm.currentRealm?.uniqueNameSettings ?? configuration.value?.uniqueNameSettings);
 
 function hide(): void {
   modalRef.value?.hide();
@@ -107,7 +105,7 @@ onMounted(async () => {
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
         <TarButton
-          :disabled="isSubmitting || !hasChanges"
+          :disabled="!uniqueNameSettings || isSubmitting || !hasChanges"
           icon="fas fa-plus"
           :loading="isSubmitting"
           :status="t('loading')"
