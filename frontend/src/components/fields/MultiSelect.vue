@@ -86,7 +86,12 @@ function toggle(option: SelectOption): void {
     </FormTextarea>
     <ul class="dropdown-menu">
       <li v-if="placeholder" class="disabled dropdown-item">{{ placeholder }}</li>
-      <li v-for="option in options" :key="option.value" :class="{ active: isSelected(option), 'dropdown-item': true }" @click.prevent="toggle(option)">
+      <li
+        v-for="option in options"
+        :key="option.value"
+        :class="{ active: isSelected(option), disabled: option.disabled, 'dropdown-item': true }"
+        @click.prevent="toggle(option)"
+      >
         <font-awesome-icon v-if="isSelected(option)" icon="fas fa-check" /> {{ option.text }}
       </li>
     </ul>
