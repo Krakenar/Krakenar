@@ -160,7 +160,6 @@ function onPublished(published: Content, language?: Language): void {
   toasts.success("contents.item.published.success");
 }
 function onUnpublished(unpublished: Content, language?: Language): void {
-  console.log("onUnpublished " + typeof language);
   if (content.value) {
     if (language) {
       replaceLocale(unpublished, language);
