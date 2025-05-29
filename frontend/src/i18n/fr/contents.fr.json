@@ -11,6 +11,11 @@
       "locale": "La traduction a été supprimée."
     },
     "empty": "Cette liste est vide.",
+    "fieldValueConflict": {
+      "format": "{field} :",
+      "go": "aller au contenu",
+      "lead": "Les valeurs de champs suivantes sont déjà utilisées par d’autres contenus."
+    },
     "invariant": "Invariant",
     "name": "Nom",
     "published": {

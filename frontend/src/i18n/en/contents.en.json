@@ -11,6 +11,11 @@
       "locale": "The locale has been deleted."
     },
     "empty": "This list is empty.",
+    "fieldValueConflict": {
+      "format": "{field}:",
+      "go": "go to content",
+      "lead": "The following field values are already used by other contents."
+    },
     "invariant": "Invariant",
     "name": "Name",
     "published": {
