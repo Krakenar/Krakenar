@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import FieldValueLabel from "./FieldValueLabel.vue";
 import FormTextarea from "@/components/forms/FormTextarea.vue";
 import type { FieldDefinition, FieldType } from "@/types/fields";
 
@@ -26,7 +27,6 @@ defineEmits<{
   <FormTextarea
     :described-by="field.description ? `${field.id}-help` : undefined"
     :id="field.id"
-    :label="field.displayName ?? field.uniqueName"
     :max="fieldType.string?.maximumLength ?? undefined"
     :min="fieldType.string?.minimumLength ?? undefined"
     :model-value="modelValue"
@@ -35,6 +35,9 @@ defineEmits<{
     :rows="rows"
     @update:model-value="$emit('update:model-value', $event)"
   >
+    <template #label-override>
+      <FieldValueLabel :field="field" />
+    </template>
     <template v-if="field.description" #after>
       <div :id="`${field.id}-help`" class="form-text">{{ field.description }}</div>
     </template>

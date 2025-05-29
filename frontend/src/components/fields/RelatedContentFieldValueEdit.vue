@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import ContentFormMultiSelect from "@/components/contents/ContentFormMultiSelect.vue";
 import ContentFormSelect from "@/components/contents/ContentFormSelect.vue";
+import FieldValueLabel from "./FieldValueLabel.vue";
 import type { FieldDefinition, FieldType } from "@/types/fields";
 import type { Language } from "@/types/languages";
 
@@ -42,13 +43,15 @@ function onOptionsSelected(options: string[]): void {
       :content-type="fieldType.relatedContent?.contentTypeId"
       :described-by="field.description ? `${field.id}-help` : undefined"
       :id="field.id"
-      :label="field.displayName ?? field.uniqueName"
       :language="language?.id"
       :model-value="values"
       :name="field.uniqueName"
       :placeholder="field.placeholder ?? field.displayName ?? field.uniqueName"
       @update:model-value="onOptionsSelected"
     >
+      <template #label-override>
+        <FieldValueLabel :field="field" />
+      </template>
       <template v-if="field.description" #after>
         <div :id="`${field.id}-help`" class="form-text">{{ field.description }}</div>
       </template>
@@ -58,13 +61,15 @@ function onOptionsSelected(options: string[]): void {
       :content-type="fieldType.relatedContent?.contentTypeId"
       :described-by="field.description ? `${field.id}-help` : undefined"
       :id="field.id"
-      :label="field.displayName ?? field.uniqueName"
       :language="language?.id"
       :model-value="value"
       :name="field.uniqueName"
       :placeholder="field.placeholder ?? field.displayName ?? field.uniqueName"
       @update:model-value="onOptionSelected"
     >
+      <template #label-override>
+        <FieldValueLabel :field="field" />
+      </template>
       <template v-if="field.description" #after>
         <div :id="`${field.id}-help`" class="form-text">{{ field.description }}</div>
       </template>

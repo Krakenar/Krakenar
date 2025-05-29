@@ -83,5 +83,9 @@ watch(
     :options="options"
     :placeholder="placeholder"
     @update:modelValue="$emit('update:modelValue', $event)"
-  />
+  >
+    <template #label-override>
+      <slot name="label-override"></slot>
+    </template>
+  </MultiSelect>
 </template>

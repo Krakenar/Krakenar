@@ -90,5 +90,9 @@ watch(
     :options="options"
     :placeholder="placeholder"
     @update:modelValue="onModelValueUpdate"
-  />
+  >
+    <template #label-override>
+      <slot name="label-override"></slot>
+    </template>
+  </FormSelect>
 </template>
