@@ -27,6 +27,7 @@ export enum ErrorCodes {
   FieldUniqueNameAlreadyUsed = "FieldUniqueNameAlreadyUsed",
   IncorrectUserPassword = "IncorrectUserPassword",
   InvalidCredentials = "InvalidCredentials",
+  InvalidFieldValues = "InvalidFieldValues",
   LanguageAlreadyUsed = "LanguageAlreadyUsed",
   LocaleAlreadyUsed = "LocaleAlreadyUsed",
   MissingRecipientContacts = "MissingRecipientContacts",

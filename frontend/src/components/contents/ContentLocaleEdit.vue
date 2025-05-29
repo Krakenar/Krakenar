@@ -9,6 +9,7 @@ import DeleteContent from "./DeleteContent.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import FieldValueEdit from "@/components/fields/FieldValueEdit.vue";
+import MissingFieldValues from "./MissingFieldValues.vue";
 import PublishButton from "./PublishButton.vue";
 import PublishedInfo from "./PublishedInfo.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
@@ -38,6 +39,7 @@ const conflicts = ref<ApiError[]>([]);
 const description = ref<string>("");
 const displayName = ref<string>("");
 const fieldValues = ref<Map<string, string>>(new Map());
+const missing = ref<ApiError[]>([]);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
 
@@ -95,9 +97,20 @@ function onPublishError(e: unknown): void {
     if (details.error?.data.Errors) {
       conflicts.value = details.error.data.Errors as ApiError[];
     }
+  } else if (isError(e, StatusCodes.BadRequest, ErrorCodes.InvalidFieldValues)) {
+    const failure = e as ApiFailure;
+    const details = failure?.data as ProblemDetails;
+    if (details.error?.data.Errors) {
+      missing.value = (details.error.data.Errors as ApiError[]).filter((error) => error.code === "RequiredFieldValidator");
+    }
   } else {
     emit("error", e);
   }
+}
+function onPublished(content: Content): void {
+  conflicts.value = [];
+  missing.value = [];
+  emit("published", content);
 }
 
 watch(
@@ -131,7 +144,7 @@ watch(
         @deleted="$emit('deleted', $event)"
         @error="$emit('error', $event)"
       />
-      <PublishButton class="mx-1" :content="content" :language="locale.language ?? undefined" @error="onPublishError" @published="$emit('published', $event)" />
+      <PublishButton class="mx-1" :content="content" :language="locale.language ?? undefined" @error="onPublishError" @published="onPublished" />
       <UnpublishButton
         class="ms-1"
         :content="content"
@@ -142,6 +155,7 @@ watch(
     </div>
     <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
     <ContentFieldValueConflict v-model="conflicts" />
+    <MissingFieldValues v-model="missing" />
     <form @submit.prevent="handleSubmit(submit)">
       <div class="row">
         <UniqueNameInput class="col" required :settings="uniqueNameSettings" v-model="uniqueName" />

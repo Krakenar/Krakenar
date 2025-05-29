@@ -18,6 +18,10 @@
       "lead": "Les valeurs de champs suivantes sont déjà utilisées par d’autres contenus."
     },
     "invariant": "Invariant",
+    "missingFieldValues": {
+      "language": "L’erreur s’est produite dans la langue :",
+      "lead": "Les champs suivants sont requis afin de publier le contenu."
+    },
     "name": "Nom",
     "published": {
       "format": "Publié le {date} par",
