@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
 import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
+import ContentFieldValueConflict from "@/components/contents/ContentFieldValueConflict.vue";
 import ContentLocaleEdit from "@/components/contents/ContentLocaleEdit.vue";
 import ContentTypeInput from "@/components/contents/ContentTypeInput.vue";
 import DeleteContent from "@/components/contents/DeleteContent.vue";
@@ -18,8 +19,9 @@ import type { Breadcrumb } from "@/types/breadcrumb";
 import type { Configuration } from "@/types/configuration";
 import type { Content, ContentLocale, ContentType } from "@/types/contents";
 import type { Language } from "@/types/languages";
-import { StatusCodes, type ApiFailure } from "@/types/api";
+import { ErrorCodes, StatusCodes, type ApiError, type ApiFailure, type ProblemDetails } from "@/types/api";
 import { handleErrorKey } from "@/inject/App";
+import { isError } from "@/helpers/error";
 import { readConfiguration } from "@/api/configuration";
 import { readContent } from "@/api/contents/items";
 import { readContentType } from "@/api/contents/types";
@@ -34,6 +36,8 @@ const toasts = useToastStore();
 const { t } = useI18n();
 
 const configuration = ref<Configuration>();
+const conflictLanguage = ref<Language | null | undefined>();
+const conflicts = ref<ApiError[]>([]);
 const content = ref<Content>();
 const contentType = ref<ContentType>();
 const language = ref<Language>();
@@ -87,6 +91,8 @@ function onDeleted(saved: Content, language?: Language): void {
 }
 
 function onAllPublished(published: Content): void {
+  conflicts.value = [];
+  conflictLanguage.value = undefined;
   content.value = published;
   toasts.success("contents.item.published.success");
 }
@@ -107,6 +113,23 @@ function replaceLocale(replacement: Content, language: Language): void {
     if (locale && index >= 0) {
       content.value.locales.splice(index, 1, locale);
     }
+  }
+}
+
+function onPublishError(e: unknown): void {
+  if (isError(e, StatusCodes.Conflict, ErrorCodes.ContentFieldValueConflict)) {
+    const failure = e as ApiFailure;
+    const details = failure?.data as ProblemDetails;
+    if (details.error?.data.Errors) {
+      conflicts.value = details.error.data.Errors as ApiError[];
+    }
+    if (content.value && details.error?.data.LanguageId) {
+      conflictLanguage.value = content.value.locales.find((locale) => locale.language?.id === details.error?.data.LanguageId)?.language;
+    } else {
+      conflictLanguage.value = null;
+    }
+  } else {
+    handleError(e);
   }
 }
 
@@ -178,9 +201,10 @@ onMounted(async () => {
       </StatusDetail>
       <div class="mb-3">
         <DeleteContent class="me-1" :content="content" @deleted="onDeleted" @error="handleError" />
-        <PublishButton all class="mx-1" :content="content" @error="handleError" @published="onAllPublished" />
+        <PublishButton all class="mx-1" :content="content" @error="onPublishError" @published="onAllPublished" />
         <UnpublishButton all class="ms-1" :content="content" @error="handleError" @unpublished="onAllUnpublished" />
       </div>
+      <ContentFieldValueConflict :language="conflictLanguage" v-model="conflicts" />
       <div class="row">
         <ContentTypeInput class="col" :content-type="contentType" />
         <LanguageSelect v-if="!isTypeInvariant" class="col" :exclude="languages" :model-value="language?.id" @selected="language = $event">

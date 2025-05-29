@@ -14,6 +14,7 @@
     "fieldValueConflict": {
       "format": "{field}:",
       "go": "go to content",
+      "language": "The conflict occurred in language:",
       "lead": "The following field values are already used by other contents."
     },
     "invariant": "Invariant",

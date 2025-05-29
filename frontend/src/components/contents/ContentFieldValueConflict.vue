@@ -4,10 +4,12 @@ import { useI18n } from "vue-i18n";
 
 import ContentIcon from "./ContentIcon.vue";
 import type { ApiError } from "@/types/api";
+import type { Language } from "@/types/languages";
 
 const { t } = useI18n();
 
 defineProps<{
+  language?: Language | null;
   modelValue: ApiError[];
 }>();
 
@@ -24,6 +26,11 @@ function onModelValueUpdate(): void {
   <TarAlert :close="t('actions.close')" dismissible :model-value="Boolean(modelValue.length)" variant="warning" @update:model-value="onModelValueUpdate">
     <p>
       <strong>{{ t("contents.item.fieldValueConflict.lead") }}</strong>
+      <template v-if="language !== undefined">
+        <br />
+        {{ t("contents.item.fieldValueConflict.language") }}
+        <i>{{ language?.locale.displayName ?? t("contents.item.invariant") }}</i>
+      </template>
     </p>
     <ul>
       <li v-for="(conflict, index) in modelValue" :key="index">
