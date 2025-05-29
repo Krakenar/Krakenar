@@ -70,8 +70,8 @@ watch(
     <form @submit.prevent="handleSubmit(submit)">
       <UniqueSlugAlreadyUsed v-model="uniqueSlugAlreadyUsed" />
       <div class="row">
+        <UniqueSlugInput class="col" required v-model="uniqueSlug" />
         <DisplayNameInput class="col" v-model="displayName" />
-        <UniqueSlugInput class="col" :name-value="displayName" required v-model="uniqueSlug" />
       </div>
       <UrlInput described-by="url-help" id="url" :label="t('realms.url.label')" v-model="url">
         <template #after>

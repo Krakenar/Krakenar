@@ -22,7 +22,6 @@
       "help": "Please enter a different unique slug.",
       "lead": "The unique slug is already used."
     },
-    "custom": "Custom",
     "label": "Unique Slug"
   },
   "updated": "The realm has been updated.",

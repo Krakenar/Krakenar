@@ -3,7 +3,6 @@ import { TarButton, TarModal } from "logitar-vue3-ui";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
-import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import UniqueSlugAlreadyUsed from "./UniqueSlugAlreadyUsed.vue";
 import UniqueSlugInput from "./UniqueSlugInput.vue";
 import type { CreateOrReplaceRealmPayload, Realm } from "@/types/realms";
@@ -14,7 +13,6 @@ import { useForm } from "@/forms";
 
 const { t } = useI18n();
 
-const displayName = ref<string>("");
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const uniqueSlug = ref<string>("");
 const uniqueSlugAlreadyUsed = ref<boolean>(false);
@@ -43,7 +41,6 @@ async function submit(): Promise<void> {
   try {
     const payload: CreateOrReplaceRealmPayload = {
       uniqueSlug: uniqueSlug.value,
-      displayName: displayName.value,
       uniqueNameSettings: {
         allowedCharacters: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+",
       },
@@ -80,8 +77,7 @@ async function submit(): Promise<void> {
     <TarModal :close="t('actions.close')" id="create-realm" ref="modalRef" :title="t('realms.create')">
       <UniqueSlugAlreadyUsed v-model="uniqueSlugAlreadyUsed" />
       <form @submit.prevent="handleSubmit(submit)">
-        <DisplayNameInput v-model="displayName" />
-        <UniqueSlugInput :name-value="displayName" required v-model="uniqueSlug" />
+        <UniqueSlugInput required v-model="uniqueSlug" />
       </form>
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="onCancel" />
