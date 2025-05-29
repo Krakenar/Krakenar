@@ -49,6 +49,7 @@ public class ContentQuerier : IContentQuerier
       .WhereRealm(realmId)
       .Where(x => x.ContentTypeUid == contentTypeUid
         && (languageUid.HasValue ? x.LanguageUid == languageUid.Value : x.LanguageUid == null)
+        && x.Status == status
         && keys.Contains(x.Key)
         && x.ContentUid != contentUid)
       .Select(x => new
