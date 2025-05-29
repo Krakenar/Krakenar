@@ -88,6 +88,18 @@ async function submit(): Promise<void> {
   }
 }
 
+function onPublishError(e: unknown): void {
+  if (isError(e, StatusCodes.Conflict, ErrorCodes.ContentFieldValueConflict)) {
+    const failure = e as ApiFailure;
+    const details = failure?.data as ProblemDetails;
+    if (details.error?.data.Errors) {
+      conflicts.value = details.error.data.Errors as ApiError[];
+    }
+  } else {
+    emit("error", e);
+  }
+}
+
 watch(
   () => props.locale,
   (locale) => {
@@ -116,22 +128,16 @@ watch(
         class="me-1"
         :content="content"
         :language="locale.language ?? undefined"
-        @deleted="emit('deleted', $event)"
-        @error="emit('error', $event)"
+        @deleted="$emit('deleted', $event)"
+        @error="$emit('error', $event)"
       />
-      <PublishButton
-        class="mx-1"
-        :content="content"
-        :language="locale.language ?? undefined"
-        @deleted="emit('deleted', $event)"
-        @published="emit('published', $event)"
-      />
+      <PublishButton class="mx-1" :content="content" :language="locale.language ?? undefined" @error="onPublishError" @published="$emit('published', $event)" />
       <UnpublishButton
         class="ms-1"
         :content="content"
         :language="locale.language ?? undefined"
-        @deleted="emit('deleted', $event)"
-        @unpublished="emit('unpublished', $event)"
+        @error="$emit('error', $event)"
+        @unpublished="$emit('unpublished', $event)"
       />
     </div>
     <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
