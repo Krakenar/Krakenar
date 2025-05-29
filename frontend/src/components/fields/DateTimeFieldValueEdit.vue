@@ -2,6 +2,7 @@
 import { computed } from "vue";
 
 import DateTimeInput from "@/components/shared/DateTimeInput.vue";
+import FieldValueLabel from "./FieldValueLabel.vue";
 import type { FieldDefinition, FieldType } from "@/types/fields";
 
 const props = defineProps<{
@@ -27,13 +28,15 @@ function onModelValueUpdate(value: Date | undefined): void {
   <DateTimeInput
     :described-by="field.description ? `${field.id}-help` : undefined"
     :id="field.id"
-    :label="field.displayName ?? field.uniqueName"
     :max="maxDate"
     :min="minDate"
     :model-value="dateValue"
     :name="field.uniqueName"
     @update:model-value="onModelValueUpdate"
   >
+    <template #label-override>
+      <FieldValueLabel :field="field" />
+    </template>
     <template v-if="field.description" #after>
       <div :id="`${field.id}-help`" class="form-text">{{ field.description }}</div>
     </template>

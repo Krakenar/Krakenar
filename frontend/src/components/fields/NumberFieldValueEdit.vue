@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { parsingUtils } from "logitar-js";
 
+import FieldValueLabel from "./FieldValueLabel.vue";
 import NumberInput from "@/components/shared/NumberInput.vue";
 import type { FieldDefinition, FieldType } from "@/types/fields";
 
@@ -28,7 +29,6 @@ function onModelValueUpdate(value: number | undefined): void {
   <NumberInput
     :described-by="field.description ? `${field.id}-help` : undefined"
     :id="field.id"
-    :label="field.displayName ?? field.uniqueName"
     :max="fieldType.number?.maximumValue ?? undefined"
     :min="fieldType.number?.minimumValue ?? undefined"
     :model-value="numberValue"
@@ -37,6 +37,9 @@ function onModelValueUpdate(value: number | undefined): void {
     :step="fieldType.number?.step ?? undefined"
     @update:model-value="onModelValueUpdate"
   >
+    <template #label-override>
+      <FieldValueLabel :field="field" />
+    </template>
     <template v-if="field.description" #after>
       <div :id="`${field.id}-help`" class="form-text">{{ field.description }}</div>
     </template>
