@@ -14,7 +14,7 @@ const props = defineProps<{
 }>();
 
 const fieldType = computed<FieldType>(() => props.field.fieldType);
-const numberValue = computed<number | undefined>(() => parseNumber(props.modelValue));
+const numberValue = computed<number | undefined>(() => (props.modelValue ? parseNumber(props.modelValue) : undefined));
 
 const emit = defineEmits<{
   (e: "update:model-value", value: string): void;

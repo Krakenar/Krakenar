@@ -37,6 +37,9 @@ const emit = defineEmits<{
 }>();
 
 function onModelValueUpdate(value: string): void {
+  if (!value) {
+    return emit("update:model-value", undefined);
+  }
   try {
     const number: number | undefined = parseNumber(value);
     emit("update:model-value", typeof number === "number" && !isNaN(number) ? number : undefined);
