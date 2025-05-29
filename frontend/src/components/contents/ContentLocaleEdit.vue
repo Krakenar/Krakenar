@@ -4,20 +4,23 @@ import { arrayUtils } from "logitar-js";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
+import ContentFieldValueConflict from "./ContentFieldValueConflict.vue";
 import DeleteContent from "./DeleteContent.vue";
 import DescriptionTextarea from "@/components/shared/DescriptionTextarea.vue";
 import DisplayNameInput from "@/components/shared/DisplayNameInput.vue";
 import FieldValueEdit from "@/components/fields/FieldValueEdit.vue";
+import MissingFieldValues from "./MissingFieldValues.vue";
 import PublishButton from "./PublishButton.vue";
 import PublishedInfo from "./PublishedInfo.vue";
 import StatusInfo from "@/components/shared/StatusInfo.vue";
+import UniqueNameAlreadyUsed from "@/components/shared/UniqueNameAlreadyUsed.vue";
 import UniqueNameInput from "@/components/shared/UniqueNameInput.vue";
 import UnpublishButton from "./UnpublishButton.vue";
 import type { Configuration } from "@/types/configuration";
 import type { Content, ContentLocale, ContentType, SaveContentLocalePayload } from "@/types/contents";
 import type { FieldDefinition, FieldValuePayload } from "@/types/fields";
 import type { UniqueNameSettings } from "@/types/settings";
-import { ErrorCodes, StatusCodes } from "@/types/api";
+import { ErrorCodes, StatusCodes, type ApiError, type ApiFailure, type ProblemDetails } from "@/types/api";
 import { isError } from "@/helpers/error";
 import { saveContentLocale } from "@/api/contents/items";
 import { useForm } from "@/forms";
@@ -32,9 +35,11 @@ const props = defineProps<{
   locale: ContentLocale;
 }>();
 
+const conflicts = ref<ApiError[]>([]);
 const description = ref<string>("");
 const displayName = ref<string>("");
 const fieldValues = ref<Map<string, string>>(new Map());
+const missing = ref<ApiError[]>([]);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
 
@@ -60,6 +65,7 @@ const emit = defineEmits<{
 const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   uniqueNameAlreadyUsed.value = false;
+  conflicts.value = [];
   try {
     const payload: SaveContentLocalePayload = {
       uniqueName: uniqueName.value,
@@ -72,10 +78,39 @@ async function submit(): Promise<void> {
   } catch (e: unknown) {
     if (isError(e, StatusCodes.Conflict, ErrorCodes.ContentUniqueNameAlreadyUsed)) {
       uniqueNameAlreadyUsed.value = true;
+    } else if (isError(e, StatusCodes.Conflict, ErrorCodes.ContentFieldValueConflict)) {
+      const failure = e as ApiFailure;
+      const details = failure?.data as ProblemDetails;
+      if (details.error?.data.Errors) {
+        conflicts.value = details.error.data.Errors as ApiError[];
+      }
     } else {
       emit("error", e);
     }
   }
+}
+
+function onPublishError(e: unknown): void {
+  if (isError(e, StatusCodes.Conflict, ErrorCodes.ContentFieldValueConflict)) {
+    const failure = e as ApiFailure;
+    const details = failure?.data as ProblemDetails;
+    if (details.error?.data.Errors) {
+      conflicts.value = details.error.data.Errors as ApiError[];
+    }
+  } else if (isError(e, StatusCodes.BadRequest, ErrorCodes.InvalidFieldValues)) {
+    const failure = e as ApiFailure;
+    const details = failure?.data as ProblemDetails;
+    if (details.error?.data.Errors) {
+      missing.value = (details.error.data.Errors as ApiError[]).filter((error) => error.code === "RequiredFieldValidator");
+    }
+  } else {
+    emit("error", e);
+  }
+}
+function onPublished(content: Content): void {
+  conflicts.value = [];
+  missing.value = [];
+  emit("published", content);
 }
 
 watch(
@@ -106,24 +141,21 @@ watch(
         class="me-1"
         :content="content"
         :language="locale.language ?? undefined"
-        @deleted="emit('deleted', $event)"
-        @error="emit('error', $event)"
+        @deleted="$emit('deleted', $event)"
+        @error="$emit('error', $event)"
       />
-      <PublishButton
-        class="mx-1"
-        :content="content"
-        :language="locale.language ?? undefined"
-        @deleted="emit('deleted', $event)"
-        @published="emit('published', $event)"
-      />
+      <PublishButton class="mx-1" :content="content" :language="locale.language ?? undefined" @error="onPublishError" @published="onPublished" />
       <UnpublishButton
         class="ms-1"
         :content="content"
         :language="locale.language ?? undefined"
-        @deleted="emit('deleted', $event)"
-        @unpublished="emit('unpublished', $event)"
+        @error="$emit('error', $event)"
+        @unpublished="$emit('unpublished', $event)"
       />
     </div>
+    <UniqueNameAlreadyUsed v-model="uniqueNameAlreadyUsed" />
+    <ContentFieldValueConflict v-model="conflicts" />
+    <MissingFieldValues v-model="missing" />
     <form @submit.prevent="handleSubmit(submit)">
       <div class="row">
         <UniqueNameInput class="col" required :settings="uniqueNameSettings" v-model="uniqueName" />

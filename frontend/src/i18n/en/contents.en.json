@@ -11,7 +11,17 @@
       "locale": "The locale has been deleted."
     },
     "empty": "This list is empty.",
+    "fieldValueConflict": {
+      "format": "{field}:",
+      "go": "go to content",
+      "language": "The conflict occurred in language:",
+      "lead": "The following field values are already used by other contents."
+    },
     "invariant": "Invariant",
+    "missingFieldValues": {
+      "language": "The error occurred in language:",
+      "lead": "The following fields are required to publish the content."
+    },
     "name": "Name",
     "published": {
       "format": "Published on {date} by",
