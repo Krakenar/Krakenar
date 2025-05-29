@@ -1,12 +1,15 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
-import type { Realm } from "@/types/realms";
+import type { Realm, SearchRealmsPayload } from "@/types/realms";
+import type { SearchResults } from "@/types/search";
+import { searchRealms } from "@/api/realms";
 
 export const useRealmStore = defineStore(
   "realm",
   () => {
     const currentRealm = ref<Realm>();
+    const realms = ref<Realm[]>([])
 
     function enter(realm: Realm): void {
       currentRealm.value = realm;
@@ -15,9 +18,35 @@ export const useRealmStore = defineStore(
       currentRealm.value = undefined;
     }
 
-    return { currentRealm, enter, exit };
+    async function fetchRealms(): Promise<void> {
+      const payload: SearchRealmsPayload = {
+        ids: [],
+        search: { terms: [], operator: 'And' },
+        sort: [],
+        skip: 0,
+        limit: 0
+      }
+      const results: SearchResults<Realm> = await searchRealms(payload)
+      realms.value = results.items;
+    }
+    function saveRealm(realm: Realm): void {
+      if (currentRealm.value?.id === realm.id) {
+        currentRealm.value = realm;
+      }
+
+      const index: number = realms.value.findIndex(r => r.id === realm.id);
+      if (index < 0) {
+        realms.value.push(realm);
+      } else {
+        realms.value.splice(index, 1, realm);
+      }
+    }
+
+    return { currentRealm, realms, enter, exit, fetchRealms, saveRealm };
   },
   {
-    persist: true,
+    persist: {
+      pick: ['currentRealm'],
+    },
   },
 );

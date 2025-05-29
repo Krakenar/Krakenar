@@ -17,9 +17,11 @@ import { StatusCodes, type ApiFailure } from "@/types/api";
 import { formatRealm } from "@/helpers/format";
 import { handleErrorKey } from "@/inject/App";
 import { readRealm, updateRealm } from "@/api/realms";
+import { useRealmStore } from "@/stores/realm";
 import { useToastStore } from "@/stores/toast";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
+const realmStore = useRealmStore();
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
@@ -40,6 +42,7 @@ function setMetadata(updated: Realm): void {
     realm.value.updatedBy = updated.updatedBy;
     realm.value.updatedOn = updated.updatedOn;
   }
+  realmStore.saveRealm(updated);
 }
 
 function onGeneralUpdated(updated: Realm): void {
