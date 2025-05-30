@@ -1,5 +1,7 @@
 ﻿using Krakenar.Core;
+using Krakenar.Core.Logging;
 using Krakenar.EntityFrameworkCore.Relational;
+using Krakenar.EntityFrameworkCore.Relational.Repositories;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Extensions;
 using Krakenar.Infrastructure;
@@ -51,6 +53,10 @@ internal class Startup : StartupBase
         break;
       default:
         throw new DatabaseProviderNotSupportedException(databaseSettings.Provider);
+    }
+    if (databaseSettings.EnableLogging)
+    {
+      services.AddScoped<ILogRepository, LogRepository>();
     }
   }
 

@@ -15,6 +15,7 @@ All the following environment variables are optional.
 - `AUTHENTICATION_ENABLE_BASIC`: a boolean value indicating whether or not to enable Basic authentication. API keys should be preferred in Production environment for security purposes. Defaults to `false`.
 - `CACHING_ACTOR_LIFETIME`: the lifetime of cached actors. A string representing a [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-9.0), ex.: `3.00:00:00` (3 days) or `00:15:00` (15 minutes).
 - `DATABASE_APPLY_MIGRATIONS`: a boolean value indicating whether or not to apply database migrations on application startup. Manually applying SQL Scripts should be preferred in Production environment for data safety purposes. Defaults to `false`.
+- `DATABASE_ENABLE_LOGGING`: a boolean value indicating whether or not to store logs into the database. This should be disabled in Production environment to avoid bloating the database. You should use another provider, such as MongoDB.
 - `DATABASE_PROVIDER`: the database provider to use. Its value should be one of the `DatabaseProvider` enumeration value.
 - `DEFAULT_LOCALE`: the default locale code of the system. A string representing a [CultureInfo](https://learn.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=net-9.0), ex.: `en` (English) or `fr-CA` (Canadian French).
 - `DEFAULT_PASSWORD`: the default password of the admin user, ex.: `P@s$W0rD`.
