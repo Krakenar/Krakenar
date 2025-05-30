@@ -1,11 +1,20 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Users.Validators;
+using Logitar;
 using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users.Commands;
 
-public record AuthenticateUser(AuthenticateUserPayload Payload) : ICommand<UserDto>;
+public record AuthenticateUser(AuthenticateUserPayload Payload) : ICommand<UserDto>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    AuthenticateUser clone = this.DeepClone();
+    clone.Payload.Password = Payload.Password.Mask();
+    return clone;
+  }
+}
 
 /// <exception cref="IncorrectUserPasswordException"></exception>
 /// <exception cref="UserHasNoPasswordException"></exception>

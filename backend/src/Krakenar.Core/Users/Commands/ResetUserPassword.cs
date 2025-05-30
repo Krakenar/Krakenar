@@ -2,11 +2,20 @@
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Users.Validators;
+using Logitar;
 using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users.Commands;
 
-public record ResetUserPassword(Guid Id, ResetUserPasswordPayload Payload) : ICommand<UserDto?>;
+public record ResetUserPassword(Guid Id, ResetUserPasswordPayload Payload) : ICommand<UserDto?>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    ResetUserPassword clone = this.DeepClone();
+    clone.Payload.Password = Payload.Password.Mask();
+    return clone;
+  }
+}
 
 public class ResetUserPasswordHandler : ICommandHandler<ResetUserPassword, UserDto?>
 {
