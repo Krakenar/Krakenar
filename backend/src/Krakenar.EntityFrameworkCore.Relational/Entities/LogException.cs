@@ -45,7 +45,7 @@ public sealed class LogException
       try
       {
         object? value = exception.Data[key];
-        if (value != null)
+        if (value is not null)
         {
           string serializedKey = JsonSerializer.Serialize(key, key.GetType(), serializerOptions).Trim('"');
           string serializedValue = JsonSerializer.Serialize(value, value.GetType(), serializerOptions).Trim('"');

@@ -29,10 +29,10 @@ public sealed class LogConfiguration : IEntityTypeConfiguration<Log>
     builder.HasIndex(x => x.EndedOn);
     builder.HasIndex(x => x.Duration);
     builder.HasIndex(x => x.RealmId);
-    builder.HasIndex(x => x.ActorId);
     builder.HasIndex(x => x.ApiKeyId);
     builder.HasIndex(x => x.SessionId);
     builder.HasIndex(x => x.UserId);
+    builder.HasIndex(x => x.ActorId);
 
     builder.Property(x => x.CorrelationId).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.Method).HasMaxLength(byte.MaxValue);
@@ -43,9 +43,9 @@ public sealed class LogConfiguration : IEntityTypeConfiguration<Log>
     builder.Property(x => x.ActivityType).HasMaxLength(byte.MaxValue);
     builder.Property(x => x.Level).HasMaxLength(byte.MaxValue).HasConversion(new EnumToStringConverter<LogLevel>());
     builder.Property(x => x.RealmId).HasMaxLength(StreamId.MaximumLength);
-    builder.Property(x => x.ActorId).HasMaxLength(ActorId.MaximumLength);
     builder.Property(x => x.ApiKeyId).HasMaxLength(StreamId.MaximumLength);
     builder.Property(x => x.SessionId).HasMaxLength(StreamId.MaximumLength);
     builder.Property(x => x.UserId).HasMaxLength(StreamId.MaximumLength);
+    builder.Property(x => x.ActorId).HasMaxLength(ActorId.MaximumLength);
   }
 }

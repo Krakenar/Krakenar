@@ -52,7 +52,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IActorService, ActorService>()
       .AddScoped<ITokenBlacklist, TokenBlacklist>()
       .AddScoped<ICommandHandler<MigrateDatabase>, MigrateDatabaseCommandHandler>()
-      .AddTransient<ICommandHandler<DeleteRealm, RealmDto?>, DeleteRealmCommandHandler>();
+      .AddTransient<ICommandHandler<DeleteRealm, RealmDto?>, DeleteRealmHandler>();
   }
 
   public static IServiceCollection AddKrakenarEventHandlers(this IServiceCollection services)

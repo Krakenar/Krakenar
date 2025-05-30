@@ -33,10 +33,10 @@ public sealed class Log
   public TimeSpan? Duration { get; private set; }
 
   public string? RealmId { get; private set; }
-  public string? ActorId { get; private set; }
   public string? ApiKeyId { get; private set; }
   public string? SessionId { get; private set; }
   public string? UserId { get; private set; }
+  public string? ActorId { get; private set; }
 
   public List<LogEvent> Events { get; private set; } = [];
   public List<LogException> Exceptions { get; private set; } = [];
@@ -51,13 +51,13 @@ public sealed class Log
     Source = log.Source;
     AdditionalInformation = log.AdditionalInformation;
 
-    if (log.Operation != null)
+    if (log.Operation is not null)
     {
       OperationType = log.Operation.Type;
       OperationName = log.Operation.Name;
     }
 
-    if (log.Activity != null)
+    if (log.Activity is not null)
     {
       Type activityType = log.Activity.GetType();
       ActivityType = activityType.GetNamespaceQualifiedName();
@@ -74,11 +74,11 @@ public sealed class Log
     EndedOn = log.EndedOn?.ToUniversalTime();
     Duration = log.Duration;
 
-    RealmId = log.Realm?.Id.ToString();
+    RealmId = log.RealmId?.Value;
+    ApiKeyId = log.ApiKeyId?.Value;
+    SessionId = log.SessionId?.Value;
+    UserId = log.UserId?.Value;
     ActorId = log.ActorId?.Value;
-    ApiKeyId = log.ApiKey?.Id.ToString();
-    SessionId = log.Session?.Id.ToString();
-    UserId = log.User?.Id.ToString();
 
     foreach (IEvent @event in log.Events)
     {

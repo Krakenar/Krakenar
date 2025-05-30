@@ -7,13 +7,13 @@ using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 
-public class DeleteRealmCommandHandler : ICommandHandler<DeleteRealm, RealmDto?>
+public class DeleteRealmHandler : ICommandHandler<DeleteRealm, RealmDto?>
 {
   protected virtual EventContext Event { get; }
   protected virtual KrakenarContext Krakenar { get; }
   protected virtual IRealmQuerier RealmQuerier { get; }
 
-  public DeleteRealmCommandHandler(EventContext eventContext, KrakenarContext krakenarContext, IRealmQuerier realmQuerier)
+  public DeleteRealmHandler(EventContext eventContext, KrakenarContext krakenarContext, IRealmQuerier realmQuerier)
   {
     Event = eventContext;
     Krakenar = krakenarContext;
@@ -28,6 +28,9 @@ public class DeleteRealmCommandHandler : ICommandHandler<DeleteRealm, RealmDto?>
       return null;
     }
     string streamId = new RealmId(realm.Id).Value;
+
+    // Logging
+    await Krakenar.Logs.Where(x => x.RealmId == streamId).ExecuteDeleteAsync(cancellationToken);
 
     // Contents
     await Krakenar.FieldTypes

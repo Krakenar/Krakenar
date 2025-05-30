@@ -1,11 +1,15 @@
 ﻿using Krakenar.Contracts.Actors;
-using Krakenar.Contracts.ApiKeys;
-using Krakenar.Contracts.Realms;
-using Krakenar.Contracts.Sessions;
-using Krakenar.Contracts.Users;
 using Krakenar.Core.Actors;
+using Krakenar.Core.ApiKeys;
+using Krakenar.Core.Realms;
+using Krakenar.Core.Sessions;
+using Krakenar.Core.Users;
 using Logitar.EventSourcing;
 using Microsoft.Extensions.Logging;
+using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
+using RealmDto = Krakenar.Contracts.Realms.Realm;
+using SessionDto = Krakenar.Contracts.Sessions.Session;
+using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Logging;
 
@@ -38,10 +42,47 @@ public class Log
   public DateTime? EndedOn { get; private set; }
   public TimeSpan? Duration => EndedOn.HasValue ? EndedOn.Value - StartedOn : null;
 
-  public Realm? Realm { get; set; }
-  public ApiKey? ApiKey { get; set; }
-  public Session? Session { get; set; }
-  public User? User { get; set; }
+  public RealmDto? Realm { get; set; }
+  public RealmId? RealmId => Realm is null ? null : new(Realm.Id);
+  public ApiKeyDto? ApiKey { get; set; }
+  public ApiKeyId? ApiKeyId
+  {
+    get
+    {
+      if (ApiKey is null)
+      {
+        return null;
+      }
+      RealmId? realmId = ApiKey.Realm is null ? null : new(ApiKey.Realm.Id);
+      return new ApiKeyId(ApiKey.Id, realmId);
+    }
+  }
+  public SessionDto? Session { get; set; }
+  public SessionId? SessionId
+  {
+    get
+    {
+      if (Session is null)
+      {
+        return null;
+      }
+      RealmId? realmId = Session.User.Realm is null ? null : new(Session.User.Realm.Id);
+      return new SessionId(Session.Id, realmId);
+    }
+  }
+  public UserDto? User { get; set; }
+  public UserId? UserId
+  {
+    get
+    {
+      if (User is null)
+      {
+        return null;
+      }
+      RealmId? realmId = User.Realm is null ? null : new(User.Realm.Id);
+      return new UserId(User.Id, realmId);
+    }
+  }
   public ActorId? ActorId
   {
     get
