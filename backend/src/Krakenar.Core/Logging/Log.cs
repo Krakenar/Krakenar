@@ -1,7 +1,9 @@
-﻿using Krakenar.Contracts.ApiKeys;
+﻿using Krakenar.Contracts.Actors;
+using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Actors;
 using Logitar.EventSourcing;
 using Microsoft.Extensions.Logging;
 
@@ -40,6 +42,21 @@ public class Log
   public ApiKey? ApiKey { get; set; }
   public Session? Session { get; set; }
   public User? User { get; set; }
+  public ActorId? ActorId
+  {
+    get
+    {
+      if (User is not null)
+      {
+        return new Actor(User).GetActorId();
+      }
+      else if (ApiKey is not null)
+      {
+        return new Actor(ApiKey).GetActorId();
+      }
+      return null;
+    }
+  }
 
   private readonly List<IEvent> _events = [];
   public IReadOnlyCollection<IEvent> Events => _events.AsReadOnly();
