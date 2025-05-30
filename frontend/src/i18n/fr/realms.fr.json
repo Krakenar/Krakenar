@@ -2,10 +2,12 @@
   "create": "Nouveau royaume",
   "created": "Le royaume a été créé.",
   "delete": {
+    "agree": "J’atteste que je comprends et que je désire supprimer définitivement le royaume et toute donnée à l’intérieur.",
     "confirm": "Afin de supprimer le royaume, veuillez entrer son nom dans le champs suivant.",
-    "title": "Supprimer le royaume"
+    "title": "Supprimer le royaume",
+    "warning": "Le royaume et toute donnée à l’intérieur seront supprimés de façon permanente, et seront perdus à jamais. Cette action est irréversible."
   },
-  "deleted": "Le royaume a été supprimé.",
+  "deleted": "Le royaume a été supprimé définitivement.",
   "empty": "Cette liste est vide.",
   "none": "Krakenar (aucun royaume)",
   "sort": {

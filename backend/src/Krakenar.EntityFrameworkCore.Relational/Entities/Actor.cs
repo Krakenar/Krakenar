@@ -2,13 +2,14 @@
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
-public sealed class Actor
+public sealed class Actor : ISegregatedEntity
 {
   public int ActorId { get; private set; }
   public string Key { get; private set; } = string.Empty;
 
-  public int? RealmId { get; private set; }
   public Realm? Realm { get; private set; }
+  public int? RealmId { get; private set; }
+  public Guid? RealmUid { get; private set; }
 
   public ActorType Type { get; private set; }
   public Guid Id { get; private set; }
@@ -22,8 +23,9 @@ public sealed class Actor
   {
     Key = apiKey.StreamId;
 
-    RealmId = apiKey.RealmId;
     Realm = apiKey.Realm;
+    RealmId = apiKey.RealmId;
+    RealmUid = apiKey.RealmUid;
 
     Type = ActorType.ApiKey;
     Id = apiKey.Id;
@@ -34,8 +36,9 @@ public sealed class Actor
   {
     Key = user.StreamId;
 
-    RealmId = user.RealmId;
     Realm = user.Realm;
+    RealmId = user.RealmId;
+    RealmUid = user.RealmUid;
 
     Type = ActorType.User;
     Id = user.Id;

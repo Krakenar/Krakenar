@@ -2,10 +2,12 @@
   "create": "New Realm",
   "created": "The realm has been created.",
   "delete": {
+    "agree": "I certify that I understand and that I want to delete definitively the realm and all data inside.",
     "confirm": "To delete the realm, enter its name in the field below.",
-    "title": "Delete Realm"
+    "title": "Delete Realm",
+    "warning": "The realm and all data inside will be deleted permanently, and will be lost forever. This action is irreversible."
   },
-  "deleted": "The realm has been deleted.",
+  "deleted": "The realm has been deleted permanently.",
   "empty": "This list is empty.",
   "none": "Krakenar (no realm)",
   "sort": {

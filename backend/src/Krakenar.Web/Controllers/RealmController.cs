@@ -26,6 +26,13 @@ public class RealmController : ControllerBase
     return ToActionResult(result);
   }
 
+  [HttpDelete("{id}")]
+  public virtual async Task<ActionResult<Realm>> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Realm? realm = await RealmService.DeleteAsync(id, cancellationToken);
+    return realm is null ? NotFound() : Ok(realm);
+  }
+
   [HttpGet("{id}")]
   public virtual async Task<ActionResult<Realm>> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
