@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Krakenar.EntityFrameworkCore.SqlServer\Krakenar.EntityFrameworkCore.SqlServer.csproj" />
+    <ProjectReference Include="..\Krakenar.MongoDB\Krakenar.MongoDB.csproj" />
     <ProjectReference Include="..\Krakenar.Web\Krakenar.Web.csproj" />
   </ItemGroup>
 
