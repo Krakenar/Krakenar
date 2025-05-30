@@ -59,4 +59,4 @@ export const useRealmStore = defineStore(
       pick: ["currentRealm"],
     },
   },
-); // TODO(fpion): unit tests
+);
