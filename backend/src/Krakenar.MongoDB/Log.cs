@@ -7,7 +7,7 @@ using CoreLog = Krakenar.Core.Logging.Log;
 
 namespace Krakenar.MongoDB;
 
-public sealed class Log // TODO(fpion): rename
+public sealed class Log
 {
   [BsonId]
   public ObjectId LogId { get; private set; }
