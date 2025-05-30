@@ -8,11 +8,10 @@ namespace Krakenar.Core.Logging;
 
 public interface ILoggingService
 {
-  void Open(string traceIdentifier, string method, string url, string? ipAddress, string additionalInformation);
+  void Open(string correlationId, string method, string url, string? ipAddress, string additionalInformation);
   void Report(IEvent @event);
   void Report(Exception exception);
-  void SetActivity<TResult>(ICommand<TResult> command);
-  void SetActivity<TResult>(IQuery<TResult> command);
+  void SetActivity(IActivity activity);
   void SetOperation(Operation operation);
   void SetRealm(Realm? realm);
   void SetApiKey(ApiKey? apiKey);

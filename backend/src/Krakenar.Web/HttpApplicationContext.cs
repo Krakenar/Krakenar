@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts.Actors;
 using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
+using Krakenar.Contracts.Logging;
 using Krakenar.Contracts.Settings;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
@@ -63,4 +64,6 @@ public class HttpApplicationContext : IApplicationContext
   public IPasswordSettings PasswordSettings => Realm?.PasswordSettings ?? Configuration.PasswordSettings;
   public bool RequireUniqueEmail => Realm?.RequireUniqueEmail ?? false;
   public bool RequireConfirmedAccount => Realm?.RequireConfirmedAccount ?? false;
+
+  public ILoggingSettings LoggingSettings => Configuration.LoggingSettings;
 }

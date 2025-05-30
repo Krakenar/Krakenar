@@ -4,8 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Krakenar.Core;
 
-public interface ICommand;
-public interface ICommand<TResult>;
+public interface IActivity;
+
+public interface ICommand : IActivity;
+public interface ICommand<TResult> : IActivity;
 
 public interface ICommandBus
 {
@@ -26,7 +28,7 @@ public interface IEventHandler<TEvent> where TEvent : IEvent
   Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
 }
 
-public interface IQuery<TResult>;
+public interface IQuery<TResult> : IActivity;
 
 public interface IQueryBus
 {

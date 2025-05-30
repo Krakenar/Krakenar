@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Settings;
+﻿using Krakenar.Contracts.Logging;
+using Krakenar.Contracts.Settings;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
 using Logitar.EventSourcing;
@@ -20,4 +21,6 @@ public interface IApplicationContext
   IPasswordSettings PasswordSettings { get; }
   bool RequireUniqueEmail { get; }
   bool RequireConfirmedAccount { get; }
+
+  ILoggingSettings LoggingSettings { get; }
 }
