@@ -7,35 +7,30 @@ namespace Krakenar.Core.Passwords;
 
 public class OneTimePasswordService : IOneTimePasswordService
 {
-  protected virtual ICommandHandler<CreateOneTimePassword, OneTimePasswordDto> CreateOneTimePassword { get; }
-  protected virtual IQueryHandler<ReadOneTimePassword, OneTimePasswordDto?> ReadOneTimePassword { get; }
-  protected virtual ICommandHandler<ValidateOneTimePassword, OneTimePasswordDto?> ValidateOneTimePassword { get; }
+  protected virtual ICommandBus CommandBus { get; }
+  protected virtual IQueryBus QueryBus { get; }
 
-  public OneTimePasswordService(
-    ICommandHandler<CreateOneTimePassword, OneTimePasswordDto> createOneTimePassword,
-    IQueryHandler<ReadOneTimePassword, OneTimePasswordDto?> readOneTimePassword,
-    ICommandHandler<ValidateOneTimePassword, OneTimePasswordDto?> validateOneTimePassword)
+  public OneTimePasswordService(ICommandBus commandBus, IQueryBus queryBus)
   {
-    CreateOneTimePassword = createOneTimePassword;
-    ReadOneTimePassword = readOneTimePassword;
-    ValidateOneTimePassword = validateOneTimePassword;
+    CommandBus = commandBus;
+    QueryBus = queryBus;
   }
 
   public virtual async Task<OneTimePasswordDto> CreateAsync(CreateOneTimePasswordPayload payload, CancellationToken cancellationToken)
   {
     CreateOneTimePassword command = new(payload);
-    return await CreateOneTimePassword.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 
   public virtual async Task<OneTimePasswordDto?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
     ReadOneTimePassword query = new(id);
-    return await ReadOneTimePassword.HandleAsync(query, cancellationToken);
+    return await QueryBus.ExecuteAsync(query, cancellationToken);
   }
 
   public virtual async Task<OneTimePasswordDto?> ValidateAsync(Guid id, ValidateOneTimePasswordPayload payload, CancellationToken cancellationToken)
   {
     ValidateOneTimePassword command = new(id, payload);
-    return await ValidateOneTimePassword.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 }

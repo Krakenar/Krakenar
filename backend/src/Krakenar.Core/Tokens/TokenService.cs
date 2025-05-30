@@ -5,24 +5,22 @@ namespace Krakenar.Core.Tokens;
 
 public class TokenService : ITokenService
 {
-  protected virtual ICommandHandler<CreateToken, CreatedToken> CreateToken { get; }
-  protected virtual ICommandHandler<ValidateToken, ValidatedToken> ValidateToken { get; }
+  protected virtual ICommandBus CommandBus { get; }
 
-  public TokenService(ICommandHandler<CreateToken, CreatedToken> createToken, ICommandHandler<ValidateToken, ValidatedToken> validateToken)
+  public TokenService(ICommandBus commandBus)
   {
-    CreateToken = createToken;
-    ValidateToken = validateToken;
+    CommandBus = commandBus;
   }
 
   public virtual async Task<CreatedToken> CreateAsync(CreateTokenPayload payload, CancellationToken cancellationToken)
   {
     CreateToken command = new(payload);
-    return await CreateToken.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 
   public virtual async Task<ValidatedToken> ValidateAsync(ValidateTokenPayload payload, CancellationToken cancellationToken)
   {
     ValidateToken command = new(payload);
-    return await ValidateToken.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 }

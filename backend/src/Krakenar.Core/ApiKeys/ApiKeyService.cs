@@ -8,62 +8,48 @@ namespace Krakenar.Core.ApiKeys;
 
 public class ApiKeyService : IApiKeyService
 {
-  protected virtual ICommandHandler<AuthenticateApiKey, ApiKeyDto> AuthenticateApiKey { get; }
-  protected virtual ICommandHandler<CreateOrReplaceApiKey, CreateOrReplaceApiKeyResult> CreateOrReplaceApiKey { get; }
-  protected virtual ICommandHandler<DeleteApiKey, ApiKeyDto?> DeleteApiKey { get; }
-  protected virtual IQueryHandler<ReadApiKey, ApiKeyDto?> ReadApiKey { get; }
-  protected virtual IQueryHandler<SearchApiKeys, SearchResults<ApiKeyDto>> SearchApiKeys { get; }
-  protected virtual ICommandHandler<UpdateApiKey, ApiKeyDto?> UpdateApiKey { get; }
+  protected virtual ICommandBus CommandBus { get; }
+  protected virtual IQueryBus QueryBus { get; }
 
-  public ApiKeyService(
-    ICommandHandler<AuthenticateApiKey, ApiKeyDto> authenticateApiKey,
-    ICommandHandler<CreateOrReplaceApiKey, CreateOrReplaceApiKeyResult> createOrReplaceApiKey,
-    ICommandHandler<DeleteApiKey, ApiKeyDto?> deleteApiKey,
-    IQueryHandler<ReadApiKey, ApiKeyDto?> readApiKey,
-    IQueryHandler<SearchApiKeys, SearchResults<ApiKeyDto>> searchApiKeys,
-    ICommandHandler<UpdateApiKey, ApiKeyDto?> updateApiKey)
+  public ApiKeyService(ICommandBus commandBus, IQueryBus queryBus)
   {
-    AuthenticateApiKey = authenticateApiKey;
-    CreateOrReplaceApiKey = createOrReplaceApiKey;
-    DeleteApiKey = deleteApiKey;
-    ReadApiKey = readApiKey;
-    SearchApiKeys = searchApiKeys;
-    UpdateApiKey = updateApiKey;
+    CommandBus = commandBus;
+    QueryBus = queryBus;
   }
 
   public virtual async Task<ApiKeyDto> AuthenticateAsync(AuthenticateApiKeyPayload payload, CancellationToken cancellationToken)
   {
     AuthenticateApiKey command = new(payload);
-    return await AuthenticateApiKey.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 
   public virtual async Task<CreateOrReplaceApiKeyResult> CreateOrReplaceAsync(CreateOrReplaceApiKeyPayload payload, Guid? id, long? version, CancellationToken cancellationToken)
   {
     CreateOrReplaceApiKey command = new(id, payload, version);
-    return await CreateOrReplaceApiKey.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 
   public virtual async Task<ApiKeyDto?> DeleteAsync(Guid id, CancellationToken cancellationToken)
   {
     DeleteApiKey command = new(id);
-    return await DeleteApiKey.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 
   public virtual async Task<ApiKeyDto?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
     ReadApiKey query = new(id);
-    return await ReadApiKey.HandleAsync(query, cancellationToken);
+    return await QueryBus.ExecuteAsync(query, cancellationToken);
   }
 
   public virtual async Task<SearchResults<ApiKeyDto>> SearchAsync(SearchApiKeysPayload payload, CancellationToken cancellationToken)
   {
     SearchApiKeys query = new(payload);
-    return await SearchApiKeys.HandleAsync(query, cancellationToken);
+    return await QueryBus.ExecuteAsync(query, cancellationToken);
   }
 
   public virtual async Task<ApiKeyDto?> UpdateAsync(Guid id, UpdateApiKeyPayload payload, CancellationToken cancellationToken)
   {
     UpdateApiKey command = new(id, payload);
-    return await UpdateApiKey.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 }
