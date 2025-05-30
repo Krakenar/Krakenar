@@ -4,15 +4,15 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import SecretInput from "@/components/tokens/SecretInput.vue";
-import StatusInfo from "@/components/shared/StatusInfo.vue";
-import type { Realm, UpdateRealmPayload } from "@/types/realms";
-import { updateRealm } from "@/api/realms";
+import type { Configuration, UpdateConfigurationPayload } from "@/types/configuration";
+import { updateConfiguration } from "@/api/configuration";
 import { useForm } from "@/forms";
+import StatusInfo from "@/components/shared/StatusInfo.vue";
 
 const { t } = useI18n();
 
-const props = defineProps<{
-  realm: Realm;
+defineProps<{
+  configuration: Configuration;
 }>();
 
 const isLoading = ref<boolean>(false);
@@ -20,18 +20,17 @@ const secret = ref<string>("");
 
 const emit = defineEmits<{
   (e: "error", value: unknown): void;
-  (e: "updated", value: Realm): void;
+  (e: "updated", value: Configuration): void;
 }>();
 
 const { hasChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   try {
-    const payload: UpdateRealmPayload = {
+    const payload: UpdateConfigurationPayload = {
       secret: { value: secret.value },
-      customAttributes: [],
     };
-    const realm: Realm = await updateRealm(props.realm.id, payload);
-    emit("updated", realm);
+    const configuration: Configuration = await updateConfiguration(payload);
+    emit("updated", configuration);
   } catch (e: unknown) {
     emit("error", e);
   } finally {
@@ -43,12 +42,11 @@ async function onGenerate(): Promise<void> {
   if (!isLoading.value) {
     isLoading.value = true;
     try {
-      const payload: UpdateRealmPayload = {
+      const payload: UpdateConfigurationPayload = {
         secret: { value: null },
-        customAttributes: [],
       };
-      const realm: Realm = await updateRealm(props.realm.id, payload);
-      emit("updated", realm);
+      const configuration: Configuration = await updateConfiguration(payload);
+      emit("updated", configuration);
     } catch (e: unknown) {
       emit("error", e);
     } finally {
@@ -62,7 +60,7 @@ async function onGenerate(): Promise<void> {
 <template>
   <form @submit.prevent="handleSubmit(submit)">
     <p>
-      <StatusInfo :actor="realm.secretChangedBy" :date="realm.secretChangedOn" format="tokens.secret.format" />
+      <StatusInfo :actor="configuration.secretChangedBy" :date="configuration.secretChangedOn" format="tokens.secret.format" />
     </p>
     <p class="text-warning">
       <font-awesome-icon icon="fas fa-exclamation-triangle" />

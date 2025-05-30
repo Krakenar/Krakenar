@@ -25,6 +25,7 @@
   },
   "secret": {
     "changed": "Le secret a été changé avec succès.",
+    "format": "Changé le {date} par",
     "label": "Secret",
     "warning": "Si vous changez ou générez un nouveau secret, les jetons existants ne seront plus valides."
   },

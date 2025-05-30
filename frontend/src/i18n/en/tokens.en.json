@@ -25,6 +25,7 @@
   },
   "secret": {
     "changed": "The secret has been changed.",
+    "format": "Changed on {date} by",
     "label": "Secret",
     "warning": "If you change or generate a new secret, existing tokens will no longer be valid."
   },
