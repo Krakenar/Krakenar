@@ -11,7 +11,8 @@ public interface ILoggingService
   void Open(string traceIdentifier, string method, string url, string? ipAddress, string additionalInformation);
   void Report(IEvent @event);
   void Report(Exception exception);
-  // TODO(fpion): SetActivity
+  void SetActivity<TResult>(ICommand<TResult> command);
+  void SetActivity<TResult>(IQuery<TResult> command);
   void SetOperation(Operation operation);
   void SetRealm(Realm? realm);
   void SetApiKey(ApiKey? apiKey);

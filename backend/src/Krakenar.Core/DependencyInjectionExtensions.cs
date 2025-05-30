@@ -98,6 +98,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)
   {
     return services
+      .AddTransient<ICommandBus, CommandBus>()
       .AddTransient<ICommandHandler<AuthenticateApiKey, ApiKeyDto>, AuthenticateApiKeyHandler>()
       .AddTransient<ICommandHandler<AuthenticateUser, UserDto>, AuthenticateUserHandler>()
       .AddTransient<ICommandHandler<CreateContent, ContentDto>, CreateContentHandler>()
@@ -198,6 +199,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarQueries(this IServiceCollection services)
   {
     return services
+      .AddTransient<IQueryBus, QueryBus>()
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
       .AddTransient<IQueryHandler<ReadContent, ContentDto?>, ReadContentHandler>()
