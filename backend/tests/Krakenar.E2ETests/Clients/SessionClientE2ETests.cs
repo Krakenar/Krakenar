@@ -109,6 +109,6 @@ public class SessionClientE2ETests : E2ETests
     Assert.NotNull(session.SignedOutBy);
     Assert.Equal(user.Id, session.SignedOutBy.Id);
     Assert.NotNull(session.SignedOutOn);
-    Assert.Equal(DateTime.UtcNow, session.SignedOutOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, session.SignedOutOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
   }
 }

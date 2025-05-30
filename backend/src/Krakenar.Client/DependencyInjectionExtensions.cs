@@ -45,6 +45,22 @@ public static class DependencyInjectionExtensions
     return services
       .AddHttpClient()
       .AddSingleton(settings)
+      .AddKrakenarClients()
+      .AddKrakenarClientServices();
+  }
+
+  public static IServiceCollection AddKrakenarClients(this IServiceCollection services)
+  {
+    return services
+      .AddSingleton<IContentClient, ContentClient>()
+      .AddSingleton<IOneTimePasswordClient, OneTimePasswordClient>()
+      .AddSingleton<ISessionClient, SessionClient>()
+      .AddSingleton<IUserClient, UserClient>();
+  }
+
+  public static IServiceCollection AddKrakenarClientServices(this IServiceCollection services)
+  {
+    return services
       .AddSingleton<IApiKeyService, ApiKeyClient>()
       .AddSingleton<IConfigurationService, ConfigurationClient>()
       .AddSingleton<IContentService, ContentClient>()

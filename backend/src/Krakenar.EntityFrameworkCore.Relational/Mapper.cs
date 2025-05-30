@@ -46,6 +46,7 @@ public sealed class Mapper
 
   public static Actor ToActor(Entities.Actor source) => new(source.DisplayName)
   {
+    RealmId = source.RealmUid,
     Type = source.Type,
     Id = source.Id,
     IsDeleted = source.IsDeleted,

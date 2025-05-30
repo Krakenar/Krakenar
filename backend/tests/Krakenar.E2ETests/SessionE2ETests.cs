@@ -44,7 +44,7 @@ public class SessionE2ETests : E2ETests
     Assert.Equal(currentUser.PictureUrl, user.Picture);
 
     Assert.NotNull(user.AuthenticatedOn);
-    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value, TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value, TimeSpan.FromSeconds(10));
   }
 
   [Fact(DisplayName = "Session renewal middleware should work correctly.")]

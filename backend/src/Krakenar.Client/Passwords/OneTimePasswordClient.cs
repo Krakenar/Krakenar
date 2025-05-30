@@ -2,7 +2,7 @@
 
 namespace Krakenar.Client.Passwords;
 
-public class OneTimePasswordClient : BaseClient, IOneTimePasswordService
+public class OneTimePasswordClient : BaseClient, IOneTimePasswordClient
 {
   protected virtual Uri Path { get; } = new("/api/one-time-passwords", UriKind.Relative);
 
@@ -12,19 +12,34 @@ public class OneTimePasswordClient : BaseClient, IOneTimePasswordService
 
   public virtual async Task<OneTimePassword> CreateAsync(CreateOneTimePasswordPayload payload, CancellationToken cancellationToken)
   {
-    return (await PostAsync<OneTimePassword>(Path, payload, cancellationToken)).Value
+    RequestContext context = new(cancellationToken);
+    return await CreateAsync(payload, context);
+  }
+  public virtual async Task<OneTimePassword> CreateAsync(CreateOneTimePasswordPayload payload, RequestContext? context)
+  {
+    return (await PostAsync<OneTimePassword>(Path, payload, context)).Value
       ?? throw CreateInvalidApiResponseException(nameof(CreateAsync), HttpMethod.Post, Path, payload);
   }
 
   public virtual async Task<OneTimePassword?> ReadAsync(Guid id, CancellationToken cancellationToken)
   {
+    RequestContext context = new(cancellationToken);
+    return await ReadAsync(id, context);
+  }
+  public virtual async Task<OneTimePassword?> ReadAsync(Guid id, RequestContext? context)
+  {
     Uri uri = new($"{Path}/{id}", UriKind.Relative);
-    return (await GetAsync<OneTimePassword>(uri, cancellationToken)).Value;
+    return (await GetAsync<OneTimePassword>(uri, context)).Value;
   }
 
   public virtual async Task<OneTimePassword?> ValidateAsync(Guid id, ValidateOneTimePasswordPayload payload, CancellationToken cancellationToken)
   {
+    RequestContext context = new(cancellationToken);
+    return await ValidateAsync(id, payload, context);
+  }
+  public virtual async Task<OneTimePassword?> ValidateAsync(Guid id, ValidateOneTimePasswordPayload payload, RequestContext? context)
+  {
     Uri uri = new($"{Path}/{id}", UriKind.Relative);
-    return (await PutAsync<OneTimePassword>(uri, payload, cancellationToken)).Value;
+    return (await PutAsync<OneTimePassword>(uri, payload, context)).Value;
   }
 }

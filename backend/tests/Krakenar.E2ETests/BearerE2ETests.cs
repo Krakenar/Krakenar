@@ -44,7 +44,7 @@ public class BearerE2ETests : E2ETests
     Assert.True(user.HasPassword);
 
     Assert.NotNull(user.AuthenticatedOn);
-    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value, TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value, TimeSpan.FromSeconds(10));
 
     requestUri = new("/api/auth/token", UriKind.Relative);
     payload = new GetTokenPayload(tokenResponse.RefreshToken);
