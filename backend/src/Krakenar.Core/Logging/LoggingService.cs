@@ -9,12 +9,15 @@ namespace Krakenar.Core.Logging;
 
 public class LoggingService : ILoggingService
 {
-  protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual Log? Log { get; set; }
 
-  public LoggingService(IApplicationContext applicationContext)
+  protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IEnumerable<ILogRepository> Repositories { get; }
+
+  public LoggingService(IApplicationContext applicationContext, IEnumerable<ILogRepository> repositories)
   {
     ApplicationContext = applicationContext;
+    Repositories = repositories;
   }
 
   public virtual void Open(string correlationId, string method, string url, string? ipAddress, string additionalInformation)
@@ -39,7 +42,7 @@ public class LoggingService : ILoggingService
   {
     if (Log is not null)
     {
-      Log.Activity = activity; // TODO(fpion): anonymize
+      Log.Activity = activity is ISensitiveActivity sensitive ? sensitive.Anonymize() : activity;
     }
   }
 
@@ -88,9 +91,12 @@ public class LoggingService : ILoggingService
     }
     Log.Close(statusCode);
 
-    if (ShouldSaveLog())
+    if (Repositories.Any() && ShouldSaveLog())
     {
-      await Task.Delay(1, cancellationToken); //await _logRepository.SaveAsync(Log, cancellationToken); // TODO(fpion): implement
+      foreach (ILogRepository repository in Repositories)
+      {
+        await repository.SaveAsync(Log, cancellationToken);
+      }
     }
 
     Log = null;

@@ -5,6 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Krakenar.Core;
 
 public interface IActivity;
+public interface ISensitiveActivity
+{
+  IActivity Anonymize();
+}
 
 public interface ICommand : IActivity;
 public interface ICommand<TResult> : IActivity;
