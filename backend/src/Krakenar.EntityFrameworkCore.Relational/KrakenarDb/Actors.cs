@@ -15,5 +15,6 @@ public static class Actors
   public static readonly ColumnId Key = new(nameof(Actor.Key), Table);
   public static readonly ColumnId PictureUrl = new(nameof(Actor.PictureUrl), Table);
   public static readonly ColumnId RealmId = new(nameof(Actor.RealmId), Table);
+  public static readonly ColumnId RealmUid = new(nameof(Actor.RealmUid), Table);
   public static readonly ColumnId Type = new(nameof(Actor.Type), Table);
 }

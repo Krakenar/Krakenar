@@ -17,6 +17,7 @@ using Krakenar.Core.Messages.Events;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Passwords.Events;
 using Krakenar.Core.Realms;
+using Krakenar.Core.Realms.Commands;
 using Krakenar.Core.Realms.Events;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
@@ -36,6 +37,7 @@ using Krakenar.EntityFrameworkCore.Relational.Tokens;
 using Krakenar.Infrastructure.Commands;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.Extensions.DependencyInjection;
+using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.EntityFrameworkCore.Relational;
 
@@ -49,7 +51,8 @@ public static class DependencyInjectionExtensions
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
       .AddScoped<IActorService, ActorService>()
       .AddScoped<ITokenBlacklist, TokenBlacklist>()
-      .AddScoped<ICommandHandler<MigrateDatabase>, MigrateDatabaseCommandHandler>();
+      .AddScoped<ICommandHandler<MigrateDatabase>, MigrateDatabaseCommandHandler>()
+      .AddTransient<ICommandHandler<DeleteRealm, RealmDto?>, DeleteRealmCommandHandler>();
   }
 
   public static IServiceCollection AddKrakenarEventHandlers(this IServiceCollection services)

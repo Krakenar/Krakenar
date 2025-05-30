@@ -9,17 +9,20 @@ namespace Krakenar.Core.Realms;
 public class RealmService : IRealmService
 {
   protected virtual ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> CreateOrReplaceRealm { get; }
+  protected virtual ICommandHandler<DeleteRealm, RealmDto?> DeleteRealm { get; }
   protected virtual IQueryHandler<ReadRealm, RealmDto?> ReadRealm { get; }
   protected virtual IQueryHandler<SearchRealms, SearchResults<RealmDto>> SearchRealms { get; }
   protected virtual ICommandHandler<UpdateRealm, RealmDto?> UpdateRealm { get; }
 
   public RealmService(
     ICommandHandler<CreateOrReplaceRealm, CreateOrReplaceRealmResult> createOrReplaceRealm,
+    ICommandHandler<DeleteRealm, RealmDto?> deleteRealm,
     IQueryHandler<ReadRealm, RealmDto?> readRealm,
     IQueryHandler<SearchRealms, SearchResults<RealmDto>> searchRealms,
     ICommandHandler<UpdateRealm, RealmDto?> updateRealm)
   {
     CreateOrReplaceRealm = createOrReplaceRealm;
+    DeleteRealm = deleteRealm;
     ReadRealm = readRealm;
     SearchRealms = searchRealms;
     UpdateRealm = updateRealm;
@@ -29,6 +32,12 @@ public class RealmService : IRealmService
   {
     CreateOrReplaceRealm command = new(id, payload, version);
     return await CreateOrReplaceRealm.HandleAsync(command, cancellationToken);
+  }
+
+  public virtual async Task<RealmDto?> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    DeleteRealm command = new(id);
+    return await DeleteRealm.HandleAsync(command, cancellationToken);
   }
 
   public virtual async Task<RealmDto?> ReadAsync(Guid? id, string? uniqueSlug, CancellationToken cancellationToken)

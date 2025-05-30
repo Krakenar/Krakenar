@@ -18,6 +18,7 @@ public sealed class ActorConfiguration : IEntityTypeConfiguration<ActorEntity>
 
     builder.HasIndex(x => x.Key).IsUnique();
     builder.HasIndex(x => new { x.RealmId, x.Type, x.Id }).IsUnique();
+    builder.HasIndex(x => x.RealmUid);
     builder.HasIndex(x => x.IsDeleted);
     builder.HasIndex(x => x.DisplayName);
     builder.HasIndex(x => x.EmailAddress);

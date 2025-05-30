@@ -20,6 +20,12 @@ public class RealmClient : BaseClient, IRealmService
     return new CreateOrReplaceRealmResult(result.Value, result.StatusCode == HttpStatusCode.Created);
   }
 
+  public virtual async Task<Realm?> DeleteAsync(Guid id, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{Path}/{id}", UriKind.Relative);
+    return (await DeleteAsync<Realm>(uri, cancellationToken)).Value;
+  }
+
   public virtual async Task<Realm?> ReadAsync(Guid? id, string? uniqueSlug, CancellationToken cancellationToken)
   {
     Dictionary<Guid, Realm> realms = new(capacity: 2);

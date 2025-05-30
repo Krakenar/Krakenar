@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import { TarButton, TarInput, TarModal, type InputStatus } from "logitar-vue3-ui";
+import { TarButton, TarCheckbox, type CheckboxOptions, TarInput, TarModal, type InputStatus } from "logitar-vue3-ui";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import type { Realm } from "@/types/realms";
 import { deleteRealm } from "@/api/realms";
+import { useRealmStore } from "@/stores/realm";
 
+const realmStore = useRealmStore();
 const { t } = useI18n();
 
 const props = defineProps<{
   realm: Realm;
 }>();
 
+const confirm = ref<boolean>(false);
 const isDeleting = ref<boolean>(false);
 const modalRef = ref<InstanceType<typeof TarModal> | null>(null);
 const name = ref<string>("");
@@ -43,6 +46,7 @@ async function doDelete(): Promise<void> {
     isDeleting.value = true;
     try {
       const realm: Realm = await deleteRealm(props.realm.id);
+      realmStore.deleteRealm(realm);
       emit("deleted", realm);
       hide();
     } catch (e: unknown) {
@@ -56,18 +60,22 @@ async function doDelete(): Promise<void> {
 
 <template>
   <span>
-    <TarButton disabled icon="fas fa-trash" :text="t('actions.delete')" variant="danger" data-bs-toggle="modal" data-bs-target="#delete-realm" />
+    <TarButton icon="fas fa-trash" :text="t('actions.delete')" variant="danger" data-bs-toggle="modal" data-bs-target="#delete-realm" />
     <TarModal :close="t('actions.close')" id="delete-realm" ref="modalRef" :title="t('realms.delete.title')">
       <p>
         {{ t("realms.delete.confirm") }}
         <br />
         <span class="text-danger">{{ expectedName }}</span>
       </p>
-      <TarInput floating id="delete-realm-name" :label="t('name')" :placeholder="t('name')" required :status="status" v-model="name" />
+      <TarInput class="mb-3" floating id="delete-realm-name" :label="t('name')" :placeholder="t('name')" required :status="status" v-model="name" />
+      <p>
+        <strong class="text-danger">{{ t("realms.delete.warning") }}</strong>
+      </p>
+      <TarCheckbox class="text-danger" id="delete-realm-confirm" :label="t('realms.delete.agree')" required v-model="confirm" />
       <template #footer>
         <TarButton icon="fas fa-ban" :text="t('actions.cancel')" variant="secondary" @click="cancel" />
         <TarButton
-          :disabled="isDeleting || status !== 'valid'"
+          :disabled="isDeleting || status !== 'valid' || !confirm"
           icon="fas fa-trash"
           :loading="isDeleting"
           :status="t('loading')"

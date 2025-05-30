@@ -9,6 +9,7 @@ public static class UserIdentifiers
 
   public static readonly ColumnId Key = new(nameof(UserIdentifier.Key), Table);
   public static readonly ColumnId RealmId = new(nameof(UserIdentifier.RealmId), Table);
+  public static readonly ColumnId RealmUid = new(nameof(UserIdentifier.RealmUid), Table);
   public static readonly ColumnId UserId = new(nameof(UserIdentifier.UserId), Table);
   public static readonly ColumnId UserIdentifierId = new(nameof(UserIdentifier.UserIdentifierId), Table);
   public static readonly ColumnId UserUid = new(nameof(UserIdentifier.UserUid), Table);
