@@ -56,7 +56,7 @@ public class UpdateConfigurationHandlerTests
   [InlineData(null)]
   [InlineData("")]
   [InlineData("  ")]
-  [InlineData("PrgBEkQFLGMf5z3JRcFAxmKpTPGfB8h3qeaRvM4VEW2DsYKA")]
+  [InlineData("Jdv48cxPCRLH5LUPMKEC8c6GTYpAhjJsgWzR52r43qwfXtFZTSufq7r96snmQ2EV")]
   public async Task Given_Secret_When_HandleAsync_Then_SecretChanged(string? secretValue)
   {
     ActorId actorId = ActorId.NewId();
