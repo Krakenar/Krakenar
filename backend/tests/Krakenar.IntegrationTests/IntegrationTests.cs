@@ -4,6 +4,7 @@ using Krakenar.Core.Actors;
 using Krakenar.Core.Caching;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Localization;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
@@ -11,6 +12,7 @@ using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Infrastructure;
 using Krakenar.Infrastructure.Commands;
+using Krakenar.Logging;
 using Logitar.Data;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
@@ -70,6 +72,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     }
 
     services.AddSingleton<IApplicationContext>(_applicationContext);
+    services.AddSingleton<ILoggingService, FakeLoggingService>();
 
     ServiceProvider = services.BuildServiceProvider();
 
