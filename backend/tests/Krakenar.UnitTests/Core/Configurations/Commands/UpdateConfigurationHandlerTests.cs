@@ -4,6 +4,7 @@ using Krakenar.Contracts.Logging;
 using Krakenar.Core.Caching;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
+using Logitar;
 using Logitar.EventSourcing;
 using Logitar.Security.Cryptography;
 using Moq;
@@ -89,7 +90,7 @@ public class UpdateConfigurationHandlerTests
 
     Assert.Equal(newSecret, configuration.Secret);
     Assert.Equal(actorId, configuration.SecretChangedBy);
-    Assert.Equal(DateTime.UtcNow, configuration.SecretChangedOn, TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, configuration.SecretChangedOn.AsUniversalTime(), TimeSpan.FromSeconds(1));
 
     _configurationRepository.Verify(x => x.SaveAsync(configuration, _cancellationToken), Times.Once);
   }
