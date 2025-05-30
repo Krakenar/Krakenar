@@ -1,6 +1,5 @@
 ﻿using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Logging;
-using Krakenar.Contracts.Realms;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
@@ -47,7 +46,7 @@ public class ConfigurationIntegrationTests : IntegrationTests
     {
       Assert.NotNull(configuration.Secret);
       Secret secret = new(configuration.Secret);
-      string decrypted = _secretManager.Decrypt(secret, Realm.Id);
+      string decrypted = _secretManager.Decrypt(secret);
       Assert.Equal(secretValue, decrypted);
     }
     Assert.Equal(Actor, configuration.SecretChangedBy);

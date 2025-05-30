@@ -21,6 +21,8 @@ const realm: Realm = {
   updatedBy: actor,
   updatedOn: now,
   uniqueSlug: "new-world",
+  secretChangedBy: actor,
+  secretChangedOn: now,
   uniqueNameSettings: {},
   passwordSettings: {
     requiredLength: 8,
@@ -44,6 +46,7 @@ describe("realmStore", () => {
   it.concurrent("should be initially empty", () => {
     const realmStore = useRealmStore();
     expect(realmStore.currentRealm).toBeUndefined();
+    expect(realmStore.realms).toEqual([]);
   });
 
   it.concurrent("should enter a realm", () => {

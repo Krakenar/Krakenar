@@ -23,7 +23,11 @@
     "label": "Durée de vie",
     "unit": "seconde | seconde | secondes"
   },
-  "secret": "Secret",
+  "secret": {
+    "changed": "Le secret a été changé avec succès.",
+    "label": "Secret",
+    "warning": "Si vous changez ou générez un nouveau secret, les jetons existants ne seront plus valides."
+  },
   "subject": "Sujet",
   "title": "Jetons",
   "token": "Jeton",

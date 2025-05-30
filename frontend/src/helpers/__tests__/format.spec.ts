@@ -156,6 +156,8 @@ describe("formatRealm", () => {
       updatedOn: now,
       uniqueSlug: "new-world",
       displayName: "The New World",
+      secretChangedBy: actor,
+      secretChangedOn: now,
       uniqueNameSettings: {},
       passwordSettings: {
         requiredLength: 8,
@@ -182,6 +184,8 @@ describe("formatRealm", () => {
       updatedBy: actor,
       updatedOn: now,
       uniqueSlug: "new-world",
+      secretChangedBy: actor,
+      secretChangedOn: now,
       uniqueNameSettings: {},
       passwordSettings: {
         requiredLength: 8,
