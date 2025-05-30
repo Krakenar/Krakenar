@@ -10,7 +10,7 @@ using ConfigurationEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Con
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 
-public class ConfigurationEvents : IEventHandler<ConfigurationInitialized>, IEventHandler<ConfigurationUpdated>
+public class ConfigurationEvents : IEventHandler<ConfigurationInitialized>, IEventHandler<ConfigurationSecretChanged>, IEventHandler<ConfigurationUpdated>
 {
   protected virtual KrakenarContext Context { get; }
   protected virtual ILogger<ConfigurationEvents> Logger { get; }
@@ -35,14 +35,21 @@ public class ConfigurationEvents : IEventHandler<ConfigurationInitialized>, IEve
     Logger.LogSuccess(@event);
   }
 
+  public virtual async Task HandleAsync(ConfigurationSecretChanged @event, CancellationToken cancellationToken)
+  {
+    Dictionary<string, ConfigurationEntity> configurations = await Context.Configuration.ToDictionaryAsync(x => x.Key, x => x, cancellationToken);
+
+    SetSecret(configurations, @event.Secret, @event);
+
+    await Context.SaveChangesAsync(cancellationToken);
+
+    Logger.LogSuccess(@event);
+  }
+
   public virtual async Task HandleAsync(ConfigurationUpdated @event, CancellationToken cancellationToken)
   {
     Dictionary<string, ConfigurationEntity> configurations = await Context.Configuration.ToDictionaryAsync(x => x.Key, x => x, cancellationToken);
 
-    if (@event.Secret is not null)
-    {
-      SetSecret(configurations, @event.Secret, @event);
-    }
     if (@event.UniqueNameSettings is not null)
     {
       SetUniqueNameSettings(configurations, @event.UniqueNameSettings, @event);

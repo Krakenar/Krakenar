@@ -14,6 +14,7 @@
     "options": {
       "CreatedOn": "Date de création",
       "DisplayName": "Nom d’affichage",
+      "SecretChangedOn": "Secret changé",
       "UniqueSlug": "Alias unique",
       "UpdatedOn": "Dernière modification"
     }

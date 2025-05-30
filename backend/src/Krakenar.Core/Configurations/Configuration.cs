@@ -8,24 +8,14 @@ namespace Krakenar.Core.Configurations;
 public class Configuration : AggregateRoot
 {
   private ConfigurationUpdated _updated = new();
-  private bool HasUpdates => _updated.Secret is not null
-    || _updated.UniqueNameSettings is not null || _updated.PasswordSettings is not null || _updated.LoggingSettings is not null;
+  private bool HasUpdates => _updated.UniqueNameSettings is not null || _updated.PasswordSettings is not null || _updated.LoggingSettings is not null;
 
   public new ConfigurationId Id => new(base.Id);
 
   private Secret? _secret = null;
-  public Secret Secret
-  {
-    get => _secret ?? throw new InvalidOperationException("The configuration has not been initialized.");
-    set
-    {
-      if (_secret != value)
-      {
-        _secret = value;
-        _updated.Secret = value;
-      }
-    }
-  }
+  public Secret Secret => _secret ?? throw new InvalidOperationException("The configuration has not been initialized.");
+  public ActorId? SecretChangedBy { get; private set; }
+  public DateTime SecretChangedOn { get; private set; }
 
   private UniqueNameSettings? _uniqueNameSettings = null;
   public UniqueNameSettings UniqueNameSettings
@@ -93,6 +83,20 @@ public class Configuration : AggregateRoot
     _loggingSettings = @event.LoggingSettings;
   }
 
+  public void SetSecret(Secret secret, ActorId? actorId = null)
+  {
+    if (_secret != secret)
+    {
+      Raise(new ConfigurationSecretChanged(secret), actorId);
+    }
+  }
+  protected virtual void Handle(ConfigurationSecretChanged @event)
+  {
+    _secret = @event.Secret;
+    SecretChangedBy = @event.ActorId;
+    SecretChangedOn = @event.OccurredOn;
+  }
+
   public void Update(ActorId? actorId = null)
   {
     if (HasUpdates)
@@ -103,11 +107,6 @@ public class Configuration : AggregateRoot
   }
   protected virtual void Handle(ConfigurationUpdated @event)
   {
-    if (@event.Secret is not null)
-    {
-      _secret = @event.Secret;
-    }
-
     if (@event.UniqueNameSettings is not null)
     {
       _uniqueNameSettings = @event.UniqueNameSettings;

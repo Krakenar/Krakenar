@@ -30,6 +30,8 @@ public static class Realms
   public static readonly ColumnId RequiredPasswordUniqueChars = new(nameof(Realm.RequiredPasswordUniqueChars), Table);
   public static readonly ColumnId RequireUniqueEmail = new(nameof(Realm.RequireUniqueEmail), Table);
   public static readonly ColumnId Secret = new(nameof(Realm.Secret), Table);
+  public static readonly ColumnId SecretChangedBy = new(nameof(Realm.SecretChangedBy), Table);
+  public static readonly ColumnId SecretChangedOn = new(nameof(Realm.SecretChangedOn), Table);
   public static readonly ColumnId UniqueSlug = new(nameof(Realm.UniqueSlug), Table);
   public static readonly ColumnId UniqueSlugNormalized = new(nameof(Realm.UniqueSlugNormalized), Table);
   public static readonly ColumnId Url = new(nameof(Realm.Url), Table);

@@ -14,6 +14,7 @@
     "options": {
       "CreatedOn": "Created on",
       "DisplayName": "Display Name",
+      "SecretChangedOn": "Secret changed on",
       "UniqueSlug": "Unique Slug",
       "UpdatedOn": "Updated on"
     }

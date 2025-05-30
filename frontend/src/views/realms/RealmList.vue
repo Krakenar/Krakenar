@@ -154,6 +154,7 @@ watch(
           <tr>
             <th scope="col">{{ t("realms.sort.options.UniqueSlug") }}</th>
             <th scope="col">{{ t("realms.sort.options.DisplayName") }}</th>
+            <th scope="col">{{ t("realms.sort.options.SecretChangedOn") }}</th>
             <th scope="col">{{ t("realms.sort.options.UpdatedOn") }}</th>
             <th scope="col"></th>
           </tr>
@@ -167,6 +168,7 @@ watch(
               <template v-if="realm.displayName">{{ realm.displayName }}</template>
               <span v-else class="text-muted">{{ "—" }}</span>
             </td>
+            <td><StatusBlock :actor="realm.secretChangedBy" :date="realm.secretChangedOn" /></td>
             <td><StatusBlock :actor="realm.updatedBy" :date="realm.updatedOn" /></td>
             <td><SwitchButton :realm="realm" /></td>
           </tr>

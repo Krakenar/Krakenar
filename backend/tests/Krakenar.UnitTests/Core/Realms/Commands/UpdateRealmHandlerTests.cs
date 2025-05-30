@@ -22,12 +22,13 @@ public class UpdateRealmHandlerTests
   private readonly Mock<IRealmManager> _realmManager = new();
   private readonly Mock<IRealmQuerier> _realmQuerier = new();
   private readonly Mock<IRealmRepository> _realmRepository = new();
+  private readonly Mock<ISecretManager> _secretManager = new();
 
   private readonly UpdateRealmHandler _handler;
 
   public UpdateRealmHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _realmManager.Object, _realmQuerier.Object, _realmRepository.Object);
+    _handler = new(_applicationContext.Object, _realmManager.Object, _realmQuerier.Object, _realmRepository.Object, _secretManager.Object);
   }
 
   [Fact(DisplayName = "It should return null when the realm was not found.")]
@@ -112,5 +113,47 @@ public class UpdateRealmHandlerTests
     Assert.Equal(2, realm.CustomAttributes.Count);
     Assert.Contains(realm.CustomAttributes, c => c.Key.Value == "Key" && c.Value == "Value");
     Assert.Contains(realm.CustomAttributes, c => c.Key.Value == "ExternalId" && c.Value == externalId);
+  }
+
+  [Theory(DisplayName = "It should update the realm secret.")]
+  [InlineData(null)]
+  [InlineData("")]
+  [InlineData("  ")]
+  [InlineData("EhY2MKaLpTxb8ujrc8G9E5YWJwHtAQB6bNkSaRhKq73UFpCzXcwH3vGB94r7tFJV")]
+  public async Task Given_Secret_When_HandleAsync_Then_SecretChanged(string? secretValue)
+  {
+    ActorId actorId = ActorId.NewId();
+    _applicationContext.SetupGet(x => x.ActorId).Returns(actorId);
+
+    Secret oldSecret = new(RandomStringGenerator.GetString(Secret.MinimumLength));
+    Realm realm = new(new Slug("the-realm"), oldSecret, actorId);
+    realm.Update(actorId);
+    _realmRepository.Setup(x => x.LoadAsync(realm.Id, _cancellationToken)).ReturnsAsync(realm);
+
+    Secret newSecret = new(RandomStringGenerator.GetString(Secret.MinimumLength));
+    if (string.IsNullOrWhiteSpace(secretValue))
+    {
+      _secretManager.Setup(x => x.Generate(realm.Id)).Returns(newSecret);
+    }
+    else
+    {
+      _secretManager.Setup(x => x.Encrypt(secretValue, realm.Id)).Returns(newSecret);
+    }
+
+    RealmDto dto = new();
+    _realmQuerier.Setup(x => x.ReadAsync(realm, _cancellationToken)).ReturnsAsync(dto);
+
+    UpdateRealmPayload payload = new()
+    {
+      Secret = new Contracts.Change<string>(secretValue)
+    };
+    UpdateRealm command = new(realm.Id.ToGuid(), payload);
+    RealmDto? result = await _handler.HandleAsync(command, _cancellationToken);
+    Assert.NotNull(result);
+    Assert.Same(dto, result);
+
+    Assert.Equal(newSecret, realm.Secret);
+
+    _realmManager.Verify(x => x.SaveAsync(realm, _cancellationToken), Times.Once);
   }
 }

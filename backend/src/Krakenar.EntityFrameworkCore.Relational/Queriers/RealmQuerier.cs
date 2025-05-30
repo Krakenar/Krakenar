@@ -91,6 +91,11 @@ public class RealmQuerier : IRealmQuerier
             ? (sort.IsDescending ? query.OrderByDescending(x => x.DisplayName) : query.OrderBy(x => x.DisplayName))
             : (sort.IsDescending ? ordered.ThenByDescending(x => x.DisplayName) : ordered.ThenBy(x => x.DisplayName));
           break;
+        case RealmSort.SecretChangedOn:
+          ordered = (ordered is null)
+            ? (sort.IsDescending ? query.OrderByDescending(x => x.SecretChangedOn) : query.OrderBy(x => x.SecretChangedOn))
+            : (sort.IsDescending ? ordered.ThenByDescending(x => x.SecretChangedOn) : ordered.ThenBy(x => x.SecretChangedOn));
+          break;
         case RealmSort.UniqueSlug:
           ordered = (ordered is null)
             ? (sort.IsDescending ? query.OrderByDescending(x => x.UniqueSlug) : query.OrderBy(x => x.UniqueSlug))

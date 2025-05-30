@@ -122,6 +122,10 @@ public class ConfigurationQuerier : IConfigurationQuerier
     {
       actorIds.Add(configuration.UpdatedBy.Value);
     }
+    if (configuration.SecretChangedBy.HasValue)
+    {
+      actorIds.Add(configuration.SecretChangedBy.Value);
+    }
     IReadOnlyDictionary<ActorId, Actor> actors = await ActorService.FindAsync(actorIds, cancellationToken);
     Mapper mapper = new(actors);
     return mapper.ToConfiguration(configuration);

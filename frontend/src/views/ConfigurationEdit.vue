@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { TarButton } from "logitar-vue3-ui";
+import { TarButton, TarTab, TarTabs } from "logitar-vue3-ui";
 import { computed, inject, onMounted, ref } from "vue";
 import { stringUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
+import ConfigurationSecret from "@/components/configuration/ConfigurationSecret.vue";
 import LoggingSettingsEdit from "@/components/settings/LoggingSettingsEdit.vue";
 import PasswordSettingsEdit from "@/components/settings/PasswordSettingsEdit.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
@@ -64,6 +65,17 @@ async function submit(): Promise<void> {
   }
 }
 
+function onSecretUpdated(updated: Configuration): void {
+  if (configuration.value) {
+    configuration.value.version = updated.version;
+    configuration.value.updatedBy = updated.updatedBy;
+    configuration.value.updatedOn = updated.updatedOn;
+    configuration.value.secretChangedBy = updated.secretChangedBy;
+    configuration.value.secretChangedOn = updated.secretChangedOn;
+  }
+  toasts.success("tokens.secret.changed");
+}
+
 onMounted(async () => {
   try {
     const configuration: Configuration = await readConfiguration();
@@ -79,14 +91,21 @@ onMounted(async () => {
     <template v-if="configuration">
       <h1>{{ t("configuration.title") }}</h1>
       <StatusDetail :aggregate="configuration" />
-      <form @submit.prevent="handleSubmit(submit)">
-        <UniqueNameSettingsEdit v-model="uniqueNameSettings" />
-        <PasswordSettingsEdit v-model="passwordSettings" />
-        <LoggingSettingsEdit v-model="loggingSettings" />
-        <div class="mb-3">
-          <TarButton :disabled="!canSubmit" icon="fas fa-save" :loading="isSubmitting" :status="t('loading')" :text="t('actions.save')" type="submit" />
-        </div>
-      </form>
+      <TarTabs>
+        <TarTab active id="general" :title="t('general')">
+          <form @submit.prevent="handleSubmit(submit)">
+            <UniqueNameSettingsEdit v-model="uniqueNameSettings" />
+            <PasswordSettingsEdit v-model="passwordSettings" />
+            <LoggingSettingsEdit v-model="loggingSettings" />
+            <div class="mb-3">
+              <TarButton :disabled="!canSubmit" icon="fas fa-save" :loading="isSubmitting" :status="t('loading')" :text="t('actions.save')" type="submit" />
+            </div>
+          </form>
+        </TarTab>
+        <TarTab id="secret" :title="t('tokens.secret.label')">
+          <ConfigurationSecret :configuration="configuration" @error="handleError" @updated="onSecretUpdated" />
+        </TarTab>
+      </TarTabs>
     </template>
   </main>
 </template>

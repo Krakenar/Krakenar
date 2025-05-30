@@ -1,3 +1,4 @@
+import type { Actor } from "./actor";
 import type { Aggregate } from "./aggregate";
 import type { Change } from "./change";
 import type { CustomAttribute } from "./custom";
@@ -20,6 +21,8 @@ export type Realm = Aggregate & {
   uniqueSlug: string;
   displayName?: string | null;
   description?: string | null;
+  secretChangedBy: Actor;
+  secretChangedOn: string;
   url?: string | null;
   uniqueNameSettings: UniqueNameSettings;
   passwordSettings: PasswordSettings;
@@ -28,7 +31,7 @@ export type Realm = Aggregate & {
   customAttributes: CustomAttribute[];
 };
 
-export type RealmSort = "CreatedOn" | "DisplayName" | "UniqueSlug" | "UpdatedOn";
+export type RealmSort = "CreatedOn" | "DisplayName" | "SecretChangedOn" | "UniqueSlug" | "UpdatedOn";
 
 export type RealmSortOption = SortOption & {
   field: RealmSort;
@@ -42,6 +45,7 @@ export type UpdateRealmPayload = {
   uniqueSlug?: string;
   displayName?: Change<string>;
   description?: Change<string>;
+  secret?: Change<string>;
   url?: Change<string>;
   uniqueNameSettings?: UniqueNameSettings;
   passwordSettings?: PasswordSettings;

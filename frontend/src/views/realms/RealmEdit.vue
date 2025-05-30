@@ -8,6 +8,7 @@ import AppBreadcrumb from "@/components/shared/AppBreadcrumb.vue";
 import CustomAttributeList from "@/components/shared/CustomAttributeList.vue";
 import DeleteRealm from "@/components/realms/DeleteRealm.vue";
 import RealmGeneral from "@/components/realms/RealmGeneral.vue";
+import RealmSecret from "@/components/realms/RealmSecret.vue";
 import RealmSettings from "@/components/realms/RealmSettings.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import SwitchButton from "@/components/realms/SwitchButton.vue";
@@ -54,6 +55,14 @@ function onGeneralUpdated(updated: Realm): void {
     realm.value.url = updated.url;
   }
   toasts.success("realms.updated");
+}
+function onSecretUpdated(updated: Realm): void {
+  if (realm.value) {
+    setMetadata(updated);
+    realm.value.secretChangedBy = updated.secretChangedBy;
+    realm.value.secretChangedOn = updated.secretChangedOn;
+  }
+  toasts.success("tokens.secret.changed");
 }
 function onSettingsUpdated(updated: Realm): void {
   if (realm.value) {
@@ -107,6 +116,9 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="settings" :title="t('settings.title')">
           <RealmSettings :realm="realm" @error="handleError" @updated="onSettingsUpdated" />
+        </TarTab>
+        <TarTab id="secret" :title="t('tokens.secret.label')">
+          <RealmSecret :realm="realm" @error="handleError" @updated="onSecretUpdated" />
         </TarTab>
         <TarTab id="attributes" :title="t('customAttributes.label')">
           <CustomAttributeList :attributes="realm.customAttributes" :save="saveCustomAttributes" @error="handleError" />

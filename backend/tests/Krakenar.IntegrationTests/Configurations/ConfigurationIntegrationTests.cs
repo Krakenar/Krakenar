@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Logging;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Settings;
+using Krakenar.Core.Tokens;
 using Logitar;
 using Microsoft.Extensions.DependencyInjection;
 using Configuration = Krakenar.Core.Configurations.Configuration;
@@ -17,11 +18,39 @@ public class ConfigurationIntegrationTests : IntegrationTests
 {
   private readonly IConfigurationRepository _configurationRepository;
   private readonly IConfigurationService _configurationService;
+  private readonly ISecretManager _secretManager;
 
   public ConfigurationIntegrationTests() : base()
   {
     _configurationRepository = ServiceProvider.GetRequiredService<IConfigurationRepository>();
     _configurationService = ServiceProvider.GetRequiredService<IConfigurationService>();
+    _secretManager = ServiceProvider.GetRequiredService<ISecretManager>();
+  }
+
+  [Theory(DisplayName = "It should change the configuration secret.")]
+  [InlineData(null)]
+  [InlineData("PrgBEkQFLGMf5z3JRcFAxmKpTPGfB8h3qeaRvM4VEW2DsYKA")]
+  public async Task Given_Secret_When_Update_Then_Changed(string? secretValue)
+  {
+    UpdateConfigurationPayload payload = new()
+    {
+      Secret = new Contracts.Change<string>(secretValue)
+    };
+    ConfigurationDto? configuration = await _configurationService.UpdateAsync(payload);
+    Assert.NotNull(configuration);
+
+    Assert.Equal(Actor, configuration.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, configuration.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    if (secretValue is not null)
+    {
+      Assert.NotNull(configuration.Secret);
+      Secret secret = new(configuration.Secret);
+      string decrypted = _secretManager.Decrypt(secret);
+      Assert.Equal(secretValue, decrypted);
+    }
+    Assert.Equal(Actor, configuration.SecretChangedBy);
+    Assert.Equal(configuration.UpdatedOn, configuration.SecretChangedOn);
   }
 
   [Fact(DisplayName = "It should read the configuration.")]

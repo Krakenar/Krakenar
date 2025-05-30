@@ -12,10 +12,12 @@ withDefaults(
     max?: string | number;
     min?: number | string;
     modelValue?: string;
+    placeholder?: string;
+    required?: boolean | string;
   }>(),
   {
     id: "secret",
-    label: "tokens.secret",
+    label: "tokens.secret.label",
     max: 512 / 8,
     min: 256 / 8,
   },
@@ -33,7 +35,8 @@ defineEmits<{
     :max="max"
     :min="min"
     :model-value="modelValue"
-    :placeholder="t(label)"
+    :placeholder="placeholder ? t(placeholder) : undefined"
+    :required="required"
     @update:model-value="$emit('update:model-value', $event)"
   />
 </template>
