@@ -1,6 +1,4 @@
-﻿using Krakenar.Contracts.Constants;
-
-namespace Krakenar.Client;
+﻿namespace Krakenar.Client;
 
 public abstract class BaseClient
 {
@@ -10,32 +8,7 @@ public abstract class BaseClient
   protected BaseClient(HttpClient httpClient, IKrakenarSettings settings)
   {
     HttpClient = httpClient;
-    if (!string.IsNullOrWhiteSpace(settings.BaseUrl))
-    {
-      HttpClient.BaseAddress = new Uri(settings.BaseUrl.Trim(), UriKind.Absolute);
-    }
-    if (!string.IsNullOrWhiteSpace(settings.ApiKey))
-    {
-      HttpClient.DefaultRequestHeaders.Add(Headers.ApiKey, settings.ApiKey);
-    }
-    if (settings.Basic is not null && !string.IsNullOrWhiteSpace(settings.Basic.Username) && !string.IsNullOrWhiteSpace(settings.Basic.Password))
-    {
-      string value = string.Join(' ', Schemes.Basic, Convert.ToBase64String(Encoding.UTF8.GetBytes(settings.Basic.ToString())));
-      HttpClient.DefaultRequestHeaders.Add(Headers.Authorization, value);
-    }
-    if (!string.IsNullOrWhiteSpace(settings.Bearer))
-    {
-      string value = string.Join(' ', Schemes.Bearer, settings.Bearer.Trim());
-      HttpClient.DefaultRequestHeaders.Add(Headers.Authorization, value);
-    }
-    if (!string.IsNullOrWhiteSpace(settings.Realm))
-    {
-      HttpClient.DefaultRequestHeaders.Add(Headers.Realm, settings.Realm.Trim());
-    }
-    if (!string.IsNullOrWhiteSpace(settings.User))
-    {
-      HttpClient.DefaultRequestHeaders.Add(Headers.User, settings.User.Trim());
-    }
+    httpClient.ApplySettings(settings);
 
     SerializerOptions.Converters.Add(new JsonStringEnumConverter());
     SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -43,34 +16,61 @@ public abstract class BaseClient
 
   protected virtual async Task<ApiResult<T>> DeleteAsync<T>(Uri uri, CancellationToken cancellationToken)
     => await SendAsync<T>(HttpMethod.Delete, uri, cancellationToken);
+  protected virtual async Task<ApiResult<T>> DeleteAsync<T>(Uri uri, RequestContext? context)
+    => await SendAsync<T>(HttpMethod.Delete, uri, context);
 
   protected virtual async Task<ApiResult<T>> GetAsync<T>(Uri uri, CancellationToken cancellationToken)
     => await SendAsync<T>(HttpMethod.Get, uri, cancellationToken);
+  protected virtual async Task<ApiResult<T>> GetAsync<T>(Uri uri, RequestContext? context)
+    => await SendAsync<T>(HttpMethod.Get, uri, context);
 
   protected virtual async Task<ApiResult<T>> PatchAsync<T>(Uri uri, CancellationToken cancellationToken)
     => await PatchAsync<T>(uri, payload: null, cancellationToken);
+  protected virtual async Task<ApiResult<T>> PatchAsync<T>(Uri uri, RequestContext? context)
+    => await PatchAsync<T>(uri, payload: null, context);
   protected virtual async Task<ApiResult<T>> PatchAsync<T>(Uri uri, object? payload, CancellationToken cancellationToken)
     => await SendAsync<T>(HttpMethod.Patch, uri, payload, cancellationToken);
+  protected virtual async Task<ApiResult<T>> PatchAsync<T>(Uri uri, object? payload, RequestContext? context)
+    => await SendAsync<T>(HttpMethod.Patch, uri, payload, context);
 
   protected virtual async Task<ApiResult<T>> PostAsync<T>(Uri uri, CancellationToken cancellationToken)
     => await PostAsync<T>(uri, payload: null, cancellationToken);
+  protected virtual async Task<ApiResult<T>> PostAsync<T>(Uri uri, RequestContext? context)
+    => await PostAsync<T>(uri, payload: null, context);
   protected virtual async Task<ApiResult<T>> PostAsync<T>(Uri uri, object? payload, CancellationToken cancellationToken)
     => await SendAsync<T>(HttpMethod.Post, uri, payload, cancellationToken);
+  protected virtual async Task<ApiResult<T>> PostAsync<T>(Uri uri, object? payload, RequestContext? context)
+    => await SendAsync<T>(HttpMethod.Post, uri, payload, context);
 
   protected virtual async Task<ApiResult<T>> PutAsync<T>(Uri uri, CancellationToken cancellationToken)
     => await PutAsync<T>(uri, payload: null, cancellationToken);
+  protected virtual async Task<ApiResult<T>> PutAsync<T>(Uri uri, RequestContext? context)
+    => await PutAsync<T>(uri, payload: null, context);
   protected virtual async Task<ApiResult<T>> PutAsync<T>(Uri uri, object? payload, CancellationToken cancellationToken)
     => await SendAsync<T>(HttpMethod.Put, uri, payload, cancellationToken);
+  protected virtual async Task<ApiResult<T>> PutAsync<T>(Uri uri, object? payload, RequestContext? context)
+    => await SendAsync<T>(HttpMethod.Put, uri, payload, context);
 
   protected virtual async Task<ApiResult<T>> SendAsync<T>(HttpMethod method, Uri uri, CancellationToken cancellationToken)
    => await SendAsync<T>(method, uri, payload: null, cancellationToken);
+  protected virtual async Task<ApiResult<T>> SendAsync<T>(HttpMethod method, Uri uri, RequestContext? context)
+   => await SendAsync<T>(method, uri, payload: null, context);
   protected virtual async Task<ApiResult<T>> SendAsync<T>(HttpMethod method, Uri uri, object? payload, CancellationToken cancellationToken)
   {
+    RequestContext context = new(cancellationToken);
+    return await SendAsync<T>(method, uri, payload, context);
+  }
+  protected virtual async Task<ApiResult<T>> SendAsync<T>(HttpMethod method, Uri uri, object? payload, RequestContext? context)
+  {
+    context ??= new();
+    CancellationToken cancellationToken = context.CancellationToken;
+
     using HttpRequestMessage request = new(method, uri);
     if (payload is not null)
     {
       request.Content = JsonContent.Create(payload, payload.GetType(), mediaType: null, SerializerOptions);
     }
+    request.ApplyContext(context);
 
     using HttpResponseMessage response = await HttpClient.SendAsync(request, cancellationToken);
 

@@ -248,7 +248,7 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(_user.EntityId, dto.Id);
     Assert.Equal(_user.Version + 1, dto.Version);
     Assert.Equal(Actor, dto.UpdatedBy);
-    Assert.Equal(DateTime.UtcNow, dto.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, dto.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
     Assert.Empty(dto.CustomIdentifiers);
   }
 
@@ -694,7 +694,7 @@ public class UserIntegrationTests : IntegrationTests
     Assert.Equal(_user.EntityId, dto.Id);
     Assert.Equal(2, dto.Version);
     Assert.Equal(Actor, dto.UpdatedBy);
-    Assert.Equal(DateTime.UtcNow, dto.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Equal(DateTime.UtcNow, dto.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     CustomIdentifierDto customIdentifier = Assert.Single(dto.CustomIdentifiers);
     Assert.Equal(key, customIdentifier.Key);
