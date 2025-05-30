@@ -3,6 +3,7 @@ using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Logging;
 using Krakenar.Web.Constants;
 using Krakenar.Web.Settings;
 using Microsoft.Extensions.Primitives;
@@ -59,10 +60,26 @@ public static class HttpContextExtensions
   public static User? GetUser(this HttpContext context) => context.GetItem<User>(UserKey);
   public static T? GetItem<T>(this HttpContext context, object key) => context.Items.TryGetValue(key, out object? value) ? (T?)value : default;
 
-  public static void SetApiKey(this HttpContext context, ApiKey? apiKey) => context.SetItem(ApiKeyKey, apiKey);
-  public static void SetRealm(this HttpContext context, Realm? realm) => context.SetItem(RealmKey, realm);
-  public static void SetSession(this HttpContext context, Session? session) => context.SetItem(SessionKey, session);
-  public static void SetUser(this HttpContext context, User? user) => context.SetItem(UserKey, user);
+  public static void SetApiKey(this HttpContext context, ApiKey? apiKey)
+  {
+    context.SetItem(ApiKeyKey, apiKey);
+    context.GetLoggingService().SetApiKey(apiKey);
+  }
+  public static void SetRealm(this HttpContext context, Realm? realm)
+  {
+    context.SetItem(RealmKey, realm);
+    context.GetLoggingService().SetRealm(realm);
+  }
+  public static void SetSession(this HttpContext context, Session? session)
+  {
+    context.SetItem(SessionKey, session);
+    context.GetLoggingService().SetSession(session);
+  }
+  public static void SetUser(this HttpContext context, User? user)
+  {
+    context.SetItem(UserKey, user);
+    context.GetLoggingService().SetUser(user);
+  }
   public static void SetItem<T>(this HttpContext context, object key, T? value)
   {
     if (value is null)
@@ -74,6 +91,8 @@ public static class HttpContextExtensions
       context.Items[key] = value;
     }
   }
+
+  private static ILoggingService GetLoggingService(this HttpContext context) => context.RequestServices.GetRequiredService<ILoggingService>();
 
   public static Guid? GetSessionId(this HttpContext context)
   {

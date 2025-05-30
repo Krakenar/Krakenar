@@ -3,6 +3,7 @@ using Krakenar.Core;
 using Krakenar.Web.Authentication;
 using Krakenar.Web.Authorization;
 using Krakenar.Web.Constants;
+using Krakenar.Web.Filters;
 using Krakenar.Web.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,7 @@ public static class DependencyInjectionExtensions
   {
     AdminSettings adminSettings = AdminSettings.Initialize(configuration);
     services.AddSingleton(adminSettings);
-    services.AddControllersWithViews()
+    services.AddControllersWithViews(options => options.Filters.Add<Logging>())
       .AddJsonOptions(options =>
       {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
