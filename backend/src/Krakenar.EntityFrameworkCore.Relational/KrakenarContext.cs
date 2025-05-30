@@ -24,6 +24,9 @@ public sealed class KrakenarContext : DbContext
   public DbSet<FieldIndex> FieldIndex => Set<FieldIndex>();
   public DbSet<FieldType> FieldTypes => Set<FieldType>();
   public DbSet<Language> Languages => Set<Language>();
+  public DbSet<Log> Logs => Set<Log>();
+  public DbSet<LogEvent> LogEvents => Set<LogEvent>();
+  public DbSet<LogException> LogExceptions => Set<LogException>();
   public DbSet<Message> Messages => Set<Message>();
   public DbSet<OneTimePassword> OneTimePasswords => Set<OneTimePassword>();
   public DbSet<PublishedContent> PublishedContents => Set<PublishedContent>();
