@@ -4,6 +4,7 @@ public enum RealmSort
 {
   CreatedOn,
   DisplayName,
+  SecretChangedOn,
   UniqueSlug,
   UpdatedOn
 }

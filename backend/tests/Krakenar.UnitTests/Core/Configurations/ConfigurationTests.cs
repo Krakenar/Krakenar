@@ -1,6 +1,7 @@
 ﻿using Krakenar.Core.Configurations.Events;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
+using Logitar;
 using Logitar.EventSourcing;
 using Logitar.Security.Cryptography;
 
@@ -50,22 +51,6 @@ public class ConfigurationTests
     Assert.False(_configuration.HasChanges);
   }
 
-  [Fact(DisplayName = "It should handle Secret change correctly.")]
-  public void Given_Changes_When_Secret_Then_Changed()
-  {
-    Secret secret = new(RandomStringGenerator.GetString(Secret.MinimumLength));
-    _configuration.Secret = secret;
-    _configuration.Update(_configuration.CreatedBy);
-    Assert.Equal(secret, _configuration.Secret);
-    Assert.Contains(_configuration.Changes, change => change is ConfigurationUpdated updated && updated.Secret is not null && updated.Secret.Equals(secret));
-
-    _configuration.ClearChanges();
-
-    _configuration.Secret = secret;
-    _configuration.Update();
-    Assert.False(_configuration.HasChanges);
-  }
-
   [Fact(DisplayName = "It should handle UniqueNameSettings change correctly.")]
   public void Given_Changes_When_UniqueNameSettings_Then_Changed()
   {
@@ -101,5 +86,23 @@ public class ConfigurationTests
     Assert.Equal(new LoggingSettings(), configuration.LoggingSettings);
 
     Assert.Contains(configuration.Changes, change => change is ConfigurationInitialized);
+  }
+
+  [Fact(DisplayName = "SetSecret: it should handle Secret change correctly.")]
+  public void Given_Changes_When_SetSecret_Then_Changed()
+  {
+    ActorId actorId = ActorId.NewId();
+
+    Secret secret = new(RandomStringGenerator.GetString(Secret.MinimumLength));
+    _configuration.SetSecret(secret, actorId);
+    Assert.Equal(secret, _configuration.Secret);
+    Assert.Equal(actorId, _configuration.SecretChangedBy);
+    Assert.Equal(DateTime.UtcNow, _configuration.SecretChangedOn.AsUniversalTime(), TimeSpan.FromSeconds(1));
+    Assert.Contains(_configuration.Changes, change => change is ConfigurationSecretChanged changed && changed.ActorId == actorId && changed.Secret.Equals(secret));
+
+    _configuration.ClearChanges();
+
+    _configuration.SetSecret(secret, actorId);
+    Assert.False(_configuration.HasChanges);
   }
 }

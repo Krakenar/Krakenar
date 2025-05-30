@@ -133,22 +133,6 @@ public class RealmTests
     Assert.False(_realm.HasChanges);
   }
 
-  [Fact(DisplayName = "It should handle Secret change correctly.")]
-  public void Given_Changes_When_Secret_Then_Changed()
-  {
-    Secret secret = new(RandomStringGenerator.GetString(Secret.MinimumLength));
-    _realm.Secret = secret;
-    _realm.Update(_realm.CreatedBy);
-    Assert.Equal(secret, _realm.Secret);
-    Assert.Contains(_realm.Changes, change => change is RealmUpdated updated && updated.Secret is not null && updated.Secret.Equals(secret));
-
-    _realm.ClearChanges();
-
-    _realm.Secret = secret;
-    _realm.Update();
-    Assert.False(_realm.HasChanges);
-  }
-
   [Fact(DisplayName = "It should handle UniqueNameSettings change correctly.")]
   public void Given_Changes_When_UniqueNameSettings_Then_Changed()
   {
@@ -231,6 +215,22 @@ public class RealmTests
     _realm.Update();
     Assert.False(_realm.HasChanges);
     Assert.Empty(_realm.Changes);
+  }
+
+  [Fact(DisplayName = "SetSecret: it should handle Secret change correctly.")]
+  public void Given_Changes_When_SetSecret_Then_Changed()
+  {
+    ActorId actorId = ActorId.NewId();
+
+    Secret secret = new(RandomStringGenerator.GetString(Secret.MinimumLength));
+    _realm.SetSecret(secret, actorId);
+    Assert.Equal(secret, _realm.Secret);
+    Assert.Contains(_realm.Changes, change => change is RealmSecretChanged changed && changed.ActorId == actorId && changed.Secret.Equals(secret));
+
+    _realm.ClearChanges();
+
+    _realm.SetSecret(secret, actorId);
+    Assert.False(_realm.HasChanges);
   }
 
   [Fact(DisplayName = "SetUniqueSlug: it should handle changes correctly.")]

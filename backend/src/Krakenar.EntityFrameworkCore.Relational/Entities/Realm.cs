@@ -1,7 +1,10 @@
 ﻿using Krakenar.Contracts.Settings;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Events;
+using Krakenar.Core.Tokens;
 using Krakenar.EntityFrameworkCore.Relational.KrakenarDb;
+using Logitar;
+using Logitar.EventSourcing;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Entities;
 
@@ -20,6 +23,9 @@ public sealed class Realm : Aggregate
   public string? Description { get; private set; }
 
   public string Secret { get; private set; } = string.Empty;
+  public string? SecretChangedBy { get; private set; }
+  public DateTime SecretChangedOn { get; private set; }
+
   public string? Url { get; private set; }
 
   public string? AllowedUniqueNameCharacters { get; private set; }
@@ -59,7 +65,7 @@ public sealed class Realm : Aggregate
 
     UniqueSlug = @event.UniqueSlug.Value;
 
-    Secret = @event.Secret.Value;
+    SetSecret(@event.Secret, @event);
 
     SetUniqueNameSettings(@event.UniqueNameSettings);
     SetPasswordSettings(@event.PasswordSettings);
@@ -71,9 +77,26 @@ public sealed class Realm : Aggregate
   {
   }
 
+  public override IReadOnlyCollection<ActorId> GetActorIds()
+  {
+    HashSet<ActorId> actorIds = new(base.GetActorIds());
+    if (SecretChangedBy is not null)
+    {
+      actorIds.Add(new ActorId(SecretChangedBy));
+    }
+    return actorIds.ToList().AsReadOnly();
+  }
+
+  public void SetSecret(RealmSecretChanged @event)
+  {
+    Update(@event);
+
+    SetSecret(@event.Secret, @event);
+  }
+
   public void SetUniqueSlug(RealmUniqueSlugChanged @event)
   {
-    base.Update(@event);
+    Update(@event);
 
     UniqueSlug = @event.UniqueSlug.Value;
   }
@@ -91,10 +114,6 @@ public sealed class Realm : Aggregate
       Description = @event.Description.Value?.Value;
     }
 
-    if (@event.Secret is not null)
-    {
-      Secret = @event.Secret.Value;
-    }
     if (@event.Url is not null)
     {
       Url = @event.Url.Value?.Value;
@@ -164,6 +183,13 @@ public sealed class Realm : Aggregate
   private void SetUniqueNameSettings(IUniqueNameSettings uniqueNameSettings)
   {
     AllowedUniqueNameCharacters = uniqueNameSettings.AllowedCharacters;
+  }
+
+  private void SetSecret(Secret secret, DomainEvent @event)
+  {
+    Secret = secret.Value;
+    SecretChangedBy = @event.ActorId?.Value;
+    SecretChangedOn = @event.OccurredOn.AsUniversalTime();
   }
 
   public override string ToString() => $"{DisplayName ?? UniqueSlug} | {base.ToString()}";

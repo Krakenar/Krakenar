@@ -9,7 +9,7 @@ public class Realm : AggregateRoot, ICustomizable
 {
   private RealmUpdated _updated = new();
   private bool HasUpdates => _updated.DisplayName is not null || _updated.Description is not null
-    || _updated.Secret is not null || _updated.Url is not null
+    || _updated.Url is not null
     || _updated.UniqueNameSettings is not null || _updated.PasswordSettings is not null || _updated.RequireUniqueEmail is not null || _updated.RequireConfirmedAccount is not null
     || _updated.CustomAttributes.Count > 0;
 
@@ -45,18 +45,8 @@ public class Realm : AggregateRoot, ICustomizable
   }
 
   private Secret? _secret = null;
-  public Secret Secret
-  {
-    get => _secret ?? throw new InvalidOperationException("The realm has not been initialized.");
-    set
-    {
-      if (_secret != value)
-      {
-        _secret = value;
-        _updated.Secret = value;
-      }
-    }
-  }
+  public Secret Secret => _secret ?? throw new InvalidOperationException("The realm has not been initialized.");
+
   private Url? _url = null;
   public Url? Url
   {
@@ -185,6 +175,18 @@ public class Realm : AggregateRoot, ICustomizable
     }
   }
 
+  public void SetSecret(Secret secret, ActorId? actorId = null)
+  {
+    if (_secret != secret)
+    {
+      Raise(new RealmSecretChanged(secret), actorId);
+    }
+  }
+  protected virtual void Handle(RealmSecretChanged @event)
+  {
+    _secret = @event.Secret;
+  }
+
   public void SetUniqueSlug(Slug uniqueSlug, ActorId? actorId = null)
   {
     if (_uniqueSlug != uniqueSlug)
@@ -216,10 +218,6 @@ public class Realm : AggregateRoot, ICustomizable
       _description = @event.Description.Value;
     }
 
-    if (@event.Secret is not null)
-    {
-      _secret = @event.Secret;
-    }
     if (@event.Url is not null)
     {
       _url = @event.Url.Value;

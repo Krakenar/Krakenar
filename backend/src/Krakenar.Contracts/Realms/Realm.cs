@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Settings;
+﻿using Krakenar.Contracts.Actors;
+using Krakenar.Contracts.Settings;
 
 namespace Krakenar.Contracts.Realms;
 
@@ -10,6 +11,8 @@ public class Realm : Aggregate
 
   [JsonIgnore]
   public string? Secret { get; set; }
+  public Actor SecretChangedBy { get; set; } = new();
+  public DateTime SecretChangedOn { get; set; }
 
   public string? Url { get; set; }
 

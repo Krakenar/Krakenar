@@ -8,6 +8,8 @@ public record UpdateRealmPayload
   public Change<string>? DisplayName { get; set; }
   public Change<string>? Description { get; set; }
 
+  public Change<string>? Secret { get; set; }
+
   public Change<string>? Url { get; set; }
 
   public UniqueNameSettings? UniqueNameSettings { get; set; }

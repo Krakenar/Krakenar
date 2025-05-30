@@ -27,6 +27,34 @@ public class RealmIntegrationTests : IntegrationTests
     _secretManager = ServiceProvider.GetRequiredService<ISecretManager>();
   }
 
+  [Theory(DisplayName = "It should change the realm secret.")]
+  [InlineData(null)]
+  [InlineData("UTaAX3gt9ALFhNz26GTZprc9UwyQ4YJ8Wu5WGfZcY6yLmjpE")]
+  public async Task Given_Secret_When_Update_Then_Changed(string? secretValue)
+  {
+    UpdateRealmPayload payload = new()
+    {
+      Secret = new Contracts.Change<string>(secretValue)
+    };
+    RealmDto? realm = await _realmService.UpdateAsync(Realm.Id.ToGuid(), payload);
+    Assert.NotNull(realm);
+
+    Assert.Equal(Realm.Id.ToGuid(), realm.Id);
+    Assert.Equal(Realm.Version + 1, realm.Version);
+    Assert.Equal(Actor, realm.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, realm.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    if (secretValue is not null)
+    {
+      Assert.NotNull(realm.Secret);
+      Secret secret = new(realm.Secret);
+      string decrypted = _secretManager.Decrypt(secret, Realm.Id);
+      Assert.Equal(secretValue, decrypted);
+    }
+    Assert.Equal(Actor, realm.SecretChangedBy);
+    Assert.Equal(realm.UpdatedOn, realm.SecretChangedOn);
+  }
+
   [Fact(DisplayName = "It should create a new realm.")]
   public async Task Given_NotExist_When_CreateOrReplace_Then_Created()
   {

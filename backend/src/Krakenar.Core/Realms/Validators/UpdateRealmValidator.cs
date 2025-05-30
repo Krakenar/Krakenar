@@ -13,6 +13,8 @@ public class UpdateRealmValidator : AbstractValidator<UpdateRealmPayload>
     When(x => !string.IsNullOrWhiteSpace(x.DisplayName?.Value), () => RuleFor(x => x.DisplayName!.Value!).DisplayName());
     When(x => !string.IsNullOrWhiteSpace(x.Description?.Value), () => RuleFor(x => x.Description!.Value!).Description());
 
+    When(x => !string.IsNullOrWhiteSpace(x.Secret?.Value), () => RuleFor(x => x.Secret!.Value!).Secret());
+
     When(x => !string.IsNullOrWhiteSpace(x.Url?.Value), () => RuleFor(x => x.Url!.Value!).Url());
 
     When(x => x.UniqueNameSettings is not null, () => RuleFor(x => x.UniqueNameSettings!).SetValidator(new UniqueNameSettingsValidator()));

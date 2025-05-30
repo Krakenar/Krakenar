@@ -6,7 +6,11 @@ using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
 
-public class RealmEvents : IEventHandler<RealmCreated>, IEventHandler<RealmDeleted>, IEventHandler<RealmUniqueSlugChanged>, IEventHandler<RealmUpdated>
+public class RealmEvents : IEventHandler<RealmCreated>,
+  IEventHandler<RealmDeleted>,
+  IEventHandler<RealmSecretChanged>,
+  IEventHandler<RealmUniqueSlugChanged>,
+  IEventHandler<RealmUpdated>
 {
   protected virtual KrakenarContext Context { get; }
   protected virtual ILogger<RealmEvents> Logger { get; }
@@ -51,6 +55,22 @@ public class RealmEvents : IEventHandler<RealmCreated>, IEventHandler<RealmDelet
 
       Logger.LogSuccess(@event);
     }
+  }
+
+  public virtual async Task HandleAsync(RealmSecretChanged @event, CancellationToken cancellationToken)
+  {
+    RealmEntity? realm = await Context.Realms.SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
+    if (realm is null || realm.Version != (@event.Version - 1))
+    {
+      Logger.LogUnexpectedVersion(@event, realm);
+      return;
+    }
+
+    realm.SetSecret(@event);
+
+    await Context.SaveChangesAsync(cancellationToken);
+
+    Logger.LogSuccess(@event);
   }
 
   public virtual async Task HandleAsync(RealmUniqueSlugChanged @event, CancellationToken cancellationToken)

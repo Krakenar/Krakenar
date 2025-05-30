@@ -84,6 +84,8 @@ public sealed class Mapper
     Configuration destination = new()
     {
       Secret = source.Secret.Value,
+      SecretChangedBy = TryFindActor(source.SecretChangedBy) ?? _system,
+      SecretChangedOn = source.SecretChangedOn.AsUniversalTime(),
       UniqueNameSettings = new UniqueNameSettings(source.UniqueNameSettings),
       PasswordSettings = new PasswordSettings(source.PasswordSettings),
       LoggingSettings = new LoggingSettings(source.LoggingSettings)
@@ -501,6 +503,8 @@ public sealed class Mapper
       DisplayName = source.DisplayName,
       Description = source.Description,
       Secret = source.Secret,
+      SecretChangedBy = TryFindActor(source.SecretChangedBy) ?? _system,
+      SecretChangedOn = source.SecretChangedOn.AsUniversalTime(),
       Url = source.Url,
       UniqueNameSettings = source.GetUniqueNameSettings(),
       PasswordSettings = source.GetPasswordSettings(),

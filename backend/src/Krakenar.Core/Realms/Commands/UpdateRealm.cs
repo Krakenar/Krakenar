@@ -3,6 +3,7 @@ using Krakenar.Contracts;
 using Krakenar.Contracts.Realms;
 using Krakenar.Core.Realms.Validators;
 using Krakenar.Core.Settings;
+using Krakenar.Core.Tokens;
 using Logitar.EventSourcing;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
@@ -18,17 +19,20 @@ public class UpdateRealmHandler : ICommandHandler<UpdateRealm, RealmDto?>
   protected virtual IRealmManager RealmManager { get; }
   protected virtual IRealmQuerier RealmQuerier { get; }
   protected virtual IRealmRepository RealmRepository { get; }
+  protected virtual ISecretManager SecretManager { get; }
 
   public UpdateRealmHandler(
     IApplicationContext applicationContext,
     IRealmManager realmManager,
     IRealmQuerier realmQuerier,
-    IRealmRepository realmRepository)
+    IRealmRepository realmRepository,
+    ISecretManager secretManager)
   {
     ApplicationContext = applicationContext;
     RealmManager = realmManager;
     RealmQuerier = realmQuerier;
     RealmRepository = realmRepository;
+    SecretManager = secretManager;
   }
 
   public virtual async Task<RealmDto?> HandleAsync(UpdateRealm command, CancellationToken cancellationToken)
@@ -57,6 +61,14 @@ public class UpdateRealmHandler : ICommandHandler<UpdateRealm, RealmDto?>
     if (payload.Description is not null)
     {
       realm.Description = Description.TryCreate(payload.Description.Value);
+    }
+
+    if (payload.Secret is not null)
+    {
+      Secret secret = string.IsNullOrWhiteSpace(payload.Secret.Value)
+        ? SecretManager.Generate(realm.Id)
+        : SecretManager.Encrypt(payload.Secret.Value.Trim(), realm.Id);
+      realm.SetSecret(secret, actorId);
     }
 
     if (payload.Url is not null)
