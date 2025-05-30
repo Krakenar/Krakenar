@@ -7,35 +7,30 @@ namespace Krakenar.Core.Configurations;
 
 public class ConfigurationService : IConfigurationService
 {
-  protected virtual IQueryHandler<ReadConfiguration, ConfigurationDto> ReadConfiguration { get; }
-  protected virtual ICommandHandler<ReplaceConfiguration, ConfigurationDto> ReplaceConfiguration { get; }
-  protected virtual ICommandHandler<UpdateConfiguration, ConfigurationDto> UpdateConfiguration { get; }
+  protected virtual ICommandBus CommandBus { get; }
+  protected virtual IQueryBus QueryBus { get; }
 
-  public ConfigurationService(
-    IQueryHandler<ReadConfiguration, ConfigurationDto> readConfiguration,
-    ICommandHandler<ReplaceConfiguration, ConfigurationDto> replaceConfiguration,
-    ICommandHandler<UpdateConfiguration, ConfigurationDto> updateConfiguration)
+  public ConfigurationService(ICommandBus commandBus, IQueryBus queryBus)
   {
-    ReadConfiguration = readConfiguration;
-    ReplaceConfiguration = replaceConfiguration;
-    UpdateConfiguration = updateConfiguration;
+    CommandBus = commandBus;
+    QueryBus = queryBus;
   }
 
   public virtual async Task<ConfigurationDto> ReadAsync(CancellationToken cancellationToken)
   {
     ReadConfiguration query = new();
-    return await ReadConfiguration.HandleAsync(query, cancellationToken);
+    return await QueryBus.ExecuteAsync(query, cancellationToken);
   }
 
   public virtual async Task<ConfigurationDto> ReplaceAsync(ReplaceConfigurationPayload payload, long? version, CancellationToken cancellationToken)
   {
     ReplaceConfiguration command = new(payload, version);
-    return await ReplaceConfiguration.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 
   public virtual async Task<ConfigurationDto> UpdateAsync(UpdateConfigurationPayload payload, CancellationToken cancellationToken)
   {
     UpdateConfiguration command = new(payload);
-    return await UpdateConfiguration.HandleAsync(command, cancellationToken);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 }
