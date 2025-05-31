@@ -145,6 +145,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<SignInSession, SessionDto>, SignInSessionHandler>()
       .AddTransient<ICommandHandler<SignOutSession, SessionDto?>, SignOutSessionHandler>()
       .AddTransient<ICommandHandler<SignOutUser, UserDto?>, SignOutUserHandler>()
+      .AddTransient<ICommandHandler<SwitchFieldDefinitions, ContentTypeDto?>, SwitchFieldDefinitionsHandler>()
       .AddTransient<ICommandHandler<UnpublishContent, ContentDto?>, UnpublishContentHandler>()
       .AddTransient<ICommandHandler<UpdateApiKey, ApiKeyDto?>, UpdateApiKeyHandler>()
       .AddTransient<ICommandHandler<UpdateConfiguration, ConfigurationDto>, UpdateConfigurationHandler>()

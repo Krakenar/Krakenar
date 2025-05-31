@@ -3,7 +3,9 @@ using Krakenar.Core;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Settings;
+using Krakenar.Core.Settings;
 using Microsoft.Extensions.DependencyInjection;
+using ContentType = Krakenar.Core.Contents.ContentType;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
 using FieldDefinitionDto = Krakenar.Contracts.Fields.FieldDefinition;
@@ -201,6 +203,44 @@ public class FieldDefinitionIntegrationTests : IntegrationTests
     Assert.True(field.CreatedOn < field.UpdatedOn);
     Assert.Equal(Actor, field.UpdatedBy);
     Assert.Equal(contentType.UpdatedOn, field.UpdatedOn);
+  }
+
+  [Fact(DisplayName = "It should switch two field definitions.")]
+  public async Task Given_ContentType_When_Switch_Then_FieldsSwitched()
+  {
+    UniqueNameSettings uniqueNameSettings = new();
+    FieldType boolean = new(new UniqueName(uniqueNameSettings, "Boolean"), new BooleanSettings(), ActorId, FieldTypeId.NewId(Realm.Id));
+    FieldType priceType = new(new UniqueName(uniqueNameSettings, "Price"), new NumberSettings(minimumValue: 0.01, maximumValue: 999999.99, step: 0.01), ActorId, FieldTypeId.NewId(Realm.Id));
+    FieldType skuType = new(new UniqueName(uniqueNameSettings, "StockKeepingUnit"), new StringSettings(minimumLength: 3, maximumLength: 32, pattern: null), ActorId, FieldTypeId.NewId(Realm.Id));
+    await _fieldTypeRepository.SaveAsync([boolean, priceType, skuType]);
+
+    ContentType product = new(new Identifier("Product"), isInvariant: false, ActorId, ContentTypeId.NewId(Realm.Id));
+
+    FieldDefinition isFeatured = new(Guid.NewGuid(), boolean.Id, true, false, true, false, new Identifier("IsFeatured"), null, null, null);
+    product.SetField(isFeatured);
+
+    FieldDefinition price = new(Guid.NewGuid(), priceType.Id, true, true, true, false, new Identifier("Price"), null, null, null);
+    product.SetField(price);
+
+    FieldDefinition sku = new(Guid.NewGuid(), skuType.Id, true, true, true, true, new Identifier("Sku"), null, null, null);
+    product.SetField(sku);
+
+    await _contentTypeRepository.SaveAsync(product);
+
+    SwitchFieldDefinitionsPayload payload = new([isFeatured.UniqueName.Value, sku.Id.ToString()]);
+    ContentTypeDto? contentType = await _fieldDefinitionService.SwitchAsync(product.EntityId, payload);
+    Assert.NotNull(contentType);
+
+    Assert.Equal(product.EntityId, contentType.Id);
+    Assert.Equal(product.Version + 1, contentType.Version);
+    Assert.Equal(Actor, contentType.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, contentType.UpdatedOn, TimeSpan.FromSeconds(10));
+
+    FieldDefinitionDto[] fields = [.. contentType.Fields.OrderBy(field => field.Order)];
+    Assert.Equal(3, fields.Length);
+    Assert.Equal(sku.Id, fields[0].Id);
+    Assert.Equal(price.Id, fields[1].Id);
+    Assert.Equal(isFeatured.Id, fields[2].Id);
   }
 
   [Fact(DisplayName = "It should update an existing field definition.")]

@@ -1,4 +1,7 @@
-﻿using Krakenar.Core.Realms;
+﻿using Krakenar.Core.Fields;
+using Krakenar.Core.Fields.Settings;
+using Krakenar.Core.Realms;
+using Krakenar.Core.Settings;
 using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Contents;
@@ -132,6 +135,31 @@ public class ContentTypeIdTests
     ContentTypeId id1 = new(Guid.NewGuid(), RealmId.NewId());
     ContentTypeId id2 = new(id1.EntityId);
     Assert.True(id1 != id2);
+  }
+
+  [Fact(DisplayName = "SwitchFields: it should throw ArgumentException when the source field could not be found.")]
+  public void Given_SourceNotFound_When_SwitchFields_Then_ArgumentException()
+  {
+    UniqueNameSettings uniqueNameSettings = new();
+    FieldType boolean = new(new UniqueName(uniqueNameSettings, "Boolean"), new BooleanSettings());
+    FieldType priceType = new(new UniqueName(uniqueNameSettings, "Price"), new NumberSettings(minimumValue: 0.01, maximumValue: 999999.99, step: 0.01));
+    FieldType skuType = new(new UniqueName(uniqueNameSettings, "StockKeepingUnit"), new StringSettings(minimumLength: 3, maximumLength: 32, pattern: null));
+
+    ContentType product = new(new Identifier("Product"));
+
+    FieldDefinition isFeatured = new(Guid.NewGuid(), boolean.Id, true, false, true, false, new Identifier("IsFeatured"), null, null, null);
+    product.SetField(isFeatured);
+
+    FieldDefinition price = new(Guid.NewGuid(), priceType.Id, true, true, true, false, new Identifier("Price"), null, null, null);
+    product.SetField(price);
+
+    FieldDefinition sku = new(Guid.NewGuid(), skuType.Id, true, true, true, true, new Identifier("Sku"), null, null, null);
+    product.SetField(sku);
+
+    Guid sourceId = Guid.NewGuid();
+    var exception = Assert.Throws<ArgumentException>(() => product.SwitchFields(sourceId, sku.Id));
+    Assert.StartsWith($"The field 'Id={sourceId}' was not found on content type '{product}'.", exception.Message);
+    Assert.Equal("sourceId", exception.ParamName);
   }
 
   [Theory(DisplayName = "ToString: it should return the correct string representation.")]

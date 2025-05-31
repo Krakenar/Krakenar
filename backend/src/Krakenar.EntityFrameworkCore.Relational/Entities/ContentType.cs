@@ -115,6 +115,11 @@ public class ContentType : Aggregate, ISegregatedEntity
     UniqueName = @event.UniqueName.Value;
   }
 
+  public void SwitchFields(ContentTypeFieldSwitched @event)
+  {
+    Update(@event);
+  }
+
   public void Update(ContentTypeUpdated @event)
   {
     base.Update(@event);

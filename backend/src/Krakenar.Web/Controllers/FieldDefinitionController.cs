@@ -39,6 +39,13 @@ public class FieldDefinitionController : ControllerBase
     return contentType is null ? NotFound() : Ok(contentType);
   }
 
+  [HttpPatch("switch")]
+  public virtual async Task<ActionResult<ContentType>> SwitchAsync(Guid contentTypeId, [FromBody] SwitchFieldDefinitionsPayload payload, CancellationToken cancellationToken)
+  {
+    ContentType? contentType = await FieldDefinitionService.SwitchAsync(contentTypeId, payload, cancellationToken);
+    return contentType is null ? NotFound() : Ok(contentType);
+  }
+
   [HttpPatch("{fieldId}")]
   public virtual async Task<ActionResult<ContentType>> UpdateAsync(Guid contentTypeId, Guid fieldId, [FromBody] UpdateFieldDefinitionPayload payload, CancellationToken cancellationToken)
   {
