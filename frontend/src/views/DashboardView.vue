@@ -11,12 +11,11 @@ import SessionIcon from "@/components/sessions/SessionIcon.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import UserAvatar from "@/components/users/UserAvatar.vue";
 import UserIcon from "@/components/users/UserIcon.vue";
+import type { Session } from "@/types/sessions";
 import type { Statistics } from "@/types/dashboard";
-import { formatRealm } from "@/helpers/format";
 import { getStatistics } from "@/api/dashboard";
 import { handleErrorKey } from "@/inject/App";
 import { useRealmStore } from "@/stores/realm";
-import type { Session } from "@/types/sessions";
 
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
 const realm = useRealmStore();
@@ -41,121 +40,66 @@ onMounted(async () => {
   <main class="container">
     <template v-if="statistics">
       <h1>{{ t("dashboard") }}</h1>
-      <template v-if="realm.currentRealm && statistics.realm">
-        <h3>{{ formatRealm(realm.currentRealm) }}</h3>
-        <div class="d-flex flex-column justify-content-center align-items-center mt-3">
-          <div class="dash-grid-main">
-            <RouterLink :to="{ name: 'UserList' }" class="tile">
-              <span><UserIcon /> {{ t("users.title") }}</span>
-              <br />
-              <span class="icon">{{ statistics.realm.userCount }}</span>
-            </RouterLink>
-            <RouterLink :to="{ name: 'SessionList' }" class="tile">
-              <span><SessionIcon /> {{ t("sessions.title.list") }}</span>
-              <br />
-              <span class="icon">{{ statistics.realm.sessionCount }}</span>
-            </RouterLink>
-            <RouterLink :to="{ name: 'MessageList' }" class="tile">
-              <span><MessageIcon /> {{ t("messages.title") }}</span>
-              <br />
-              <span class="icon">{{ statistics.realm.messageCount }}</span>
-            </RouterLink>
-            <RouterLink :to="{ name: 'ContentList' }" class="tile">
-              <span><ContentIcon /> {{ t("contents.item.title") }}</span>
-              <br />
-              <span class="icon">{{ statistics.realm.contentCount }}</span>
-            </RouterLink>
-          </div>
+      <div class="d-flex flex-column justify-content-center align-items-center mt-3">
+        <div class="dash-grid-main">
+          <RouterLink v-if="!realm.currentRealm" :to="{ name: 'RealmList' }" class="tile">
+            <span><RealmIcon /> {{ t("realms.title") }}</span>
+            <br />
+            <span class="icon">{{ statistics.realmCount }}</span>
+          </RouterLink>
+          <RouterLink :to="{ name: 'UserList' }" class="tile">
+            <span><UserIcon /> {{ t("users.title") }}</span>
+            <br />
+            <span class="icon">{{ statistics.userCount }}</span>
+          </RouterLink>
+          <RouterLink :to="{ name: 'SessionList' }" class="tile">
+            <span><SessionIcon /> {{ t("sessions.title.list") }}</span>
+            <br />
+            <span class="icon">{{ statistics.sessionCount }}</span>
+          </RouterLink>
+          <RouterLink :to="{ name: 'MessageList' }" class="tile">
+            <span><MessageIcon /> {{ t("messages.title") }}</span>
+            <br />
+            <span class="icon">{{ statistics.messageCount }}</span>
+          </RouterLink>
+          <RouterLink v-if="realm.currentRealm" :to="{ name: 'ContentList' }" class="tile">
+            <span><ContentIcon /> {{ t("contents.item.title") }}</span>
+            <br />
+            <span class="icon">{{ statistics.contentCount }}</span>
+          </RouterLink>
         </div>
-        <h5>{{ t("sessions.active.list") }}</h5>
-        <table v-if="statistics.realm.sessions.length" class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">{{ t("sessions.sort.options.CreatedOn") }}</th>
-              <th scope="col">{{ t("users.select.label") }}</th>
-              <th scope="col">{{ t("sessions.ipAddress") }}</th>
-              <th scope="col">{{ t("sessions.sort.options.UpdatedOn") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="session in statistics.realm.sessions" :key="session.id">
-              <td>
-                <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }"><EditIcon /> {{ d(session.createdOn, "medium") }}</RouterLink>
-                <template v-if="session.isPersistent">
-                  <br />
-                  <PersistentBadge />
-                </template>
-              </td>
-              <td>
-                <UserAvatar target="_blank" :user="session.user" />
-              </td>
-              <td>
-                <template v-if="getIpAddress(session)">{{ getIpAddress(session) }}</template>
-                <span v-else class="text-muted">—</span>
-              </td>
-              <td><StatusBlock :actor="session.updatedBy" :date="session.updatedOn" /></td>
-            </tr>
-          </tbody>
-        </table>
-        <p v-else>{{ t("sessions.empty") }}</p>
-      </template>
-      <template v-else>
-        <div class="d-flex flex-column justify-content-center align-items-center mt-3">
-          <div class="dash-grid-main">
-            <RouterLink :to="{ name: 'RealmList' }" class="tile">
-              <span><RealmIcon /> {{ t("realms.title") }}</span>
-              <br />
-              <span class="icon">{{ statistics.realmCount }}</span>
-            </RouterLink>
-            <RouterLink :to="{ name: 'UserList' }" class="tile">
-              <span><UserIcon /> {{ t("users.title") }}</span>
-              <br />
-              <span class="icon">{{ statistics.userCount }}</span>
-            </RouterLink>
-            <RouterLink :to="{ name: 'SessionList' }" class="tile">
-              <span><SessionIcon /> {{ t("sessions.title.list") }}</span>
-              <br />
-              <span class="icon">{{ statistics.sessionCount }}</span>
-            </RouterLink>
-            <RouterLink :to="{ name: 'MessageList' }" class="tile">
-              <span><MessageIcon /> {{ t("messages.title") }}</span>
-              <br />
-              <span class="icon">{{ statistics.messageCount }}</span>
-            </RouterLink>
-          </div>
-        </div>
-        <h5>{{ t("sessions.active.list") }}</h5>
-        <table v-if="statistics.sessions.length" class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">{{ t("sessions.sort.options.CreatedOn") }}</th>
-              <th scope="col">{{ t("users.select.label") }}</th>
-              <th scope="col">{{ t("sessions.ipAddress") }}</th>
-              <th scope="col">{{ t("sessions.sort.options.UpdatedOn") }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="session in statistics.sessions" :key="session.id">
-              <td>
-                <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }"><EditIcon /> {{ d(session.createdOn, "medium") }}</RouterLink>
-                <template v-if="session.isPersistent">
-                  <br />
-                  <PersistentBadge />
-                </template>
-              </td>
-              <td>
-                <UserAvatar target="_blank" :user="session.user" />
-              </td>
-              <td>
-                <template v-if="getIpAddress(session)">{{ getIpAddress(session) }}</template>
-                <span v-else class="text-muted">—</span>
-              </td>
-              <td><StatusBlock :actor="session.updatedBy" :date="session.updatedOn" /></td>
-            </tr>
-          </tbody>
-        </table>
-        <p v-else>{{ t("sessions.empty") }}</p>
-      </template>
+      </div>
+      <h5>{{ t("sessions.active.list") }}</h5>
+      <table v-if="statistics.sessions.length" class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">{{ t("sessions.sort.options.CreatedOn") }}</th>
+            <th scope="col">{{ t("users.select.label") }}</th>
+            <th scope="col">{{ t("sessions.ipAddress") }}</th>
+            <th scope="col">{{ t("sessions.sort.options.UpdatedOn") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="session in statistics.sessions" :key="session.id">
+            <td>
+              <RouterLink :to="{ name: 'SessionEdit', params: { id: session.id } }"><EditIcon /> {{ d(session.createdOn, "medium") }}</RouterLink>
+              <template v-if="session.isPersistent">
+                <br />
+                <PersistentBadge />
+              </template>
+            </td>
+            <td>
+              <UserAvatar target="_blank" :user="session.user" />
+            </td>
+            <td>
+              <template v-if="getIpAddress(session)">{{ getIpAddress(session) }}</template>
+              <span v-else class="text-muted">—</span>
+            </td>
+            <td><StatusBlock :actor="session.updatedBy" :date="session.updatedOn" /></td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else>{{ t("sessions.empty") }}</p>
     </template>
   </main>
 </template>

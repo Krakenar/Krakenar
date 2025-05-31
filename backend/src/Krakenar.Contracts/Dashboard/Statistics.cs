@@ -8,8 +8,7 @@ public record Statistics
   public int UserCount { get; set; }
   public int SessionCount { get; set; }
   public int MessageCount { get; set; }
+  public int ContentCount { get; set; }
 
   public List<Session> Sessions { get; set; } = [];
-
-  public RealmStatistics? Realm { get; set; }
 }
