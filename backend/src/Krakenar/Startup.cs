@@ -1,10 +1,9 @@
 ﻿using Krakenar.Core;
-using Krakenar.Core.Logging;
 using Krakenar.EntityFrameworkCore.Relational;
-using Krakenar.EntityFrameworkCore.Relational.Repositories;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Extensions;
 using Krakenar.Infrastructure;
+using Krakenar.MongoDB;
 using Krakenar.Settings;
 using Krakenar.Web;
 using Krakenar.Web.Middlewares;
@@ -30,7 +29,6 @@ internal class Startup : StartupBase
 
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
-    services.AddKrakenarEntityFrameworkCoreRelational();
     services.AddKrakenarWeb(_configuration);
 
     AdminSettings? adminSettings = services.Where(x => x.ServiceType.Equals(typeof(AdminSettings)) && x.ImplementationInstance is AdminSettings)
@@ -44,6 +42,7 @@ internal class Startup : StartupBase
     IHealthChecksBuilder healthChecks = services.AddHealthChecks();
     DatabaseSettings databaseSettings = DatabaseSettings.Initialize(_configuration);
     services.AddSingleton(databaseSettings);
+    services.AddKrakenarEntityFrameworkCoreRelational(databaseSettings.EnableLogging);
     switch (databaseSettings.Provider)
     {
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
@@ -54,10 +53,7 @@ internal class Startup : StartupBase
       default:
         throw new DatabaseProviderNotSupportedException(databaseSettings.Provider);
     }
-    if (databaseSettings.EnableLogging)
-    {
-      services.AddScoped<ILogRepository, LogRepository>();
-    }
+    services.AddKrakenarMongoDB(_configuration);
   }
 
   public override void Configure(IApplicationBuilder builder)

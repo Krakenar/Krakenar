@@ -12,6 +12,7 @@ using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Events;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Messages.Events;
 using Krakenar.Core.Passwords;
@@ -33,6 +34,7 @@ using Krakenar.Core.Users.Events;
 using Krakenar.EntityFrameworkCore.Relational.Actors;
 using Krakenar.EntityFrameworkCore.Relational.Handlers;
 using Krakenar.EntityFrameworkCore.Relational.Queriers;
+using Krakenar.EntityFrameworkCore.Relational.Repositories;
 using Krakenar.EntityFrameworkCore.Relational.Tokens;
 using Krakenar.Infrastructure.Commands;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
@@ -43,8 +45,13 @@ namespace Krakenar.EntityFrameworkCore.Relational;
 
 public static class DependencyInjectionExtensions
 {
-  public static IServiceCollection AddKrakenarEntityFrameworkCoreRelational(this IServiceCollection services)
+  public static IServiceCollection AddKrakenarEntityFrameworkCoreRelational(this IServiceCollection services, bool enableLogging = false)
   {
+    if (enableLogging)
+    {
+      services.AddScoped<ILogRepository, LogRepository>();
+    }
+
     return services
       .AddKrakenarEventHandlers()
       .AddKrakenarQueriers()

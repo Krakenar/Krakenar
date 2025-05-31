@@ -48,10 +48,9 @@ public class LoggingIntegrationTests : IntegrationTests
     services.AddSingleton(context);
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
-    services.AddKrakenarEntityFrameworkCoreRelational();
+    services.AddKrakenarEntityFrameworkCoreRelational(enableLogging: true);
     services.AddKrakenarEntityFrameworkCoreSqlServer(connectionString);
     services.AddKrakenarMongoDB(configuration);
-    services.AddScoped<ILogRepository, EntityFrameworkCore.Relational.Repositories.LogRepository>();
     IServiceProvider serviceProvider = services.BuildServiceProvider();
     ILoggingService loggingService = serviceProvider.GetRequiredService<ILoggingService>();
 

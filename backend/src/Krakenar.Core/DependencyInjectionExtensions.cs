@@ -93,8 +93,8 @@ public static class DependencyInjectionExtensions
       .AddKrakenarRepositories()
       .AddLogitarEventSourcing()
       .AddSingleton<IAddressHelper, AddressHelper>()
-      .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>()
-      .AddTransient<ILoggingService, LoggingService>();
+      .AddScoped<ILoggingService, LoggingService>()
+      .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>();
   }
 
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)
