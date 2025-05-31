@@ -8,6 +8,7 @@ namespace Krakenar.Core.Fields.Commands;
 
 public record SwitchFieldDefinitions(Guid ContentTypeId, SwitchFieldDefinitionsPayload Payload) : ICommand<ContentTypeDto?>;
 
+/// <exception cref="FieldDefinitionsNotFoundException"></exception>
 /// <exception cref="ValidationException"></exception>
 public class SwitchFieldDefinitionsHandler : ICommandHandler<SwitchFieldDefinitions, ContentTypeDto?>
 {
@@ -39,8 +40,24 @@ public class SwitchFieldDefinitionsHandler : ICommandHandler<SwitchFieldDefiniti
     {
       throw new InvalidOperationException($"There must be exactly 2 fields to switch, but {(fields.Length < 1 ? "none" : $"{fields.Length} fields")} were specified.");
     }
-    FieldDefinition source = contentType.ResolveField(fields[0]) ?? throw new NotImplementedException(); // TODO(fpion): implement
-    FieldDefinition destination = contentType.ResolveField(fields[1]) ?? throw new NotImplementedException(); // TODO(fpion): implement
+
+    FieldDefinition? source = contentType.ResolveField(fields[0]);
+    FieldDefinition? destination = contentType.ResolveField(fields[1]);
+
+    if (source is null || destination is null)
+    {
+      HashSet<string> missing = new(capacity: 2);
+      if (source is null)
+      {
+        missing.Add(fields[0]);
+      }
+      if (destination is null)
+      {
+        missing.Add(fields[1]);
+      }
+      throw new FieldDefinitionsNotFoundException(contentType, missing, nameof(payload.Fields));
+    }
+
     contentType.SwitchFields(source, destination, ApplicationContext.ActorId);
 
     await ContentTypeRepository.SaveAsync(contentType, cancellationToken);
