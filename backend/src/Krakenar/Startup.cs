@@ -1,5 +1,7 @@
 ﻿using Krakenar.Core;
+using Krakenar.Core.Logging;
 using Krakenar.EntityFrameworkCore.Relational;
+using Krakenar.EntityFrameworkCore.Relational.Repositories;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Extensions;
 using Krakenar.Infrastructure;
@@ -52,6 +54,10 @@ internal class Startup : StartupBase
       default:
         throw new DatabaseProviderNotSupportedException(databaseSettings.Provider);
     }
+    if (databaseSettings.EnableLogging)
+    {
+      services.AddScoped<ILogRepository, LogRepository>();
+    }
   }
 
   public override void Configure(IApplicationBuilder builder)
@@ -74,6 +80,7 @@ internal class Startup : StartupBase
     application.UseStaticFiles();
     application.UseExceptionHandler();
     application.UseSession();
+    application.UseMiddleware<Logging>();
     application.UseMiddleware<RenewSession>();
     application.UseMiddleware<RedirectNotFound>();
     application.UseAuthentication();

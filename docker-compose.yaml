@@ -1,5 +1,17 @@
 name: krakenar
 services:
+  krakenar_mongo:
+    image: mongo
+    container_name: Krakenar_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: krakenar
+      MONGO_INITDB_ROOT_PASSWORD: V6sLFqRpXrAevPM5
+    ports:
+      - 27046:27017
+    volumes:
+      - mongodata:/data/db
+
   krakenar_mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: Krakenar_mssql
@@ -38,11 +50,13 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_Environment: Development
+      MONGOCONNSTR_Krakenar: mongodb://krakenar:V6sLFqRpXrAevPM5@krakenar_mongo:27017/
       SQLCONNSTR_Krakenar: Server=krakenar_mssql;Database=Krakenar;User Id=SA;Password=H8A9VsMra2vqmpGE;Persist Security Info=False;Encrypt=False;
     ports:
       - 8096:8080
 
 volumes:
+  mongodata:
   mssql_backup:
   mssql_data:
   mssql_log:

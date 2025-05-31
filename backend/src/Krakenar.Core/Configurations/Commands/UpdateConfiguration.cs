@@ -4,12 +4,26 @@ using Krakenar.Core.Caching;
 using Krakenar.Core.Configurations.Validators;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
+using Logitar;
 using Logitar.EventSourcing;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 
 namespace Krakenar.Core.Configurations.Commands;
 
-public record UpdateConfiguration(UpdateConfigurationPayload Payload) : ICommand<ConfigurationDto>;
+public record UpdateConfiguration(UpdateConfigurationPayload Payload) : ICommand<ConfigurationDto>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    if (string.IsNullOrWhiteSpace(Payload.Secret?.Value))
+    {
+      return this;
+    }
+
+    UpdateConfiguration clone = this.DeepClone();
+    clone.Payload.Secret = new Contracts.Change<string>(Payload.Secret.Value.Mask());
+    return clone;
+  }
+}
 
 /// <exception cref="ValidationException"></exception>
 public class UpdateConfigurationHandler : ICommandHandler<UpdateConfiguration, ConfigurationDto>

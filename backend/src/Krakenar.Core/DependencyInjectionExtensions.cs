@@ -33,6 +33,7 @@ using Krakenar.Core.Fields.Validators;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Messages.Commands;
 using Krakenar.Core.Messages.Queries;
@@ -92,12 +93,14 @@ public static class DependencyInjectionExtensions
       .AddKrakenarRepositories()
       .AddLogitarEventSourcing()
       .AddSingleton<IAddressHelper, AddressHelper>()
-      .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>();
+      .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>()
+      .AddTransient<ILoggingService, LoggingService>();
   }
 
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)
   {
     return services
+      .AddTransient<ICommandBus, CommandBus>()
       .AddTransient<ICommandHandler<AuthenticateApiKey, ApiKeyDto>, AuthenticateApiKeyHandler>()
       .AddTransient<ICommandHandler<AuthenticateUser, UserDto>, AuthenticateUserHandler>()
       .AddTransient<ICommandHandler<CreateContent, ContentDto>, CreateContentHandler>()
@@ -198,6 +201,7 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarQueries(this IServiceCollection services)
   {
     return services
+      .AddTransient<IQueryBus, QueryBus>()
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
       .AddTransient<IQueryHandler<ReadContent, ContentDto?>, ReadContentHandler>()

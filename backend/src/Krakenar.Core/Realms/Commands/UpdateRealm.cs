@@ -4,12 +4,26 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Core.Realms.Validators;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
+using Logitar;
 using Logitar.EventSourcing;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.Core.Realms.Commands;
 
-public record UpdateRealm(Guid Id, UpdateRealmPayload Payload) : ICommand<RealmDto?>;
+public record UpdateRealm(Guid Id, UpdateRealmPayload Payload) : ICommand<RealmDto?>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    if (string.IsNullOrWhiteSpace(Payload.Secret?.Value))
+    {
+      return this;
+    }
+
+    UpdateRealm clone = this.DeepClone();
+    clone.Payload.Secret = new Contracts.Change<string>(Payload.Secret.Value.Mask());
+    return clone;
+  }
+}
 
 /// <exception cref="UniqueSlugAlreadyUsedException"></exception>
 /// <exception cref="ValidationException"></exception>

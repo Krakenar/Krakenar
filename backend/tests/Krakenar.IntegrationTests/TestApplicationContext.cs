@@ -1,4 +1,5 @@
-﻿using Krakenar.Contracts.Settings;
+﻿using Krakenar.Contracts.Logging;
+using Krakenar.Contracts.Settings;
 using Krakenar.Core;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
@@ -21,4 +22,6 @@ internal class TestApplicationContext : IApplicationContext
   public IPasswordSettings PasswordSettings => Realm?.PasswordSettings ?? Configuration?.PasswordSettings ?? throw new InvalidOperationException("The configuration has not been initialized.");
   public bool RequireUniqueEmail => Realm?.RequireUniqueEmail ?? false;
   public bool RequireConfirmedAccount => Realm?.RequireConfirmedAccount ?? false;
+
+  public ILoggingSettings LoggingSettings => Configuration?.LoggingSettings ?? throw new InvalidOperationException("The configuration has not been initialized.");
 }

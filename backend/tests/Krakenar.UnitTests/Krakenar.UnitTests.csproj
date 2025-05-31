@@ -30,13 +30,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Krakenar.EntityFrameworkCore.Relational\Krakenar.EntityFrameworkCore.Relational.csproj" />
     <ProjectReference Include="..\..\src\Krakenar.Infrastructure\Krakenar.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Krakenar.MongoDB\Krakenar.MongoDB.csproj" />
     <ProjectReference Include="..\Krakenar.Tests\Krakenar.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="System.Globalization" />
     <Using Include="System.IdentityModel.Tokens.Jwt" />
+    <Using Include="System.Net" />
     <Using Include="System.Reflection" />
     <Using Include="System.Security.Claims" />
     <Using Include="System.Security.Cryptography" />

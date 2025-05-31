@@ -3,6 +3,7 @@ using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Tokens;
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Tokens.Validators;
+using Logitar;
 using Logitar.Security.Claims;
 using Claim = System.Security.Claims.Claim;
 
@@ -10,7 +11,27 @@ namespace Krakenar.Core.Tokens.Commands;
 
 /// <exception cref="SecurityTokenBlacklistedException"></exception>
 /// <exception cref="ValidationException"></exception>
-public record ValidateToken(ValidateTokenPayload Payload) : ICommand<ValidatedToken>;
+public record ValidateToken(ValidateTokenPayload Payload) : ICommand<ValidatedToken>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    if (Payload.Consume && string.IsNullOrWhiteSpace(Payload.Secret))
+    {
+      return this;
+    }
+
+    ValidateToken clone = this.DeepClone();
+    if (!Payload.Consume)
+    {
+      clone.Payload.Token = Payload.Token.Mask();
+    }
+    if (!string.IsNullOrWhiteSpace(Payload.Secret))
+    {
+      clone.Payload.Secret = Payload.Secret.Mask();
+    }
+    return clone;
+  }
+}
 
 internal class ValidateTokenCommandHandler : ICommandHandler<ValidateToken, ValidatedToken>
 {

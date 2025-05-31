@@ -26,7 +26,7 @@ public class Actor
   public Actor(ApiKey apiKey) : this(apiKey.Name)
   {
     RealmId = apiKey.Realm?.Id;
-    Type = ActorType.User;
+    Type = ActorType.ApiKey;
     Id = apiKey.Id;
   }
 

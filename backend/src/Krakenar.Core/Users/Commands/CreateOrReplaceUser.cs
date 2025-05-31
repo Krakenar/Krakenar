@@ -5,13 +5,27 @@ using Krakenar.Core.Localization;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Users.Validators;
+using Logitar;
 using Logitar.EventSourcing;
 using TimeZone = Krakenar.Core.Localization.TimeZone;
 using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users.Commands;
 
-public record CreateOrReplaceUser(Guid? Id, CreateOrReplaceUserPayload Payload, long? Version) : ICommand<CreateOrReplaceUserResult>;
+public record CreateOrReplaceUser(Guid? Id, CreateOrReplaceUserPayload Payload, long? Version) : ICommand<CreateOrReplaceUserResult>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    if (Payload.Password is null)
+    {
+      return this;
+    }
+
+    CreateOrReplaceUser clone = this.DeepClone();
+    clone.Payload.Password = new ChangePasswordPayload(Payload.Password.New.Mask(), Payload.Password.Current?.Mask());
+    return clone;
+  }
+}
 
 /// <exception cref="EmailAddressAlreadyUsedException"></exception>
 /// <exception cref="IncorrectUserPasswordException"></exception>

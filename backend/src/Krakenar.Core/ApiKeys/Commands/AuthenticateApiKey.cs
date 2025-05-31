@@ -1,11 +1,20 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.ApiKeys;
 using Krakenar.Core.ApiKeys.Validators;
+using Logitar;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 
 namespace Krakenar.Core.ApiKeys.Commands;
 
-public record AuthenticateApiKey(AuthenticateApiKeyPayload Payload) : ICommand<ApiKeyDto>;
+public record AuthenticateApiKey(AuthenticateApiKeyPayload Payload) : ICommand<ApiKeyDto>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    AuthenticateApiKey clone = this.DeepClone();
+    clone.Payload.XApiKey = Payload.XApiKey.Mask();
+    return clone;
+  }
+}
 
 /// <exception cref="ApiKeyIsExpiredException"></exception>
 /// <exception cref="ApiKeyNotFoundException"></exception>

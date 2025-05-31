@@ -5,12 +5,21 @@ using Krakenar.Core.Passwords;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Sessions.Validators;
 using Krakenar.Core.Users;
+using Logitar;
 using Logitar.EventSourcing;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
 
 namespace Krakenar.Core.Sessions.Commands;
 
-public record SignInSession(SignInSessionPayload Payload) : ICommand<SessionDto>;
+public record SignInSession(SignInSessionPayload Payload) : ICommand<SessionDto>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    SignInSession clone = this.DeepClone();
+    clone.Payload.Password = Payload.Password.Mask();
+    return clone;
+  }
+}
 
 /// <exception cref="IdAlreadyUsedException"></exception>
 /// <exception cref="IncorrectUserPasswordException"></exception>
