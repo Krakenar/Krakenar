@@ -29,11 +29,11 @@ public class GetDashboardStatisticsHandler : IQueryHandler<GetDashboardStatistic
     Statistics statistics = new()
     {
       RealmCount = await KrakenarContext.Realms.AsNoTracking().CountAsync(cancellationToken),
-      UserCount = await KrakenarContext.Users.AsNoTracking().Where(x => x.RealmId == null).CountAsync(cancellationToken), // TODO(fpion): Enabled only?
-      SessionCount = await KrakenarContext.Sessions.AsNoTracking().Where(x => x.RealmId == null).CountAsync(cancellationToken), // TODO(fpion): Active only?
+      UserCount = await KrakenarContext.Users.AsNoTracking().Where(x => x.RealmId == null).CountAsync(cancellationToken),
+      SessionCount = await KrakenarContext.Sessions.AsNoTracking().Where(x => x.RealmId == null).CountAsync(cancellationToken),
       MessageCount = await KrakenarContext.Messages.AsNoTracking().Where(x => x.RealmId == null).CountAsync(cancellationToken)
     };
-    statistics.Sessions.AddRange(await LoadSessionsAsync(realm: null, cancellationToken)); // TODO(fpion): Active only?
+    statistics.Sessions.AddRange(await LoadSessionsAsync(realm: null, cancellationToken));
 
     RealmDto? realm = ApplicationContext.Realm;
     if (realm is not null)
@@ -41,12 +41,12 @@ public class GetDashboardStatisticsHandler : IQueryHandler<GetDashboardStatistic
       Guid realmUid = realm.Id;
       RealmStatistics realmStatistics = new()
       {
-        UserCount = await KrakenarContext.Users.AsNoTracking().Where(x => x.RealmUid == realmUid).CountAsync(cancellationToken), // TODO(fpion): Enabled only?
-        SessionCount = await KrakenarContext.Sessions.AsNoTracking().Where(x => x.RealmUid == realmUid).CountAsync(cancellationToken), // TODO(fpion): Active only?
+        UserCount = await KrakenarContext.Users.AsNoTracking().Where(x => x.RealmUid == realmUid).CountAsync(cancellationToken),
+        SessionCount = await KrakenarContext.Sessions.AsNoTracking().Where(x => x.RealmUid == realmUid).CountAsync(cancellationToken),
         MessageCount = await KrakenarContext.Messages.AsNoTracking().Where(x => x.RealmUid == realmUid).CountAsync(cancellationToken),
-        ContentCount = await KrakenarContext.Contents.AsNoTracking().Where(x => x.RealmUid == realmUid).CountAsync(cancellationToken) // TODO(fpion): locales? published?
+        ContentCount = await KrakenarContext.Contents.AsNoTracking().Where(x => x.RealmUid == realmUid).CountAsync(cancellationToken)
       };
-      realmStatistics.Sessions.AddRange(await LoadSessionsAsync(realm, cancellationToken)); // TODO(fpion): Active only?
+      realmStatistics.Sessions.AddRange(await LoadSessionsAsync(realm, cancellationToken));
       statistics.Realm = realmStatistics;
     }
 
@@ -60,7 +60,7 @@ public class GetDashboardStatisticsHandler : IQueryHandler<GetDashboardStatistic
     Session[] sessions = await KrakenarContext.Sessions.AsNoTracking()
       .Include(x => x.User).ThenInclude(x => x!.Identifiers)
       .Include(x => x.User).ThenInclude(x => x!.Roles)
-      .Where(x => x.RealmUid == realmUid)
+      .Where(x => x.RealmUid == realmUid && x.IsActive)
       .OrderByDescending(x => x.UpdatedOn)
       .Take(10)
       .ToArrayAsync(cancellationToken);
