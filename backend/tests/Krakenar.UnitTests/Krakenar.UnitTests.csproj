@@ -30,7 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Krakenar.EntityFrameworkCore.Relational\Krakenar.EntityFrameworkCore.Relational.csproj" />
     <ProjectReference Include="..\..\src\Krakenar.Infrastructure\Krakenar.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Krakenar.MongoDB\Krakenar.MongoDB.csproj" />
     <ProjectReference Include="..\Krakenar.Tests\Krakenar.Tests.csproj" />
   </ItemGroup>
 
