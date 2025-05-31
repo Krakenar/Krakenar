@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.ApiKeys;
+using Krakenar.Contracts.Constants;
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Contracts.Users;
@@ -35,7 +36,34 @@ public static class HttpContextExtensions
   }
   public static string GetAdditionalInformation(this HttpContext context)
   {
-    return JsonSerializer.Serialize(context.Request.Headers);
+    HttpRequest request = context.Request;
+    Dictionary<string, string> additionalInformation = new(capacity: 4);
+
+    string userAgent = request.Headers.UserAgent.ToString();
+    if (!string.IsNullOrWhiteSpace(userAgent))
+    {
+      additionalInformation[Headers.UserAgent] = userAgent.Trim().Trim('"');
+    }
+
+    string secureClientHintUserAgent = request.Headers[Headers.SecureClientHintUserAgent].ToString();
+    if (!string.IsNullOrWhiteSpace(secureClientHintUserAgent))
+    {
+      additionalInformation[Headers.SecureClientHintUserAgent] = secureClientHintUserAgent.Trim().Trim('"');
+    }
+
+    string secureClientHintUserAgentMobile = request.Headers[Headers.SecureClientHintUserAgentMobile].ToString();
+    if (!string.IsNullOrWhiteSpace(secureClientHintUserAgentMobile))
+    {
+      additionalInformation[Headers.SecureClientHintUserAgentMobile] = secureClientHintUserAgentMobile.Trim().Trim('"');
+    }
+
+    string secureClientHintUserAgentPlatform = request.Headers[Headers.SecureClientHintUserAgentPlatform].ToString();
+    if (!string.IsNullOrWhiteSpace(secureClientHintUserAgentPlatform))
+    {
+      additionalInformation[Headers.SecureClientHintUserAgentPlatform] = secureClientHintUserAgentPlatform.Trim().Trim('"');
+    }
+
+    return JsonSerializer.Serialize(additionalInformation);
   }
   public static string? GetClientIpAddress(this HttpContext context)
   {
