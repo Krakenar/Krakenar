@@ -145,7 +145,13 @@ watch(
     </div>
     <div class="mb-3 row">
       <UserSelect class="col" :model-value="userId" @error="handleError" @update:model-value="setQuery('user', $event)" />
-      <YesNoSelect class="col" id="active" label="sessions.active" :model-value="isActive" @update:model-value="setQuery('active', $event?.toString() ?? '')" />
+      <YesNoSelect
+        class="col"
+        id="active"
+        label="sessions.active.label"
+        :model-value="isActive"
+        @update:model-value="setQuery('active', $event?.toString() ?? '')"
+      />
       <YesNoSelect
         class="col"
         id="persistent"

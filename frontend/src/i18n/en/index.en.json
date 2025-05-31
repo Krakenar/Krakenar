@@ -33,6 +33,7 @@
     "label": "Custom Attributes",
     "value": "Value"
   },
+  "dashboard": "Dashboard",
   "description": "Description",
   "displayName": "Display Name",
   "general": "General",

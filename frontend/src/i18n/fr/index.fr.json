@@ -33,6 +33,7 @@
     "label": "Attributs personnalisés",
     "value": "Valeur"
   },
+  "dashboard": "Tableau de bord",
   "description": "Description",
   "displayName": "Nom d’affichage",
   "general": "Général",

@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-onMounted(() => router.push({ name: "RealmList" }));
+onMounted(() => router.push({ name: "Dashboard" }));
 </script>
 
 <template>
