@@ -12,9 +12,6 @@ using Content = Krakenar.Core.Contents.Content;
 using ContentLocale = Krakenar.Core.Contents.ContentLocale;
 using ContentType = Krakenar.Core.Contents.ContentType;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
-using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
-using FieldType = Krakenar.Core.Fields.FieldType;
-using FieldValue = Krakenar.Core.Fields.FieldValue;
 
 namespace Krakenar.Contents;
 
