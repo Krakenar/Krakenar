@@ -54,8 +54,8 @@ const hasChanges = computed<boolean>(() => {
   if (hasFormChanges.value || initialValues.value.size !== fieldValues.value.size) {
     return true;
   }
-  for (const [fieldId, value] of fieldValues.value.entries()) {
-    if (initialValues.value.get(fieldId) !== value) {
+  for (const field of fieldValues.value.keys()) {
+    if (fieldValues.value.get(field) !== initialValues.value.get(field)) {
       return true;
     }
   }
