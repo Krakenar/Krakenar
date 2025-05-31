@@ -5,7 +5,7 @@ using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
-namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
+namespace Krakenar.EntityFrameworkCore.Relational.Handlers.Realms;
 
 public class DeleteRealmHandler : ICommandHandler<DeleteRealm, RealmDto?>
 {

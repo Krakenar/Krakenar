@@ -1,4 +1,5 @@
-﻿using Krakenar.Core;
+﻿using Krakenar.Contracts.Dashboard;
+using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.ApiKeys;
 using Krakenar.Core.ApiKeys.Events;
@@ -6,6 +7,7 @@ using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Events;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Contents.Events;
+using Krakenar.Core.Dashboard.Queries;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Events;
 using Krakenar.Core.Fields;
@@ -33,6 +35,8 @@ using Krakenar.Core.Users;
 using Krakenar.Core.Users.Events;
 using Krakenar.EntityFrameworkCore.Relational.Actors;
 using Krakenar.EntityFrameworkCore.Relational.Handlers;
+using Krakenar.EntityFrameworkCore.Relational.Handlers.Dashboard;
+using Krakenar.EntityFrameworkCore.Relational.Handlers.Realms;
 using Krakenar.EntityFrameworkCore.Relational.Queriers;
 using Krakenar.EntityFrameworkCore.Relational.Repositories;
 using Krakenar.EntityFrameworkCore.Relational.Tokens;
@@ -59,7 +63,8 @@ public static class DependencyInjectionExtensions
       .AddScoped<IActorService, ActorService>()
       .AddScoped<ITokenBlacklist, TokenBlacklist>()
       .AddScoped<ICommandHandler<MigrateDatabase>, MigrateDatabaseCommandHandler>()
-      .AddTransient<ICommandHandler<DeleteRealm, RealmDto?>, DeleteRealmHandler>();
+      .AddTransient<ICommandHandler<DeleteRealm, RealmDto?>, DeleteRealmHandler>()
+      .AddTransient<IQueryHandler<GetDashboardStatistics, Statistics>, GetDashboardStatisticsHandler>();
   }
 
   public static IServiceCollection AddKrakenarEventHandlers(this IServiceCollection services)

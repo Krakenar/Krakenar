@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Configurations;
 using Krakenar.Contracts.Contents;
+using Krakenar.Contracts.Dashboard;
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Localization;
@@ -23,6 +24,7 @@ using Krakenar.Core.Configurations.Queries;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Contents.Commands;
 using Krakenar.Core.Contents.Queries;
+using Krakenar.Core.Dashboard;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Dictionaries.Commands;
 using Krakenar.Core.Dictionaries.Queries;
@@ -168,6 +170,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<IConfigurationService, ConfigurationService>()
       .AddTransient<IContentService, ContentService>()
       .AddTransient<IContentTypeService, ContentTypeService>()
+      .AddTransient<IDashboardService, DashboardService>()
       .AddTransient<IDictionaryService, DictionaryService>()
       .AddTransient<IFieldDefinitionService, FieldDefinitionService>()
       .AddTransient<IFieldTypeService, FieldTypeService>()
