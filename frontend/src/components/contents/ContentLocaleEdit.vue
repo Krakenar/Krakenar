@@ -39,6 +39,7 @@ const conflicts = ref<ApiError[]>([]);
 const description = ref<string>("");
 const displayName = ref<string>("");
 const fieldValues = ref<Map<string, string>>(new Map());
+const initialValues = ref<Map<string, string>>(new Map());
 const missing = ref<ApiError[]>([]);
 const uniqueName = ref<string>("");
 const uniqueNameAlreadyUsed = ref<boolean>(false);
@@ -49,6 +50,17 @@ const fields = computed<FieldDefinition[]>(() =>
     "order",
   ),
 );
+const hasChanges = computed<boolean>(() => {
+  if (hasFormChanges.value || initialValues.value.size !== fieldValues.value.size) {
+    return true;
+  }
+  for (const [fieldId, value] of fieldValues.value.entries()) {
+    if (initialValues.value.get(fieldId) !== value) {
+      return true;
+    }
+  }
+  return false;
+});
 const isTypeInvariant = computed<boolean>(() => props.contentType.isInvariant ?? false);
 const uniqueNameSettings = computed<UniqueNameSettings | undefined>(
   () => props.contentType.realm?.uniqueNameSettings ?? props.configuration?.uniqueNameSettings,
@@ -62,7 +74,7 @@ const emit = defineEmits<{
   (e: "unpublished", value: Content): void;
 }>();
 
-const { hasChanges, isSubmitting, handleSubmit } = useForm();
+const { hasChanges: hasFormChanges, isSubmitting, handleSubmit } = useForm();
 async function submit(): Promise<void> {
   uniqueNameAlreadyUsed.value = false;
   conflicts.value = [];
@@ -120,7 +132,11 @@ watch(
     displayName.value = locale.displayName ?? "";
     description.value = locale.description ?? "";
     fieldValues.value.clear();
-    locale.fieldValues.forEach((fieldValue) => fieldValues.value.set(fieldValue.id, fieldValue.value));
+    initialValues.value.clear();
+    locale.fieldValues.forEach((fieldValue) => {
+      fieldValues.value.set(fieldValue.id, fieldValue.value);
+      initialValues.value.set(fieldValue.id, fieldValue.value);
+    });
   },
   { deep: true, immediate: true },
 );
