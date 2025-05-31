@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
 
-namespace Krakenar.EntityFrameworkCore.Relational.Handlers;
+namespace Krakenar.EntityFrameworkCore.Relational.Handlers.Realms;
 
 public class RealmEvents : IEventHandler<RealmCreated>,
   IEventHandler<RealmDeleted>,

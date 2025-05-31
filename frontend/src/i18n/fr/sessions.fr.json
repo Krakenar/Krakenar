@@ -1,5 +1,8 @@
 {
-  "active": "Active",
+  "active": {
+    "label": "Active",
+    "list": "Sessions actives"
+  },
   "additionalInformation": {
     "empty": "Aucune information additionnelle à afficher.",
     "title": "Informations additionnelles"

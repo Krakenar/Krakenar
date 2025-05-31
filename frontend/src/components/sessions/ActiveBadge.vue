@@ -6,5 +6,5 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <TarBadge variant="info"><font-awesome-icon icon="fas fa-hourglass-half" /> {{ t("sessions.active") }}</TarBadge>
+  <TarBadge variant="info"><font-awesome-icon icon="fas fa-hourglass-half" /> {{ t("sessions.active.label") }}</TarBadge>
 </template>
