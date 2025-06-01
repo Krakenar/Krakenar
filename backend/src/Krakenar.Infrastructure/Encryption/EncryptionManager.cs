@@ -4,7 +4,7 @@ using Krakenar.Infrastructure.Settings;
 
 namespace Krakenar.Infrastructure.Encryption;
 
-public class EncryptionManager : IEncryptionManager // TODO(fpion): tests
+public class EncryptionManager : IEncryptionManager
 {
   protected virtual EncryptionSettings Settings { get; }
 
