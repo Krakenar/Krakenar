@@ -2,5 +2,6 @@
 
 public enum DatabaseProvider
 {
+  EntityFrameworkCorePostgreSQL,
   EntityFrameworkCoreSqlServer
 }

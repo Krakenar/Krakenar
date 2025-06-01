@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.E2ETests", "tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.MongoDB", "src\Krakenar.MongoDB\Krakenar.MongoDB.csproj", "{1A794B32-1CEF-43D9-BC1F-F7ABC8F351A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Krakenar.EntityFrameworkCore.PostgreSQL", "src\Krakenar.EntityFrameworkCore.PostgreSQL\Krakenar.EntityFrameworkCore.PostgreSQL.csproj", "{0C91E5C6-4F66-4B60-A7FC-09E6A5281A39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{1A794B32-1CEF-43D9-BC1F-F7ABC8F351A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A794B32-1CEF-43D9-BC1F-F7ABC8F351A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A794B32-1CEF-43D9-BC1F-F7ABC8F351A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C91E5C6-4F66-4B60-A7FC-09E6A5281A39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C91E5C6-4F66-4B60-A7FC-09E6A5281A39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C91E5C6-4F66-4B60-A7FC-09E6A5281A39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C91E5C6-4F66-4B60-A7FC-09E6A5281A39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

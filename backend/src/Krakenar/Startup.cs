@@ -1,4 +1,5 @@
 ﻿using Krakenar.Core;
+using Krakenar.EntityFrameworkCore.PostgreSQL;
 using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Extensions;
@@ -45,6 +46,11 @@ internal class Startup : StartupBase
     services.AddKrakenarEntityFrameworkCoreRelational(databaseSettings.EnableLogging);
     switch (databaseSettings.Provider)
     {
+      case DatabaseProvider.EntityFrameworkCorePostgreSQL:
+        services.AddKrakenarEntityFrameworkCorePostgreSQL(_configuration);
+        healthChecks.AddDbContextCheck<EventContext>();
+        healthChecks.AddDbContextCheck<KrakenarContext>();
+        break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         services.AddKrakenarEntityFrameworkCoreSqlServer(_configuration);
         healthChecks.AddDbContextCheck<EventContext>();
