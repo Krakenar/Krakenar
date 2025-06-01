@@ -3,14 +3,30 @@ using Krakenar.Core.Messages;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Senders;
 using Krakenar.Core.Senders.Settings;
+using MessageDto = Krakenar.Contracts.Messages.Message;
 using Sender = Krakenar.Core.Senders.Sender;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 using TemplateContent = Krakenar.Core.Templates.Content;
+using VariableDto = Krakenar.Contracts.Messages.Variable;
 
 namespace Krakenar.Core.Encryption;
 
 public static class EncryptionExtensions
 {
+  public static void Decrypt(this IEncryptionManager manager, MessageDto message)
+  {
+    RealmId? realmId = message.Realm is null ? null : new(message.Realm.Id);
+
+    message.Body.Text = manager.Decrypt(new EncryptedString(message.Body.Text), realmId);
+
+    manager.DecryptSettings(message.Sender);
+
+    foreach (VariableDto variable in message.Variables)
+    {
+      variable.Value = manager.Decrypt(new EncryptedString(variable.Value), realmId);
+    }
+  }
+
   public static void DecryptSettings(this IEncryptionManager manager, SenderDto sender)
   {
     RealmId? realmId = sender.Realm is null ? null : new(sender.Realm.Id);

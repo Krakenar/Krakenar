@@ -55,6 +55,7 @@ public class MessageManager : IMessageManager
     SendMailResult result;
     try
     {
+      // TODO(fpion): decrypt body
       result = await messageHandler.SendAsync(message, cancellationToken);
     }
     catch (Exception exception)
