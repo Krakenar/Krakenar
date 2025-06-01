@@ -98,6 +98,8 @@ public class UpdateSenderHandler : ICommandHandler<UpdateSender, SenderDto?>
     sender.Update(actorId);
     await SenderRepository.SaveAsync(sender, cancellationToken);
 
-    return await SenderQuerier.ReadAsync(sender, cancellationToken);
+    SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
+    EncryptionManager.Decrypt(dto);
+    return dto;
   }
 }

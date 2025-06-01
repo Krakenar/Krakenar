@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Senders;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Senders;
 using Krakenar.Core.Senders.Settings;
 using Logitar;
@@ -20,6 +21,7 @@ namespace Krakenar.Senders;
 [Trait(Traits.Category, Categories.Integration)]
 public class SenderIntegrationTests : IntegrationTests
 {
+  private readonly IEncryptionManager _encryptionManager;
   private readonly ISenderRepository _senderRepository;
   private readonly ISenderService _senderService;
 
@@ -28,11 +30,17 @@ public class SenderIntegrationTests : IntegrationTests
 
   public SenderIntegrationTests() : base()
   {
+    _encryptionManager = ServiceProvider.GetRequiredService<IEncryptionManager>();
     _senderRepository = ServiceProvider.GetRequiredService<ISenderRepository>();
     _senderService = ServiceProvider.GetRequiredService<ISenderService>();
 
-    _sendGrid = new(new Email(Faker.Person.Email), SenderHelper.GenerateSendGridSettings(), isDefault: true, actorId: null, SenderId.NewId(Realm.Id));
-    _twilio = new(new Phone("+15148454636", countryCode: "CA"), SenderHelper.GenerateTwilioSettings(), isDefault: true, actorId: null, SenderId.NewId(Realm.Id));
+    SendGridSettings sendGridSettings = new(_encryptionManager.Encrypt(SenderHelper.GenerateSendGridApiKey(), Realm.Id).Value);
+    _sendGrid = new(new Email(Faker.Person.Email), sendGridSettings, isDefault: true, actorId: null, SenderId.NewId(Realm.Id));
+
+    TwilioSettings twilioSettings = new(
+      _encryptionManager.Encrypt(SenderHelper.GenerateTwilioAccountSid(), Realm.Id).Value,
+      _encryptionManager.Encrypt(SenderHelper.GenerateTwilioAuthenticationToken(), Realm.Id).Value);
+    _twilio = new(new Phone("+15148454636", countryCode: "CA"), twilioSettings, isDefault: true, actorId: null, SenderId.NewId(Realm.Id));
   }
 
   public override async Task InitializeAsync()
@@ -185,7 +193,9 @@ public class SenderIntegrationTests : IntegrationTests
     TwilioSettings oldSettings = (TwilioSettings)_twilio.Settings;
     long version = _twilio.Version;
 
-    TwilioSettings twilioSettings = SenderHelper.GenerateTwilioSettings();
+    TwilioSettings twilioSettings = new(
+      _encryptionManager.Encrypt(SenderHelper.GenerateTwilioAccountSid(), Realm.Id).Value,
+      _encryptionManager.Encrypt(SenderHelper.GenerateTwilioAuthenticationToken(), Realm.Id).Value);
     _twilio.SetSettings(twilioSettings, ActorId);
     await _senderRepository.SaveAsync(_twilio);
 
@@ -194,7 +204,9 @@ public class SenderIntegrationTests : IntegrationTests
       Phone = new PhonePayload("+15148422112", countryCode: "CA"),
       DisplayName = $" {Faker.Company.CompanyName()} ",
       Description = "  This is the default Twilio settings.  ",
-      Twilio = new TwilioSettingsDto(oldSettings)
+      Twilio = new TwilioSettingsDto(
+        _encryptionManager.Decrypt(new EncryptedString(oldSettings.AccountSid), Realm.Id),
+        _encryptionManager.Decrypt(new EncryptedString(oldSettings.AuthenticationToken), Realm.Id))
     };
 
     CreateOrReplaceSenderResult result = await _senderService.CreateOrReplaceAsync(payload, _twilio.EntityId, version);
@@ -210,7 +222,9 @@ public class SenderIntegrationTests : IntegrationTests
     Assert.Equal(payload.Phone.Number, sender.Phone?.Number);
     Assert.Equal(payload.DisplayName.Trim(), sender.DisplayName);
     Assert.Equal(payload.Description.Trim(), sender.Description);
-    Assert.Equal(new TwilioSettingsDto(twilioSettings), sender.Twilio);
+
+    Assert.NotNull(sender.Twilio);
+    Assert.True(twilioSettings.AreEqual(sender.Twilio, _encryptionManager, Realm.Id));
   }
 
   [Fact(DisplayName = "It should return null when the sender cannot be found.")]
@@ -311,6 +325,8 @@ public class SenderIntegrationTests : IntegrationTests
     Assert.Equal(payload.Email.Address.Trim(), sender.Email?.Address);
     Assert.Equal(payload.DisplayName.Value?.Trim(), sender.DisplayName);
     Assert.Equal(payload.Description.Value?.Trim(), sender.Description);
-    Assert.Equal(new SendGridSettingsDto((SendGridSettings)_sendGrid.Settings), sender.SendGrid);
+
+    Assert.NotNull(sender.SendGrid);
+    Assert.True(((SendGridSettings)_sendGrid.Settings).AreEqual(sender.SendGrid, _encryptionManager, Realm.Id));
   }
 }

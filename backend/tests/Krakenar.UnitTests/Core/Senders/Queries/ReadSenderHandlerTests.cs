@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Senders;
 using Krakenar.Contracts.Senders.Settings;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Encryption;
 using Moq;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
@@ -12,6 +13,7 @@ public class ReadSenderHandlerTests
 {
   private readonly CancellationToken _cancellationToken = default;
 
+  private readonly Mock<IEncryptionManager> _encryptionManager = new();
   private readonly Mock<ISenderQuerier> _senderQuerier = new();
 
   private readonly ReadSenderHandler _handler;
@@ -21,7 +23,7 @@ public class ReadSenderHandlerTests
 
   public ReadSenderHandlerTests()
   {
-    _handler = new(_senderQuerier.Object);
+    _handler = new(_encryptionManager.Object, _senderQuerier.Object);
 
     _sendGrid = new SenderDto
     {

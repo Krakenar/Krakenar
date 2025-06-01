@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Senders.Events;
 using Krakenar.Core.Users;
@@ -16,6 +17,7 @@ public class DeleteSenderHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<IEncryptionManager> _encryptionManager = new();
   private readonly Mock<ISenderQuerier> _senderQuerier = new();
   private readonly Mock<ISenderRepository> _senderRepository = new();
 
@@ -23,7 +25,7 @@ public class DeleteSenderHandlerTests
 
   public DeleteSenderHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _senderQuerier.Object, _senderRepository.Object);
+    _handler = new(_applicationContext.Object, _encryptionManager.Object, _senderQuerier.Object, _senderRepository.Object);
   }
 
   [Fact(DisplayName = "It should delete the default sender when there is no other sender of this kind.")]
@@ -100,6 +102,9 @@ public class DeleteSenderHandlerTests
 
     Sender sender = new(new Email(_faker.Person.Email), SenderHelper.GenerateSendGridSettings(), isDefault: true, actorId, SenderId.NewId(realmId));
     _senderRepository.Setup(x => x.LoadAsync(sender.Id, _cancellationToken)).ReturnsAsync(sender);
+
+    SenderDto dto = new();
+    _senderQuerier.Setup(x => x.ReadAsync(sender, _cancellationToken)).ReturnsAsync(dto);
 
     int count = 1 + _faker.Random.Int(1, 10);
     _senderQuerier.Setup(x => x.CountAsync(sender.Kind, _cancellationToken)).ReturnsAsync(count);
