@@ -7,11 +7,13 @@ using Krakenar.Core.Localization;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
+using Krakenar.EntityFrameworkCore.PostgreSQL;
 using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Infrastructure;
 using Krakenar.Infrastructure.Commands;
 using Logitar.Data;
+using Logitar.Data.PostgreSQL;
 using Logitar.Data.SqlServer;
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
@@ -60,6 +62,11 @@ public abstract class IntegrationTests : IAsyncLifetime
     string? connectionString;
     switch (_databaseProvider)
     {
+      case DatabaseProvider.EntityFrameworkCorePostgreSQL:
+        connectionString = EnvironmentHelper.TryGetString("POSTGRESQLCONNSTR_Krakenar", configuration.GetConnectionString("PostgreSQL"))?.Replace("{Database}", GetType().Name)
+          ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCorePostgreSQL}' could not be found.");
+        services.AddKrakenarEntityFrameworkCorePostgreSQL(connectionString);
+        break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
         connectionString = EnvironmentHelper.TryGetString("SQLCONNSTR_Krakenar", configuration.GetConnectionString("SqlServer"))?.Replace("{Database}", GetType().Name)
           ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCoreSqlServer}' could not be found.");
@@ -120,7 +127,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     foreach (TableId table in tables)
     {
       Logitar.Data.ICommand delete = CreateDeleteBuilder(table).Build();
-      sql.AppendLine(delete.Text);
+      sql.Append(delete.Text).Append(';').AppendLine();
     }
     await KrakenarContext.Database.ExecuteSqlRawAsync(sql.ToString());
 
@@ -150,6 +157,7 @@ public abstract class IntegrationTests : IAsyncLifetime
   }
   private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
   {
+    DatabaseProvider.EntityFrameworkCorePostgreSQL => new PostgresDeleteBuilder(table),
     DatabaseProvider.EntityFrameworkCoreSqlServer => new SqlServerDeleteBuilder(table),
     _ => throw new DatabaseProviderNotSupportedException(_databaseProvider),
   };

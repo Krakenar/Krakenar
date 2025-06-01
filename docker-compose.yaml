@@ -51,6 +51,7 @@ services:
     environment:
       ASPNETCORE_Environment: Development
       MONGOCONNSTR_Krakenar: mongodb://krakenar:V6sLFqRpXrAevPM5@krakenar_mongo:27017/
+      POSTGRESQLCONNSTR_Krakenar: User ID=postgres;Password=w7eZ5fSW6KQpdBX2;Host=krakenar_postgres;Port=5432;Database=Krakenar;
       SQLCONNSTR_Krakenar: Server=krakenar_mssql;Database=Krakenar;User Id=SA;Password=H8A9VsMra2vqmpGE;Persist Security Info=False;Encrypt=False;
     ports:
       - 8096:8080

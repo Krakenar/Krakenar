@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 {
     [DbContext(typeof(KrakenarContext))]
-    [Migration("20250517205250_AddFieldValues")]
-    partial class AddFieldValues
+    [Migration("20250601030109_Krakenar_1_0_0")]
+    partial class Krakenar_1_0_0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,6 +59,9 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<int?>("RealmId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -74,6 +77,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("Key")
                         .IsUnique();
+
+                    b.HasIndex("RealmUid");
 
                     b.HasIndex("RealmId", "Type", "Id")
                         .IsUnique()
@@ -363,7 +368,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -378,11 +384,24 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<string>("FieldValues")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("LanguageId")
                         .HasColumnType("int");
 
                     b.Property<Guid?>("LanguageUid")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PublishedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("PublishedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("PublishedVersion")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("UniqueName")
                         .IsRequired()
@@ -395,7 +414,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime2");
@@ -409,13 +429,31 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("ContentUid");
 
+                    b.HasIndex("CreatedBy");
+
+                    b.HasIndex("CreatedOn");
+
                     b.HasIndex("DisplayName");
+
+                    b.HasIndex("IsPublished");
 
                     b.HasIndex("LanguageId");
 
                     b.HasIndex("LanguageUid");
 
+                    b.HasIndex("PublishedBy");
+
+                    b.HasIndex("PublishedOn");
+
+                    b.HasIndex("PublishedVersion");
+
                     b.HasIndex("UniqueName");
+
+                    b.HasIndex("UpdatedBy");
+
+                    b.HasIndex("UpdatedOn");
+
+                    b.HasIndex("Version");
 
                     b.HasIndex("ContentId", "LanguageId")
                         .IsUnique()
@@ -589,6 +627,9 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<int>("LanguageId")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("LanguageUid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int?>("RealmId")
                         .HasColumnType("int");
 
@@ -620,6 +661,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("LanguageId")
                         .IsUnique();
+
+                    b.HasIndex("LanguageUid");
 
                     b.HasIndex("RealmUid");
 
@@ -800,6 +843,171 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.ToTable("FieldDefinitions", "Content");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldIndex", b =>
+                {
+                    b.Property<int>("FieldIndexId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FieldIndexId"));
+
+                    b.Property<bool?>("Boolean")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ContentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContentLocaleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentLocaleName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("ContentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentTypeName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("ContentTypeUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FieldDefinitionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FieldDefinitionName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("FieldDefinitionUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FieldTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FieldTypeName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("FieldTypeUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LanguageCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<int?>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("LanguageIsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("LanguageUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double?>("Number")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("RealmId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RelatedContent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RichText")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Select")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("String")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("FieldIndexId");
+
+                    b.HasIndex("Boolean");
+
+                    b.HasIndex("ContentId");
+
+                    b.HasIndex("ContentLocaleId");
+
+                    b.HasIndex("ContentLocaleName");
+
+                    b.HasIndex("ContentTypeId");
+
+                    b.HasIndex("ContentTypeName");
+
+                    b.HasIndex("ContentTypeUid");
+
+                    b.HasIndex("ContentUid");
+
+                    b.HasIndex("DateTime");
+
+                    b.HasIndex("FieldDefinitionId");
+
+                    b.HasIndex("FieldDefinitionName");
+
+                    b.HasIndex("FieldDefinitionUid");
+
+                    b.HasIndex("FieldTypeId");
+
+                    b.HasIndex("FieldTypeName");
+
+                    b.HasIndex("FieldTypeUid");
+
+                    b.HasIndex("LanguageCode");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("LanguageIsDefault");
+
+                    b.HasIndex("LanguageUid");
+
+                    b.HasIndex("Number");
+
+                    b.HasIndex("RealmId");
+
+                    b.HasIndex("RealmUid");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("String");
+
+                    b.HasIndex("Version");
+
+                    b.HasIndex("ContentLocaleId", "FieldDefinitionId", "Status")
+                        .IsUnique();
+
+                    b.ToTable("FieldIndex", "Content");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", b =>
                 {
                     b.Property<int>("FieldTypeId")
@@ -834,6 +1042,12 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("RelatedContentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RelatedContentTypeUid")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Settings")
@@ -875,6 +1089,10 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("DisplayName");
 
                     b.HasIndex("RealmUid");
+
+                    b.HasIndex("RelatedContentTypeId");
+
+                    b.HasIndex("RelatedContentTypeUid");
 
                     b.HasIndex("StreamId")
                         .IsUnique();
@@ -1008,6 +1226,223 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasFilter("[RealmId] IS NOT NULL");
 
                     b.ToTable("Languages", "Localization");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Log", b =>
+                {
+                    b.Property<long>("LogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("LogId"));
+
+                    b.Property<string>("ActivityData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ActivityType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ActorId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("AdditionalInformation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApiKeyId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("CorrelationId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Destination")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<TimeSpan?>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime?>("EndedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasErrors")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Method")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("OperationName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("OperationType")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("RealmId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("SessionId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
+
+                    b.Property<DateTime>("StartedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("StatusCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("LogId");
+
+                    b.HasIndex("ActivityType");
+
+                    b.HasIndex("ActorId");
+
+                    b.HasIndex("ApiKeyId");
+
+                    b.HasIndex("CorrelationId");
+
+                    b.HasIndex("Duration");
+
+                    b.HasIndex("EndedOn");
+
+                    b.HasIndex("HasErrors");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("IsCompleted");
+
+                    b.HasIndex("Level");
+
+                    b.HasIndex("Method");
+
+                    b.HasIndex("OperationName");
+
+                    b.HasIndex("OperationType");
+
+                    b.HasIndex("RealmId");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("StartedOn");
+
+                    b.HasIndex("StatusCode");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Logs", "Logging");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.LogEvent", b =>
+                {
+                    b.Property<long>("LogEventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("LogEventId"));
+
+                    b.Property<string>("EventId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("LogId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("LogUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LogEventId");
+
+                    b.HasIndex("LogUid");
+
+                    b.HasIndex("LogId", "EventId")
+                        .IsUnique();
+
+                    b.ToTable("LogEvents", "Logging");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.LogException", b =>
+                {
+                    b.Property<long>("LogExceptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("LogExceptionId"));
+
+                    b.Property<string>("Data")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HResult")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HelpLink")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<long>("LogId")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("LogUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StackTrace")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TargetSite")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("LogExceptionId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("LogId");
+
+                    b.HasIndex("LogUid");
+
+                    b.HasIndex("Type");
+
+                    b.ToTable("LogExceptions", "Logging");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Message", b =>
@@ -1242,6 +1677,9 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("UserUid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("ValidationSucceededOn")
                         .HasColumnType("datetime2");
 
@@ -1273,6 +1711,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("UserId");
 
+                    b.HasIndex("UserUid");
+
                     b.HasIndex("ValidationSucceededOn");
 
                     b.HasIndex("Version");
@@ -1282,6 +1722,106 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasFilter("[RealmId] IS NOT NULL");
 
                     b.ToTable("OneTimePasswords", "Identity");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.PublishedContent", b =>
+                {
+                    b.Property<int>("ContentLocaleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentTypeName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("ContentTypeUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FieldValues")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LanguageCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<int?>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("LanguageIsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("LanguageUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PublishedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("PublishedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UniqueName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("UniqueNameNormalized")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ContentLocaleId");
+
+                    b.HasIndex("ContentId");
+
+                    b.HasIndex("ContentTypeId");
+
+                    b.HasIndex("ContentTypeName");
+
+                    b.HasIndex("ContentTypeUid");
+
+                    b.HasIndex("ContentUid");
+
+                    b.HasIndex("DisplayName");
+
+                    b.HasIndex("LanguageCode");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("LanguageIsDefault");
+
+                    b.HasIndex("LanguageUid");
+
+                    b.HasIndex("PublishedBy");
+
+                    b.HasIndex("PublishedOn");
+
+                    b.HasIndex("UniqueName");
+
+                    b.HasIndex("UniqueNameNormalized");
+
+                    b.HasIndex("Version");
+
+                    b.ToTable("PublishedContents", "Content");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", b =>
@@ -1350,6 +1890,13 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("SecretChangedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("SecretChangedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("StreamId")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -1389,6 +1936,10 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique();
+
+                    b.HasIndex("SecretChangedBy");
+
+                    b.HasIndex("SecretChangedOn");
 
                     b.HasIndex("StreamId")
                         .IsUnique();
@@ -1758,6 +2309,9 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UserUid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<long>("Version")
                         .HasColumnType("bigint");
 
@@ -1787,6 +2341,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.HasIndex("UpdatedOn");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserUid");
 
                     b.HasIndex("Version");
 
@@ -1901,6 +2457,160 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasFilter("[RealmId] IS NOT NULL");
 
                     b.ToTable("Templates", "Messaging");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.UniqueIndex", b =>
+                {
+                    b.Property<int>("UniqueIndexId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UniqueIndexId"));
+
+                    b.Property<int>("ContentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContentLocaleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentLocaleName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("ContentTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentTypeName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("ContentTypeUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ContentUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FieldDefinitionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FieldDefinitionName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("FieldDefinitionUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FieldTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FieldTypeName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid>("FieldTypeUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(278)
+                        .HasColumnType("nvarchar(278)");
+
+                    b.Property<string>("LanguageCode")
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<int?>("LanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("LanguageIsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("LanguageUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("RealmId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ValueNormalized")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<long>("Version")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("UniqueIndexId");
+
+                    b.HasIndex("ContentId");
+
+                    b.HasIndex("ContentLocaleId");
+
+                    b.HasIndex("ContentLocaleName");
+
+                    b.HasIndex("ContentTypeId");
+
+                    b.HasIndex("ContentTypeName");
+
+                    b.HasIndex("ContentTypeUid");
+
+                    b.HasIndex("ContentUid");
+
+                    b.HasIndex("FieldDefinitionId");
+
+                    b.HasIndex("FieldDefinitionName");
+
+                    b.HasIndex("FieldDefinitionUid");
+
+                    b.HasIndex("FieldTypeId");
+
+                    b.HasIndex("FieldTypeName");
+
+                    b.HasIndex("FieldTypeUid");
+
+                    b.HasIndex("Key");
+
+                    b.HasIndex("LanguageCode");
+
+                    b.HasIndex("LanguageId");
+
+                    b.HasIndex("LanguageIsDefault");
+
+                    b.HasIndex("LanguageUid");
+
+                    b.HasIndex("RealmId");
+
+                    b.HasIndex("RealmUid");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("Value");
+
+                    b.HasIndex("ValueNormalized");
+
+                    b.HasIndex("Version");
+
+                    b.HasIndex("FieldDefinitionId", "LanguageId", "Status", "ValueNormalized")
+                        .IsUnique()
+                        .HasFilter("[LanguageId] IS NOT NULL");
+
+                    b.ToTable("UniqueIndex", "Content");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.User", b =>
@@ -2232,8 +2942,14 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Property<int?>("RealmId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("RealmUid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("UserUid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -2243,6 +2959,10 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.HasKey("UserIdentifierId");
 
                     b.HasIndex("Key");
+
+                    b.HasIndex("RealmUid");
+
+                    b.HasIndex("UserUid");
 
                     b.HasIndex("Value");
 
@@ -2408,6 +3128,63 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("FieldType");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldIndex", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Content", "Content")
+                        .WithMany("FieldIndex")
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.ContentLocale", "ContentLocale")
+                        .WithMany("FieldIndex")
+                        .HasForeignKey("ContentLocaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.ContentType", "ContentType")
+                        .WithMany("FieldIndex")
+                        .HasForeignKey("ContentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.FieldDefinition", "FieldDefinition")
+                        .WithMany("FieldIndex")
+                        .HasForeignKey("FieldDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", "FieldType")
+                        .WithMany("FieldIndex")
+                        .HasForeignKey("FieldTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Language", "Language")
+                        .WithMany("FieldIndex")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
+                        .WithMany("FieldIndex")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Content");
+
+                    b.Navigation("ContentLocale");
+
+                    b.Navigation("ContentType");
+
+                    b.Navigation("FieldDefinition");
+
+                    b.Navigation("FieldType");
+
+                    b.Navigation("Language");
+
+                    b.Navigation("Realm");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", b =>
                 {
                     b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
@@ -2415,7 +3192,14 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .HasForeignKey("RealmId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.ContentType", "RelatedContentType")
+                        .WithMany("RelatedFieldTypes")
+                        .HasForeignKey("RelatedContentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Realm");
+
+                    b.Navigation("RelatedContentType");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Language", b =>
@@ -2426,6 +3210,28 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Realm");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.LogEvent", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Log", "Log")
+                        .WithMany("Events")
+                        .HasForeignKey("LogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Log");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.LogException", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Log", "Log")
+                        .WithMany("Exceptions")
+                        .HasForeignKey("LogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Log");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Message", b =>
@@ -2467,6 +3273,40 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Realm");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.PublishedContent", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Content", "Content")
+                        .WithMany("PublishedContents")
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.ContentLocale", "ContentLocale")
+                        .WithOne("PublishedContent")
+                        .HasForeignKey("Krakenar.EntityFrameworkCore.Relational.Entities.PublishedContent", "ContentLocaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.ContentType", "ContentType")
+                        .WithMany("PublishedContents")
+                        .HasForeignKey("ContentTypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Language", "Language")
+                        .WithMany("PublishedContents")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Content");
+
+                    b.Navigation("ContentLocale");
+
+                    b.Navigation("ContentType");
+
+                    b.Navigation("Language");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Recipient", b =>
@@ -2535,6 +3375,63 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Realm");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.UniqueIndex", b =>
+                {
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Content", "Content")
+                        .WithMany("UniqueIndex")
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.ContentLocale", "ContentLocale")
+                        .WithMany("UniqueIndex")
+                        .HasForeignKey("ContentLocaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.ContentType", "ContentType")
+                        .WithMany("UniqueIndex")
+                        .HasForeignKey("ContentTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.FieldDefinition", "FieldDefinition")
+                        .WithMany("UniqueIndex")
+                        .HasForeignKey("FieldDefinitionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", "FieldType")
+                        .WithMany("UniqueIndex")
+                        .HasForeignKey("FieldTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Language", "Language")
+                        .WithMany("UniqueIndex")
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
+                        .WithMany("UniqueIndex")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Content");
+
+                    b.Navigation("ContentLocale");
+
+                    b.Navigation("ContentType");
+
+                    b.Navigation("FieldDefinition");
+
+                    b.Navigation("FieldType");
+
+                    b.Navigation("Language");
+
+                    b.Navigation("Realm");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.User", b =>
                 {
                     b.HasOne("Krakenar.EntityFrameworkCore.Relational.Entities.Realm", "Realm")
@@ -2580,7 +3477,22 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Content", b =>
                 {
+                    b.Navigation("FieldIndex");
+
                     b.Navigation("Locales");
+
+                    b.Navigation("PublishedContents");
+
+                    b.Navigation("UniqueIndex");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.ContentLocale", b =>
+                {
+                    b.Navigation("FieldIndex");
+
+                    b.Navigation("PublishedContent");
+
+                    b.Navigation("UniqueIndex");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.ContentType", b =>
@@ -2590,6 +3502,14 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Contents");
 
                     b.Navigation("FieldDefinitions");
+
+                    b.Navigation("FieldIndex");
+
+                    b.Navigation("PublishedContents");
+
+                    b.Navigation("RelatedFieldTypes");
+
+                    b.Navigation("UniqueIndex");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary", b =>
@@ -2597,9 +3517,20 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Entries");
                 });
 
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldDefinition", b =>
+                {
+                    b.Navigation("FieldIndex");
+
+                    b.Navigation("UniqueIndex");
+                });
+
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.FieldType", b =>
                 {
                     b.Navigation("FieldDefinitions");
+
+                    b.Navigation("FieldIndex");
+
+                    b.Navigation("UniqueIndex");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Language", b =>
@@ -2607,6 +3538,19 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("ContentLocales");
 
                     b.Navigation("Dictionary");
+
+                    b.Navigation("FieldIndex");
+
+                    b.Navigation("PublishedContents");
+
+                    b.Navigation("UniqueIndex");
+                });
+
+            modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Log", b =>
+                {
+                    b.Navigation("Events");
+
+                    b.Navigation("Exceptions");
                 });
 
             modelBuilder.Entity("Krakenar.EntityFrameworkCore.Relational.Entities.Message", b =>
@@ -2626,6 +3570,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
 
                     b.Navigation("Dictionaries");
 
+                    b.Navigation("FieldIndex");
+
                     b.Navigation("FieldTypes");
 
                     b.Navigation("Languages");
@@ -2641,6 +3587,8 @@ namespace Krakenar.EntityFrameworkCore.SqlServer.Migrations
                     b.Navigation("Sessions");
 
                     b.Navigation("Templates");
+
+                    b.Navigation("UniqueIndex");
 
                     b.Navigation("UserIdentifiers");
 
