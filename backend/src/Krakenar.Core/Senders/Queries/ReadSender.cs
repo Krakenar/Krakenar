@@ -1,5 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Encryption;
+using Krakenar.Core.Realms;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
 namespace Krakenar.Core.Senders.Queries;
@@ -9,10 +11,12 @@ public record ReadSender(Guid? Id, SenderKind? Kind) : IQuery<SenderDto?>;
 /// <exception cref="TooManyResultsException{T}"></exception>
 public class ReadSenderHandler : IQueryHandler<ReadSender, SenderDto?>
 {
+  protected virtual IEncryptionManager EncryptionManager { get; }
   protected virtual ISenderQuerier SenderQuerier { get; }
 
-  public ReadSenderHandler(ISenderQuerier senderQuerier)
+  public ReadSenderHandler(IEncryptionManager encryptionManager, ISenderQuerier senderQuerier)
   {
+    EncryptionManager = encryptionManager;
     SenderQuerier = senderQuerier;
   }
 
@@ -43,6 +47,23 @@ public class ReadSenderHandler : IQueryHandler<ReadSender, SenderDto?>
       throw TooManyResultsException<SenderDto>.ExpectedSingle(senders.Count);
     }
 
-    return senders.SingleOrDefault().Value;
+    SenderDto? dto = senders.SingleOrDefault().Value;
+    if (dto is null)
+    {
+      return null;
+    }
+
+    RealmId? realmId = dto.Realm is null ? null : new(dto.Realm.Id);
+    if (dto.SendGrid is not null)
+    {
+      dto.SendGrid.ApiKey = EncryptionManager.Decrypt(new EncryptedString(dto.SendGrid.ApiKey), realmId);
+    }
+    if (dto.Twilio is not null)
+    {
+      dto.Twilio.AccountSid = EncryptionManager.Decrypt(new EncryptedString(dto.Twilio.AccountSid), realmId);
+      dto.Twilio.AuthenticationToken = EncryptionManager.Decrypt(new EncryptedString(dto.Twilio.AuthenticationToken), realmId);
+    }
+
+    return dto;
   }
 }

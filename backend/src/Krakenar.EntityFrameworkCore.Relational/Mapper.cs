@@ -571,10 +571,10 @@ public sealed class Mapper
       switch (source.Provider)
       {
         case SenderProvider.SendGrid:
-          destination.SendGrid = JsonSerializer.Deserialize<SendGridSettings>(source.Settings); // TODO(fpion): decrypt here!
+          destination.SendGrid = JsonSerializer.Deserialize<SendGridSettings>(source.Settings);
           break;
         case SenderProvider.Twilio:
-          destination.Twilio = JsonSerializer.Deserialize<TwilioSettings>(source.Settings); // TODO(fpion): decrypt here!
+          destination.Twilio = JsonSerializer.Deserialize<TwilioSettings>(source.Settings);
           break;
         default:
           throw new SenderProviderNotSupportedException(source.Provider);
