@@ -49,7 +49,7 @@ public class ReadSenderHandler : IQueryHandler<ReadSender, SenderDto?>
     SenderDto? dto = senders.SingleOrDefault().Value;
     if (dto is not null)
     {
-      EncryptionManager.Decrypt(dto);
+      EncryptionManager.DecryptSettings(dto);
     }
     return dto;
   }

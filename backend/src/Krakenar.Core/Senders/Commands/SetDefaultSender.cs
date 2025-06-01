@@ -54,7 +54,7 @@ public class SetDefaultSenderHandler : ICommandHandler<SetDefaultSender, SenderD
     }
 
     SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
-    EncryptionManager.Decrypt(dto);
+    EncryptionManager.DecryptSettings(dto);
     return dto;
   }
 }

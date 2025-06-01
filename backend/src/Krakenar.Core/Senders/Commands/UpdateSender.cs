@@ -99,7 +99,7 @@ public class UpdateSenderHandler : ICommandHandler<UpdateSender, SenderDto?>
     await SenderRepository.SaveAsync(sender, cancellationToken);
 
     SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
-    EncryptionManager.Decrypt(dto);
+    EncryptionManager.DecryptSettings(dto);
     return dto;
   }
 }

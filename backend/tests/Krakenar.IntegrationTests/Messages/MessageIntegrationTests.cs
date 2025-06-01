@@ -4,6 +4,7 @@ using Krakenar.Contracts.Senders;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
 using Krakenar.Core.Dictionaries;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Senders;
@@ -31,6 +32,7 @@ public class MessageIntegrationTests : IntegrationTests
 
   private readonly IConfiguration _configuration;
   private readonly IDictionaryRepository _dictionaryRepository;
+  private readonly IEncryptionManager _encryptionManager;
   private readonly ILanguageQuerier _languageQuerier;
   private readonly ILanguageRepository _languageRepository;
   private readonly IMessageRepository _messageRepository;
@@ -48,6 +50,7 @@ public class MessageIntegrationTests : IntegrationTests
   {
     _configuration = ServiceProvider.GetRequiredService<IConfiguration>();
     _dictionaryRepository = ServiceProvider.GetRequiredService<IDictionaryRepository>();
+    _encryptionManager = ServiceProvider.GetRequiredService<IEncryptionManager>();
     _languageQuerier = ServiceProvider.GetRequiredService<ILanguageQuerier>();
     _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
     _messageRepository = ServiceProvider.GetRequiredService<IMessageRepository>();
@@ -63,7 +66,8 @@ public class MessageIntegrationTests : IntegrationTests
     SenderConfiguration senderConfiguration = _configuration.GetSection(SenderConfiguration.SectionKey).Get<SenderConfiguration>() ?? new();
 
     Email email = new(senderConfiguration.SendGrid.EmailAddress?.CleanTrim() ?? Faker.Internet.Email());
-    SendGridSettings sendGridSettings = new(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey());
+    SendGridSettings sendGridSettings = new(
+      _encryptionManager.Encrypt(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey(), Realm.Id).Value);
     _sendGrid = new(email, sendGridSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id))
     {
       DisplayName = new DisplayName(senderConfiguration.SendGrid.DisplayName?.CleanTrim() ?? Faker.Company.CompanyName())
@@ -72,8 +76,8 @@ public class MessageIntegrationTests : IntegrationTests
 
     Phone phone = new(senderConfiguration.Twilio.PhoneNumber?.CleanTrim() ?? "+15148454636", countryCode: "CA");
     TwilioSettings twilioSettings = new(
-      senderConfiguration.Twilio.AccountSid?.CleanTrim() ?? SenderHelper.GenerateTwilioAccountSid(),
-      senderConfiguration.Twilio.AuthenticationToken?.CleanTrim() ?? SenderHelper.GenerateTwilioAuthenticationToken());
+      _encryptionManager.Encrypt(senderConfiguration.Twilio.AccountSid?.CleanTrim() ?? SenderHelper.GenerateTwilioAccountSid(), Realm.Id).Value,
+      _encryptionManager.Encrypt(senderConfiguration.Twilio.AuthenticationToken?.CleanTrim() ?? SenderHelper.GenerateTwilioAuthenticationToken(), Realm.Id).Value);
     _twilio = new(phone, twilioSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id));
 
     await _senderRepository.SaveAsync([_sendGrid, _twilio]);

@@ -33,7 +33,7 @@ public class DeleteSenderHandler : ICommandHandler<DeleteSender, SenderDto?>
       return null;
     }
     SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
-    EncryptionManager.Decrypt(dto);
+    EncryptionManager.DecryptSettings(dto);
 
     if (sender.IsDefault)
     {

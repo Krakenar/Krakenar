@@ -134,7 +134,7 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
     await SenderRepository.SaveAsync(sender, cancellationToken);
 
     SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
-    EncryptionManager.Decrypt(dto);
+    EncryptionManager.DecryptSettings(dto);
     return new CreateOrReplaceSenderResult(dto, created);
   }
 
