@@ -62,7 +62,7 @@ public class MessageQuerier : IMessageQuerier
 
     if (payload.TemplateId.HasValue)
     {
-      builder.Where(KrakenarDb.Messages.TemplateUid, Operators.IsEqualTo(payload.TemplateId.Value.ToString()));
+      builder.Where(KrakenarDb.Messages.TemplateUid, Operators.IsEqualTo(payload.TemplateId.Value));
     }
     if (payload.IsDemo.HasValue)
     {
