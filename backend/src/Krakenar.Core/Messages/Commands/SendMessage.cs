@@ -8,6 +8,7 @@ using Krakenar.Core.Realms;
 using Krakenar.Core.Senders;
 using Krakenar.Core.Templates;
 using Krakenar.Core.Users;
+using Logitar;
 using Logitar.EventSourcing;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
@@ -15,7 +16,18 @@ using Sender = Krakenar.Core.Senders.Sender;
 
 namespace Krakenar.Core.Messages.Commands;
 
-public record SendMessage(SendMessagePayload Payload) : ICommand<SentMessages>;
+public record SendMessage(SendMessagePayload Payload) : ICommand<SentMessages>, ISensitiveActivity
+{
+  public IActivity Anonymize()
+  {
+    SendMessage clone = this.DeepClone();
+    foreach (Variable variable in clone.Payload.Variables)
+    {
+      variable.Value = variable.Value.Mask();
+    }
+    return clone;
+  }
+}
 
 /// <exception cref="InvalidSmsMessageContentTypeException"></exception>
 /// <exception cref="MissingRecipientContactsException"></exception>
