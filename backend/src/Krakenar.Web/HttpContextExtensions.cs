@@ -42,28 +42,33 @@ public static class HttpContextExtensions
     string userAgent = request.Headers.UserAgent.ToString();
     if (!string.IsNullOrWhiteSpace(userAgent))
     {
-      additionalInformation[Headers.UserAgent] = userAgent.Trim().Trim('"');
+      additionalInformation[Headers.UserAgent] = Sanitize(userAgent);
     }
 
     string secureClientHintUserAgent = request.Headers[Headers.SecureClientHintUserAgent].ToString();
     if (!string.IsNullOrWhiteSpace(secureClientHintUserAgent))
     {
-      additionalInformation[Headers.SecureClientHintUserAgent] = secureClientHintUserAgent.Trim().Trim('"');
+      additionalInformation[Headers.SecureClientHintUserAgent] = Sanitize(secureClientHintUserAgent);
     }
 
     string secureClientHintUserAgentMobile = request.Headers[Headers.SecureClientHintUserAgentMobile].ToString();
     if (!string.IsNullOrWhiteSpace(secureClientHintUserAgentMobile))
     {
-      additionalInformation[Headers.SecureClientHintUserAgentMobile] = secureClientHintUserAgentMobile.Trim().Trim('"');
+      additionalInformation[Headers.SecureClientHintUserAgentMobile] = Sanitize(secureClientHintUserAgentMobile);
     }
 
     string secureClientHintUserAgentPlatform = request.Headers[Headers.SecureClientHintUserAgentPlatform].ToString();
     if (!string.IsNullOrWhiteSpace(secureClientHintUserAgentPlatform))
     {
-      additionalInformation[Headers.SecureClientHintUserAgentPlatform] = secureClientHintUserAgentPlatform.Trim().Trim('"');
+      additionalInformation[Headers.SecureClientHintUserAgentPlatform] = Sanitize(secureClientHintUserAgentPlatform);
     }
 
     return JsonSerializer.Serialize(additionalInformation);
+  }
+  private static string Sanitize(string value)
+  {
+    value = value.Trim();
+    return value[1..^1].Contains('"') ? value : value.Trim('"');
   }
   public static string? GetClientIpAddress(this HttpContext context)
   {
