@@ -142,13 +142,25 @@ public class MessageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should read the message by ID.")]
   public async Task Given_Id_When_Read_Then_Found()
   {
+    Content content = new(_passwordRecovery.Content.Type, _encryptionManager.Encrypt(_passwordRecovery.Content.Text, Realm.Id).Value);
     Recipient[] recipients = [new(email: new Email(Faker.Person.Email))];
-    Message message = new(_passwordRecovery.Subject, _passwordRecovery.Content, recipients, _sendGrid, _passwordRecovery, messageId: MessageId.NewId(Realm.Id));
+    string id = Guid.NewGuid().ToString();
+    Dictionary<string, string> variables = new()
+    {
+      ["Id"] = _encryptionManager.Encrypt(id, Realm.Id).Value
+    };
+    Message message = new(_passwordRecovery.Subject, content, recipients, _sendGrid, _passwordRecovery, variables: variables.AsReadOnly(), messageId: MessageId.NewId(Realm.Id));
     await _messageRepository.SaveAsync(message);
 
     MessageDto? result = await _messageService.ReadAsync(message.EntityId);
     Assert.NotNull(result);
     Assert.Equal(message.EntityId, result.Id);
+    Assert.Equal(_passwordRecovery.Content.Type, result.Body.Type);
+    Assert.Equal(_passwordRecovery.Content.Text, result.Body.Text);
+
+    Variable variable = Assert.Single(result.Variables);
+    Assert.Equal("Id", variable.Key);
+    Assert.Equal(id, variable.Value);
   }
 
   [Fact(DisplayName = "It should return null when the message cannot be found.")]
