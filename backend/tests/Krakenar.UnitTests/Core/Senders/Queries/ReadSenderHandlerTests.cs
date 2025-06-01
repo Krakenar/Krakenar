@@ -2,7 +2,6 @@
 using Krakenar.Contracts.Senders;
 using Krakenar.Contracts.Senders.Settings;
 using Krakenar.Contracts.Users;
-using Krakenar.Core.Encryption;
 using Moq;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
@@ -13,7 +12,6 @@ public class ReadSenderHandlerTests
 {
   private readonly CancellationToken _cancellationToken = default;
 
-  private readonly Mock<IEncryptionManager> _encryptionManager = new();
   private readonly Mock<ISenderQuerier> _senderQuerier = new();
 
   private readonly ReadSenderHandler _handler;
@@ -23,7 +21,7 @@ public class ReadSenderHandlerTests
 
   public ReadSenderHandlerTests()
   {
-    _handler = new(_encryptionManager.Object, _senderQuerier.Object);
+    _handler = new(_senderQuerier.Object);
 
     _sendGrid = new SenderDto
     {
@@ -46,42 +44,6 @@ public class ReadSenderHandlerTests
     _senderQuerier.Setup(x => x.ReadAsync(_twilio.Id, _cancellationToken)).ReturnsAsync(_twilio);
     _senderQuerier.Setup(x => x.ReadDefaultAsync(_sendGrid.Kind, _cancellationToken)).ReturnsAsync(_sendGrid);
     _senderQuerier.Setup(x => x.ReadDefaultAsync(_twilio.Kind, _cancellationToken)).ReturnsAsync(_twilio);
-  }
-
-  [Fact(DisplayName = "It should decrypt the SendGrid settings.")]
-  public async Task Given_SendGrid_When_HandleAsync_Then_SettingsDecrypted()
-  {
-    Assert.NotNull(_sendGrid.SendGrid);
-    string apiKey = _sendGrid.SendGrid.ApiKey;
-    _sendGrid.SendGrid.ApiKey = Convert.ToBase64String(Encoding.ASCII.GetBytes(apiKey));
-
-    _encryptionManager.Setup(x => x.Decrypt(It.Is<EncryptedString>(s => s.Value == _sendGrid.SendGrid.ApiKey), null)).Returns(apiKey);
-
-    ReadSender query = new(_sendGrid.Id, Kind: null);
-    SenderDto? sender = await _handler.HandleAsync(query, _cancellationToken);
-    Assert.NotNull(sender);
-    Assert.NotNull(sender.SendGrid);
-    Assert.Equal(apiKey, sender.SendGrid.ApiKey);
-  }
-
-  [Fact(DisplayName = "It should decrypt the Twilio settings.")]
-  public async Task Given_Twilio_When_HandleAsync_Then_SettingsDecrypted()
-  {
-    Assert.NotNull(_twilio.Twilio);
-    string accountSid = _twilio.Twilio.AccountSid;
-    _twilio.Twilio.AccountSid = Convert.ToBase64String(Encoding.ASCII.GetBytes(accountSid));
-    string authenticationToken = _twilio.Twilio.AuthenticationToken;
-    _twilio.Twilio.AuthenticationToken = Convert.ToBase64String(Encoding.ASCII.GetBytes(authenticationToken));
-
-    _encryptionManager.Setup(x => x.Decrypt(It.Is<EncryptedString>(s => s.Value == _twilio.Twilio.AccountSid), null)).Returns(accountSid);
-    _encryptionManager.Setup(x => x.Decrypt(It.Is<EncryptedString>(s => s.Value == _twilio.Twilio.AuthenticationToken), null)).Returns(authenticationToken);
-
-    ReadSender query = new(_twilio.Id, Kind: null);
-    SenderDto? sender = await _handler.HandleAsync(query, _cancellationToken);
-    Assert.NotNull(sender);
-    Assert.NotNull(sender.Twilio);
-    Assert.Equal(accountSid, sender.Twilio.AccountSid);
-    Assert.Equal(authenticationToken, sender.Twilio.AuthenticationToken);
   }
 
   [Fact(DisplayName = "It should return null when no sender was found.")]
