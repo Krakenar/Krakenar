@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Encryption;
+using Krakenar.Core.Realms;
 using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Senders.Validators;
 using Krakenar.Core.Users;
@@ -32,19 +34,26 @@ public record CreateOrReplaceSender(Guid? Id, CreateOrReplaceSenderPayload Paylo
 public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSender, CreateOrReplaceSenderResult>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IEncryptionManager EncryptionManager { get; }
   protected virtual ISenderQuerier SenderQuerier { get; }
   protected virtual ISenderRepository SenderRepository { get; }
 
-  public CreateOrReplaceSenderHandler(IApplicationContext applicationContext, ISenderQuerier senderQuerier, ISenderRepository senderRepository)
+  public CreateOrReplaceSenderHandler(
+    IApplicationContext applicationContext,
+    IEncryptionManager encryptionManager,
+    ISenderQuerier senderQuerier,
+    ISenderRepository senderRepository)
   {
     ApplicationContext = applicationContext;
+    EncryptionManager = encryptionManager;
     SenderQuerier = senderQuerier;
     SenderRepository = senderRepository;
   }
 
   public virtual async Task<CreateOrReplaceSenderResult> HandleAsync(CreateOrReplaceSender command, CancellationToken cancellationToken)
   {
-    SenderId senderId = SenderId.NewId(ApplicationContext.RealmId);
+    RealmId? realmId = ApplicationContext.RealmId;
+    SenderId senderId = SenderId.NewId(realmId);
     Sender? sender = null;
     if (command.Id.HasValue)
     {
@@ -61,7 +70,7 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
 
     Email? email = payload.Email is null ? null : new(payload.Email);
     Phone? phone = payload.Phone is null ? null : new(payload.Phone);
-    SenderSettings settings = GetSettings(payload);
+    SenderSettings settings = GetSettings(payload, realmId);
     ActorId? actorId = ApplicationContext.ActorId;
 
     bool created = false;
@@ -134,17 +143,20 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
     return new CreateOrReplaceSenderResult(dto, created);
   }
 
-  protected virtual SenderSettings GetSettings(CreateOrReplaceSenderPayload payload)
+  protected virtual SenderSettings GetSettings(CreateOrReplaceSenderPayload payload, RealmId? realmId)
   {
     List<SenderSettings> settings = new(capacity: 2);
 
     if (payload.SendGrid is not null)
     {
-      settings.Add(new SendGridSettings(payload.SendGrid));
+      EncryptedString apiKey = EncryptionManager.Encrypt(payload.SendGrid.ApiKey, realmId);
+      settings.Add(new SendGridSettings(apiKey.Value));
     }
     if (payload.Twilio is not null)
     {
-      settings.Add(new TwilioSettings(payload.Twilio));
+      EncryptedString accountSid = EncryptionManager.Encrypt(payload.Twilio.AccountSid, realmId);
+      EncryptedString authenticationToken = EncryptionManager.Encrypt(payload.Twilio.AuthenticationToken, realmId);
+      settings.Add(new TwilioSettings(accountSid.Value, authenticationToken.Value));
     }
 
     if (settings.Count > 1)

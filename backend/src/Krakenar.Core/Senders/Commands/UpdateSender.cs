@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Encryption;
+using Krakenar.Core.Realms;
 using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Senders.Validators;
 using Krakenar.Core.Users;
@@ -31,12 +33,18 @@ public record UpdateSender(Guid Id, UpdateSenderPayload Payload) : ICommand<Send
 public class UpdateSenderHandler : ICommandHandler<UpdateSender, SenderDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IEncryptionManager EncryptionManager { get; }
   protected virtual ISenderQuerier SenderQuerier { get; }
   protected virtual ISenderRepository SenderRepository { get; }
 
-  public UpdateSenderHandler(IApplicationContext applicationContext, ISenderQuerier senderQuerier, ISenderRepository senderRepository)
+  public UpdateSenderHandler(
+    IApplicationContext applicationContext,
+    IEncryptionManager encryptionManager,
+    ISenderQuerier senderQuerier,
+    ISenderRepository senderRepository)
   {
     ApplicationContext = applicationContext;
+    EncryptionManager = encryptionManager;
     SenderQuerier = senderQuerier;
     SenderRepository = senderRepository;
   }
@@ -72,14 +80,18 @@ public class UpdateSenderHandler : ICommandHandler<UpdateSender, SenderDto?>
       sender.Description = Description.TryCreate(payload.Description.Value);
     }
 
+    RealmId? realmId = sender.RealmId;
     if (payload.SendGrid is not null)
     {
-      SendGridSettings settings = new(payload.SendGrid);
+      EncryptedString apiKey = EncryptionManager.Encrypt(payload.SendGrid.ApiKey, realmId);
+      SendGridSettings settings = new(apiKey.Value);
       sender.SetSettings(settings, actorId);
     }
     if (payload.Twilio is not null)
     {
-      TwilioSettings settings = new(payload.Twilio);
+      EncryptedString accountSid = EncryptionManager.Encrypt(payload.Twilio.AccountSid, realmId);
+      EncryptedString authenticationToken = EncryptionManager.Encrypt(payload.Twilio.AuthenticationToken, realmId);
+      TwilioSettings settings = new(accountSid.Value, authenticationToken.Value);
       sender.SetSettings(settings, actorId);
     }
 

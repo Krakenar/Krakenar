@@ -7,7 +7,7 @@ using Logitar.Security.Cryptography;
 
 namespace Krakenar.Infrastructure.Tokens;
 
-public class SecretManager : ISecretManager
+public class SecretManager : ISecretManager // TODO(fpion): use EncryptionManager!
 {
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual EncryptionSettings Settings { get; }

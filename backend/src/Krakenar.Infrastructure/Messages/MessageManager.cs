@@ -44,7 +44,7 @@ public class MessageManager : IMessageManager
       throw new SenderProviderNotSupportedException(sender.Provider);
     }
 
-    IMessageHandler messageHandler = strategy.Execute(sender.Settings);
+    IMessageHandler messageHandler = strategy.Execute(sender.Settings); // TODO(fpion): will not work with encryption!
 
     SendMailResult result;
     try
