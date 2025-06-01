@@ -1,4 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "logitar-vue3-ui/style.css"
 import persistedState from "pinia-plugin-persistedstate";
 import { createApp } from "vue";
 import { createPinia } from "pinia";
