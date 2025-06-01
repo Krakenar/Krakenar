@@ -130,6 +130,10 @@ export type StringSettings = {
   pattern?: string | null;
 };
 
+export type SwitchFieldDefinitionsPayload = {
+  fields: string[];
+};
+
 export type TagsSettings = {};
 
 export type UpdateFieldDefinitionPayload = {

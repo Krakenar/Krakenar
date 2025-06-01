@@ -66,6 +66,13 @@ function onFieldDeleted(updated: ContentType): void {
   }
   toasts.success("fields.definition.deleted");
 }
+function onFieldReordered(updated: ContentType): void {
+  if (contentType.value) {
+    setMetadata(updated);
+    contentType.value.fields = [...updated.fields];
+  }
+  toasts.success("fields.definition.reordered");
+}
 function onFieldUpdated(updated: ContentType): void {
   if (contentType.value) {
     setMetadata(updated);
@@ -103,7 +110,14 @@ onMounted(async () => {
           <ContentTypeGeneral :content-type="contentType" @error="handleError" @updated="onGeneralUpdated" />
         </TarTab>
         <TarTab id="fields" :title="t('fields.definition.title')">
-          <FieldDefinitionList :content-type="contentType" @error="handleError" @created="onFieldCreated" @deleted="onFieldDeleted" @updated="onFieldUpdated" />
+          <FieldDefinitionList
+            :content-type="contentType"
+            @error="handleError"
+            @created="onFieldCreated"
+            @deleted="onFieldDeleted"
+            @reordered="onFieldReordered"
+            @updated="onFieldUpdated"
+          />
         </TarTab>
       </TarTabs>
     </template>

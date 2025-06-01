@@ -4,7 +4,11 @@ public record SwitchFieldDefinitionsPayload
 {
   public List<string> Fields { get; set; } = [];
 
-  public SwitchFieldDefinitionsPayload(IEnumerable<string>? fields = null)
+  public SwitchFieldDefinitionsPayload()
+  {
+  }
+
+  public SwitchFieldDefinitionsPayload(IEnumerable<string>? fields)
   {
     if (fields is not null)
     {

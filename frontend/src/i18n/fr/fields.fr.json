@@ -27,15 +27,16 @@
       "help": "Ce texte est affiché à l’intérieur des champs vides.",
       "label": "Espace réservé (placeholder)"
     },
+    "reordered": "Les définitions de champs ont été réordonnées.",
     "required": {
       "help": "Lorsque activé, les valeurs de ce champs seront requises afin de publier un contenu.",
       "label": "Requis"
     },
+    "title": "Champs",
     "unique": {
       "help": "Lorsque activé, les valeurs de champs devront être uniques pour chaque contenu.",
       "label": "Unique"
     },
-    "title": "Champs",
     "updated": "La définition de champs a été mise à jour.",
     "updatedOn": "Dernière modification"
   },
