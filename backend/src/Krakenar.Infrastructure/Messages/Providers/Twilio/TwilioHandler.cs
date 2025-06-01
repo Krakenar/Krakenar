@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core.Messages;
 using Krakenar.Core.Senders.Settings;
+using Krakenar.Core.Templates;
 using Logitar.Net.Mail;
 using Logitar.Net.Sms;
 using Logitar.Net.Sms.Twilio;
@@ -21,9 +22,9 @@ public class TwilioHandler : IMessageHandler
     GC.SuppressFinalize(this);
   }
 
-  public virtual async Task<SendMailResult> SendAsync(Message message, CancellationToken cancellationToken)
+  public virtual async Task<SendMailResult> SendAsync(Message message, Content body, CancellationToken cancellationToken)
   {
-    SmsMessage smsMessage = message.ToSmsMessage();
+    SmsMessage smsMessage = message.ToSmsMessage(body);
     SendSmsResult result = await Client.SendAsync(smsMessage, cancellationToken);
     return new SendMailResult(result.Succeeded, result.Data.ToDictionary());
   }

@@ -290,14 +290,15 @@ public class MessageIntegrationTests : IntegrationTests
 
     Assert.Equal("Réinitialiser votre mot de passe", message.Subject.Value);
     Assert.Equal(_passwordRecovery.Content.Type, message.Body.Type);
-    Assert.Contains($@"lang=""{_canadianFrench.Code}""", message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Cliquez sur le lien ci-dessous afin de le réinitialiser."), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode($"https://www.francispion.ca/password/reset?token={token}"), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message."), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Cordialement,"), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("The Logitar Team"), message.Body.Text);
+    Content body = _encryptionManager.DecryptBody(message);
+    Assert.Contains($@"lang=""{_canadianFrench.Code}""", body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cliquez sur le lien ci-dessous afin de le réinitialiser."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode($"https://www.francispion.ca/password/reset?token={token}"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cordialement,"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("The Logitar Team"), body.Text);
 
     Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
     foreach (RecipientPayload recipient in payload.Recipients)
@@ -323,11 +324,9 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(payload.IgnoreUserLocale, message.IgnoreUserLocale);
     Assert.Equal(payload.Locale, message.Locale?.Code);
 
-    Assert.Equal(payload.Variables.Count, message.Variables.Count);
-    foreach (Variable variable in payload.Variables)
-    {
-      Assert.Contains(message.Variables, v => v.Key == variable.Key && v.Value == variable.Value);
-    }
+    KeyValuePair<string, string> variable = message.Variables.Single();
+    Assert.Equal("Token", variable.Key);
+    Assert.Equal(token, _encryptionManager.Decrypt(new EncryptedString(variable.Value), Realm.Id));
 
     Assert.Equal(payload.IsDemo, message.IsDemo);
 
@@ -375,7 +374,8 @@ public class MessageIntegrationTests : IntegrationTests
 
     Assert.Equal("Your Multi-Factor Authentication code has arrived!", message.Subject.Value);
     Assert.Equal(_multiFactorAuthentication.Content.Type, message.Body.Type);
-    Assert.Equal($"Your Multi-Factor Authentication code has arrived! Do not disclose it to anyone: {code}", message.Body.Text);
+    Content body = _encryptionManager.DecryptBody(message);
+    Assert.Equal($"Your Multi-Factor Authentication code has arrived! Do not disclose it to anyone: {code}", body.Text);
 
     Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
     foreach (RecipientPayload recipient in payload.Recipients)
@@ -401,11 +401,9 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(payload.IgnoreUserLocale, message.IgnoreUserLocale);
     Assert.Equal(payload.Locale, message.Locale?.Code);
 
-    Assert.Equal(payload.Variables.Count, message.Variables.Count);
-    foreach (Variable variable in payload.Variables)
-    {
-      Assert.Contains(message.Variables, v => v.Key == variable.Key && v.Value == variable.Value);
-    }
+    KeyValuePair<string, string> variable = Assert.Single(message.Variables);
+    Assert.Equal("Code", variable.Key);
+    Assert.Equal(code, _encryptionManager.Decrypt(new EncryptedString(variable.Value), Realm.Id));
 
     Assert.Equal(payload.IsDemo, message.IsDemo);
 

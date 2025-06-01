@@ -27,6 +27,13 @@ public static class EncryptionExtensions
     }
   }
 
+  public static TemplateContent DecryptBody(this IEncryptionManager manager, Message message)
+  {
+    TemplateContent body = message.Body;
+    string text = manager.Decrypt(new EncryptedString(body.Text), message.RealmId);
+    return new TemplateContent(body.Type, text);
+  }
+
   public static void DecryptSettings(this IEncryptionManager manager, SenderDto sender)
   {
     RealmId? realmId = sender.Realm is null ? null : new(sender.Realm.Id);
@@ -55,12 +62,6 @@ public static class EncryptionExtensions
       default:
         throw new SenderProviderNotSupportedException(sender.Provider);
     }
-  }
-
-  public static TemplateContent Decrypt(this IEncryptionManager manager, TemplateContent content, RealmId? realmId)
-  {
-    string text = manager.Decrypt(new EncryptedString(content.Text), realmId);
-    return new TemplateContent(content.Type, text);
   }
 
   public static TemplateContent Encrypt(this IEncryptionManager manager, TemplateContent content, RealmId? realmId)
