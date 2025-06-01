@@ -104,6 +104,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     TableId[] tables =
     [
       KrakenarDb.Logs.Table,
+      KrakenarDb.ContentLocales.Table,
       KrakenarDb.Contents.Table,
       KrakenarDb.ContentTypes.Table,
       KrakenarDb.FieldTypes.Table,

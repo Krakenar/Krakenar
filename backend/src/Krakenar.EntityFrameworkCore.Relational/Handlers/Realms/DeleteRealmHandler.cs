@@ -38,6 +38,7 @@ public class DeleteRealmHandler : ICommandHandler<DeleteRealm, RealmDto?>
       .ExecuteUpdateAsync(setters => setters
         .SetProperty(x => x.RelatedContentTypeId, x => null)
         .SetProperty(x => x.RelatedContentTypeUid, x => null), cancellationToken);
+    await Krakenar.ContentLocales.Include(x => x.Content).Where(x => x.Content!.RealmUid == realm.Id).ExecuteDeleteAsync(cancellationToken);
     await Krakenar.Contents.Where(x => x.RealmUid == realm.Id).ExecuteDeleteAsync(cancellationToken);
     await Krakenar.ContentTypes.Where(x => x.RealmUid == realm.Id).ExecuteDeleteAsync(cancellationToken);
     await Krakenar.FieldTypes.Where(x => x.RealmUid == realm.Id).ExecuteDeleteAsync(cancellationToken);
