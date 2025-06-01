@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Senders;
 using Krakenar.Core.Dictionaries;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Messages.Validators;
 using Krakenar.Core.Realms;
@@ -39,6 +40,7 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
   protected virtual IDictionaryQuerier DictionaryQuerier { get; }
+  protected virtual IEncryptionManager EncryptionManager { get; }
   protected virtual ILanguageQuerier LanguageQuerier { get; }
   protected virtual IMessageManager MessageManager { get; }
   protected virtual IMessageQuerier MessageQuerier { get; }
@@ -50,6 +52,7 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
   public SendMessageHandler(
     IApplicationContext applicationContext,
     IDictionaryQuerier dictionaryQuerier,
+    IEncryptionManager encryptionManager,
     ILanguageQuerier languageQuerier,
     IMessageManager messageManager,
     IMessageQuerier messageQuerier,
@@ -60,6 +63,7 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
   {
     ApplicationContext = applicationContext;
     DictionaryQuerier = dictionaryQuerier;
+    EncryptionManager = encryptionManager;
     LanguageQuerier = languageQuerier;
     MessageManager = messageManager;
     MessageQuerier = messageQuerier;
@@ -92,7 +96,7 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
     Dictionaries defaultDictionaries = new(dictionariesByLocale, defaultLocale, targetLocale);
 
     Variables variables = new(payload.Variables);
-    IReadOnlyDictionary<string, string> variableDictionary = variables.AsDictionary();
+    IReadOnlyDictionary<string, string> encryptedVariables = EncryptionManager.Encrypt(variables, realmId);
 
     List<Message> messages = new(capacity: allRecipients.To.Count);
     foreach (Recipient recipient in allRecipients.To)
@@ -114,9 +118,10 @@ public class SendMessageHandler : ICommandHandler<SendMessage, SentMessages>
 
       Subject subject = new(dictionaries.Translate(template.Subject.Value));
       Content body = await MessageManager.CompileAsync(messageId, template, dictionaries, locale, recipient.User, variables, cancellationToken);
+      body = EncryptionManager.Encrypt(body, realmId);
       IReadOnlyCollection<Recipient> recipients = [recipient, .. allRecipients.CC, .. allRecipients.Bcc];
 
-      Message message = new(subject, body, recipients, sender, template, ignoreUserLocale, locale, variableDictionary, payload.IsDemo, actorId, messageId);
+      Message message = new(subject, body, recipients, sender, template, ignoreUserLocale, locale, encryptedVariables, payload.IsDemo, actorId, messageId);
       messages.Add(message);
 
       await MessageManager.SendAsync(message, sender, actorId, cancellationToken);
