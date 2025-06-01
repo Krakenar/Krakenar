@@ -289,8 +289,8 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     Assert.Equal("Réinitialiser votre mot de passe", message.Subject.Value);
-    Assert.Equal(_passwordRecovery.Content.Type, message.Body.Type);
     Content body = _encryptionManager.DecryptBody(message);
+    Assert.Equal(_passwordRecovery.Content.Type, body.Type);
     Assert.Contains($@"lang=""{_canadianFrench.Code}""", body.Text);
     Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), body.Text);
     Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), body.Text);
@@ -373,8 +373,8 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     Assert.Equal("Your Multi-Factor Authentication code has arrived!", message.Subject.Value);
-    Assert.Equal(_multiFactorAuthentication.Content.Type, message.Body.Type);
     Content body = _encryptionManager.DecryptBody(message);
+    Assert.Equal(_multiFactorAuthentication.Content.Type, body.Type);
     Assert.Equal($"Your Multi-Factor Authentication code has arrived! Do not disclose it to anyone: {code}", body.Text);
 
     Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
