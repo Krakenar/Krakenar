@@ -1,4 +1,5 @@
-﻿using Logitar.EventSourcing;
+﻿using Krakenar.Core.Encryption;
+using Logitar.EventSourcing;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
 namespace Krakenar.Core.Senders.Commands;
@@ -8,12 +9,18 @@ public record SetDefaultSender(Guid Id) : ICommand<SenderDto?>;
 public class SetDefaultSenderHandler : ICommandHandler<SetDefaultSender, SenderDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IEncryptionManager EncryptionManager { get; }
   protected virtual ISenderQuerier SenderQuerier { get; }
   protected virtual ISenderRepository SenderRepository { get; }
 
-  public SetDefaultSenderHandler(IApplicationContext applicationContext, ISenderQuerier senderQuerier, ISenderRepository senderRepository)
+  public SetDefaultSenderHandler(
+    IApplicationContext applicationContext,
+    IEncryptionManager encryptionManager,
+    ISenderQuerier senderQuerier,
+    ISenderRepository senderRepository)
   {
     ApplicationContext = applicationContext;
+    EncryptionManager = encryptionManager;
     SenderQuerier = senderQuerier;
     SenderRepository = senderRepository;
   }
@@ -46,6 +53,8 @@ public class SetDefaultSenderHandler : ICommandHandler<SetDefaultSender, SenderD
       await SenderRepository.SaveAsync(senders, cancellationToken);
     }
 
-    return await SenderQuerier.ReadAsync(sender, cancellationToken);
+    SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
+    EncryptionManager.DecryptSettings(dto);
+    return dto;
   }
 }

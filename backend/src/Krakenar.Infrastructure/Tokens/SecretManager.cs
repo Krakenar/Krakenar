@@ -1,7 +1,7 @@
 ﻿using Krakenar.Core;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
-using Krakenar.Infrastructure.Settings;
 using Logitar;
 using Logitar.Security.Cryptography;
 
@@ -10,29 +10,18 @@ namespace Krakenar.Infrastructure.Tokens;
 public class SecretManager : ISecretManager
 {
   protected virtual IApplicationContext ApplicationContext { get; }
-  protected virtual EncryptionSettings Settings { get; }
+  protected virtual IEncryptionManager EncryptionManager { get; }
 
-  public SecretManager(IApplicationContext applicationContext, EncryptionSettings settings)
+  public SecretManager(IApplicationContext applicationContext, IEncryptionManager encryptionManager)
   {
     ApplicationContext = applicationContext;
-    Settings = settings;
+    EncryptionManager = encryptionManager;
   }
 
   public string Decrypt(Secret secret, RealmId? realmId)
   {
-    byte[] bytes = Convert.FromBase64String(secret.Value);
-    byte length = bytes.First();
-    byte[] iv = bytes.Skip(1).Take(length).ToArray();
-    byte[] encryptedBytes = bytes.Skip(1 + length).ToArray();
-
-    using Aes aes = Aes.Create();
-    using ICryptoTransform decryptor = aes.CreateDecryptor(GetEncryptionKey(realmId), iv);
-    using MemoryStream encryptedStream = new(encryptedBytes);
-    using CryptoStream cryptoStream = new(encryptedStream, decryptor, CryptoStreamMode.Read);
-
-    using MemoryStream decryptedStream = new();
-    cryptoStream.CopyTo(decryptedStream);
-    return Encoding.UTF8.GetString(decryptedStream.ToArray());
+    EncryptedString encrypted = new(secret.Value);
+    return EncryptionManager.Decrypt(encrypted, realmId);
   }
 
   public virtual Secret Encrypt(string secret, RealmId? realmId)
@@ -42,19 +31,9 @@ public class SecretManager : ISecretManager
     {
       throw new ArgumentException($"The secret must be between {Secret.MinimumLength} and {Secret.MaximumLength} characters long (inclusive), excluding any spaces.");
     }
-    byte[] data = Encoding.UTF8.GetBytes(secret);
 
-    using Aes aes = Aes.Create();
-    using ICryptoTransform encryptor = aes.CreateEncryptor(GetEncryptionKey(realmId), aes.IV);
-    using MemoryStream encryptedStream = new();
-    using CryptoStream cryptoStream = new(encryptedStream, encryptor, CryptoStreamMode.Write);
-    cryptoStream.Write(data, 0, data.Length);
-    cryptoStream.FlushFinalBlock();
-    byte[] encryptedBytes = encryptedStream.ToArray();
-
-    byte length = (byte)aes.IV.Length;
-    string encrypted = Convert.ToBase64String(new byte[] { length }.Concat(aes.IV).Concat(encryptedBytes).ToArray());
-    return new Secret(encrypted);
+    EncryptedString encrypted = EncryptionManager.Encrypt(secret, realmId);
+    return new Secret(encrypted.Value);
   }
 
   public virtual Secret Generate(RealmId? realmId)
@@ -71,15 +50,5 @@ public class SecretManager : ISecretManager
     }
 
     return value.Trim();
-  }
-
-  protected virtual byte[] GetEncryptionKey(RealmId? realmId)
-  {
-    byte[] key = HKDF.Extract(HashAlgorithmName.SHA256, Encoding.UTF8.GetBytes(Settings.Key));
-    if (realmId.HasValue)
-    {
-      key = HKDF.Expand(HashAlgorithmName.SHA256, key, key.Length, realmId.Value.ToGuid().ToByteArray());
-    }
-    return key;
   }
 }

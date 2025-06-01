@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Senders.Events;
 using Krakenar.Core.Users;
@@ -16,6 +17,7 @@ public class SetDefaultSenderHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<IEncryptionManager> _encryptionManager = new();
   private readonly Mock<ISenderQuerier> _senderQuerier = new();
   private readonly Mock<ISenderRepository> _senderRepository = new();
 
@@ -23,7 +25,7 @@ public class SetDefaultSenderHandlerTests
 
   public SetDefaultSenderHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _senderQuerier.Object, _senderRepository.Object);
+    _handler = new(_applicationContext.Object, _encryptionManager.Object, _senderQuerier.Object, _senderRepository.Object);
   }
 
   [Fact(DisplayName = "It should not do anything when the sender is already default.")]

@@ -1,8 +1,10 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Senders;
+using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Templates;
 using Krakenar.Core.Users;
 using Krakenar.Infrastructure.Messages.Providers;
@@ -16,11 +18,14 @@ namespace Krakenar.Infrastructure.Messages;
 
 public class MessageManager : IMessageManager
 {
+  protected virtual IEncryptionManager EncryptionManager { get; }
   protected virtual JsonSerializerOptions SerializerOptions { get; } = new();
   protected virtual Dictionary<SenderProvider, IProviderStrategy> Strategies { get; } = [];
 
-  public MessageManager(IEnumerable<IProviderStrategy> strategies)
+  public MessageManager(IEncryptionManager encryptionManager, IEnumerable<IProviderStrategy> strategies)
   {
+    EncryptionManager = encryptionManager;
+
     foreach (IProviderStrategy strategy in strategies)
     {
       Strategies[strategy.Provider] = strategy;
@@ -44,12 +49,14 @@ public class MessageManager : IMessageManager
       throw new SenderProviderNotSupportedException(sender.Provider);
     }
 
-    IMessageHandler messageHandler = strategy.Execute(sender.Settings);
+    SenderSettings settings = EncryptionManager.DecryptSettings(sender);
+    IMessageHandler messageHandler = strategy.Execute(settings);
 
     SendMailResult result;
     try
     {
-      result = await messageHandler.SendAsync(message, cancellationToken);
+      Content body = EncryptionManager.DecryptBody(message);
+      result = await messageHandler.SendAsync(message, body, cancellationToken);
     }
     catch (Exception exception)
     {

@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Senders;
+using Krakenar.Core.Templates;
 using Krakenar.Core.Users;
 using Logitar.Net.Sms;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
@@ -10,7 +11,7 @@ namespace Krakenar.Infrastructure.Messages.Providers.Twilio;
 
 public static class TwilioExtensions
 {
-  public static SmsMessage ToSmsMessage(this Message message)
+  public static SmsMessage ToSmsMessage(this Message message, Content body)
   {
     Recipient[] recipients = message.Recipients.Where(recipient => recipient.Type == RecipientType.To).ToArray();
     if (recipients.Length != 1)
@@ -28,11 +29,11 @@ public static class TwilioExtensions
       throw new ArgumentException($"The sender must be a {nameof(SenderKind.Phone)} sender in order to send a SMS message.", nameof(message));
     }
 
-    if (message.Body.Type != MediaTypeNames.Text.Plain)
+    if (body.Type != MediaTypeNames.Text.Plain)
     {
-      throw new ArgumentException($"The SMS message text contents must be '{MediaTypeNames.Text.Plain}'. The content type '{message.Body.Type}' is not supported.", nameof(message));
+      throw new ArgumentException($"The SMS message text contents must be '{MediaTypeNames.Text.Plain}'. The content type '{body.Type}' is not supported.", nameof(message));
     }
 
-    return new SmsMessage(message.Sender.Phone.FormatToE164(), recipient.Phone.FormatToE164(), message.Body.Text);
+    return new SmsMessage(message.Sender.Phone.FormatToE164(), recipient.Phone.FormatToE164(), body.Text);
   }
 }

@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Senders;
 using Krakenar.Core.Senders;
+using Krakenar.Core.Templates;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 using Message = Krakenar.Core.Messages.Message;
 using Recipient = Krakenar.Core.Messages.Recipient;
@@ -9,14 +10,14 @@ namespace Krakenar.Infrastructure.Messages.Providers.SendGrid;
 
 public static class SendGridExtensions
 {
-  public static MailMessage ToMailMessage(this Message message)
+  public static MailMessage ToMailMessage(this Message message, Content body)
   {
     MailMessage mailMessage = new()
     {
       From = message.Sender.ToMailAddress(),
       Subject = message.Subject.Value,
-      Body = message.Body.Text,
-      IsBodyHtml = message.Body.Type == MediaTypeNames.Text.Html
+      Body = body.Text,
+      IsBodyHtml = body.Type == MediaTypeNames.Text.Html
     };
 
     foreach (Recipient recipient in message.Recipients)

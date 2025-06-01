@@ -1,4 +1,5 @@
-﻿using SenderDto = Krakenar.Contracts.Senders.Sender;
+﻿using Krakenar.Core.Encryption;
+using SenderDto = Krakenar.Contracts.Senders.Sender;
 
 namespace Krakenar.Core.Senders.Commands;
 
@@ -7,13 +8,18 @@ public record DeleteSender(Guid Id) : ICommand<SenderDto?>;
 public class DeleteSenderHandler : ICommandHandler<DeleteSender, SenderDto?>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IEncryptionManager EncryptionManager { get; }
   protected virtual ISenderQuerier SenderQuerier { get; }
   protected virtual ISenderRepository SenderRepository { get; }
 
   public DeleteSenderHandler(
-    IApplicationContext applicationContext, ISenderQuerier senderQuerier, ISenderRepository senderRepository)
+    IApplicationContext applicationContext,
+    IEncryptionManager encryptionManager,
+    ISenderQuerier senderQuerier,
+    ISenderRepository senderRepository)
   {
     ApplicationContext = applicationContext;
+    EncryptionManager = encryptionManager;
     SenderQuerier = senderQuerier;
     SenderRepository = senderRepository;
   }
@@ -27,6 +33,7 @@ public class DeleteSenderHandler : ICommandHandler<DeleteSender, SenderDto?>
       return null;
     }
     SenderDto dto = await SenderQuerier.ReadAsync(sender, cancellationToken);
+    EncryptionManager.DecryptSettings(dto);
 
     if (sender.IsDefault)
     {

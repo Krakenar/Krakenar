@@ -1,7 +1,7 @@
 ﻿using Krakenar.Core;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Tokens;
-using Krakenar.Infrastructure.Settings;
 using Logitar.Security.Cryptography;
 using Moq;
 
@@ -11,16 +11,13 @@ namespace Krakenar.Infrastructure.Tokens;
 public class SecretManagerTests
 {
   private readonly Mock<IApplicationContext> _applicationContext = new();
-  private readonly EncryptionSettings _settings = new()
-  {
-    Key = "E8Qh3xq7vSas9KdPpL2XFfeRt6mATMCc"
-  };
+  private readonly Mock<IEncryptionManager> _encryptionManager = new();
 
   private readonly SecretManager _helper;
 
   public SecretManagerTests()
   {
-    _helper = new(_applicationContext.Object, _settings);
+    _helper = new(_applicationContext.Object, _encryptionManager.Object);
   }
 
   [Theory(DisplayName = "Decrypt: it should decrypt a token secret.")]
@@ -32,10 +29,11 @@ public class SecretManagerTests
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
     string secret = RandomStringGenerator.GetString(Secret.MinimumLength);
-    Secret encrypted = Encrypt(secret, realmId);
+    Secret encrypted = new(Convert.ToBase64String(Encoding.ASCII.GetBytes(secret)));
+
+    _encryptionManager.Setup(x => x.Decrypt(It.Is<EncryptedString>(s => s.Value == encrypted.Value), realmId)).Returns(secret);
 
     string decrypted = _helper.Decrypt(encrypted, realmId);
-
     Assert.Equal(secret, decrypted);
   }
 
@@ -47,10 +45,11 @@ public class SecretManagerTests
     RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
 
     string secret = RandomStringGenerator.GetString(Secret.MinimumLength);
+    Secret expected = new(Convert.ToBase64String(Encoding.ASCII.GetBytes(secret)));
+    _encryptionManager.Setup(x => x.Encrypt(secret, realmId)).Returns(new EncryptedString(expected.Value));
+
     Secret encrypted = _helper.Encrypt(secret, realmId);
 
-    byte[] iv = GetIV(encrypted);
-    Secret expected = Encrypt(secret, realmId, iv);
     Assert.Equal(expected, encrypted);
   }
 
@@ -61,10 +60,16 @@ public class SecretManagerTests
   {
     RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
 
+    string secret = string.Empty;
+    EncryptedString expected = new(RandomStringGenerator.GetString(Secret.MinimumLength));
+    _encryptionManager.Setup(x => x.Encrypt(It.IsAny<string>(), realmId))
+      .Callback<string, RealmId?>((s, _) => secret = s)
+      .Returns(expected);
+
     Secret encrypted = _helper.Generate(realmId);
 
-    string decrypted = Decrypt(encrypted, realmId);
-    Assert.Equal(Secret.MinimumLength, decrypted.Length);
+    Assert.Equal(expected.Value, encrypted.Value);
+    Assert.Equal(Secret.MinimumLength, secret.Length);
   }
 
   [Theory(DisplayName = "It should generate, encrypt, then decrypt a secret correctly.")]
@@ -75,8 +80,18 @@ public class SecretManagerTests
     RealmId? realmId = realmIdValue is null ? null : new(Guid.Parse(realmIdValue));
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
-    Secret encrypted = _helper.Generate(realmId);
-    string decrypted = _helper.Decrypt(encrypted, realmId);
+    string secretString = string.Empty;
+    EncryptedString encrypted = new(RandomStringGenerator.GetString(Secret.MinimumLength));
+    _encryptionManager.Setup(x => x.Encrypt(It.IsAny<string>(), realmId))
+      .Callback<string, RealmId?>((s, _) => secretString = s)
+      .Returns(encrypted);
+
+    Secret secret = _helper.Generate(realmId);
+
+    _encryptionManager.Setup(x => x.Decrypt(It.Is<EncryptedString>(s => s.Value == encrypted.Value), realmId)).Returns(secretString);
+    string decrypted = _helper.Decrypt(secret, realmId);
+
+    Assert.Equal(secretString, decrypted);
     Assert.Equal(Secret.MinimumLength, decrypted.Length);
   }
 
@@ -87,8 +102,10 @@ public class SecretManagerTests
   public void Given_Empty_When_Resolve_Then_RealmDecrypted(string? value)
   {
     string secret = "f6gMmrwcEHy3QtsbGWFDJLCuT2ZYU5qS";
-    Secret encrypted = Encrypt(secret, realmId: null);
+    Secret encrypted = new(Convert.ToBase64String(Encoding.ASCII.GetBytes(secret)));
     _applicationContext.SetupGet(x => x.Secret).Returns(encrypted);
+
+    _encryptionManager.Setup(x => x.Decrypt(It.Is<EncryptedString>(s => s.Value == encrypted.Value), null)).Returns(secret);
 
     string resolved = _helper.Resolve(value);
     Assert.Equal(secret, resolved);
@@ -104,8 +121,10 @@ public class SecretManagerTests
     _applicationContext.SetupGet(x => x.RealmId).Returns(realmId);
 
     string secret = "f6gMmrwcEHy3QtsbGWFDJLCuT2ZYU5qS";
-    Secret encrypted = Encrypt(secret, realmId);
+    Secret encrypted = new(Convert.ToBase64String(Encoding.ASCII.GetBytes(secret)));
     _applicationContext.SetupGet(x => x.Secret).Returns(encrypted);
+
+    _encryptionManager.Setup(x => x.Decrypt(It.Is<EncryptedString>(s => s.Value == encrypted.Value), realmId)).Returns(secret);
 
     string resolved = _helper.Resolve(value);
     Assert.Equal(secret, resolved);
@@ -118,53 +137,5 @@ public class SecretManagerTests
   {
     string resolved = _helper.Resolve(value);
     Assert.Equal(value.Trim(), resolved);
-  }
-
-  private string Decrypt(Secret secret, RealmId? realmId)
-  {
-    byte[] bytes = Convert.FromBase64String(secret.Value);
-    byte length = bytes.First();
-    byte[] iv = bytes.Skip(1).Take(length).ToArray();
-    byte[] encryptedBytes = bytes.Skip(1 + length).ToArray();
-
-    using Aes aes = Aes.Create();
-    using ICryptoTransform decryptor = aes.CreateDecryptor(GetEncryptionKey(realmId), iv);
-    using MemoryStream encryptedStream = new(encryptedBytes);
-    using CryptoStream cryptoStream = new(encryptedStream, decryptor, CryptoStreamMode.Read);
-
-    using MemoryStream decryptedStream = new();
-    cryptoStream.CopyTo(decryptedStream);
-    return Encoding.UTF8.GetString(decryptedStream.ToArray());
-  }
-  private Secret Encrypt(string secret, RealmId? realmId, byte[]? iv = null)
-  {
-    using Aes aes = Aes.Create();
-    iv ??= aes.IV;
-    using ICryptoTransform encryptor = aes.CreateEncryptor(GetEncryptionKey(realmId), iv);
-    using MemoryStream encryptedStream = new();
-    using CryptoStream cryptoStream = new(encryptedStream, encryptor, CryptoStreamMode.Write);
-    byte[] data = Encoding.UTF8.GetBytes(secret);
-    cryptoStream.Write(data, 0, data.Length);
-    cryptoStream.FlushFinalBlock();
-    byte[] encryptedBytes = encryptedStream.ToArray();
-
-    byte length = (byte)iv.Length;
-    string encrypted = Convert.ToBase64String(new byte[] { length }.Concat(iv).Concat(encryptedBytes).ToArray());
-    return new Secret(encrypted);
-  }
-  private byte[] GetEncryptionKey(RealmId? realmId)
-  {
-    byte[] key = HKDF.Extract(HashAlgorithmName.SHA256, Encoding.UTF8.GetBytes(_settings.Key));
-    if (realmId.HasValue)
-    {
-      key = HKDF.Expand(HashAlgorithmName.SHA256, key, key.Length, realmId.Value.ToGuid().ToByteArray());
-    }
-    return key;
-  }
-  private static byte[] GetIV(Secret secret)
-  {
-    byte[] bytes = Convert.FromBase64String(secret.Value);
-    byte length = bytes.First();
-    return bytes.Skip(1).Take(length).ToArray();
   }
 }

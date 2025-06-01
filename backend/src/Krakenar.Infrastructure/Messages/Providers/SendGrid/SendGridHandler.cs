@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core.Messages;
 using Krakenar.Core.Senders.Settings;
+using Krakenar.Core.Templates;
 using Logitar.Net.Mail;
 using Logitar.Net.Mail.SendGrid;
 
@@ -20,9 +21,9 @@ public class SendGridHandler : IMessageHandler
     GC.SuppressFinalize(this);
   }
 
-  public virtual async Task<SendMailResult> SendAsync(Message message, CancellationToken cancellationToken)
+  public virtual async Task<SendMailResult> SendAsync(Message message, Content body, CancellationToken cancellationToken)
   {
-    MailMessage mailMessage = message.ToMailMessage();
+    MailMessage mailMessage = message.ToMailMessage(body);
     SendMailResult result = await Client.SendAsync(mailMessage, cancellationToken);
     return result;
   }

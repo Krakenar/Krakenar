@@ -4,6 +4,7 @@ using Krakenar.Contracts.Senders;
 using Krakenar.Contracts.Users;
 using Krakenar.Core;
 using Krakenar.Core.Dictionaries;
+using Krakenar.Core.Encryption;
 using Krakenar.Core.Localization;
 using Krakenar.Core.Messages;
 using Krakenar.Core.Senders;
@@ -31,6 +32,7 @@ public class MessageIntegrationTests : IntegrationTests
 
   private readonly IConfiguration _configuration;
   private readonly IDictionaryRepository _dictionaryRepository;
+  private readonly IEncryptionManager _encryptionManager;
   private readonly ILanguageQuerier _languageQuerier;
   private readonly ILanguageRepository _languageRepository;
   private readonly IMessageRepository _messageRepository;
@@ -48,6 +50,7 @@ public class MessageIntegrationTests : IntegrationTests
   {
     _configuration = ServiceProvider.GetRequiredService<IConfiguration>();
     _dictionaryRepository = ServiceProvider.GetRequiredService<IDictionaryRepository>();
+    _encryptionManager = ServiceProvider.GetRequiredService<IEncryptionManager>();
     _languageQuerier = ServiceProvider.GetRequiredService<ILanguageQuerier>();
     _languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
     _messageRepository = ServiceProvider.GetRequiredService<IMessageRepository>();
@@ -63,7 +66,8 @@ public class MessageIntegrationTests : IntegrationTests
     SenderConfiguration senderConfiguration = _configuration.GetSection(SenderConfiguration.SectionKey).Get<SenderConfiguration>() ?? new();
 
     Email email = new(senderConfiguration.SendGrid.EmailAddress?.CleanTrim() ?? Faker.Internet.Email());
-    SendGridSettings sendGridSettings = new(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey());
+    SendGridSettings sendGridSettings = new(
+      _encryptionManager.Encrypt(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey(), Realm.Id).Value);
     _sendGrid = new(email, sendGridSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id))
     {
       DisplayName = new DisplayName(senderConfiguration.SendGrid.DisplayName?.CleanTrim() ?? Faker.Company.CompanyName())
@@ -72,8 +76,8 @@ public class MessageIntegrationTests : IntegrationTests
 
     Phone phone = new(senderConfiguration.Twilio.PhoneNumber?.CleanTrim() ?? "+15148454636", countryCode: "CA");
     TwilioSettings twilioSettings = new(
-      senderConfiguration.Twilio.AccountSid?.CleanTrim() ?? SenderHelper.GenerateTwilioAccountSid(),
-      senderConfiguration.Twilio.AuthenticationToken?.CleanTrim() ?? SenderHelper.GenerateTwilioAuthenticationToken());
+      _encryptionManager.Encrypt(senderConfiguration.Twilio.AccountSid?.CleanTrim() ?? SenderHelper.GenerateTwilioAccountSid(), Realm.Id).Value,
+      _encryptionManager.Encrypt(senderConfiguration.Twilio.AuthenticationToken?.CleanTrim() ?? SenderHelper.GenerateTwilioAuthenticationToken(), Realm.Id).Value);
     _twilio = new(phone, twilioSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id));
 
     await _senderRepository.SaveAsync([_sendGrid, _twilio]);
@@ -138,13 +142,25 @@ public class MessageIntegrationTests : IntegrationTests
   [Fact(DisplayName = "It should read the message by ID.")]
   public async Task Given_Id_When_Read_Then_Found()
   {
+    Content content = new(_passwordRecovery.Content.Type, _encryptionManager.Encrypt(_passwordRecovery.Content.Text, Realm.Id).Value);
     Recipient[] recipients = [new(email: new Email(Faker.Person.Email))];
-    Message message = new(_passwordRecovery.Subject, _passwordRecovery.Content, recipients, _sendGrid, _passwordRecovery, messageId: MessageId.NewId(Realm.Id));
+    string id = Guid.NewGuid().ToString();
+    Dictionary<string, string> variables = new()
+    {
+      ["Id"] = _encryptionManager.Encrypt(id, Realm.Id).Value
+    };
+    Message message = new(_passwordRecovery.Subject, content, recipients, _sendGrid, _passwordRecovery, variables: variables.AsReadOnly(), messageId: MessageId.NewId(Realm.Id));
     await _messageRepository.SaveAsync(message);
 
     MessageDto? result = await _messageService.ReadAsync(message.EntityId);
     Assert.NotNull(result);
     Assert.Equal(message.EntityId, result.Id);
+    Assert.Equal(_passwordRecovery.Content.Type, result.Body.Type);
+    Assert.Equal(_passwordRecovery.Content.Text, result.Body.Text);
+
+    Variable variable = Assert.Single(result.Variables);
+    Assert.Equal("Id", variable.Key);
+    Assert.Equal(id, variable.Value);
   }
 
   [Fact(DisplayName = "It should return null when the message cannot be found.")]
@@ -273,15 +289,16 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     Assert.Equal("Réinitialiser votre mot de passe", message.Subject.Value);
-    Assert.Equal(_passwordRecovery.Content.Type, message.Body.Type);
-    Assert.Contains($@"lang=""{_canadianFrench.Code}""", message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Cliquez sur le lien ci-dessous afin de le réinitialiser."), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode($"https://www.francispion.ca/password/reset?token={token}"), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message."), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("Cordialement,"), message.Body.Text);
-    Assert.Contains(HttpUtility.HtmlEncode("The Logitar Team"), message.Body.Text);
+    Content body = _encryptionManager.DecryptBody(message);
+    Assert.Equal(_passwordRecovery.Content.Type, body.Type);
+    Assert.Contains($@"lang=""{_canadianFrench.Code}""", body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cliquez sur le lien ci-dessous afin de le réinitialiser."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode($"https://www.francispion.ca/password/reset?token={token}"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cordialement,"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("The Logitar Team"), body.Text);
 
     Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
     foreach (RecipientPayload recipient in payload.Recipients)
@@ -307,11 +324,9 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(payload.IgnoreUserLocale, message.IgnoreUserLocale);
     Assert.Equal(payload.Locale, message.Locale?.Code);
 
-    Assert.Equal(payload.Variables.Count, message.Variables.Count);
-    foreach (Variable variable in payload.Variables)
-    {
-      Assert.Contains(message.Variables, v => v.Key == variable.Key && v.Value == variable.Value);
-    }
+    KeyValuePair<string, string> variable = message.Variables.Single();
+    Assert.Equal("Token", variable.Key);
+    Assert.Equal(token, _encryptionManager.Decrypt(new EncryptedString(variable.Value), Realm.Id));
 
     Assert.Equal(payload.IsDemo, message.IsDemo);
 
@@ -358,8 +373,9 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
 
     Assert.Equal("Your Multi-Factor Authentication code has arrived!", message.Subject.Value);
-    Assert.Equal(_multiFactorAuthentication.Content.Type, message.Body.Type);
-    Assert.Equal($"Your Multi-Factor Authentication code has arrived! Do not disclose it to anyone: {code}", message.Body.Text);
+    Content body = _encryptionManager.DecryptBody(message);
+    Assert.Equal(_multiFactorAuthentication.Content.Type, body.Type);
+    Assert.Equal($"Your Multi-Factor Authentication code has arrived! Do not disclose it to anyone: {code}", body.Text);
 
     Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
     foreach (RecipientPayload recipient in payload.Recipients)
@@ -385,11 +401,9 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(payload.IgnoreUserLocale, message.IgnoreUserLocale);
     Assert.Equal(payload.Locale, message.Locale?.Code);
 
-    Assert.Equal(payload.Variables.Count, message.Variables.Count);
-    foreach (Variable variable in payload.Variables)
-    {
-      Assert.Contains(message.Variables, v => v.Key == variable.Key && v.Value == variable.Value);
-    }
+    KeyValuePair<string, string> variable = Assert.Single(message.Variables);
+    Assert.Equal("Code", variable.Key);
+    Assert.Equal(code, _encryptionManager.Decrypt(new EncryptedString(variable.Value), Realm.Id));
 
     Assert.Equal(payload.IsDemo, message.IsDemo);
 
