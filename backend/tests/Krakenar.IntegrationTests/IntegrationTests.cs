@@ -29,15 +29,14 @@ namespace Krakenar;
 
 public abstract class IntegrationTests : IAsyncLifetime
 {
-  private readonly DatabaseProvider _databaseProvider;
-
+  protected DatabaseProvider DatabaseProvider { get; }
   protected Faker Faker { get; } = new();
 
-  private readonly TestApplicationContext _applicationContext = new();
+  protected TestApplicationContext ApplicationContext { get; } = new();
   protected ActorDto Actor { get; private set; } = new();
-  protected ActorId? ActorId => _applicationContext.ActorId;
+  protected ActorId? ActorId => ApplicationContext.ActorId;
   protected Realm Realm { get; }
-  protected RealmDto? RealmDto => _applicationContext.Realm;
+  protected RealmDto? RealmDto => ApplicationContext.Realm;
 
   protected IServiceProvider ServiceProvider { get; }
   protected KrakenarContext KrakenarContext { get; }
@@ -49,7 +48,7 @@ public abstract class IntegrationTests : IAsyncLifetime
       .AddUserSecrets("9d4b585d-9a96-4cb3-b1ff-7a8d77eda766")
       .Build();
 
-    _databaseProvider = configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
+    DatabaseProvider = configuration.GetValue<DatabaseProvider?>("DatabaseProvider") ?? DatabaseProvider.EntityFrameworkCoreSqlServer;
 
     ServiceCollection services = new();
     services.AddLogging();
@@ -60,7 +59,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     services.AddKrakenarEntityFrameworkCoreRelational();
 
     string? connectionString;
-    switch (_databaseProvider)
+    switch (DatabaseProvider)
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
         connectionString = EnvironmentHelper.TryGetString("POSTGRESQLCONNSTR_Krakenar", configuration.GetConnectionString("PostgreSQL"))?.Replace("{Database}", GetType().Name)
@@ -73,10 +72,10 @@ public abstract class IntegrationTests : IAsyncLifetime
         services.AddKrakenarEntityFrameworkCoreSqlServer(connectionString);
         break;
       default:
-        throw new DatabaseProviderNotSupportedException(_databaseProvider);
+        throw new DatabaseProviderNotSupportedException(DatabaseProvider);
     }
 
-    services.AddSingleton<IApplicationContext>(_applicationContext);
+    services.AddSingleton<IApplicationContext>(ApplicationContext);
 
     ServiceProvider = services.BuildServiceProvider();
 
@@ -136,30 +135,30 @@ public abstract class IntegrationTests : IAsyncLifetime
     await configurationHandler.HandleAsync(initializeConfiguration);
 
     ICacheService cacheService = ServiceProvider.GetRequiredService<ICacheService>();
-    _applicationContext.Configuration = cacheService.Configuration;
-    Assert.NotNull(_applicationContext.Configuration);
+    ApplicationContext.Configuration = cacheService.Configuration;
+    Assert.NotNull(ApplicationContext.Configuration);
 
     IUserQuerier userQuerier = ServiceProvider.GetRequiredService<IUserQuerier>();
     UserDto? user = await userQuerier.ReadAsync(initializeConfiguration.UniqueName);
     Assert.NotNull(user);
     Actor = new ActorDto(user);
-    _applicationContext.ActorId = Actor.GetActorId();
+    ApplicationContext.ActorId = Actor.GetActorId();
 
     IRealmRepository realmRepository = ServiceProvider.GetRequiredService<IRealmRepository>();
     await realmRepository.SaveAsync(Realm);
     IRealmQuerier realmQuerier = ServiceProvider.GetRequiredService<IRealmQuerier>();
-    _applicationContext.Realm = await realmQuerier.ReadAsync(Realm);
-    _applicationContext.RealmId = Realm.Id;
+    ApplicationContext.Realm = await realmQuerier.ReadAsync(Realm);
+    ApplicationContext.RealmId = Realm.Id;
 
     ILanguageRepository languageRepository = ServiceProvider.GetRequiredService<ILanguageRepository>();
     Language language = new(new Locale(initializeConfiguration.DefaultLocale), isDefault: true, ActorId, LanguageId.NewId(Realm.Id));
     await languageRepository.SaveAsync(language);
   }
-  private IDeleteBuilder CreateDeleteBuilder(TableId table) => _databaseProvider switch
+  private IDeleteBuilder CreateDeleteBuilder(TableId table) => DatabaseProvider switch
   {
     DatabaseProvider.EntityFrameworkCorePostgreSQL => new PostgresDeleteBuilder(table),
     DatabaseProvider.EntityFrameworkCoreSqlServer => new SqlServerDeleteBuilder(table),
-    _ => throw new DatabaseProviderNotSupportedException(_databaseProvider),
+    _ => throw new DatabaseProviderNotSupportedException(DatabaseProvider),
   };
 
   public Task DisposeAsync() => Task.CompletedTask;

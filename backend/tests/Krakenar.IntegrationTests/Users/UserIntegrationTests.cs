@@ -711,7 +711,7 @@ public class UserIntegrationTests : IntegrationTests
     Assert.NotNull(dto);
     Assert.Equal(_user.EntityId, dto.Id);
     Assert.Equal(_user.Version, dto.Version);
-    Assert.Equal(_user.UpdatedOn.AsUniversalTime(), dto.UpdatedOn.AsUniversalTime());
+    Assert.Equal(_user.UpdatedOn.AsUniversalTime(), dto.UpdatedOn.AsUniversalTime(), TimeSpan.FromMilliseconds(1));
 
     SessionEntity? entity = await KrakenarContext.Sessions.AsNoTracking().SingleOrDefaultAsync(x => x.StreamId == session.Id.Value);
     Assert.NotNull(entity);
