@@ -57,6 +57,12 @@ public static class EncryptionExtensions
     }
   }
 
+  public static TemplateContent Decrypt(this IEncryptionManager manager, TemplateContent content, RealmId? realmId)
+  {
+    string text = manager.Decrypt(new EncryptedString(content.Text), realmId);
+    return new TemplateContent(content.Type, text);
+  }
+
   public static TemplateContent Encrypt(this IEncryptionManager manager, TemplateContent content, RealmId? realmId)
   {
     string text = manager.Encrypt(content.Text, realmId).Value;
