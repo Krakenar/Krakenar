@@ -9,7 +9,7 @@ using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar;
 
-internal class TestApplicationContext : IApplicationContext
+public class TestApplicationContext : IApplicationContext
 {
   public ActorId? ActorId { get; set; }
   public string BaseUrl { get; set; } = "http://localhost:80";

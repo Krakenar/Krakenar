@@ -8,6 +8,7 @@ using Krakenar.Core.Logging;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Users.Commands;
 using Krakenar.Core.Users.Events;
+using Krakenar.EntityFrameworkCore.PostgreSQL;
 using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Infrastructure;
@@ -37,9 +38,6 @@ public class LoggingIntegrationTests : IntegrationTests
   public async Task Given_Repositories_When_Save_Then_LogsSaved()
   {
     IConfiguration configuration = ServiceProvider.GetRequiredService<IConfiguration>();
-    string connectionString = EnvironmentHelper.TryGetString("SQLCONNSTR_Krakenar", configuration.GetConnectionString("SqlServer"))?.Replace("{Database}", GetType().Name)
-      ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCoreSqlServer}' could not be found.");
-
     IApplicationContext context = ServiceProvider.GetRequiredService<IApplicationContext>();
 
     ServiceCollection services = new();
@@ -49,7 +47,22 @@ public class LoggingIntegrationTests : IntegrationTests
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational(enableLogging: true);
-    services.AddKrakenarEntityFrameworkCoreSqlServer(connectionString);
+    string connectionString;
+    switch (DatabaseProvider)
+    {
+      case DatabaseProvider.EntityFrameworkCorePostgreSQL:
+        connectionString = EnvironmentHelper.TryGetString("POSTGRESQLCONNSTR_Krakenar", configuration.GetConnectionString("PostgreSQL"))?.Replace("{Database}", GetType().Name)
+          ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCorePostgreSQL}' could not be found.");
+        services.AddKrakenarEntityFrameworkCorePostgreSQL(connectionString);
+        break;
+      case DatabaseProvider.EntityFrameworkCoreSqlServer:
+        connectionString = EnvironmentHelper.TryGetString("SQLCONNSTR_Krakenar", configuration.GetConnectionString("SqlServer"))?.Replace("{Database}", GetType().Name)
+          ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCoreSqlServer}' could not be found.");
+        services.AddKrakenarEntityFrameworkCoreSqlServer(connectionString);
+        break;
+      default:
+        throw new DatabaseProviderNotSupportedException(DatabaseProvider);
+    }
     services.AddKrakenarMongoDB(configuration);
     IServiceProvider serviceProvider = services.BuildServiceProvider();
     ILoggingService loggingService = serviceProvider.GetRequiredService<ILoggingService>();

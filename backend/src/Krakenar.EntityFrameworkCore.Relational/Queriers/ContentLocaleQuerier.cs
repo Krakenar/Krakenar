@@ -39,12 +39,12 @@ public class ContentLocaleQuerier : IContentLocaleQuerier
     if (payload.ContentTypeId.HasValue)
     {
       builder.LeftJoin(ContentTypes.ContentTypeId, KrakenarDb.ContentLocales.ContentTypeId)
-        .Where(ContentTypes.Id, Operators.IsEqualTo(payload.ContentTypeId.Value.ToString()));
+        .Where(ContentTypes.Id, Operators.IsEqualTo(payload.ContentTypeId.Value));
     }
     if (payload.LanguageId.HasValue)
     {
       builder.LeftJoin(Languages.LanguageId, KrakenarDb.ContentLocales.LanguageId)
-        .Where(Languages.Id, Operators.IsEqualTo(payload.LanguageId.Value.ToString()));
+        .Where(Languages.Id, Operators.IsEqualTo(payload.LanguageId.Value));
     }
     else
     {

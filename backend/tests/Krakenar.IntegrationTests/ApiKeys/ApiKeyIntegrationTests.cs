@@ -156,7 +156,7 @@ public class ApiKeyIntegrationTests : IntegrationTests
     Assert.Equal(payload.Name.Trim(), apiKey.Name);
     Assert.Equal(payload.Description.Trim(), apiKey.Description);
     Assert.NotNull(apiKey.ExpiresOn);
-    Assert.Equal(payload.ExpiresOn.Value.AsUniversalTime(), apiKey.ExpiresOn.Value.AsUniversalTime());
+    Assert.Equal(payload.ExpiresOn.Value.AsUniversalTime(), apiKey.ExpiresOn.Value.AsUniversalTime(), TimeSpan.FromMilliseconds(1));
     Assert.Equal(payload.CustomAttributes, apiKey.CustomAttributes);
 
     Assert.Single(apiKey.Roles);
@@ -209,7 +209,7 @@ public class ApiKeyIntegrationTests : IntegrationTests
     Assert.Equal(payload.Name.Trim(), apiKey.Name);
     Assert.Equal(description.Value, apiKey.Description);
     Assert.NotNull(apiKey.ExpiresOn);
-    Assert.Equal(payload.ExpiresOn.Value.AsUniversalTime(), apiKey.ExpiresOn.Value.AsUniversalTime());
+    Assert.Equal(payload.ExpiresOn.Value.AsUniversalTime(), apiKey.ExpiresOn.Value.AsUniversalTime(), TimeSpan.FromMilliseconds(1));
     Assert.Equal(payload.CustomAttributes, apiKey.CustomAttributes);
 
     Assert.Equal(3, apiKey.Roles.Count);
