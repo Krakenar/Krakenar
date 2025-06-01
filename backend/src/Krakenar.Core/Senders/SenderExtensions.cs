@@ -8,7 +8,7 @@ namespace Krakenar.Core.Senders;
 
 public static class SenderExtensions
 {
-  public static void DecryptSettings(this IEncryptionManager encryptionManager, SenderDto sender) // TODO(fpion): tests
+  public static void DecryptSettings(this IEncryptionManager encryptionManager, SenderDto sender)
   {
     RealmId? realmId = sender.Realm is null ? null : new(sender.Realm.Id);
     if (sender.SendGrid is not null)
@@ -21,7 +21,7 @@ public static class SenderExtensions
       sender.Twilio.AuthenticationToken = encryptionManager.Decrypt(new EncryptedString(sender.Twilio.AuthenticationToken), realmId);
     }
   }
-  public static SenderSettings DecryptSettings(this IEncryptionManager encryptionManager, Sender sender) // TODO(fpion): tests
+  public static SenderSettings DecryptSettings(this IEncryptionManager encryptionManager, Sender sender)
   {
     switch (sender.Provider)
     {
