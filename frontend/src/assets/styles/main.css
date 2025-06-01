@@ -1,5 +1,3 @@
-@import "toasts.css";
-
 body {
   position: relative;
   min-height: calc(100svh);
@@ -8,10 +6,6 @@ body {
 
 a {
   text-decoration: none;
-}
-
-button:disabled {
-  cursor: not-allowed !important;
 }
 
 .card {
