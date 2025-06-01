@@ -186,7 +186,7 @@ public class Sender : AggregateRoot
       throw new SenderProviderMismatchException(this, settings.Provider, nameof(settings));
     }
 
-    if (_settings != settings) // TODO(fpion): will not work with encryption!
+    if (_settings != settings)
     {
       Raise(new SendGridSettingsChanged(settings), actorId);
     }
