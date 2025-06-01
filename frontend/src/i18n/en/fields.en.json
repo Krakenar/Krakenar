@@ -27,15 +27,16 @@
       "help": "This text is used into empty fields.",
       "label": "Placeholder"
     },
+    "reordered": "The field definitions have been reordered.",
     "required": {
       "help": "When enabled, field values will be required to publish contents.",
       "label": "Required"
     },
+    "title": "Fields",
     "unique": {
       "help": "When enabled, field values must be unique for each content.",
       "label": "Unique"
     },
-    "title": "Fields",
     "updated": "The field definition has been updated.",
     "updatedOn": "Updated On"
   },

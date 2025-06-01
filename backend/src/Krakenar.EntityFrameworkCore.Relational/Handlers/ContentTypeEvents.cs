@@ -17,6 +17,7 @@ public class ContentTypeEvents : IEventHandler<ContentTypeCreated>,
   IEventHandler<ContentTypeDeleted>,
   IEventHandler<ContentTypeFieldChanged>,
   IEventHandler<ContentTypeFieldRemoved>,
+  IEventHandler<ContentTypeFieldSwitched>,
   IEventHandler<ContentTypeUniqueNameChanged>,
   IEventHandler<ContentTypeUpdated>
 {
@@ -122,6 +123,36 @@ public class ContentTypeEvents : IEventHandler<ContentTypeCreated>,
       Context.UniqueIndex.RemoveRange(uniqueIndices);
 
       Context.FieldDefinitions.Remove(fieldDefinition);
+    }
+
+    await Context.SaveChangesAsync(cancellationToken);
+
+    Logger.LogSuccess(@event);
+  }
+
+  public virtual async Task HandleAsync(ContentTypeFieldSwitched @event, CancellationToken cancellationToken)
+  {
+    ContentTypeEntity? contentType = await Context.ContentTypes
+      .Include(x => x.FieldDefinitions)
+      .SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
+    if (contentType is null || contentType.Version != (@event.Version - 1))
+    {
+      Logger.LogUnexpectedVersion(@event, contentType);
+      return;
+    }
+
+    contentType.SwitchFields(@event);
+
+    FieldDefinitionEntity? source = contentType.FieldDefinitions.SingleOrDefault(field => field.Id == @event.SourceId);
+    FieldDefinitionEntity? destination = contentType.FieldDefinitions.SingleOrDefault(field => field.Id == @event.DestinationId);
+    if (source is not null && destination is not null)
+    {
+      int order = source.Order;
+      source.Order = -1;
+      await Context.SaveChangesAsync(cancellationToken);
+
+      source.Order = destination.Order;
+      destination.Order = order;
     }
 
     await Context.SaveChangesAsync(cancellationToken);

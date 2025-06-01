@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { TarButton } from "logitar-vue3-ui";
 import { arrayUtils } from "logitar-js";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
 import DeleteFieldDefinition from "./DeleteFieldDefinition.vue";
@@ -12,8 +13,9 @@ import RequiredBadge from "./RequiredBadge.vue";
 import StatusBlock from "@/components/shared/StatusBlock.vue";
 import UniqueBadge from "./UniqueBadge.vue";
 import type { ContentType } from "@/types/contents";
-import type { FieldDefinition } from "@/types/fields";
+import type { FieldDefinition, SwitchFieldDefinitionsPayload } from "@/types/fields";
 import { formatFieldDefinition } from "@/helpers/format";
+import { switchFieldDefinitions } from "@/api/fields/definitions";
 
 const { orderBy } = arrayUtils;
 const { t } = useI18n();
@@ -22,14 +24,37 @@ const props = defineProps<{
   contentType: ContentType;
 }>();
 
+const isLoading = ref<boolean>(false);
+
 const fields = computed<FieldDefinition[]>(() => orderBy(props.contentType.fields, "order"));
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "created", value: ContentType): void;
   (e: "deleted", value: ContentType): void;
   (e: "error", value: unknown): void;
+  (e: "reordered", value: ContentType): void;
   (e: "updated", value: ContentType): void;
 }>();
+
+async function onMove(index: number, direction: -1 | 1): Promise<void> {
+  if (!isLoading.value) {
+    isLoading.value = true;
+    try {
+      // NOTE(fpion): -1 moves up the field, +1 moves down the field.
+      const source: FieldDefinition | undefined = fields.value[index];
+      const destination: FieldDefinition | undefined = fields.value[index + direction];
+      const payload: SwitchFieldDefinitionsPayload = {
+        fields: [source?.id, destination?.id],
+      };
+      const contentType: ContentType = await switchFieldDefinitions(props.contentType.id, payload);
+      emit("reordered", contentType);
+    } catch (e: unknown) {
+      emit("error", e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+}
 </script>
 
 <template>
@@ -47,7 +72,7 @@ defineEmits<{
         </tr>
       </thead>
       <tbody>
-        <tr v-for="field in fields" :key="field.id">
+        <tr v-for="(field, index) in fields" :key="field.id">
           <td>
             {{ formatFieldDefinition(field) }}
             <template v-if="field.isInvariant || field.isRequired || field.isIndexed || field.isUnique">
@@ -65,7 +90,17 @@ defineEmits<{
           </td>
           <td><StatusBlock :actor="field.updatedBy" :date="field.updatedOn" /></td>
           <td>
-            <FieldDefinitionEdit class="me-1" :content-type="contentType" :field="field" @error="$emit('error', $event)" @saved="$emit('updated', $event)" />
+            <div class="btn-group me-1" role="group" aria-label="Basic example">
+              <TarButton :disabled="index === 0 || isLoading" icon="fas fa-arrow-up" :loading="isLoading" :status="t('loading')" @click="onMove(index, -1)" />
+              <TarButton
+                :disabled="index === fields.length - 1 || isLoading"
+                icon="fas fa-arrow-down"
+                :loading="isLoading"
+                :status="t('loading')"
+                @click="onMove(index, +1)"
+              />
+            </div>
+            <FieldDefinitionEdit class="mx-1" :content-type="contentType" :field="field" @error="$emit('error', $event)" @saved="$emit('updated', $event)" />
             <DeleteFieldDefinition
               class="ms-1"
               :content-type="contentType"

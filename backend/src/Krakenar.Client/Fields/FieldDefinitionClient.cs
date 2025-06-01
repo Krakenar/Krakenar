@@ -24,6 +24,12 @@ public class FieldDefinitionClient : BaseClient, IFieldDefinitionService
     return (await DeleteAsync<ContentType>(uri, cancellationToken)).Value;
   }
 
+  public virtual async Task<ContentType?> SwitchAsync(Guid contentTypeId, SwitchFieldDefinitionsPayload payload, CancellationToken cancellationToken)
+  {
+    Uri uri = new($"{GetPath(contentTypeId).ToString().TrimEnd('/')}/switch", UriKind.Relative);
+    return (await PatchAsync<ContentType>(uri, payload, cancellationToken)).Value;
+  }
+
   public virtual async Task<ContentType?> UpdateAsync(Guid contentTypeId, Guid fieldId, UpdateFieldDefinitionPayload payload, CancellationToken cancellationToken)
   {
     Uri uri = GetPath(contentTypeId, fieldId);

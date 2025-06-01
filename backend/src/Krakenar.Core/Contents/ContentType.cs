@@ -214,6 +214,40 @@ public class ContentType : AggregateRoot
     _uniqueName = @event.UniqueName;
   }
 
+  public void SwitchFields(FieldDefinition source, FieldDefinition destination, ActorId? actorId = null) => SwitchFields(source.Id, destination.Id, actorId);
+  public void SwitchFields(Guid sourceId, Guid destinationId, ActorId? actorId = null)
+  {
+    if (sourceId != destinationId)
+    {
+      if (!HasField(sourceId))
+      {
+        throw new ArgumentException($"The field 'Id={sourceId}' was not found on content type '{this}'.", nameof(sourceId));
+      }
+      if (!HasField(destinationId))
+      {
+        throw new ArgumentException($"The field 'Id={destinationId}' was not found on content type '{this}'.", nameof(destinationId));
+      }
+      Raise(new ContentTypeFieldSwitched(sourceId, destinationId), actorId);
+    }
+  }
+  protected virtual void Handle(ContentTypeFieldSwitched @event)
+  {
+    int sourceIndex = _fieldIdIndex[@event.SourceId];
+    FieldDefinition source = _fields[sourceIndex];
+
+    int destinationIndex = _fieldIdIndex[@event.DestinationId];
+    FieldDefinition destination = _fields[destinationIndex];
+
+    _fields[sourceIndex] = destination;
+    _fields[destinationIndex] = source;
+
+    _fieldIdIndex[source.Id] = destinationIndex;
+    _fieldIdIndex[destination.Id] = sourceIndex;
+
+    _fieldNameIndex[Normalize(source.UniqueName)] = destinationIndex;
+    _fieldNameIndex[Normalize(destination.UniqueName)] = sourceIndex;
+  }
+
   public FieldDefinition? TryGetField(Guid id) => _fieldIdIndex.TryGetValue(id, out int index) ? _fields[index] : null;
   public FieldDefinition? TryGetField(Identifier uniqueName) => _fieldNameIndex.TryGetValue(Normalize(uniqueName), out int index) ? _fields[index] : null;
 

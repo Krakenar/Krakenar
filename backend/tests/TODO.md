@@ -57,6 +57,7 @@
 - CreateOrReplaceFieldType
 - DeleteFieldDefinition
 - DeleteFieldType
+- SwitchFieldDefinitions
 - UpdateFieldDefinition
 - UpdateFieldType
 

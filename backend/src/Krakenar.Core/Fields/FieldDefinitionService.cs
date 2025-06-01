@@ -25,6 +25,12 @@ public class FieldDefinitionService : IFieldDefinitionService
     return await CommandBus.ExecuteAsync(command, cancellationToken);
   }
 
+  public virtual async Task<ContentTypeDto?> SwitchAsync(Guid contentTypeId, SwitchFieldDefinitionsPayload payload, CancellationToken cancellationToken)
+  {
+    SwitchFieldDefinitions command = new(contentTypeId, payload);
+    return await CommandBus.ExecuteAsync(command, cancellationToken);
+  }
+
   public virtual async Task<ContentTypeDto?> UpdateAsync(Guid contentTypeId, Guid fieldId, UpdateFieldDefinitionPayload payload, CancellationToken cancellationToken)
   {
     UpdateFieldDefinition command = new(contentTypeId, fieldId, payload);

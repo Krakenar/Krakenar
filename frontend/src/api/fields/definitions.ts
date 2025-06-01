@@ -1,7 +1,7 @@
 import { urlUtils } from "logitar-js";
 
-import type { CreateOrReplaceFieldDefinitionPayload } from "@/types/fields";
-import { _delete, post, put } from "..";
+import type { CreateOrReplaceFieldDefinitionPayload, SwitchFieldDefinitionsPayload } from "@/types/fields";
+import { _delete, patch, post, put } from "..";
 import type { ContentType } from "@/types/contents";
 
 function createUrlBuilder(contentTypeId: string, fieldId?: string): urlUtils.IUrlBuilder {
@@ -26,4 +26,11 @@ export async function deleteFieldDefinition(contentTypeId: string, fieldId: stri
 export async function replaceFieldDefinition(contentTypeId: string, fieldId: string, payload: CreateOrReplaceFieldDefinitionPayload): Promise<ContentType> {
   const url: string = createUrlBuilder(contentTypeId, fieldId).buildRelative();
   return (await put<CreateOrReplaceFieldDefinitionPayload, ContentType>(url, payload)).data;
+}
+
+export async function switchFieldDefinitions(contentTypeId: string, payload: SwitchFieldDefinitionsPayload): Promise<ContentType> {
+  const url: string = new urlUtils.UrlBuilder({ path: "/api/contents/types/{contentTypeId}/fields/switch" })
+    .setParameter("contentTypeId", contentTypeId)
+    .buildRelative();
+  return (await patch<SwitchFieldDefinitionsPayload, ContentType>(url, payload)).data;
 }
