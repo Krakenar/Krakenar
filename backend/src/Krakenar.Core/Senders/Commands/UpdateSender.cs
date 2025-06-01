@@ -81,13 +81,13 @@ public class UpdateSenderHandler : ICommandHandler<UpdateSender, SenderDto?>
     }
 
     RealmId? realmId = sender.RealmId;
-    if (payload.SendGrid is not null)
+    if (payload.SendGrid is not null && !((SendGridSettings)sender.Settings).AreEqual(payload.SendGrid, EncryptionManager, realmId))
     {
       EncryptedString apiKey = EncryptionManager.Encrypt(payload.SendGrid.ApiKey, realmId);
       SendGridSettings settings = new(apiKey.Value);
       sender.SetSettings(settings, actorId);
     }
-    if (payload.Twilio is not null)
+    if (payload.Twilio is not null && !((TwilioSettings)sender.Settings).AreEqual(payload.Twilio, EncryptionManager, realmId))
     {
       EncryptedString accountSid = EncryptionManager.Encrypt(payload.Twilio.AccountSid, realmId);
       EncryptedString authenticationToken = EncryptionManager.Encrypt(payload.Twilio.AuthenticationToken, realmId);

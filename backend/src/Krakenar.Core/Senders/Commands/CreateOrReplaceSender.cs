@@ -121,19 +121,13 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
       sender.Description = description;
     }
 
-    if (reference.Settings != settings)
+    if (payload.SendGrid is not null && !((SendGridSettings)reference.Settings).AreEqual(payload.SendGrid, EncryptionManager, realmId))
     {
-      switch (settings.Provider)
-      {
-        case SenderProvider.SendGrid:
-          sender.SetSettings((SendGridSettings)settings);
-          break;
-        case SenderProvider.Twilio:
-          sender.SetSettings((TwilioSettings)settings);
-          break;
-        default:
-          throw new SenderProviderNotSupportedException(settings.Provider);
-      }
+      sender.SetSettings((SendGridSettings)settings);
+    }
+    if (payload.Twilio is not null && !((TwilioSettings)reference.Settings).AreEqual(payload.Twilio, EncryptionManager, realmId))
+    {
+      sender.SetSettings((TwilioSettings)settings);
     }
 
     sender.Update(actorId);
