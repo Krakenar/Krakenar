@@ -10,6 +10,7 @@ import SentMessage from "./SentMessage.vue";
 import TemplateFormSelect from "@/components/templates/TemplateFormSelect.vue";
 import VariableList from "./VariableList.vue";
 import locales from "@/resources/locales.json";
+import type { CurrentUser } from "@/types/account";
 import type { Locale } from "@/types/i18n";
 import type { MediaType } from "@/types/contents";
 import type { SendMessagePayload, SentMessages, Variable } from "@/types/messages";
@@ -20,8 +21,10 @@ import { isError } from "@/helpers/error";
 import { sendMessage } from "@/api/messages";
 import { useAccountStore } from "@/stores/account";
 import { useForm } from "@/forms";
+import { useRealmStore } from "@/stores/realm";
 
 const account = useAccountStore();
+const realm = useRealmStore();
 const { locale, t } = useI18n();
 
 const props = defineProps<{
@@ -52,18 +55,33 @@ async function submit(): Promise<void> {
   try {
     missingRecipientContacts.value = false;
     sentMessageId.value = "";
-    const payload: SendMessagePayload = {
-      sender: props.sender?.id ?? selectedSender.value?.id ?? "",
-      template: props.template?.id ?? selectedTemplate.value?.id ?? "",
-      recipients: [{ type: "To", userId: account.currentUser?.id }],
-      ignoreUserLocale: ignoreUserLocale.value,
-      locale: selectedLocale.value?.code,
-      variables: variables.value,
-      isDemo: true,
-    };
-    const sentMessages: SentMessages = await sendMessage(payload);
-    if (sentMessages.ids.length > 0) {
-      sentMessageId.value = sentMessages.ids[0];
+    const sender: Sender | undefined = props.sender ?? selectedSender.value;
+    const template: Template | undefined = props.template ?? selectedTemplate.value;
+    const user: CurrentUser | undefined = account.currentUser;
+    if (sender && template && user) {
+      const payload: SendMessagePayload = {
+        sender: sender.id,
+        template: template.id,
+        recipients: [],
+        ignoreUserLocale: ignoreUserLocale.value,
+        locale: selectedLocale.value?.code,
+        variables: variables.value,
+        isDemo: true,
+      };
+      if (realm.currentRealm) {
+        payload.recipients.push({
+          type: "To",
+          email: sender.kind === "Email" && user.emailAddress ? { address: user.emailAddress, isVerified: false } : undefined,
+          phone: sender.kind === "Phone" && user.phoneNumber ? { number: user.phoneNumber, isVerified: false } : undefined,
+          displayName: user.displayName,
+        });
+      } else {
+        payload.recipients.push({ type: "To", userId: user.id });
+      }
+      const sentMessages: SentMessages = await sendMessage(payload);
+      if (sentMessages.ids.length > 0) {
+        sentMessageId.value = sentMessages.ids[0];
+      }
     }
   } catch (e: unknown) {
     if (isError(e, StatusCodes.BadRequest, ErrorCodes.MissingRecipientContacts)) {

@@ -6,7 +6,9 @@ import { parsingUtils } from "logitar-js";
 import { useI18n } from "vue-i18n";
 
 import type { Actor } from "@/types/actor";
+import { useRealmStore } from "@/stores/realm";
 
+const realm = useRealmStore();
 const { d, t } = useI18n();
 const { parseNumber } = parsingUtils;
 
@@ -31,19 +33,20 @@ const icon = computed<string | undefined>(() => {
   switch (props.actor.type) {
     case "ApiKey":
       return "fas fa-key";
-    case "System":
-      return "fas fa-robot";
     case "User":
       return "fas fa-user";
   }
+  return "fas fa-robot";
 });
 const parsedRevision = computed<number | undefined>(() => parseNumber(props.revision));
 const route = computed<RouteLocationRaw | undefined>(() => {
-  switch (props.actor.type) {
-    case "ApiKey":
-      return { name: "ApiKeyEdit", params: { id: props.actor.id } };
-    case "User":
-      return { name: "UserEdit", params: { id: props.actor.id } };
+  if (!props.actor.isDeleted && (props.actor.realmId || undefined) === (realm.currentRealm?.id || undefined)) {
+    switch (props.actor.type) {
+      case "ApiKey":
+        return { name: "ApiKeyEdit", params: { id: props.actor.id } };
+      case "User":
+        return { name: "UserEdit", params: { id: props.actor.id } };
+    }
   }
   return undefined;
 });
@@ -57,10 +60,10 @@ const variant = computed<string | undefined>(() => (props.actor.type === "ApiKey
       <TarAvatar :display-name="displayName" :email-address="actor.emailAddress" :icon="icon" :size="24" :url="actor.pictureUrl" :variant="variant" />
       {{ displayName }}
     </RouterLink>
-    <template v-else>
+    <span v-else class="text-muted">
       <TarAvatar :display-name="displayName" :email-address="actor.emailAddress" :icon="icon" :size="24" :url="actor.pictureUrl" :variant="variant" />
       {{ displayName }}
-    </template>
+    </span>
     <template v-if="parsedRevision"> {{ t(revisionFormat, { revision: parsedRevision }) }}</template>
   </span>
 </template>

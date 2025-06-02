@@ -14,12 +14,12 @@ const router = createRouter({
       path: "/",
       component: HomeView,
     },
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      component: () => import("./views/DashboardView.vue"),
-    },
     // Account
+    {
+      name: "Profile",
+      path: "/profile",
+      component: () => import("./views/users/UserEdit.vue"),
+    },
     {
       name: "SignIn",
       path: "/sign-in",
@@ -31,12 +31,6 @@ const router = createRouter({
       path: "/sign-out",
       component: () => import("./views/account/SignOutView.vue"),
     },
-    // Configuration
-    {
-      name: "Configuration",
-      path: "/configuration",
-      component: () => import("./views/ConfigurationEdit.vue"),
-    },
     // API Keys
     {
       name: "ApiKeyList",
@@ -47,6 +41,12 @@ const router = createRouter({
       name: "ApiKeyEdit",
       path: "/api-keys/:id",
       component: () => import("./views/apiKeys/ApiKeyEdit.vue"),
+    },
+    // Configuration
+    {
+      name: "Configuration",
+      path: "/configuration",
+      component: () => import("./views/ConfigurationEdit.vue"),
     },
     // Contents
     {
@@ -69,6 +69,12 @@ const router = createRouter({
       name: "ContentTypeEdit",
       path: "/contents/types/:id",
       component: () => import("./views/contents/ContentTypeEdit.vue"),
+    },
+    // Dashboard
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      component: () => import("./views/DashboardView.vue"),
     },
     // Dictionaries
     {

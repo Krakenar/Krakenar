@@ -26,10 +26,12 @@ import { handleErrorKey } from "@/inject/App";
 import { readConfiguration } from "@/api/configuration";
 import { readUser, updateUser } from "@/api/users";
 import { useAccountStore } from "@/stores/account";
+import { useRealmStore } from "@/stores/realm";
 import { useToastStore } from "@/stores/toast";
 
 const account = useAccountStore();
 const handleError = inject(handleErrorKey) as (e: unknown) => void;
+const realm = useRealmStore();
 const route = useRoute();
 const router = useRouter();
 const toasts = useToastStore();
@@ -53,6 +55,7 @@ function setCurrentUser(user: User): void {
       ...account.currentUser,
       displayName: user.fullName ?? user.uniqueName,
       emailAddress: user.email?.address,
+      phoneNumber: user.phone?.e164Formatted,
       pictureUrl: user.picture,
     };
     account.signIn(currentUser);
@@ -157,7 +160,18 @@ async function saveCustomAttributes(customAttributes: CustomAttribute[]): Promis
 
 onMounted(async () => {
   try {
-    const id = route.params.id as string;
+    let id: string = "";
+    switch (route.name) {
+      case "Profile":
+        realm.exit();
+        if (account.currentUser) {
+          id = account.currentUser.id;
+        }
+        break;
+      case "UserEdit":
+        id = route.params.id as string;
+        break;
+    }
     user.value = await readUser(id);
     if (!user.value.realm) {
       configuration.value = await readConfiguration();

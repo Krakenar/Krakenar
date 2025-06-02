@@ -3,6 +3,7 @@ export type CurrentUser = {
   sessionId: string;
   displayName: string;
   emailAddress?: string | null;
+  phoneNumber?: string | null;
   pictureUrl?: string | null;
 };
 

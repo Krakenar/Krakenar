@@ -10,6 +10,7 @@ public record CurrentUser
 
   public string DisplayName { get; set; }
   public string? EmailAddress { get; set; }
+  public string? PhoneNumber { get; set; }
   public string? PictureUrl { get; set; }
 
   public CurrentUser() : this(string.Empty)
@@ -32,6 +33,7 @@ public record CurrentUser
 
     DisplayName = user.FullName ?? user.UniqueName;
     EmailAddress = user.Email?.Address;
+    PhoneNumber = user.Phone?.E164Formatted;
     PictureUrl = user.Picture;
   }
 }
