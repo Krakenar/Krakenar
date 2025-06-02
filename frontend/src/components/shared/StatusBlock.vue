@@ -5,7 +5,9 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 import type { Actor } from "@/types/actor";
+import { useRealmStore } from "@/stores/realm";
 
+const realm = useRealmStore();
 const { d, t } = useI18n();
 
 const props = defineProps<{
@@ -21,18 +23,19 @@ const icon = computed<string | undefined>(() => {
   switch (props.actor.type) {
     case "ApiKey":
       return "fas fa-key";
-    case "System":
-      return "fas fa-robot";
     case "User":
       return "fas fa-user";
   }
+  return "fas fa-robot";
 });
 const route = computed<RouteLocationRaw | undefined>(() => {
-  switch (props.actor.type) {
-    case "ApiKey":
-      return { name: "ApiKeyEdit", params: { id: props.actor.id } };
-    case "User":
-      return { name: "UserEdit", params: { id: props.actor.id } };
+  if (!props.actor.isDeleted && (props.actor.realmId || undefined) === (realm.currentRealm?.id || undefined)) {
+    switch (props.actor.type) {
+      case "ApiKey":
+        return { name: "ApiKeyEdit", params: { id: props.actor.id } };
+      case "User":
+        return { name: "UserEdit", params: { id: props.actor.id } };
+    }
   }
   return undefined;
 });
@@ -54,7 +57,7 @@ const variant = computed<string | undefined>(() => (props.actor.type === "ApiKey
       <br />
       {{ t("by") }}
       <RouterLink v-if="route" :to="route" target="_blank">{{ displayName }}</RouterLink>
-      <template v-else>{{ displayName }}</template>
+      <span v-else class="text-muted">{{ displayName }}</span>
     </div>
   </div>
 </template>
