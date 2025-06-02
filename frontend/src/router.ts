@@ -31,12 +31,6 @@ const router = createRouter({
       path: "/sign-out",
       component: () => import("./views/account/SignOutView.vue"),
     },
-    // Dashboard
-    {
-      name: "Dashboard",
-      path: "/dashboard",
-      component: () => import("./views/DashboardView.vue"),
-    },
     // API Keys
     {
       name: "ApiKeyList",
@@ -75,6 +69,12 @@ const router = createRouter({
       name: "ContentTypeEdit",
       path: "/contents/types/:id",
       component: () => import("./views/contents/ContentTypeEdit.vue"),
+    },
+    // Dashboard
+    {
+      name: "Dashboard",
+      path: "/dashboard",
+      component: () => import("./views/DashboardView.vue"),
     },
     // Dictionaries
     {
