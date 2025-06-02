@@ -4,7 +4,44 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>True</IsPackable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Krakenar.Web</Title>
+    <Authors>Francis Pion</Authors>
+    <Company>Logitar</Company>
+    <Product>Krakenar</Product>
+    <Description>Web interface of the Krakenar tool suite.</Description>
+    <Copyright>© 2025 Logitar All Rights Reserved.</Copyright>
+    <PackageIcon>krakenar.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/Krakenar/Krakenar</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+    <FileVersion>$(AssemblyVersion)</FileVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Version>0.1.0</Version>
+    <NeutralLanguage>en-CA</NeutralLanguage>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageTags>logitar;krakenar;web;interface;rest;api;controller;authentication;authorization;filter;middleware;razor;view</PackageTags>
+    <PackageProjectUrl>https://github.com/Krakenar/Krakenar/tree/main/backend/src/Krakenar.Web</PackageProjectUrl>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="krakenar.png">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="LICENSE">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <None Update="README.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>

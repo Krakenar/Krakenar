@@ -1,0 +1,47 @@
+name: Publish NuGet Packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ./backend
+
+jobs:
+  publish:
+    name: Publish NuGet Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Build Krakenar Frontend
+        run: |
+          cd ../frontend
+          npm clean-install
+          npm run build
+          cd ../backend
+
+      - name: Setup .NET9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Solution
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal --filter Category=Unit
+
+      - name: Push NuGet
+        run: dotnet nuget push "**/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate --source https://api.nuget.org/v3/index.json
