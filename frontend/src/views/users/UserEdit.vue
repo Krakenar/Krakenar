@@ -55,6 +55,7 @@ function setCurrentUser(user: User): void {
       ...account.currentUser,
       displayName: user.fullName ?? user.uniqueName,
       emailAddress: user.email?.address,
+      phoneNumber: user.phone?.e164Formatted,
       pictureUrl: user.picture,
     };
     account.signIn(currentUser);
