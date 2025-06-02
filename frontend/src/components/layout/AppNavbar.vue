@@ -185,7 +185,7 @@ watchEffect(() => {
           </template>
           <template v-if="user">
             <li class="nav-item d-block d-lg-none">
-              <RouterLink class="nav-link" :to="{ name: 'UserEdit', params: { id: user.id } }">
+              <RouterLink class="nav-link" :to="{ name: 'Profile' }">
                 <TarAvatar :display-name="user.displayName" :email-address="user.emailAddress" :size="24" :url="user.pictureUrl" />
                 {{ user.displayName }}
               </RouterLink>
@@ -201,7 +201,7 @@ watchEffect(() => {
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
-                  <RouterLink class="dropdown-item" :to="{ name: 'UserEdit', params: { id: user.id } }"><UserIcon /> {{ user.displayName }}</RouterLink>
+                  <RouterLink class="dropdown-item" :to="{ name: 'Profile' }"><UserIcon /> {{ user.displayName }}</RouterLink>
                 </li>
                 <li>
                   <RouterLink class="dropdown-item" :to="{ name: 'SignOut' }">
