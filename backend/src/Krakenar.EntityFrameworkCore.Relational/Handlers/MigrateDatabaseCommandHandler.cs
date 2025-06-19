@@ -10,10 +10,10 @@ public class MigrateDatabaseCommandHandler : ICommandHandler<MigrateDatabase>
   protected virtual EventContext EventContext { get; }
   protected virtual KrakenarContext KrakenarContext { get; }
 
-  public MigrateDatabaseCommandHandler(EventContext eventContext, KrakenarContext krakenarContet)
+  public MigrateDatabaseCommandHandler(EventContext eventContext, KrakenarContext krakenarContext)
   {
     EventContext = eventContext;
-    KrakenarContext = krakenarContet;
+    KrakenarContext = krakenarContext;
   }
 
   public virtual async Task HandleAsync(MigrateDatabase _, CancellationToken cancellationToken)
