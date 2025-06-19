@@ -45,6 +45,7 @@ services:
     image: krakenar
     container_name: Krakenar
     depends_on:
+      - krakenar_mongo
       - krakenar_mssql
       - krakenar_postgres
     restart: unless-stopped
