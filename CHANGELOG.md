@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+Nothing yet.
+
+## [1.0.1] - 2025-06-28
+
 ### Fixed
 
 - Content publishing after draft saved.
@@ -17,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release. 🚀
 
-[unreleased]: https://github.com/Krakenar/Krakenar/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/Krakenar/Krakenar/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/Krakenar/Krakenar/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Krakenar/Krakenar/compare/v0.1.0...v1.0.0
 [0.1.0]: https://github.com/Krakenar/Krakenar/releases/tag/v0.1.0
