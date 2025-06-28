@@ -16,14 +16,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Krakenar/Krakenar</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageReleaseNotes>Various fixes, see CHANGELOG.</PackageReleaseNotes>
     <PackageTags>logitar;krakenar;contracts</PackageTags>
     <PackageProjectUrl>https://github.com/Krakenar/Krakenar/tree/main/backend/src/Krakenar.Contracts</PackageProjectUrl>
   </PropertyGroup>
