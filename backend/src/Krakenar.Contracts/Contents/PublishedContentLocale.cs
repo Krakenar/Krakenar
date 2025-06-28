@@ -6,10 +6,10 @@ namespace Krakenar.Contracts.Contents;
 
 public record PublishedContentLocale
 {
-  public PublishedContent Content { get; set; } = new();
+  public PublishedContent Content { get; set; }
   public Language? Language { get; set; }
 
-  public string UniqueName { get; set; }
+  public string UniqueName { get; set; } = string.Empty;
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
 
@@ -19,13 +19,14 @@ public record PublishedContentLocale
   public Actor PublishedBy { get; set; } = new();
   public DateTime PublishedOn { get; set; }
 
-  public PublishedContentLocale() : this(string.Empty)
+  public PublishedContentLocale()
   {
+    Content = new PublishedContent(this);
   }
 
-  public PublishedContentLocale(string uniqueName)
+  public PublishedContentLocale(PublishedContent content)
   {
-    UniqueName = uniqueName;
+    Content = content;
   }
 
   public override string ToString() => $"{DisplayName ?? UniqueName}";

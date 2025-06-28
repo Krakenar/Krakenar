@@ -263,6 +263,10 @@ public class PublishedContentQuerier : IPublishedContentQuerier
       string[] languageCodes = payload.Language.Codes.Select(Helper.Normalize).ToArray();
       builder.Where(KrakenarDb.PublishedContents.LanguageCode, Operators.IsIn(languageCodes));
     }
+    if (payload.Language.IsDefault.HasValue)
+    {
+      builder.Where(KrakenarDb.PublishedContents.LanguageIsDefault, Operators.IsEqualTo(payload.Language.IsDefault.Value));
+    }
 
     IQueryable<Entities.PublishedContent> query = PublishedContents.FromQuery(builder).AsNoTracking();
 

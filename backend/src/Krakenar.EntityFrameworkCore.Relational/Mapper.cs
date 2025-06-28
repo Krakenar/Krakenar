@@ -475,9 +475,8 @@ public sealed class Mapper
 
   public PublishedContentLocale ToPublishedContentLocale(Entities.PublishedContent source, PublishedContent content, Language? language)
   {
-    PublishedContentLocale destination = new()
+    PublishedContentLocale destination = new(content)
     {
-      Content = content,
       Language = language,
       UniqueName = source.UniqueName,
       DisplayName = source.DisplayName,

@@ -6,8 +6,18 @@ public class PublishedContent
 
   public ContentType ContentType { get; set; } = new();
 
-  public PublishedContentLocale Invariant { get; set; } = new();
+  public PublishedContentLocale Invariant { get; set; }
   public List<PublishedContentLocale> Locales { get; set; } = [];
+
+  public PublishedContent()
+  {
+    Invariant = new PublishedContentLocale(this);
+  }
+
+  public PublishedContent(PublishedContentLocale invariant)
+  {
+    Invariant = invariant;
+  }
 
   public PublishedContentLocale FindDefaultLocale()
   {
