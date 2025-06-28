@@ -19,6 +19,7 @@ export type ContentLocale = {
   displayName?: string | null;
   description?: string | null;
   fieldValues: FieldValue[];
+  version: number;
   createdBy: Actor;
   createdOn: string;
   updatedBy: Actor;

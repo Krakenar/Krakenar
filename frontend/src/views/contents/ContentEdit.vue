@@ -65,6 +65,7 @@ function addLocale(): void {
       language: language.value,
       uniqueName: "",
       fieldValues: [],
+      version: 0,
       createdBy: actor,
       createdOn: now,
       updatedBy: actor,

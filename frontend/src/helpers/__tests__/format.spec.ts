@@ -46,6 +46,7 @@ const contentType: ContentType = {
 const contentLocale: ContentLocale = {
   uniqueName: "acura-tlx",
   fieldValues: [],
+  version: 0,
   createdBy: actor,
   createdOn: now,
   updatedBy: actor,
