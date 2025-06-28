@@ -35,11 +35,14 @@ const isDisabled = computed<boolean>(() => {
     return true;
   }
   if (isAll.value) {
-    return props.content.invariant.isPublished && props.content.locales.every((locale) => locale.isPublished);
+    return (
+      props.content.invariant.publishedVersion === props.content.invariant.version &&
+      props.content.locales.every((locale) => locale.publishedVersion === locale.version)
+    );
   }
   const locale: ContentLocale =
     (props.language ? props.content.locales.find((locale) => locale.language?.id === props.language?.id) : undefined) ?? props.content.invariant;
-  return locale.isPublished;
+  return locale.publishedVersion === locale.version;
 });
 
 const emit = defineEmits<{

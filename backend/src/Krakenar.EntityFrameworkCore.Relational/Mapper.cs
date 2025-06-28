@@ -139,6 +139,7 @@ public sealed class Mapper
       UniqueName = source.UniqueName,
       DisplayName = source.DisplayName,
       Description = source.Description,
+      Version = source.Version,
       CreatedBy = TryFindActor(source.CreatedBy) ?? _system,
       CreatedOn = source.CreatedOn.AsUniversalTime(),
       UpdatedBy = TryFindActor(source.UpdatedBy) ?? _system,
