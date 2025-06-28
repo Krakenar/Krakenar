@@ -6,10 +6,10 @@ namespace Krakenar.Contracts.Contents;
 
 public record ContentLocale
 {
-  public Content? Content { get; set; }
+  public Content Content { get; set; }
   public Language? Language { get; set; }
 
-  public string UniqueName { get; set; }
+  public string UniqueName { get; set; } = string.Empty;
   public string? DisplayName { get; set; }
   public string? Description { get; set; }
 
@@ -26,12 +26,13 @@ public record ContentLocale
   public Actor? PublishedBy { get; set; }
   public DateTime? PublishedOn { get; set; }
 
-  public ContentLocale() : this(string.Empty)
+  public ContentLocale()
   {
+    Content = new Content(this);
   }
 
-  public ContentLocale(string uniqueName)
+  public ContentLocale(Content content)
   {
-    UniqueName = uniqueName;
+    Content = content;
   }
 }
