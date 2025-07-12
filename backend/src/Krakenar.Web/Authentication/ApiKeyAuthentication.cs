@@ -51,11 +51,4 @@ public class ApiKeyAuthenticationHandler : AuthenticationHandler<ApiKeyAuthentic
 
     return AuthenticateResult.NoResult();
   }
-
-  private AuthenticateResult Fail(string reason)
-  {
-    Context.SignOut();
-
-    return AuthenticateResult.Fail(reason);
-  }
 }
