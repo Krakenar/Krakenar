@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Retry mechanism.
+- `AUTHENTICATION_SILENT_AUTHENTICATED_EVENT` flag to remove authenticated events (`ApiKeyAuthenticated` and `UserAuthenticated`) from Event Sourcing.
 
 ## [1.0.1] - 2025-06-28
 

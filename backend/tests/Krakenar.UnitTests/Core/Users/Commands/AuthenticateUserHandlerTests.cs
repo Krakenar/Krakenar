@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Authentication;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Users.Events;
@@ -19,6 +20,7 @@ public class AuthenticateUserHandlerTests
   private readonly Faker _faker = new();
 
   private readonly Mock<IApplicationContext> _applicationContext = new();
+  private readonly Mock<IAuthenticationService> _authenticationService = new();
   private readonly Mock<IUserQuerier> _userQuerier = new();
   private readonly Mock<IUserManager> _userManager = new();
 
@@ -26,7 +28,7 @@ public class AuthenticateUserHandlerTests
 
   public AuthenticateUserHandlerTests()
   {
-    _handler = new(_applicationContext.Object, _userManager.Object, _userQuerier.Object);
+    _handler = new(_applicationContext.Object, _authenticationService.Object, _userManager.Object, _userQuerier.Object);
   }
 
   [Theory(DisplayName = "It should authenticate the user.")]
@@ -57,7 +59,7 @@ public class AuthenticateUserHandlerTests
     Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(1));
     Assert.Contains(user.Changes, change => change is UserAuthenticated authenticated && authenticated.ActorId == (actorId ?? new ActorId(user.Id.Value)));
 
-    _userManager.Verify(x => x.SaveAsync(user, _cancellationToken), Times.Once);
+    _authenticationService.Verify(x => x.AuthenticatedAsync(user, _cancellationToken), Times.Once);
   }
 
   [Fact(DisplayName = "It should throw UserNotFoundException when the user was not found.")]

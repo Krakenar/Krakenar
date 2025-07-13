@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Authentication;
 using Krakenar.Core.Users.Validators;
 using Logitar;
 using UserDto = Krakenar.Contracts.Users.User;
@@ -24,12 +25,18 @@ public record AuthenticateUser(AuthenticateUserPayload Payload) : ICommand<UserD
 public class AuthenticateUserHandler : ICommandHandler<AuthenticateUser, UserDto>
 {
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IAuthenticationService AuthenticationService { get; }
   protected virtual IUserManager UserManager { get; }
   protected virtual IUserQuerier UserQuerier { get; }
 
-  public AuthenticateUserHandler(IApplicationContext applicationContext, IUserManager userManager, IUserQuerier userQuerier)
+  public AuthenticateUserHandler(
+    IApplicationContext applicationContext,
+    IAuthenticationService authenticationService,
+    IUserManager userManager,
+    IUserQuerier userQuerier)
   {
     ApplicationContext = applicationContext;
+    AuthenticationService = authenticationService;
     UserManager = userManager;
     UserQuerier = userQuerier;
   }
@@ -45,7 +52,7 @@ public class AuthenticateUserHandler : ICommandHandler<AuthenticateUser, UserDto
 
     user.Authenticate(payload.Password, ApplicationContext.ActorId);
 
-    await UserManager.SaveAsync(user, cancellationToken);
+    await AuthenticationService.AuthenticatedAsync(user, cancellationToken);
 
     return await UserQuerier.ReadAsync(user, cancellationToken);
   }
