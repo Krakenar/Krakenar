@@ -54,6 +54,7 @@ using Krakenar.Core.Senders.Queries;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
+using Krakenar.Core.Settings;
 using Krakenar.Core.Templates;
 using Krakenar.Core.Templates.Commands;
 using Krakenar.Core.Templates.Queries;
@@ -63,6 +64,7 @@ using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
 using Krakenar.Core.Users.Queries;
 using Logitar.EventSourcing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
@@ -94,6 +96,7 @@ public static class DependencyInjectionExtensions
       .AddKrakenarQueries()
       .AddKrakenarRepositories()
       .AddLogitarEventSourcing()
+      .AddSingleton(InitializeRetrySettings)
       .AddSingleton<IAddressHelper, AddressHelper>()
       .AddScoped<ILoggingService, LoggingService>()
       .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>();
@@ -256,5 +259,10 @@ public static class DependencyInjectionExtensions
       .AddTransient<ISessionRepository, SessionRepository>()
       .AddTransient<ITemplateRepository, TemplateRepository>()
       .AddTransient<IUserRepository, UserRepository>();
+  }
+
+  public static RetrySettings InitializeRetrySettings(this IServiceProvider serviceProvider)
+  {
+    return RetrySettings.Initialize(serviceProvider.GetRequiredService<IConfiguration>());
   }
 }
