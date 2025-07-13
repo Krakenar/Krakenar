@@ -4,7 +4,7 @@ namespace Krakenar.Core.Settings;
 
 public record RetrySettings
 {
-  private const string SectionKey = "Retry";
+  public const string SectionKey = "Retry";
 
   public RetryAlgorithm Algorithm { get; set; }
   public int Delay { get; set; }
