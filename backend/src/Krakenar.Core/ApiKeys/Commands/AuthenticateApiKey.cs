@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.ApiKeys;
 using Krakenar.Core.ApiKeys.Validators;
+using Krakenar.Core.Authentication;
 using Logitar;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 
@@ -26,12 +27,18 @@ public class AuthenticateApiKeyHandler : ICommandHandler<AuthenticateApiKey, Api
   protected virtual IApiKeyQuerier ApiKeyQuerier { get; }
   protected virtual IApiKeyRepository ApiKeyRepository { get; }
   protected virtual IApplicationContext ApplicationContext { get; }
+  protected virtual IAuthenticationService AuthenticationService { get; }
 
-  public AuthenticateApiKeyHandler(IApiKeyQuerier apiKeyQuerier, IApiKeyRepository apiKeyRepository, IApplicationContext applicationContext)
+  public AuthenticateApiKeyHandler(
+    IApiKeyQuerier apiKeyQuerier,
+    IApiKeyRepository apiKeyRepository,
+    IApplicationContext applicationContext,
+    IAuthenticationService authenticationService)
   {
     ApiKeyQuerier = apiKeyQuerier;
     ApiKeyRepository = apiKeyRepository;
     ApplicationContext = applicationContext;
+    AuthenticationService = authenticationService;
   }
 
   public virtual async Task<ApiKeyDto> HandleAsync(AuthenticateApiKey command, CancellationToken cancellationToken)
@@ -54,7 +61,7 @@ public class AuthenticateApiKeyHandler : ICommandHandler<AuthenticateApiKey, Api
 
     apiKey.Authenticate(xApiKey.Secret, ApplicationContext.ActorId);
 
-    await ApiKeyRepository.SaveAsync(apiKey, cancellationToken);
+    await AuthenticationService.AuthenticatedAsync(apiKey, cancellationToken);
 
     return await ApiKeyQuerier.ReadAsync(apiKey, cancellationToken);
   }

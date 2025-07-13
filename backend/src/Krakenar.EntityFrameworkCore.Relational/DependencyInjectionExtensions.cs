@@ -3,6 +3,7 @@ using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.ApiKeys;
 using Krakenar.Core.ApiKeys.Events;
+using Krakenar.Core.Authentication;
 using Krakenar.Core.Configurations;
 using Krakenar.Core.Configurations.Events;
 using Krakenar.Core.Contents;
@@ -34,14 +35,17 @@ using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Events;
 using Krakenar.EntityFrameworkCore.Relational.Actors;
+using Krakenar.EntityFrameworkCore.Relational.Authentication;
 using Krakenar.EntityFrameworkCore.Relational.Handlers;
 using Krakenar.EntityFrameworkCore.Relational.Handlers.Dashboard;
 using Krakenar.EntityFrameworkCore.Relational.Handlers.Realms;
 using Krakenar.EntityFrameworkCore.Relational.Queriers;
 using Krakenar.EntityFrameworkCore.Relational.Repositories;
+using Krakenar.EntityFrameworkCore.Relational.Settings;
 using Krakenar.EntityFrameworkCore.Relational.Tokens;
 using Krakenar.Infrastructure.Commands;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
@@ -60,9 +64,11 @@ public static class DependencyInjectionExtensions
       .AddKrakenarEventHandlers()
       .AddKrakenarQueriers()
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
+      .AddSingleton(InitializeAuthenticationSettings)
       .AddScoped<IActorService, ActorService>()
-      .AddScoped<ITokenBlacklist, TokenBlacklist>()
+      .AddScoped<IAuthenticationService, AuthenticationService>()
       .AddScoped<ICommandHandler<MigrateDatabase>, MigrateDatabaseCommandHandler>()
+      .AddScoped<ITokenBlacklist, TokenBlacklist>()
       .AddTransient<ICommandHandler<DeleteRealm, RealmDto?>, DeleteRealmHandler>()
       .AddTransient<IQueryHandler<GetDashboardStatistics, Statistics>, GetDashboardStatisticsHandler>();
   }
@@ -199,5 +205,10 @@ public static class DependencyInjectionExtensions
       .AddScoped<ISessionQuerier, SessionQuerier>()
       .AddScoped<ITemplateQuerier, TemplateQuerier>()
       .AddScoped<IUserQuerier, UserQuerier>();
+  }
+
+  public static AuthenticationSettings InitializeAuthenticationSettings(this IServiceProvider serviceProvider)
+  {
+    return AuthenticationSettings.Initialize(serviceProvider.GetRequiredService<IConfiguration>());
   }
 }
