@@ -2,6 +2,17 @@
 
 public static class EnvironmentHelper
 {
+  public static int GetInt32(string variable, int defaultValue = 0) => TryGetInt32(variable) ?? defaultValue;
+  public static int? TryGetInt32(string variable, int? defaultValue = null)
+  {
+    string? value = Environment.GetEnvironmentVariable(variable);
+    if (!string.IsNullOrWhiteSpace(value) && int.TryParse(value, out int intValue))
+    {
+      return intValue;
+    }
+    return defaultValue;
+  }
+
   public static string GetString(string variable, string defaultValue = "") => TryGetString(variable) ?? defaultValue;
   public static string? TryGetString(string variable, string? defaultValue = null)
   {
