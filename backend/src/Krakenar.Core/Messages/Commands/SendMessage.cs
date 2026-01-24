@@ -4,12 +4,14 @@ using Krakenar.Contracts.Senders;
 using Krakenar.Core.Dictionaries;
 using Krakenar.Core.Encryption;
 using Krakenar.Core.Localization;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Messages.Validators;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Senders;
 using Krakenar.Core.Templates;
 using Krakenar.Core.Users;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
@@ -17,9 +19,9 @@ using Sender = Krakenar.Core.Senders.Sender;
 
 namespace Krakenar.Core.Messages.Commands;
 
-public record SendMessage(SendMessagePayload Payload) : ICommand<SentMessages>, ISensitiveActivity
+public record SendMessage(SendMessagePayload Payload) : IAnonymizable, ICommand<SentMessages>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     SendMessage clone = this.DeepClone();
     foreach (Variable variable in clone.Payload.Variables)

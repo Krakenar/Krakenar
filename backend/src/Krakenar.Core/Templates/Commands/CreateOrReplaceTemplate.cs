@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Settings;
 using Krakenar.Contracts.Templates;
 using Krakenar.Core.Templates.Validators;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using TemplateDto = Krakenar.Contracts.Templates.Template;
 

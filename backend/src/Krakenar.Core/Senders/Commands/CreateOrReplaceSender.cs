@@ -2,25 +2,24 @@
 using FluentValidation.Results;
 using Krakenar.Contracts.Senders;
 using Krakenar.Core.Encryption;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Senders.Validators;
 using Krakenar.Core.Users;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
 namespace Krakenar.Core.Senders.Commands;
 
-public record CreateOrReplaceSender(Guid? Id, CreateOrReplaceSenderPayload Payload, long? Version) : ICommand<CreateOrReplaceSenderResult>, ISensitiveActivity
+public record CreateOrReplaceSender(Guid? Id, CreateOrReplaceSenderPayload Payload, long? Version) : IAnonymizable, ICommand<CreateOrReplaceSenderResult>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     CreateOrReplaceSender clone = this.DeepClone();
-    if (clone.Payload.SendGrid is not null)
-    {
-      clone.Payload.SendGrid.ApiKey = clone.Payload.SendGrid.ApiKey.Mask();
-    }
+    clone.Payload.SendGrid?.ApiKey = clone.Payload.SendGrid.ApiKey.Mask();
     if (clone.Payload.Twilio is not null)
     {
       clone.Payload.Twilio.AccountSid = clone.Payload.Twilio.AccountSid.Mask();

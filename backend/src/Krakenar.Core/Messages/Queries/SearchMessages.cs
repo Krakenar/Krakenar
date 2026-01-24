@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Messages;
 using Krakenar.Contracts.Search;
+using Logitar.CQRS;
 using MessageDto = Krakenar.Contracts.Messages.Message;
 
 namespace Krakenar.Core.Messages.Queries;

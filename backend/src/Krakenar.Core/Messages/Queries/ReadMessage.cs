@@ -1,4 +1,5 @@
 ﻿using Krakenar.Core.Encryption;
+using Logitar.CQRS;
 using MessageDto = Krakenar.Contracts.Messages.Message;
 
 namespace Krakenar.Core.Messages.Queries;

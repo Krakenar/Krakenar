@@ -1,4 +1,5 @@
 ﻿using Krakenar.Core.Encryption;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
