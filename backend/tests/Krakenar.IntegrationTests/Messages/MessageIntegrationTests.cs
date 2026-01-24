@@ -253,7 +253,7 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Equal(passwordRecovery.EntityId, message.Id);
   }
 
-  [Fact(DisplayName = "It should send an email message from SendGrid.")]
+  [Fact(DisplayName = "It should send an email message from SendGrid.", Skip = "This test does not pass because it requires a funded SendGrid account.")]
   public async Task Given_SendGrid_When_Send_Then_MessageSent()
   {
     SendMessagePayload payload = new()
@@ -339,7 +339,7 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Contains(message.Results, r => r.Key == "TrailingHeaders");
   }
 
-  [Fact(DisplayName = "It should send a SMS message from Twilio.")]
+  [Fact(DisplayName = "It should send a SMS message from Twilio.", Skip = "This test does not pass because it requires a funded Twilio account.")]
   public async Task Given_Twilio_When_Send_Then_MessageSent()
   {
     SendMessagePayload payload = new()
