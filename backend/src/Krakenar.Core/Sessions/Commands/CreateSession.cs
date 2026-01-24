@@ -5,6 +5,7 @@ using Krakenar.Core.Passwords;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Sessions.Validators;
 using Krakenar.Core.Users;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
 

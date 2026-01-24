@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core.Passwords;
 using Krakenar.Core.Sessions;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using UserDto = Krakenar.Contracts.Users.User;
 

@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Users.Commands;
 using Krakenar.Core.Users.Queries;
+using Logitar.CQRS;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
 using UserDto = Krakenar.Contracts.Users.User;
 

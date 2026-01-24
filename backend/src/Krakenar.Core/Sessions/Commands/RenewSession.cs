@@ -3,6 +3,7 @@ using Krakenar.Contracts;
 using Krakenar.Contracts.Sessions;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Sessions.Validators;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
 

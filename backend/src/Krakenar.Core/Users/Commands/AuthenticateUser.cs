@@ -1,15 +1,17 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Authentication;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Users.Validators;
 using Logitar;
+using Logitar.CQRS;
 using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users.Commands;
 
-public record AuthenticateUser(AuthenticateUserPayload Payload) : ICommand<UserDto>, ISensitiveActivity
+public record AuthenticateUser(AuthenticateUserPayload Payload) : IAnonymizable, ICommand<UserDto>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     AuthenticateUser clone = this.DeepClone();
     clone.Payload.Password = Payload.Password.Mask();
