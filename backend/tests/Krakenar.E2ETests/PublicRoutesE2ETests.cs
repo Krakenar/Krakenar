@@ -29,7 +29,7 @@ public class PublicRoutesE2ETests : E2ETests
     Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
 
     Assert.True(response.Headers.TryGetValues("Location", out IEnumerable<string>? locations));
-    Assert.Equal("/app/404", locations.Single());
+    Assert.Equal("/admin/404", locations.Single());
   }
 
   [Fact(DisplayName = "API index should return the current version.")]
