@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="7.0.2" />
+    <PackageReference Include="Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL" Version="10.1.0" />
   </ItemGroup>
 
 </Project>
