@@ -3,6 +3,7 @@ using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.Dashboard.Queries;
 using Krakenar.EntityFrameworkCore.Relational.Entities;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using ActorDto = Krakenar.Contracts.Actors.Actor;

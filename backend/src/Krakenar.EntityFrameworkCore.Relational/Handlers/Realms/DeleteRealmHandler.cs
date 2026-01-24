@@ -1,6 +1,6 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Realms;
+﻿using Krakenar.Core.Realms;
 using Krakenar.Core.Realms.Commands;
+using Logitar.CQRS;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.EntityFrameworkCore;
 using RealmDto = Krakenar.Contracts.Realms.Realm;

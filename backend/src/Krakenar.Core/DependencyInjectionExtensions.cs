@@ -54,7 +54,6 @@ using Krakenar.Core.Senders.Queries;
 using Krakenar.Core.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
-using Krakenar.Core.Settings;
 using Krakenar.Core.Templates;
 using Krakenar.Core.Templates.Commands;
 using Krakenar.Core.Templates.Queries;
@@ -63,8 +62,8 @@ using Krakenar.Core.Tokens.Commands;
 using Krakenar.Core.Users;
 using Krakenar.Core.Users.Commands;
 using Krakenar.Core.Users.Queries;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
@@ -95,8 +94,8 @@ public static class DependencyInjectionExtensions
       .AddKrakenarManagers()
       .AddKrakenarQueries()
       .AddKrakenarRepositories()
+      .AddLogitarCQRS()
       .AddLogitarEventSourcing()
-      .AddSingleton(InitializeRetrySettings)
       .AddSingleton<IAddressHelper, AddressHelper>()
       .AddScoped<ILoggingService, LoggingService>()
       .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>();
@@ -105,7 +104,6 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)
   {
     return services
-      .AddTransient<ICommandBus, CommandBus>()
       .AddTransient<ICommandHandler<AuthenticateApiKey, ApiKeyDto>, AuthenticateApiKeyHandler>()
       .AddTransient<ICommandHandler<AuthenticateUser, UserDto>, AuthenticateUserHandler>()
       .AddTransient<ICommandHandler<CreateContent, ContentDto>, CreateContentHandler>()
@@ -134,7 +132,7 @@ public static class DependencyInjectionExtensions
       .AddTransient<ICommandHandler<DeleteSender, SenderDto?>, DeleteSenderHandler>()
       .AddTransient<ICommandHandler<DeleteTemplate, TemplateDto?>, DeleteTemplateHandler>()
       .AddTransient<ICommandHandler<DeleteUser, UserDto?>, DeleteUserHandler>()
-      .AddTransient<ICommandHandler<InitializeConfiguration>, InitializeConfigurationHandler>()
+      .AddTransient<ICommandHandler<InitializeConfiguration, Unit>, InitializeConfigurationHandler>()
       .AddTransient<ICommandHandler<PublishContent, ContentDto?>, PublishContentHandler>()
       .AddTransient<ICommandHandler<RemoveUserIdentifier, UserDto?>, RemoveUserIdentifierHandler>()
       .AddTransient<ICommandHandler<RenewSession, SessionDto>, RenewSessionHandler>()
@@ -208,7 +206,6 @@ public static class DependencyInjectionExtensions
   public static IServiceCollection AddKrakenarQueries(this IServiceCollection services)
   {
     return services
-      .AddTransient<IQueryBus, QueryBus>()
       .AddTransient<IQueryHandler<ReadApiKey, ApiKeyDto?>, ReadApiKeyHandler>()
       .AddTransient<IQueryHandler<ReadConfiguration, ConfigurationDto>, ReadConfigurationHandler>()
       .AddTransient<IQueryHandler<ReadContent, ContentDto?>, ReadContentHandler>()
@@ -259,10 +256,5 @@ public static class DependencyInjectionExtensions
       .AddTransient<ISessionRepository, SessionRepository>()
       .AddTransient<ITemplateRepository, TemplateRepository>()
       .AddTransient<IUserRepository, UserRepository>();
-  }
-
-  public static RetrySettings InitializeRetrySettings(this IServiceProvider serviceProvider)
-  {
-    return RetrySettings.Initialize(serviceProvider.GetRequiredService<IConfiguration>());
   }
 }

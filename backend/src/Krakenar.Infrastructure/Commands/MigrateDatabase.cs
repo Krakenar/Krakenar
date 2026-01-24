@@ -1,4 +1,4 @@
-﻿using Krakenar.Core;
+﻿using Logitar.CQRS;
 
 namespace Krakenar.Infrastructure.Commands;
 

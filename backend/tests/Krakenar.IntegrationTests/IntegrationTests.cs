@@ -12,6 +12,7 @@ using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Infrastructure;
 using Krakenar.Infrastructure.Commands;
+using Logitar.CQRS;
 using Logitar.Data;
 using Logitar.Data.PostgreSQL;
 using Logitar.Data.SqlServer;
@@ -95,7 +96,7 @@ public abstract class IntegrationTests : IAsyncLifetime
   public virtual async Task InitializeAsync()
   {
     MigrateDatabase command = new();
-    ICommandHandler<MigrateDatabase> migrationHandler = ServiceProvider.GetRequiredService<ICommandHandler<MigrateDatabase>>();
+    ICommandHandler<MigrateDatabase, Unit> migrationHandler = ServiceProvider.GetRequiredService<ICommandHandler<MigrateDatabase, Unit>>();
     await migrationHandler.HandleAsync(command);
 
     await KrakenarContext.FieldTypes.ExecuteUpdateAsync(setters => setters.SetProperty(x => x.RelatedContentTypeId, x => null));
@@ -132,7 +133,7 @@ public abstract class IntegrationTests : IAsyncLifetime
     await KrakenarContext.Database.ExecuteSqlRawAsync(sql.ToString());
 
     InitializeConfiguration initializeConfiguration = new("en", "admin", "P@s$W0rD");
-    ICommandHandler<InitializeConfiguration> configurationHandler = ServiceProvider.GetRequiredService<ICommandHandler<InitializeConfiguration>>();
+    ICommandHandler<InitializeConfiguration, Unit> configurationHandler = ServiceProvider.GetRequiredService<ICommandHandler<InitializeConfiguration, Unit>>();
     await configurationHandler.HandleAsync(initializeConfiguration);
 
     ICacheService cacheService = ServiceProvider.GetRequiredService<ICacheService>();
