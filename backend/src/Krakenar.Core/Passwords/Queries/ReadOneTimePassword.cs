@@ -1,4 +1,5 @@
-﻿using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
+﻿using Logitar.CQRS;
+using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
 
 namespace Krakenar.Core.Passwords.Queries;
 

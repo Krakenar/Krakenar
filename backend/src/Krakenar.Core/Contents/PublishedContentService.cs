@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Search;
 using Krakenar.Core.Contents.Queries;
+using Logitar.CQRS;
 
 namespace Krakenar.Core.Contents;
 

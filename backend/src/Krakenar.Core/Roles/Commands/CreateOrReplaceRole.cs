@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Roles.Validators;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using RoleDto = Krakenar.Contracts.Roles.Role;
 

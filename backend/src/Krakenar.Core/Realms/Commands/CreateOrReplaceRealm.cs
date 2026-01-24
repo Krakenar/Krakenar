@@ -4,6 +4,7 @@ using Krakenar.Core.Localization;
 using Krakenar.Core.Realms.Validators;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 

@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core.Contents;
 using Krakenar.Core.Dictionaries;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 

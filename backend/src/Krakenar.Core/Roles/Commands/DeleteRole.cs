@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core.ApiKeys;
 using Krakenar.Core.Users;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using RoleDto = Krakenar.Contracts.Roles.Role;
 

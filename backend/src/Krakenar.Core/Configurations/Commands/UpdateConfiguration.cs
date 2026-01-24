@@ -2,17 +2,19 @@
 using Krakenar.Contracts.Configurations;
 using Krakenar.Core.Caching;
 using Krakenar.Core.Configurations.Validators;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 
 namespace Krakenar.Core.Configurations.Commands;
 
-public record UpdateConfiguration(UpdateConfigurationPayload Payload) : ICommand<ConfigurationDto>, ISensitiveActivity
+public record UpdateConfiguration(UpdateConfigurationPayload Payload) : IAnonymizable, ICommand<ConfigurationDto>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     if (string.IsNullOrWhiteSpace(Payload.Secret?.Value))
     {

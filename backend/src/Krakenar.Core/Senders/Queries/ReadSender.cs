@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts;
 using Krakenar.Contracts.Senders;
 using Krakenar.Core.Encryption;
+using Logitar.CQRS;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
 namespace Krakenar.Core.Senders.Queries;

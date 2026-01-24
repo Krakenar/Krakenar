@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Krakenar.Core.Contents;
+using Logitar.CQRS;
 using ContentType = Krakenar.Core.Contents.ContentType;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 

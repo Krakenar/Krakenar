@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Search;
 using Krakenar.Core.Localization.Commands;
 using Krakenar.Core.Localization.Queries;
+using Logitar.CQRS;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 
 namespace Krakenar.Core.Localization;

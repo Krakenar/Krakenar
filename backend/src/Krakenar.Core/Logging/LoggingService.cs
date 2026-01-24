@@ -38,49 +38,31 @@ public class LoggingService : ILoggingService
     Log?.Report(exception);
   }
 
-  public virtual void SetActivity(IActivity activity)
+  public virtual void SetActivity(object activity)
   {
-    if (Log is not null)
-    {
-      Log.Activity = activity is ISensitiveActivity sensitive ? sensitive.Anonymize() : activity;
-    }
+    Log?.Activity = activity is IAnonymizable anonymizable ? anonymizable.Anonymize() : activity;
   }
 
   public virtual void SetOperation(Operation operation)
   {
-    if (Log is not null)
-    {
-      Log.Operation = operation;
-    }
+    Log?.Operation = operation;
   }
 
   public virtual void SetRealm(Realm? realm)
   {
-    if (Log is not null)
-    {
-      Log.Realm = realm;
-    }
+    Log?.Realm = realm;
   }
   public virtual void SetApiKey(ApiKey? apiKey)
   {
-    if (Log is not null)
-    {
-      Log.ApiKey = apiKey;
-    }
+    Log?.ApiKey = apiKey;
   }
   public virtual void SetSession(Session? session)
   {
-    if (Log is not null)
-    {
-      Log.Session = session;
-    }
+    Log?.Session = session;
   }
   public virtual void SetUser(User? user)
   {
-    if (Log is not null)
-    {
-      Log.User = user;
-    }
+    Log?.User = user;
   }
 
   public virtual async Task CloseAndSaveAsync(int statusCode, CancellationToken cancellationToken)

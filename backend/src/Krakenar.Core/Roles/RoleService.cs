@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Search;
 using Krakenar.Core.Roles.Commands;
 using Krakenar.Core.Roles.Queries;
+using Logitar.CQRS;
 using RoleDto = Krakenar.Contracts.Roles.Role;
 
 namespace Krakenar.Core.Roles;

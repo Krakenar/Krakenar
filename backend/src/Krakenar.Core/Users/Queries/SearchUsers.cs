@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Users;
+using Logitar.CQRS;
 using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users.Queries;

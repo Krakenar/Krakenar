@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Search;
 using Krakenar.Core.Dictionaries.Commands;
 using Krakenar.Core.Dictionaries.Queries;
+using Logitar.CQRS;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 
 namespace Krakenar.Core.Dictionaries;

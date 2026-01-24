@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Fields;
 using Krakenar.Core.Fields.Commands;
+using Logitar.CQRS;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 
 namespace Krakenar.Core.Fields;

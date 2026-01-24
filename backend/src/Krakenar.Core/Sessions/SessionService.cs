@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Sessions;
 using Krakenar.Core.Sessions.Commands;
 using Krakenar.Core.Sessions.Queries;
+using Logitar.CQRS;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
 
 namespace Krakenar.Core.Sessions;

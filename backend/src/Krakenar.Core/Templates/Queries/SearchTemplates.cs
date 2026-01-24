@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Search;
 using Krakenar.Contracts.Templates;
+using Logitar.CQRS;
 using TemplateDto = Krakenar.Contracts.Templates.Template;
 
 namespace Krakenar.Core.Templates.Queries;

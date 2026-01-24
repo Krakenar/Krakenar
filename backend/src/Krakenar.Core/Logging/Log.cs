@@ -24,7 +24,7 @@ public class Log
   public string? AdditionalInformation { get; private set; }
 
   public Operation? Operation { get; set; }
-  public IActivity? Activity { get; set; }
+  public object? Activity { get; set; }
 
   public int? StatusCode { get; private set; }
   public bool IsCompleted => StatusCode.HasValue;

@@ -4,6 +4,7 @@ using Krakenar.Contracts.ApiKeys;
 using Krakenar.Contracts.Roles;
 using Krakenar.Core.ApiKeys.Validators;
 using Krakenar.Core.Roles;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using Role = Krakenar.Core.Roles.Role;

@@ -4,6 +4,7 @@ using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Fields.Settings;
 using Krakenar.Core.Fields.Validators;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
 

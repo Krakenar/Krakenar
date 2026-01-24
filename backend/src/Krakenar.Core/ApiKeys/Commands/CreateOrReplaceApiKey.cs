@@ -3,6 +3,7 @@ using Krakenar.Contracts.ApiKeys;
 using Krakenar.Core.ApiKeys.Validators;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Roles;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 

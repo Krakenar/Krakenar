@@ -1,4 +1,5 @@
 ﻿using Krakenar.Core.Localization;
+using Logitar.CQRS;
 using ContentDto = Krakenar.Contracts.Contents.Content;
 
 namespace Krakenar.Core.Contents.Commands;

@@ -1,4 +1,5 @@
 ﻿using Krakenar.Core.Localization;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using ContentDto = Krakenar.Contracts.Contents.Content;
 

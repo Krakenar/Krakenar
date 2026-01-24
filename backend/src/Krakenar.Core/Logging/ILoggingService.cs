@@ -11,7 +11,7 @@ public interface ILoggingService
   void Open(string correlationId, string method, string url, string? ipAddress, string additionalInformation);
   void Report(IEvent @event);
   void Report(Exception exception);
-  void SetActivity(IActivity activity);
+  void SetActivity(object activity);
   void SetOperation(Operation operation);
   void SetRealm(Realm? realm);
   void SetApiKey(ApiKey? apiKey);

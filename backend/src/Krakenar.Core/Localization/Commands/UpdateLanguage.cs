@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts.Localization;
 using Krakenar.Core.Localization.Validators;
+using Logitar.CQRS;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 
 namespace Krakenar.Core.Localization.Commands;

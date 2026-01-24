@@ -1,4 +1,5 @@
-﻿using SessionDto = Krakenar.Contracts.Sessions.Session;
+﻿using Logitar.CQRS;
+using SessionDto = Krakenar.Contracts.Sessions.Session;
 
 namespace Krakenar.Core.Sessions.Queries;
 

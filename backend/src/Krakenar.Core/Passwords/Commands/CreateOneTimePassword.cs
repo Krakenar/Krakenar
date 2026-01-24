@@ -4,6 +4,7 @@ using Krakenar.Contracts.Passwords;
 using Krakenar.Core.Passwords.Validators;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Users;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using OneTimePasswordDto = Krakenar.Contracts.Passwords.OneTimePassword;
 

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Krakenar.Core.Validators;
+using Logitar.CQRS;
 using CustomIdentifierDto = Krakenar.Contracts.CustomIdentifier;
 using UserDto = Krakenar.Contracts.Users.User;
 

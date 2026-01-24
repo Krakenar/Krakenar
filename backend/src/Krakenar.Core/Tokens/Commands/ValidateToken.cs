@@ -2,8 +2,10 @@
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Tokens;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Tokens.Validators;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.Security.Claims;
 using Claim = System.Security.Claims.Claim;
 
@@ -11,9 +13,9 @@ namespace Krakenar.Core.Tokens.Commands;
 
 /// <exception cref="SecurityTokenBlacklistedException"></exception>
 /// <exception cref="ValidationException"></exception>
-public record ValidateToken(ValidateTokenPayload Payload) : ICommand<ValidatedToken>, ISensitiveActivity
+public record ValidateToken(ValidateTokenPayload Payload) : IAnonymizable, ICommand<ValidatedToken>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     if (Payload.Consume && string.IsNullOrWhiteSpace(Payload.Secret))
     {

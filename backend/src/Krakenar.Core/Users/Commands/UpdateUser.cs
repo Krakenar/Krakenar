@@ -4,10 +4,12 @@ using Krakenar.Contracts.Roles;
 using Krakenar.Contracts.Settings;
 using Krakenar.Contracts.Users;
 using Krakenar.Core.Localization;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Users.Validators;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using Role = Krakenar.Core.Roles.Role;
 using TimeZone = Krakenar.Core.Localization.TimeZone;
@@ -15,9 +17,9 @@ using UserDto = Krakenar.Contracts.Users.User;
 
 namespace Krakenar.Core.Users.Commands;
 
-public record UpdateUser(Guid Id, UpdateUserPayload Payload) : ICommand<UserDto?>, ISensitiveActivity
+public record UpdateUser(Guid Id, UpdateUserPayload Payload) : IAnonymizable, ICommand<UserDto?>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     if (Payload.Password is null)
     {

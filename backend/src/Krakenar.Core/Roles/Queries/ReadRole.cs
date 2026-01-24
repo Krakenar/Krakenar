@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts;
+using Logitar.CQRS;
 using RoleDto = Krakenar.Contracts.Roles.Role;
 
 namespace Krakenar.Core.Roles.Queries;

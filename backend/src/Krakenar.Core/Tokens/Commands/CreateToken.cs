@@ -2,17 +2,19 @@
 using Krakenar.Contracts.Realms;
 using Krakenar.Contracts.Tokens;
 using Krakenar.Contracts.Users;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Tokens.Validators;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.Security.Claims;
 using ClaimDto = Krakenar.Contracts.Tokens.Claim;
 
 namespace Krakenar.Core.Tokens.Commands;
 
 /// <exception cref="ValidationException"></exception>
-public record CreateToken(CreateTokenPayload Payload) : ICommand<CreatedToken>, ISensitiveActivity
+public record CreateToken(CreateTokenPayload Payload) : IAnonymizable, ICommand<CreatedToken>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     if (string.IsNullOrWhiteSpace(Payload.Secret))
     {

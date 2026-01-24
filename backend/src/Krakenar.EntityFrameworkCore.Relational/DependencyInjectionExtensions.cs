@@ -1,5 +1,4 @@
 ﻿using Krakenar.Contracts.Dashboard;
-using Krakenar.Core;
 using Krakenar.Core.Actors;
 using Krakenar.Core.ApiKeys;
 using Krakenar.Core.ApiKeys.Events;
@@ -44,6 +43,7 @@ using Krakenar.EntityFrameworkCore.Relational.Repositories;
 using Krakenar.EntityFrameworkCore.Relational.Settings;
 using Krakenar.EntityFrameworkCore.Relational.Tokens;
 using Krakenar.Infrastructure.Commands;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.Extensions.Configuration;
@@ -68,7 +68,7 @@ public static class DependencyInjectionExtensions
       .AddSingleton(InitializeAuthenticationSettings)
       .AddScoped<IActorService, ActorService>()
       .AddScoped<IAuthenticationService, AuthenticationService>()
-      .AddScoped<ICommandHandler<MigrateDatabase>, MigrateDatabaseCommandHandler>()
+      .AddScoped<ICommandHandler<MigrateDatabase, Unit>, MigrateDatabaseCommandHandler>()
       .AddScoped<ITokenBlacklist, TokenBlacklist>()
       .AddTransient<ICommandHandler<DeleteRealm, RealmDto?>, DeleteRealmHandler>()
       .AddTransient<IQueryHandler<GetDashboardStatistics, Statistics>, GetDashboardStatisticsHandler>();

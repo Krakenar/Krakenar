@@ -1,18 +1,20 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts;
 using Krakenar.Contracts.Realms;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Realms.Validators;
 using Krakenar.Core.Settings;
 using Krakenar.Core.Tokens;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.Core.Realms.Commands;
 
-public record UpdateRealm(Guid Id, UpdateRealmPayload Payload) : ICommand<RealmDto?>, ISensitiveActivity
+public record UpdateRealm(Guid Id, UpdateRealmPayload Payload) : IAnonymizable, ICommand<RealmDto?>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     if (string.IsNullOrWhiteSpace(Payload.Secret?.Value))
     {

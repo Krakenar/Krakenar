@@ -2,14 +2,16 @@
 using Krakenar.Contracts.ApiKeys;
 using Krakenar.Core.ApiKeys.Validators;
 using Krakenar.Core.Authentication;
+using Krakenar.Core.Logging;
 using Logitar;
+using Logitar.CQRS;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 
 namespace Krakenar.Core.ApiKeys.Commands;
 
-public record AuthenticateApiKey(AuthenticateApiKeyPayload Payload) : ICommand<ApiKeyDto>, ISensitiveActivity
+public record AuthenticateApiKey(AuthenticateApiKeyPayload Payload) : IAnonymizable, ICommand<ApiKeyDto>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     AuthenticateApiKey clone = this.DeepClone();
     clone.Payload.XApiKey = Payload.XApiKey.Mask();

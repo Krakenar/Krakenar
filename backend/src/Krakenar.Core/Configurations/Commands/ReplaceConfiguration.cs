@@ -3,6 +3,7 @@ using Krakenar.Contracts.Configurations;
 using Krakenar.Core.Caching;
 using Krakenar.Core.Configurations.Validators;
 using Krakenar.Core.Settings;
+using Logitar.CQRS;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 
 namespace Krakenar.Core.Configurations.Commands;

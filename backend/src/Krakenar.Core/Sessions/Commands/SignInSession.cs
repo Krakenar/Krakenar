@@ -1,19 +1,21 @@
 ﻿using FluentValidation;
 using Krakenar.Contracts;
 using Krakenar.Contracts.Sessions;
+using Krakenar.Core.Logging;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Realms;
 using Krakenar.Core.Sessions.Validators;
 using Krakenar.Core.Users;
 using Logitar;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using SessionDto = Krakenar.Contracts.Sessions.Session;
 
 namespace Krakenar.Core.Sessions.Commands;
 
-public record SignInSession(SignInSessionPayload Payload) : ICommand<SessionDto>, ISensitiveActivity
+public record SignInSession(SignInSessionPayload Payload) : IAnonymizable, ICommand<SessionDto>
 {
-  public IActivity Anonymize()
+  public object? Anonymize()
   {
     SignInSession clone = this.DeepClone();
     clone.Payload.Password = Payload.Password.Mask();

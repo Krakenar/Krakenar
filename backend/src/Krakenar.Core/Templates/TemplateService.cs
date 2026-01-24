@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Templates;
 using Krakenar.Core.Templates.Commands;
 using Krakenar.Core.Templates.Queries;
+using Logitar.CQRS;
 using TemplateDto = Krakenar.Contracts.Templates.Template;
 
 namespace Krakenar.Core.Templates;

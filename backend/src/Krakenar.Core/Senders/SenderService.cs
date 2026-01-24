@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Senders;
 using Krakenar.Core.Senders.Commands;
 using Krakenar.Core.Senders.Queries;
+using Logitar.CQRS;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 
 namespace Krakenar.Core.Senders;
