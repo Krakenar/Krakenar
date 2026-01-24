@@ -1,7 +1,7 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Realms;
+﻿using Krakenar.Core.Realms;
 using Krakenar.Core.Roles;
 using Krakenar.Core.Roles.Events;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;

@@ -1,8 +1,8 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Localization;
+﻿using Krakenar.Core.Localization;
 using Krakenar.Core.Localization.Events;
 using Krakenar.Core.Realms;
 using Logitar.Data;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using LanguageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Language;

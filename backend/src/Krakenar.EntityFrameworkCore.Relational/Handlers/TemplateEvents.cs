@@ -1,7 +1,7 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Realms;
+﻿using Krakenar.Core.Realms;
 using Krakenar.Core.Templates;
 using Krakenar.Core.Templates.Events;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RealmEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Realm;
