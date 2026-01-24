@@ -1,5 +1,5 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Logging;
+﻿using Krakenar.Core.Logging;
+using Logitar;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -10,7 +10,7 @@ public static class DependencyInjectionExtensions
 {
   public static IServiceCollection AddKrakenarMongoDB(this IServiceCollection services, IConfiguration configuration)
   {
-    string? connectionString = EnvironmentHelper.TryGetString("MONGOCONNSTR_Krakenar", configuration.GetConnectionString("MongoDB"));
+    string? connectionString = EnvironmentHelper.TryGetString("MONGOCONNSTR_Krakenar") ?? configuration.GetConnectionString("MongoDB");
     MongoDBSettings settings = MongoDBSettings.Initialize(configuration);
     return services.AddKrakenarMongoDB(connectionString, settings);
   }

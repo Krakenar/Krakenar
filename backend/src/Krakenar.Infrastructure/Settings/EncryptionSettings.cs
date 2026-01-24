@@ -1,4 +1,4 @@
-﻿using Krakenar.Core;
+﻿using Logitar;
 using Microsoft.Extensions.Configuration;
 
 namespace Krakenar.Infrastructure.Settings;

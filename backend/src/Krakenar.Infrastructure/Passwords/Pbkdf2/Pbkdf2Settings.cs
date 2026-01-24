@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+﻿using Logitar;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Configuration;
 
 namespace Krakenar.Infrastructure.Passwords.Pbkdf2;
@@ -16,29 +17,10 @@ public record Pbkdf2Settings
   {
     Pbkdf2Settings settings = configuration.GetSection(SectionKey).Get<Pbkdf2Settings>() ?? new();
 
-    string? algorithmValue = Environment.GetEnvironmentVariable("PASSWORDS_PBKDF2_ALGORITHM");
-    if (!string.IsNullOrWhiteSpace(algorithmValue) && Enum.TryParse(algorithmValue, out KeyDerivationPrf algorithm) && Enum.IsDefined(algorithm))
-    {
-      settings.Algorithm = algorithm;
-    }
-
-    string? iterationsValue = Environment.GetEnvironmentVariable("PASSWORDS_PBKDF2_ITERATIONS");
-    if (!string.IsNullOrWhiteSpace(iterationsValue) && int.TryParse(iterationsValue, out int iterations))
-    {
-      settings.Iterations = iterations;
-    }
-
-    string? saltLengthValue = Environment.GetEnvironmentVariable("PASSWORDS_PBKDF2_SALT_LENGTH");
-    if (!string.IsNullOrWhiteSpace(saltLengthValue) && int.TryParse(saltLengthValue, out int saltLength))
-    {
-      settings.SaltLength = saltLength;
-    }
-
-    string? hashLengthValue = Environment.GetEnvironmentVariable("PASSWORDS_PBKDF2_HASH_LENGTH");
-    if (!string.IsNullOrWhiteSpace(hashLengthValue) && int.TryParse(hashLengthValue, out int hashLength))
-    {
-      settings.HashLength = hashLength;
-    }
+    settings.Algorithm = EnvironmentHelper.GetEnum("PASSWORDS_PBKDF2_ALGORITHM", settings.Algorithm);
+    settings.Iterations = EnvironmentHelper.GetInt32("PASSWORDS_PBKDF2_ITERATIONS", settings.Iterations);
+    settings.SaltLength = EnvironmentHelper.GetInt32("PASSWORDS_PBKDF2_SALT_LENGTH", settings.SaltLength);
+    settings.HashLength = EnvironmentHelper.TryGetInt32("PASSWORDS_PBKDF2_HASH_LENGTH") ?? settings.HashLength;
 
     return settings;
   }

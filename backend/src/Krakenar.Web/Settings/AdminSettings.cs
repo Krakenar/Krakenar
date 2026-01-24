@@ -1,4 +1,4 @@
-﻿using Krakenar.Core;
+﻿using Logitar;
 
 namespace Krakenar.Web.Settings;
 
@@ -16,17 +16,11 @@ public record AdminSettings
     AdminSettings settings = configuration.GetSection(SectionKey).Get<AdminSettings>() ?? new();
 
     settings.BasePath = EnvironmentHelper.GetString("ADMIN_BASE_PATH", settings.BasePath);
-
-    string? enableSwaggerValue = Environment.GetEnvironmentVariable("ADMIN_ENABLE_SWAGGER");
-    if (!string.IsNullOrWhiteSpace(enableSwaggerValue) && bool.TryParse(enableSwaggerValue, out bool enableSwagger))
-    {
-      settings.EnableSwagger = enableSwagger;
-    }
-
+    settings.EnableSwagger = EnvironmentHelper.GetBoolean("ADMIN_ENABLE_SWAGGER", settings.EnableSwagger);
     settings.Title = EnvironmentHelper.GetString("ADMIN_TITLE", settings.Title);
 
-    string? versionValue = Environment.GetEnvironmentVariable("ADMIN_VERSION");
-    if (!string.IsNullOrWhiteSpace(versionValue) && Version.TryParse(versionValue, out Version? version))
+    string? versionValue = EnvironmentHelper.TryGetString("ADMIN_VERSION");
+    if (Version.TryParse(versionValue, out Version? version))
     {
       settings.Version = version;
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Logitar;
+using Microsoft.Extensions.Configuration;
 
 namespace Krakenar.Client;
 
@@ -31,39 +32,20 @@ public class KrakenarSettings : IKrakenarSettings
   {
     KrakenarSettings settings = configuration.GetSection(SectionKey).Get<KrakenarSettings>() ?? new();
 
-    string? baseUrl = Environment.GetEnvironmentVariable("KRAKENAR_BASE_URL");
-    if (!string.IsNullOrWhiteSpace(baseUrl))
-    {
-      settings.BaseUrl = baseUrl.Trim();
-    }
+    settings.BaseUrl = EnvironmentHelper.TryGetString("KRAKENAR_BASE_URL") ?? settings.BaseUrl;
 
-    string? apiKey = Environment.GetEnvironmentVariable("KRAKENAR_API_KEY");
-    if (!string.IsNullOrWhiteSpace(apiKey))
-    {
-      settings.ApiKey = apiKey.Trim();
-    }
-    string? username = Environment.GetEnvironmentVariable("KRAKENAR_BASIC_USERNAME");
-    string? password = Environment.GetEnvironmentVariable("KRAKENAR_BASIC_PASSWORD");
-    if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
-    {
-      settings.Basic = new BasicCredentials(username.Trim(), password.Trim());
-    }
-    string? bearer = Environment.GetEnvironmentVariable("KRAKENAR_BEARER_TOKEN");
-    if (!string.IsNullOrWhiteSpace(bearer))
-    {
-      settings.Bearer = bearer.Trim();
-    }
+    settings.ApiKey = EnvironmentHelper.TryGetString("KRAKENAR_API_KEY") ?? settings.ApiKey;
 
-    string? realm = Environment.GetEnvironmentVariable("KRAKENAR_REALM");
-    if (!string.IsNullOrWhiteSpace(realm))
+    string? username = EnvironmentHelper.TryGetString("KRAKENAR_BASIC_USERNAME") ?? settings.Basic?.Username.CleanTrim();
+    string? password = EnvironmentHelper.TryGetString("KRAKENAR_BASIC_PASSWORD") ?? settings.Basic?.Password.CleanTrim();
+    if (username is not null && password is not null)
     {
-      settings.Realm = realm.Trim();
+      settings.Basic = new BasicCredentials(username, password);
     }
-    string? user = Environment.GetEnvironmentVariable("KRAKENAR_USER");
-    if (!string.IsNullOrWhiteSpace(user))
-    {
-      settings.User = user.Trim();
-    }
+    settings.Bearer = EnvironmentHelper.TryGetString("KRAKENAR_BEARER_TOKEN") ?? settings.Bearer;
+
+    settings.Realm = EnvironmentHelper.TryGetString("KRAKENAR_REALM") ?? settings.Realm;
+    settings.User = EnvironmentHelper.TryGetString("KRAKENAR_USER") ?? settings.User;
 
     return settings;
   }

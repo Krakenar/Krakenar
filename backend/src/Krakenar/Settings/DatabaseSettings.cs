@@ -1,4 +1,5 @@
 ﻿using Krakenar.Infrastructure;
+using Logitar;
 
 namespace Krakenar.Settings;
 
@@ -14,23 +15,9 @@ internal record DatabaseSettings
   {
     DatabaseSettings settings = configuration.GetSection(SectionKey).Get<DatabaseSettings>() ?? new();
 
-    string? applyMigrationsValue = Environment.GetEnvironmentVariable("DATABASE_APPLY_MIGRATIONS");
-    if (!string.IsNullOrWhiteSpace(applyMigrationsValue) && bool.TryParse(applyMigrationsValue, out bool applyMigrations))
-    {
-      settings.ApplyMigrations = applyMigrations;
-    }
-
-    string? providerValue = Environment.GetEnvironmentVariable("DATABASE_PROVIDER");
-    if (!string.IsNullOrWhiteSpace(providerValue) && Enum.TryParse(providerValue, out DatabaseProvider provider))
-    {
-      settings.Provider = provider;
-    }
-
-    string? enableLoggingValue = Environment.GetEnvironmentVariable("DATABASE_ENABLE_LOGGING");
-    if (!string.IsNullOrWhiteSpace(enableLoggingValue) && bool.TryParse(enableLoggingValue, out bool enableLogging))
-    {
-      settings.EnableLogging = enableLogging;
-    }
+    settings.ApplyMigrations = EnvironmentHelper.GetBoolean("DATABASE_APPLY_MIGRATIONS", settings.ApplyMigrations);
+    settings.Provider = EnvironmentHelper.GetEnum("DATABASE_PROVIDER", settings.Provider);
+    settings.EnableLogging = EnvironmentHelper.GetBoolean("DATABASE_ENABLE_LOGGING", settings.EnableLogging);
 
     return settings;
   }

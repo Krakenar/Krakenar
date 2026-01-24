@@ -1,4 +1,4 @@
-﻿using Krakenar.Core;
+﻿using Logitar;
 
 namespace Krakenar.Web.Settings;
 
@@ -14,18 +14,8 @@ public record AuthenticationSettings
     AuthenticationSettings settings = configuration.GetSection(SectionKey).Get<AuthenticationSettings>() ?? new();
 
     settings.AccessToken.Type = EnvironmentHelper.GetString("AUTHENTICATION_ACCESS_TOKEN_TYPE", settings.AccessToken.Type);
-
-    string? lifetimeSecondsValue = Environment.GetEnvironmentVariable("AUTHENTICATION_ACCESS_TOKEN_LIFETIME_SECONDS");
-    if (!string.IsNullOrWhiteSpace(lifetimeSecondsValue) && int.TryParse(lifetimeSecondsValue, out int lifetimeSeconds))
-    {
-      settings.AccessToken.LifetimeSeconds = lifetimeSeconds;
-    }
-
-    string? enableBasicValue = Environment.GetEnvironmentVariable("AUTHENTICATION_ENABLE_BASIC");
-    if (!string.IsNullOrWhiteSpace(enableBasicValue) && bool.TryParse(enableBasicValue, out bool enableBasic))
-    {
-      settings.EnableBasic = enableBasic;
-    }
+    settings.AccessToken.LifetimeSeconds = EnvironmentHelper.GetInt32("AUTHENTICATION_ACCESS_TOKEN_LIFETIME_SECONDS", settings.AccessToken.LifetimeSeconds);
+    settings.EnableBasic = EnvironmentHelper.GetBoolean("AUTHENTICATION_ENABLE_BASIC", settings.EnableBasic);
 
     return settings;
   }
