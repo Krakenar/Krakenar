@@ -1,4 +1,4 @@
-﻿using Krakenar.Core;
+﻿using Logitar;
 using Microsoft.Extensions.Configuration;
 
 namespace Krakenar.EntityFrameworkCore.Relational.Settings;
@@ -7,7 +7,7 @@ public record AuthenticationSettings
 {
   public const string SectionKey = "Authentication";
 
-  public bool SilentAuthenticatedEvent { get; set; }
+  public bool SilentAuthenticatedEvent { get; set; } // TODO(fpion): should it be true by default?
 
   public static AuthenticationSettings Initialize(IConfiguration configuration)
   {

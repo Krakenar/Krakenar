@@ -12,6 +12,7 @@ using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Infrastructure;
 using Krakenar.Infrastructure.Commands;
+using Logitar;
 using Logitar.CQRS;
 using Logitar.Data;
 using Logitar.Data.PostgreSQL;
@@ -63,12 +64,12 @@ public abstract class IntegrationTests : IAsyncLifetime
     switch (DatabaseProvider)
     {
       case DatabaseProvider.EntityFrameworkCorePostgreSQL:
-        connectionString = EnvironmentHelper.TryGetString("POSTGRESQLCONNSTR_Krakenar", configuration.GetConnectionString("PostgreSQL"))?.Replace("{Database}", GetType().Name)
+        connectionString = (EnvironmentHelper.TryGetString("POSTGRESQLCONNSTR_Krakenar") ?? configuration.GetConnectionString("PostgreSQL"))?.Replace("{Database}", GetType().Name)
           ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCorePostgreSQL}' could not be found.");
         services.AddKrakenarEntityFrameworkCorePostgreSQL(connectionString);
         break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
-        connectionString = EnvironmentHelper.TryGetString("SQLCONNSTR_Krakenar", configuration.GetConnectionString("SqlServer"))?.Replace("{Database}", GetType().Name)
+        connectionString = (EnvironmentHelper.TryGetString("SQLCONNSTR_Krakenar") ?? configuration.GetConnectionString("SqlServer"))?.Replace("{Database}", GetType().Name)
           ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCoreSqlServer}' could not be found.");
         services.AddKrakenarEntityFrameworkCoreSqlServer(connectionString);
         break;

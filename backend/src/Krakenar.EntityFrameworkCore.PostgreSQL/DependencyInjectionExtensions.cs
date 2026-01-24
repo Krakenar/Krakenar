@@ -1,6 +1,6 @@
-﻿using Krakenar.Core;
-using Krakenar.EntityFrameworkCore.Relational;
+﻿using Krakenar.EntityFrameworkCore.Relational;
 using Krakenar.Infrastructure;
+using Logitar;
 using Logitar.EventSourcing.EntityFrameworkCore.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +12,7 @@ public static class DependencyInjectionExtensions
 {
   public static IServiceCollection AddKrakenarEntityFrameworkCorePostgreSQL(this IServiceCollection services, IConfiguration configuration)
   {
-    string? connectionString = EnvironmentHelper.TryGetString("POSTGRESQLCONNSTR_Krakenar", configuration.GetConnectionString("PostgreSQL"));
+    string? connectionString = EnvironmentHelper.TryGetString("POSTGRESQLCONNSTR_Krakenar") ?? configuration.GetConnectionString("PostgreSQL");
     if (string.IsNullOrWhiteSpace(connectionString))
     {
       throw new ArgumentException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCorePostgreSQL}' could not be found.", nameof(configuration));

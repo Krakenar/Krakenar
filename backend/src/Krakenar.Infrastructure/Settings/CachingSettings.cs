@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Logitar;
+using Microsoft.Extensions.Configuration;
 
 namespace Krakenar.Infrastructure.Settings;
 
@@ -12,11 +13,7 @@ public record CachingSettings
   {
     CachingSettings settings = configuration.GetSection(SectionKey).Get<CachingSettings>() ?? new();
 
-    string? actorLifetimeValue = Environment.GetEnvironmentVariable("CACHING_ACTOR_LIFETIME");
-    if (!string.IsNullOrWhiteSpace(actorLifetimeValue) && TimeSpan.TryParse(actorLifetimeValue, out TimeSpan actorLifetime))
-    {
-      settings.ActorLifetime = actorLifetime;
-    }
+    settings.ActorLifetime = EnvironmentHelper.GetTimeSpan("CACHING_ACTOR_LIFETIME", settings.ActorLifetime);
 
     return settings;
   }
