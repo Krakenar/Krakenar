@@ -1,4 +1,5 @@
-﻿using ContentDto = Krakenar.Contracts.Contents.Content;
+﻿using Logitar.CQRS;
+using ContentDto = Krakenar.Contracts.Contents.Content;
 
 namespace Krakenar.Core.Contents.Queries;
 

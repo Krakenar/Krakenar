@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Contents;
 using Krakenar.Contracts.Search;
+using Logitar.CQRS;
 using ContentLocaleDto = Krakenar.Contracts.Contents.ContentLocale;
 
 namespace Krakenar.Core.Contents.Queries;

@@ -5,6 +5,7 @@ using Krakenar.Contracts.Fields;
 using Krakenar.Contracts.Settings;
 using Krakenar.Core.Contents.Validators;
 using Krakenar.Core.Localization;
+using Logitar.CQRS;
 using ContentDto = Krakenar.Contracts.Contents.Content;
 using FieldDefinition = Krakenar.Core.Fields.FieldDefinition;
 using FieldValue = Krakenar.Core.Fields.FieldValue;

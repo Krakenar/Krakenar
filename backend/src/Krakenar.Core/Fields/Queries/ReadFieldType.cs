@@ -1,4 +1,5 @@
 ﻿using Krakenar.Contracts;
+using Logitar.CQRS;
 using FieldTypeDto = Krakenar.Contracts.Fields.FieldType;
 
 namespace Krakenar.Core.Fields.Queries;

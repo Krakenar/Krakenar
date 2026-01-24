@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Fields;
 using Krakenar.Core.Contents;
 using Krakenar.Core.Fields.Validators;
+using Logitar.CQRS;
 using ContentTypeDto = Krakenar.Contracts.Contents.ContentType;
 
 namespace Krakenar.Core.Fields.Commands;

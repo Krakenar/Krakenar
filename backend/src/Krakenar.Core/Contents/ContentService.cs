@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Search;
 using Krakenar.Core.Contents.Commands;
 using Krakenar.Core.Contents.Queries;
+using Logitar.CQRS;
 using ContentDto = Krakenar.Contracts.Contents.Content;
 using ContentLocaleDto = Krakenar.Contracts.Contents.ContentLocale;
 
