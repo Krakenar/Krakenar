@@ -10,7 +10,7 @@
     <Company>Logitar</Company>
     <Product>Krakenar</Product>
     <Description>Provides an abstraction of a relational event store to be used with Krakenar tool suite and Entity Framework Core.</Description>
-    <Copyright>© 2025 Logitar All Rights Reserved.</Copyright>
+    <Copyright>© 2026 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>krakenar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Krakenar/Krakenar</RepositoryUrl>

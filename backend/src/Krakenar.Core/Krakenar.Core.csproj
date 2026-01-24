@@ -10,7 +10,7 @@
     <Company>Logitar</Company>
     <Product>Krakenar</Product>
     <Description>Domain business and application core logic of the Krakenar tool suite.</Description>
-    <Copyright>© 2025 Logitar All Rights Reserved.</Copyright>
+    <Copyright>© 2026 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>krakenar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Krakenar/Krakenar</RepositoryUrl>
