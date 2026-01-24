@@ -22,8 +22,14 @@ public class QueryBus : Logitar.CQRS.QueryBus
 
   protected override bool ShouldRetry<TResult>(IQuery<TResult> command, Exception exception)
   {
-    return exception is not TooManyResultsException;
-  }
+    exception = exception.Unwrap();
 
-  // TODO(fpion): Exceptions are not reported to the LoggingService!
+    bool shouldRetry = exception is not TooManyResultsException;
+    if (shouldRetry)
+    {
+      LoggingService?.Report(exception);
+    }
+
+    return shouldRetry;
+  }
 }

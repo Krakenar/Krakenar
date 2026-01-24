@@ -24,7 +24,9 @@ public class CommandBus : Logitar.CQRS.CommandBus
 
   protected override bool ShouldRetry<TResult>(ICommand<TResult> command, Exception exception)
   {
-    return exception is not BadRequestException
+    exception = exception.Unwrap();
+
+    bool shouldRetry = exception is not BadRequestException
       && exception is not ConflictException
       && exception is not InvalidCredentialsException
       && exception is not NotFoundException
@@ -32,7 +34,11 @@ public class CommandBus : Logitar.CQRS.CommandBus
       && exception is not SecurityTokenException
       && exception is not TooManyResultsException
       && exception is not ValidationException;
-  }
+    if (shouldRetry)
+    {
+      LoggingService?.Report(exception);
+    }
 
-  // TODO(fpion): Exceptions are not reported to the LoggingService!
+    return shouldRetry;
+  }
 }
