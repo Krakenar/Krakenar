@@ -4,6 +4,7 @@ using Krakenar.Core.Localization;
 using Krakenar.Core.Passwords;
 using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 
 namespace Krakenar.Core.Configurations.Commands;
@@ -13,7 +14,7 @@ public record InitializeConfiguration(string DefaultLocale, string UniqueName, s
 /// <exception cref="LocaleAlreadyUsedException"></exception>
 /// <exception cref="UniqueNameAlreadyUsedException"></exception>
 /// <exception cref="ValidationException"></exception>
-public class InitializeConfigurationHandler : ICommandHandler<InitializeConfiguration>
+public class InitializeConfigurationHandler : ICommandHandler<InitializeConfiguration, Unit>
 {
   protected virtual ICacheService CacheService { get; }
   protected virtual IConfigurationQuerier ConfigurationQuerier { get; }
@@ -41,7 +42,7 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
     UserManager = userManager;
   }
 
-  public virtual async Task HandleAsync(InitializeConfiguration command, CancellationToken cancellationToken)
+  public virtual async Task<Unit> HandleAsync(InitializeConfiguration command, CancellationToken cancellationToken)
   {
     Configuration? configuration = await ConfigurationRepository.LoadAsync(cancellationToken);
     if (configuration is null)
@@ -64,5 +65,6 @@ public class InitializeConfigurationHandler : ICommandHandler<InitializeConfigur
       await UserManager.SaveAsync(user, cancellationToken);
     }
     CacheService.Configuration = await ConfigurationQuerier.ReadAsync(configuration, cancellationToken);
+    return Unit.Value;
   }
 }

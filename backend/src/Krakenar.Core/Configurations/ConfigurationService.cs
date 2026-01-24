@@ -1,6 +1,7 @@
 ﻿using Krakenar.Contracts.Configurations;
 using Krakenar.Core.Configurations.Commands;
 using Krakenar.Core.Configurations.Queries;
+using Logitar.CQRS;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 
 namespace Krakenar.Core.Configurations;

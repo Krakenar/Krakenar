@@ -1,4 +1,5 @@
-﻿using RealmDto = Krakenar.Contracts.Realms.Realm;
+﻿using Logitar.CQRS;
+using RealmDto = Krakenar.Contracts.Realms.Realm;
 
 namespace Krakenar.Core.Realms.Commands;
 

@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Dashboard;
 using Krakenar.Core.Dashboard.Queries;
+using Logitar.CQRS;
 
 namespace Krakenar.Core.Dashboard;
 

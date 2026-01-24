@@ -1,4 +1,5 @@
 ﻿using Krakenar.Core.Caching;
+using Logitar.CQRS;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
 
 namespace Krakenar.Core.Configurations.Queries;
