@@ -65,7 +65,7 @@ public static class DependencyInjectionExtensions
       .AddKrakenarEventHandlers()
       .AddKrakenarQueriers()
       .AddLogitarEventSourcingWithEntityFrameworkCoreRelational()
-      .AddSingleton(InitializeAuthenticationSettings)
+      .AddSingleton(serviceProvider => AuthenticationSettings.Initialize(serviceProvider.GetRequiredService<IConfiguration>()))
       .AddScoped<IActorService, ActorService>()
       .AddScoped<IAuthenticationService, AuthenticationService>()
       .AddScoped<ICommandHandler<MigrateDatabase, Unit>, MigrateDatabaseCommandHandler>()
@@ -206,10 +206,5 @@ public static class DependencyInjectionExtensions
       .AddScoped<ISessionQuerier, SessionQuerier>()
       .AddScoped<ITemplateQuerier, TemplateQuerier>()
       .AddScoped<IUserQuerier, UserQuerier>();
-  }
-
-  public static AuthenticationSettings InitializeAuthenticationSettings(this IServiceProvider serviceProvider)
-  {
-    return AuthenticationSettings.Initialize(serviceProvider.GetRequiredService<IConfiguration>());
   }
 }

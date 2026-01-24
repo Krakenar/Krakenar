@@ -12,8 +12,8 @@ All the following environment variables are optional.
 - `ADMIN_VERSION`: the version of the API, used for `/api` route and Swagger UI. Defaults to current API version.
 - `AUTHENTICATION_ACCESS_TOKEN_LIFETIME_SECONDS`: the default lifetime of access tokens, in seconds. Defaults to `300` (5 minutes).
 - `AUTHENTICATION_ACCESS_TOKEN_TYPE`: the token type of access tokens. Defaults to `at+jwt`.
+- `AUTHENTICATION_ENABLE_AUTHENTICATED_EVENT_SOURCING`: a boolean value indicating whether or not to source authenticated events. Unsourced events are not stored, nor published through Event Sourcing. Defaults to `false`.
 - `AUTHENTICATION_ENABLE_BASIC`: a boolean value indicating whether or not to enable Basic authentication. API keys should be preferred in Production environment for security purposes. Defaults to `false`.
-- `AUTHENTICATION_SILENT_AUTHENTICATED_EVENT`: a boolean value indicating whether or not authenticated events are silent. Silent events are not stored, nor published through Event Sourcing. Defaults to `false`.
 - `CACHING_ACTOR_LIFETIME`: the lifetime of cached actors. A string representing a [TimeSpan](https://learn.microsoft.com/en-us/dotnet/api/system.timespan?view=net-9.0), ex.: `3.00:00:00` (3 days) or `00:15:00` (15 minutes).
 - `DATABASE_APPLY_MIGRATIONS`: a boolean value indicating whether or not to apply database migrations on application startup. Manually applying SQL Scripts should be preferred in Production environment for data safety purposes. Defaults to `false`.
 - `DATABASE_ENABLE_LOGGING`: a boolean value indicating whether or not to store logs into the database. This should be disabled in Production environment to avoid bloating the database. You should use another provider, such as MongoDB. Defaults to `false`.

@@ -9,6 +9,7 @@ using Krakenar.Core.Tokens;
 using Krakenar.Core.Users;
 using Krakenar.EntityFrameworkCore.PostgreSQL;
 using Krakenar.EntityFrameworkCore.Relational;
+using Krakenar.EntityFrameworkCore.Relational.Settings;
 using Krakenar.EntityFrameworkCore.SqlServer;
 using Krakenar.Infrastructure;
 using Krakenar.Infrastructure.Commands;
@@ -59,6 +60,11 @@ public abstract class IntegrationTests : IAsyncLifetime
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
     services.AddKrakenarEntityFrameworkCoreRelational();
+
+    services.AddSingleton(new AuthenticationSettings
+    {
+      EnableAuthenticatedEventSourcing = true
+    });
 
     string? connectionString;
     switch (DatabaseProvider)
