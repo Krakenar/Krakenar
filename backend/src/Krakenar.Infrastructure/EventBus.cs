@@ -1,5 +1,4 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Logging;
+﻿using Krakenar.Core.Logging;
 using Logitar.EventSourcing;
 using Logitar.EventSourcing.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
