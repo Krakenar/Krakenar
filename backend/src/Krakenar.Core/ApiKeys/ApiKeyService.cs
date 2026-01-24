@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Search;
 using Krakenar.Core.ApiKeys.Commands;
 using Krakenar.Core.ApiKeys.Queries;
+using Logitar.CQRS;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 
 namespace Krakenar.Core.ApiKeys;

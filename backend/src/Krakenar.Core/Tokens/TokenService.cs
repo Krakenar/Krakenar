@@ -1,5 +1,6 @@
 ﻿using Krakenar.Contracts.Tokens;
 using Krakenar.Core.Tokens.Commands;
+using Logitar.CQRS;
 
 namespace Krakenar.Core.Tokens;
 

@@ -1,4 +1,5 @@
-﻿using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
+﻿using Logitar.CQRS;
+using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 
 namespace Krakenar.Core.ApiKeys.Commands;
 
