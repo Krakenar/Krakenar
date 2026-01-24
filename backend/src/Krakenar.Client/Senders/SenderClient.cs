@@ -61,7 +61,7 @@ public class SenderClient : BaseClient, ISenderService
   public virtual async Task<SearchResults<Sender>> SearchAsync(SearchSendersPayload payload, CancellationToken cancellationToken)
   {
     Dictionary<string, List<object?>> parameters = payload.ToQueryParameters();
-    parameters["kind"] = [payload.Provider];
+    parameters["kind"] = [payload.Kind];
     parameters["provider"] = [payload.Provider];
     parameters["sort"] = payload.Sort.Select(sort => (object?)(sort.IsDescending ? $"DESC.{sort.Field}" : sort)).ToList();
 

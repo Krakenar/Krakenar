@@ -145,7 +145,7 @@ public class Sender : AggregateRoot
     Kind = SenderKind.Email;
     IsDefault = @event.IsDefault;
 
-    Email = @event.Email;
+    _email = @event.Email;
 
     Provider = @event.Provider;
   }
@@ -154,7 +154,7 @@ public class Sender : AggregateRoot
     Kind = SenderKind.Phone;
     IsDefault = @event.IsDefault;
 
-    Phone = @event.Phone;
+    _phone = @event.Phone;
 
     Provider = @event.Provider;
   }
