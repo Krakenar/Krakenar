@@ -12,7 +12,7 @@ public static class DependencyInjectionExtensions
 {
   public static IServiceCollection AddKrakenarEntityFrameworkCoreSqlServer(this IServiceCollection services, IConfiguration configuration)
   {
-    string? connectionString = EnvironmentHelper.GetString("SQLCONNSTR_Krakenar") ?? configuration.GetConnectionString("SqlServer");
+    string? connectionString = EnvironmentHelper.TryGetString("SQLCONNSTR_Krakenar") ?? configuration.GetConnectionString("SqlServer");
     if (string.IsNullOrWhiteSpace(connectionString))
     {
       throw new ArgumentException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCoreSqlServer}' could not be found.", nameof(configuration));

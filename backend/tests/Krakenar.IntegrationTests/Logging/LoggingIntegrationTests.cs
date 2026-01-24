@@ -57,7 +57,7 @@ public class LoggingIntegrationTests : IntegrationTests
         services.AddKrakenarEntityFrameworkCorePostgreSQL(connectionString);
         break;
       case DatabaseProvider.EntityFrameworkCoreSqlServer:
-        connectionString = (EnvironmentHelper.GetString("SQLCONNSTR_Krakenar") ?? configuration.GetConnectionString("SqlServer"))?.Replace("{Database}", GetType().Name)
+        connectionString = (EnvironmentHelper.TryGetString("SQLCONNSTR_Krakenar") ?? configuration.GetConnectionString("SqlServer"))?.Replace("{Database}", GetType().Name)
           ?? throw new InvalidOperationException($"The connection string for the database provider '{DatabaseProvider.EntityFrameworkCoreSqlServer}' could not be found.");
         services.AddKrakenarEntityFrameworkCoreSqlServer(connectionString);
         break;
