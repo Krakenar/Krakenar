@@ -34,7 +34,7 @@ internal class Startup : StartupBase
 
     AdminSettings? adminSettings = services.Where(x => x.ServiceType.Equals(typeof(AdminSettings)) && x.ImplementationInstance is AdminSettings)
       .FirstOrDefault()?.ImplementationInstance as AdminSettings
-      ?? throw new InvalidOperationException($"The {nameof(AdminSettings)} service has not been regiseterd.");
+      ?? throw new InvalidOperationException($"The {nameof(AdminSettings)} service has not been registered.");
     if (adminSettings.EnableSwagger)
     {
       services.AddKrakenarSwagger(adminSettings);

@@ -11,7 +11,7 @@
     <Company>Logitar</Company>
     <Product>Krakenar</Product>
     <Description>Exposes interfaces and other public contracts of the Krakenar tool suite.</Description>
-    <Copyright>© 2025 Logitar All Rights Reserved.</Copyright>
+    <Copyright>© 2026 Logitar All Rights Reserved.</Copyright>
     <PackageIcon>krakenar.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Krakenar/Krakenar</RepositoryUrl>
@@ -52,8 +52,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Logitar" Version="7.1.0" />
-    <PackageReference Include="System.Text.Json" Version="9.0.4" />
+    <PackageReference Include="Logitar" Version="10.1.1" />
+    <PackageReference Include="System.Text.Json" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>

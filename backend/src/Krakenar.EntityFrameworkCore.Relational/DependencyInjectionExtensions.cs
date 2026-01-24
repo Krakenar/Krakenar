@@ -44,6 +44,7 @@ using Krakenar.EntityFrameworkCore.Relational.Repositories;
 using Krakenar.EntityFrameworkCore.Relational.Settings;
 using Krakenar.EntityFrameworkCore.Relational.Tokens;
 using Krakenar.Infrastructure.Commands;
+using Logitar.EventSourcing;
 using Logitar.EventSourcing.EntityFrameworkCore.Relational;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,5 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Sessions.Events;
+﻿using Krakenar.Core.Sessions.Events;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SessionEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Session;

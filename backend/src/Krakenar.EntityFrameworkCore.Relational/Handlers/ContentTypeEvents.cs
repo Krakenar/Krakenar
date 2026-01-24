@@ -1,9 +1,9 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Contents;
+﻿using Krakenar.Core.Contents;
 using Krakenar.Core.Contents.Events;
 using Krakenar.Core.Realms;
 using Krakenar.EntityFrameworkCore.Relational.Entities;
 using Logitar.Data;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ContentTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.ContentType;

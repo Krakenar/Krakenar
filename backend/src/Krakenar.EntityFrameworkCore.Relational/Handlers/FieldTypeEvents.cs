@@ -1,8 +1,8 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Fields;
+﻿using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Events;
 using Krakenar.Core.Realms;
 using Logitar.Data;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using FieldTypeEntity = Krakenar.EntityFrameworkCore.Relational.Entities.FieldType;

@@ -1,7 +1,7 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Passwords;
+﻿using Krakenar.Core.Passwords;
 using Krakenar.Core.Passwords.Events;
 using Krakenar.Core.Realms;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OneTimePasswordEntity = Krakenar.EntityFrameworkCore.Relational.Entities.OneTimePassword;

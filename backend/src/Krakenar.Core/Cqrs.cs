@@ -2,7 +2,6 @@
 using Krakenar.Contracts;
 using Krakenar.Core.Logging;
 using Krakenar.Core.Settings;
-using Logitar.EventSourcing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -30,11 +29,6 @@ public interface ICommandHandler<TCommand> where TCommand : ICommand
 public interface ICommandHandler<TCommand, TResult> where TCommand : ICommand<TResult>
 {
   Task<TResult> HandleAsync(TCommand command, CancellationToken cancellationToken = default);
-}
-
-public interface IEventHandler<TEvent> where TEvent : IEvent
-{
-  Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
 }
 
 public interface IQuery<TResult> : IActivity;

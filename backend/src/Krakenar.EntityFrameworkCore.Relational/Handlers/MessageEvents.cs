@@ -1,8 +1,8 @@
-﻿using Krakenar.Core;
-using Krakenar.Core.Messages;
+﻿using Krakenar.Core.Messages;
 using Krakenar.Core.Messages.Events;
 using Krakenar.Core.Realms;
 using Krakenar.EntityFrameworkCore.Relational.Entities;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MessageEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Message;

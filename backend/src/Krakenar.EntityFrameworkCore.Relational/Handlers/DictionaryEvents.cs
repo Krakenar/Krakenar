@@ -1,5 +1,6 @@
 ﻿using Krakenar.Core;
 using Krakenar.Core.Dictionaries.Events;
+using Logitar.EventSourcing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using DictionaryEntity = Krakenar.EntityFrameworkCore.Relational.Entities.Dictionary;
