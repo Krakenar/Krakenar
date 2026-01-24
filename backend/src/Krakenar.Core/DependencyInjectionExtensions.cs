@@ -64,6 +64,7 @@ using Krakenar.Core.Users.Commands;
 using Krakenar.Core.Users.Queries;
 using Logitar.CQRS;
 using Logitar.EventSourcing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ApiKeyDto = Krakenar.Contracts.ApiKeys.ApiKey;
 using ConfigurationDto = Krakenar.Contracts.Configurations.Configuration;
@@ -94,11 +95,13 @@ public static class DependencyInjectionExtensions
       .AddKrakenarManagers()
       .AddKrakenarQueries()
       .AddKrakenarRepositories()
-      .AddLogitarCQRS()
       .AddLogitarEventSourcing()
+      .AddSingleton(serviceProvider => RetrySettings.Initialize(serviceProvider.GetRequiredService<IConfiguration>()))
       .AddSingleton<IAddressHelper, AddressHelper>()
       .AddScoped<ILoggingService, LoggingService>()
-      .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>();
+      .AddTransient<ICommandBus, CommandBus>()
+      .AddTransient<IFieldValueValidatorFactory, FieldValueValidatorFactory>()
+      .AddTransient<IQueryBus, QueryBus>();
   }
 
   public static IServiceCollection AddKrakenarCommands(this IServiceCollection services)
