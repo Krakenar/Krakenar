@@ -15,14 +15,14 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Krakenar/Krakenar</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>1.1.0</Version>
+    <Version>2.0.0</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>Retry mechanism and silent authenticated events.</PackageReleaseNotes>
+    <PackageReleaseNotes>Miscellaneous changes, including breaking, see CHANGELOG for detailed information.</PackageReleaseNotes>
     <PackageTags>logitar;krakenar;efcore;sqlserver;store</PackageTags>
     <PackageProjectUrl>https://github.com/Krakenar/Krakenar/tree/main/backend/src/Krakenar.EntityFrameworkCore.SqlServer</PackageProjectUrl>
   </PropertyGroup>
