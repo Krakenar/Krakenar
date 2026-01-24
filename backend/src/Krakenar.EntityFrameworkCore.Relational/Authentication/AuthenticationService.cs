@@ -24,35 +24,29 @@ public class AuthenticationService : IAuthenticationService
 
   public virtual async Task AuthenticatedAsync(ApiKey apiKey, CancellationToken cancellationToken)
   {
-    if (Settings.SilentAuthenticatedEvent)
-    {
-      if (apiKey.AuthenticatedOn.HasValue)
-      {
-        await Context.ApiKeys
-          .Where(x => x.StreamId == apiKey.Id.Value)
-          .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.AuthenticatedOn, apiKey.AuthenticatedOn.Value.AsUniversalTime()), cancellationToken);
-      }
-    }
-    else
+    if (Settings.EnableAuthenticatedEventSourcing)
     {
       await ApiKeyRepository.SaveAsync(apiKey, cancellationToken);
+    }
+    else if (apiKey.AuthenticatedOn.HasValue)
+    {
+      await Context.ApiKeys
+        .Where(x => x.StreamId == apiKey.Id.Value)
+        .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.AuthenticatedOn, apiKey.AuthenticatedOn.Value.AsUniversalTime()), cancellationToken);
     }
   }
 
   public virtual async Task AuthenticatedAsync(User user, CancellationToken cancellationToken)
   {
-    if (Settings.SilentAuthenticatedEvent)
-    {
-      if (user.AuthenticatedOn.HasValue)
-      {
-        await Context.Users
-          .Where(x => x.StreamId == user.Id.Value)
-          .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.AuthenticatedOn, user.AuthenticatedOn.Value.AsUniversalTime()), cancellationToken);
-      }
-    }
-    else
+    if (Settings.EnableAuthenticatedEventSourcing)
     {
       await UserRepository.SaveAsync(user, cancellationToken);
+    }
+    else if (user.AuthenticatedOn.HasValue)
+    {
+      await Context.Users
+        .Where(x => x.StreamId == user.Id.Value)
+        .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.AuthenticatedOn, user.AuthenticatedOn.Value.AsUniversalTime()), cancellationToken);
     }
   }
 }

@@ -7,13 +7,13 @@ public record AuthenticationSettings
 {
   public const string SectionKey = "Authentication";
 
-  public bool SilentAuthenticatedEvent { get; set; } // TODO(fpion): should it be true by default?
+  public bool EnableAuthenticatedEventSourcing { get; set; }
 
   public static AuthenticationSettings Initialize(IConfiguration configuration)
   {
     AuthenticationSettings settings = configuration.GetSection(SectionKey).Get<AuthenticationSettings>() ?? new();
 
-    settings.SilentAuthenticatedEvent = EnvironmentHelper.GetBoolean("AUTHENTICATION_SILENT_AUTHENTICATED_EVENT", settings.SilentAuthenticatedEvent);
+    settings.EnableAuthenticatedEventSourcing = EnvironmentHelper.GetBoolean("AUTHENTICATION_ENABLE_AUTHENTICATED_EVENT_SOURCING", settings.EnableAuthenticatedEventSourcing);
 
     return settings;
   }

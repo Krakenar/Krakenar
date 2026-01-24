@@ -67,9 +67,15 @@ public class UserIntegrationTests : IntegrationTests
     AuthenticateUserPayload payload = new(_user.UniqueName.Value, PasswordString);
     UserDto user = await _userService.AuthenticateAsync(payload);
 
+    Assert.Equal(_user.EntityId, user.Id);
+    Assert.Equal(_user.Version + 1, user.Version);
+    Assert.Equal(Actor, user.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, user.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+
     Assert.Equal(RealmDto, user.Realm);
     Assert.Equal(payload.User, user.UniqueName);
     Assert.True(user.HasPassword);
+
     Assert.NotNull(user.AuthenticatedOn);
     Assert.Equal(DateTime.UtcNow, user.AuthenticatedOn.Value.AsUniversalTime(), TimeSpan.FromSeconds(10));
   }
