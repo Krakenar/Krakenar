@@ -2,6 +2,7 @@
 using Krakenar.Contracts.Dictionaries;
 using Krakenar.Core.Dictionaries.Validators;
 using Krakenar.Core.Localization;
+using Logitar.CQRS;
 using Logitar.EventSourcing;
 using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 

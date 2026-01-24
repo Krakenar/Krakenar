@@ -1,4 +1,5 @@
-﻿using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
+﻿using Logitar.CQRS;
+using DictionaryDto = Krakenar.Contracts.Dictionaries.Dictionary;
 
 namespace Krakenar.Core.Dictionaries.Commands;
 

@@ -1,4 +1,5 @@
-﻿using Logitar.EventSourcing;
+﻿using Logitar.CQRS;
+using Logitar.EventSourcing;
 using LanguageDto = Krakenar.Contracts.Localization.Language;
 
 namespace Krakenar.Core.Localization.Commands;
