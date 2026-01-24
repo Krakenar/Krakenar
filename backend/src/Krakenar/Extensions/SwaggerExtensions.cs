@@ -66,11 +66,6 @@ internal static class SwaggerExtensions
       Scheme = Schemes.ApiKey,
       Type = SecuritySchemeType.ApiKey
     });
-    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-      [new OpenApiSecuritySchemeReference(Schemes.ApiKey, document)] = []
-    });
-
     options.AddSecurityDefinition(Schemes.Basic, new OpenApiSecurityScheme
     {
       Description = "Enter your credentials in the inputs below:",
@@ -79,11 +74,6 @@ internal static class SwaggerExtensions
       Scheme = Schemes.Basic,
       Type = SecuritySchemeType.Http
     });
-    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-      [new OpenApiSecuritySchemeReference(Schemes.Basic, document)] = []
-    });
-
     options.AddSecurityDefinition(Schemes.Bearer, new OpenApiSecurityScheme
     {
       Description = "Enter your access token in the input below:",
@@ -92,8 +82,11 @@ internal static class SwaggerExtensions
       Scheme = Schemes.Bearer,
       Type = SecuritySchemeType.Http
     });
+
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
+      [new OpenApiSecuritySchemeReference(Schemes.ApiKey, document)] = [],
+      [new OpenApiSecuritySchemeReference(Schemes.Basic, document)] = [],
       [new OpenApiSecuritySchemeReference(Schemes.Bearer, document)] = []
     });
   }
