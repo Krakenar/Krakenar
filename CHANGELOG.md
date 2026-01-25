@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [2.0.1] - 2026-01-25
+
+### Fixed
+
+- RichText field constraints.
+
 ## [2.0.0] - 2026-01-24
 
 This release replaces several internal infrastructure components with dedicated Logitar libraries, updates configuration behavior, and fixes issues related to the .NET 10 upgrade, dependency updates, messaging, and Swagger security.
@@ -47,7 +53,8 @@ This release replaces several internal infrastructure components with dedicated 
 
 Initial release. 🚀
 
-[unreleased]: https://github.com/Krakenar/Krakenar/compare/v2.0.0...HEAD
+[unreleased]: https://github.com/Krakenar/Krakenar/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/Krakenar/Krakenar/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Krakenar/Krakenar/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/Krakenar/Krakenar/compare/v1.0.1...v1.1.0
 [1.0.1]: https://github.com/Krakenar/Krakenar/compare/v1.0.0...v1.0.1
