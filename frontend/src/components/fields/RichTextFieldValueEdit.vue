@@ -27,8 +27,8 @@ defineEmits<{
   <FormTextarea
     :described-by="field.description ? `${field.id}-help` : undefined"
     :id="field.id"
-    :max="fieldType.string?.maximumLength ?? undefined"
-    :min="fieldType.string?.minimumLength ?? undefined"
+    :max="fieldType.richText?.maximumLength ?? undefined"
+    :min="fieldType.richText?.minimumLength ?? undefined"
     :model-value="modelValue"
     :name="field.uniqueName"
     :placeholder="field.placeholder ?? field.displayName ?? field.uniqueName"
