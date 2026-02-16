@@ -51,7 +51,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="10.1.1" />
+    <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="10.1.2" />
     <PackageReference Include="Logitar.Net.Mail.SendGrid" Version="10.0.2" />
     <PackageReference Include="Logitar.Net.Sms.Twilio" Version="10.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="10.0.2" />
