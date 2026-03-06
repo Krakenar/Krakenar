@@ -22,7 +22,7 @@
     <Version>2.0.2</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>NuGet package upgrades.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed DateTime indices &amp; NuGet package upgrades.</PackageReleaseNotes>
     <PackageTags>logitar;krakenar;efcore;sqlserver;store</PackageTags>
     <PackageProjectUrl>https://github.com/Krakenar/Krakenar/tree/main/backend/src/Krakenar.EntityFrameworkCore.SqlServer</PackageProjectUrl>
   </PropertyGroup>
