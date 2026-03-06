@@ -6,6 +6,7 @@ using Krakenar.Core.Contents;
 using Krakenar.Core.Fields;
 using Krakenar.Core.Fields.Settings;
 using Krakenar.Core.Localization;
+using Logitar;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Content = Krakenar.Core.Contents.Content;
@@ -118,6 +119,41 @@ public class FieldIndexIntegrationTests : IntegrationTests
     Assert.Equal(content.Version, fieldIndex.Version);
     Assert.Equal(ContentStatus.Latest, fieldIndex.Status);
     Assert.Equal(ShortDescription, fieldIndex.String);
+  }
+
+  [Fact(DisplayName = "DateTime indices should work properly.")]
+  public async Task Given_DateTimeIndex_When_ContentCreated_Then_CorrectIndex()
+  {
+    DateTimeSettings settings = new(new DateTime(1970, 1, 1), new DateTime(2008, 12, 31, 23, 59, 59));
+    FieldType fieldType = new(new UniqueName(Realm.UniqueNameSettings, "DateOfBirth"), settings, ActorId, FieldTypeId.NewId(Realm.Id));
+    await _fieldTypeRepository.SaveAsync(fieldType);
+
+    Guid fieldId = Guid.NewGuid();
+    FieldDefinition fieldDefinition = new(fieldId, fieldType.Id, true, true, true, false, new Identifier("DateOfBirth"), null, null, null);
+    ContentType contentType = new(new Identifier("Contact"), isInvariant: true, ActorId, ContentTypeId.NewId(Realm.Id));
+    contentType.SetField(fieldDefinition, ActorId);
+    await _contentTypeRepository.SaveAsync(contentType);
+
+    DateTime dateOfBirth = Faker.Person.DateOfBirth.ToLocalTime();
+    ContentLocale invariant = new(new UniqueName(Realm.UniqueNameSettings, Faker.Person.UserName), null, null, new Dictionary<Guid, FieldValue>
+    {
+      [fieldId] = new FieldValue(dateOfBirth.ToISOString())
+    }.AsReadOnly());
+    Content content = new(contentType, invariant, ActorId, ContentId.NewId(Realm.Id));
+    await _contentManager.SaveAsync(content);
+
+    FieldIndexEntity? index = await KrakenarContext.FieldIndex.AsNoTracking().SingleOrDefaultAsync();
+    Assert.NotNull(index);
+    Assert.Equal(Realm.Id.ToGuid(), index.RealmUid);
+    Assert.Equal(contentType.EntityId, index.ContentTypeUid);
+    Assert.Null(index.LanguageUid);
+    Assert.Equal(fieldType.EntityId, index.FieldTypeUid);
+    Assert.Equal(fieldId, index.FieldDefinitionUid);
+    Assert.Equal(content.EntityId, index.ContentUid);
+    Assert.Equal(invariant.UniqueName.Value.ToUpperInvariant(), index.ContentLocaleName);
+    Assert.Equal(ContentStatus.Latest, index.Status);
+    Assert.NotNull(index.DateTime);
+    Assert.Equal(dateOfBirth.AsUniversalTime(), index.DateTime.Value, TimeSpan.FromSeconds(1));
   }
 
   [Fact(DisplayName = "Deleting content type should clear indices.")]

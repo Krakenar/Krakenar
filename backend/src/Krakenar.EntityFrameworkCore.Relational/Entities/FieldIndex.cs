@@ -131,7 +131,7 @@ public sealed class FieldIndex : ISegregatedEntity
         Boolean = bool.Parse(value);
         break;
       case DataType.DateTime:
-        DateTime = System.DateTime.Parse(value);
+        DateTime = System.DateTime.Parse(value).AsUniversalTime();
         break;
       case DataType.Number:
         Number = double.Parse(value);
