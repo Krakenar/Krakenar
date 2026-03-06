@@ -23,7 +23,7 @@
     <Version>2.0.2</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <PackageReleaseNotes>NuGet package upgrades.</PackageReleaseNotes>
+    <PackageReleaseNotes>Fixed DateTime indices &amp; NuGet package upgrades.</PackageReleaseNotes>
     <PackageTags>logitar;krakenar;web;interface;rest;api;controller;authentication;authorization;filter;middleware;razor;view</PackageTags>
     <PackageProjectUrl>https://github.com/Krakenar/Krakenar/tree/main/backend/src/Krakenar.Web</PackageProjectUrl>
   </PropertyGroup>
