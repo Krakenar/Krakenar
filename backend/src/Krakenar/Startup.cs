@@ -26,14 +26,12 @@ internal class Startup : StartupBase
   {
     base.ConfigureServices(services);
 
-    services.AddApplicationInsightsTelemetry();
-
     services.AddKrakenarCore();
     services.AddKrakenarInfrastructure();
     services.AddKrakenarWeb(_configuration);
 
-    AdminSettings? adminSettings = services.Where(x => x.ServiceType.Equals(typeof(AdminSettings)) && x.ImplementationInstance is AdminSettings)
-      .FirstOrDefault()?.ImplementationInstance as AdminSettings
+    AdminSettings? adminSettings = services.FirstOrDefault(x => x.ServiceType.Equals(typeof(AdminSettings)) && x.ImplementationInstance is AdminSettings)
+      ?.ImplementationInstance as AdminSettings
       ?? throw new InvalidOperationException($"The {nameof(AdminSettings)} service has not been registered.");
     if (adminSettings.EnableSwagger)
     {
