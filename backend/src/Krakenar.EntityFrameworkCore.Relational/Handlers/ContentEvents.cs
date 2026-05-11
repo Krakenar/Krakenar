@@ -24,9 +24,9 @@ public class ContentEvents : IEventHandler<ContentCreated>,
   IEventHandler<ContentLocaleUnpublished>
 {
   protected virtual KrakenarContext Context { get; }
-  protected virtual ILogger<ContentTypeEvents> Logger { get; }
+  protected virtual ILogger<ContentEvents> Logger { get; }
 
-  public ContentEvents(KrakenarContext context, ILogger<ContentTypeEvents> logger)
+  public ContentEvents(KrakenarContext context, ILogger<ContentEvents> logger)
   {
     Context = context;
     Logger = logger;
