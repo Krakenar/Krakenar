@@ -24,6 +24,7 @@ const country = computed<Country | undefined>(() => countries.find(({ code }) =>
 const kind = computed<SenderKind | undefined>(() => {
   switch (provider.value) {
     case "SendGrid":
+    case "SmtpProvider":
       return "Email";
     case "Twilio":
       return "Phone";
@@ -58,6 +59,10 @@ async function submit(): Promise<void> {
       email: kind.value === "Email" ? email.value : undefined,
       phone: kind.value === "Phone" ? phone.value : undefined,
       sendGrid: provider.value === "SendGrid" ? { apiKey: "<YOUR_SENDGRID_API_KEY>" } : undefined,
+      smtpProvider:
+        provider.value === "SmtpProvider"
+          ? { host: "<YOUR_SMTP_HOST>", port: 0, security: "None", username: "<YOUR_SMTP_USERNAME>", password: "<YOUR_SMTP_PASSWORD>" }
+          : undefined,
       twilio: provider.value === "Twilio" ? { accountSid: "<YOUR_TWILIO_ACCOUNT_SID>", authenticationToken: "<YOUR_TWILIO_AUTHENTICATION_TOKEN>" } : undefined,
     };
     const sender: Sender = await createSender(payload);

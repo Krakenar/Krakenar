@@ -28,6 +28,7 @@
     "label": "Service",
     "options": {
       "SendGrid": "SendGrid",
+      "SmtpProvider": "SMTP",
       "Twilio": "Twilio"
     },
     "placeholder": "Sélectionnez un service d’expédition"

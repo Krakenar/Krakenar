@@ -16,7 +16,11 @@ public static class SenderSettingsExtensions
   {
     string username = encryptionManager.Decrypt(new EncryptedString(encrypted.Username), realmId);
     string password = encryptionManager.Decrypt(new EncryptedString(encrypted.Password), realmId);
-    return encrypted.Host == decrypted.Host && encrypted.Port == decrypted.Port && username == decrypted.Username && password == decrypted.Password;
+    return encrypted.Host == decrypted.Host
+      && encrypted.Port == decrypted.Port
+      && encrypted.Security == decrypted.Security
+      && username == decrypted.Username
+      && password == decrypted.Password;
   }
 
   public static bool AreEqual(this ITwilioSettings encrypted, ITwilioSettings decrypted, IEncryptionManager encryptionManager, RealmId? realmId)
