@@ -62,7 +62,7 @@
         "StartTls": "Start TLS",
         "StartTlsWhenAvailable": "Start TLS when available"
       },
-      "placeholder": "Select a sender provider"
+      "placeholder": "Select a security mode"
     }
   },
   "sort": {
