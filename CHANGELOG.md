@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [2.0.4] - 2026-05-25
+
+### Fixed
+
+- NPM & NuGet package upgrades.
+- User Summary Postal Address.
+
 ## [2.0.3] - 2026-05-11
 
 ### Fixed
@@ -66,7 +73,8 @@ This release replaces several internal infrastructure components with dedicated 
 
 Initial release. 🚀
 
-[unreleased]: https://github.com/Krakenar/Krakenar/compare/v2.0.3...HEAD
+[unreleased]: https://github.com/Krakenar/Krakenar/compare/v2.0.4...HEAD
+[2.0.4]: https://github.com/Krakenar/Krakenar/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/Krakenar/Krakenar/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/Krakenar/Krakenar/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/Krakenar/Krakenar/compare/v2.0.0...v2.0.1
