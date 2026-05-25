@@ -15,6 +15,7 @@ public class SenderEvents : IEventHandler<EmailSenderCreated>,
   IEventHandler<SenderSetDefault>,
   IEventHandler<SenderUpdated>,
   IEventHandler<SendGridSettingsChanged>,
+  IEventHandler<SmtpProviderSettingsChanged>,
   IEventHandler<TwilioSettingsChanged>
 {
   protected virtual KrakenarContext Context { get; }
@@ -126,6 +127,22 @@ public class SenderEvents : IEventHandler<EmailSenderCreated>,
   }
 
   public virtual async Task HandleAsync(SendGridSettingsChanged @event, CancellationToken cancellationToken)
+  {
+    SenderEntity? sender = await Context.Senders.SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
+    if (sender is null || sender.Version != (@event.Version - 1))
+    {
+      Logger.LogUnexpectedVersion(@event, sender);
+      return;
+    }
+
+    sender.SetSettings(@event);
+
+    await Context.SaveChangesAsync(cancellationToken);
+
+    Logger.LogSuccess(@event);
+  }
+
+  public virtual async Task HandleAsync(SmtpProviderSettingsChanged @event, CancellationToken cancellationToken)
   {
     SenderEntity? sender = await Context.Senders.SingleOrDefaultAsync(x => x.StreamId == @event.StreamId.Value, cancellationToken);
     if (sender is null || sender.Version != (@event.Version - 1))
