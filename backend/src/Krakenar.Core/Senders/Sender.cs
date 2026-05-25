@@ -133,6 +133,9 @@ public class Sender : AggregateRoot
       case SenderProvider.SendGrid:
         SetSettings((SendGridSettings)settings, actorId);
         break;
+      case SenderProvider.SmtpProvider:
+        SetSettings((SmtpProviderSettings)settings, actorId);
+        break;
       case SenderProvider.Twilio:
         SetSettings((TwilioSettings)settings, actorId);
         break;
@@ -192,6 +195,23 @@ public class Sender : AggregateRoot
     }
   }
   protected virtual void Handle(SendGridSettingsChanged @event)
+  {
+    _settings = @event.Settings;
+  }
+
+  public void SetSettings(SmtpProviderSettings settings, ActorId? actorId = null)
+  {
+    if (Provider != SenderProvider.SmtpProvider)
+    {
+      throw new SenderProviderMismatchException(this, settings.Provider, nameof(settings));
+    }
+
+    if (_settings != settings)
+    {
+      Raise(new SmtpProviderSettingsChanged(settings), actorId);
+    }
+  }
+  protected virtual void Handle(SmtpProviderSettingsChanged @event)
   {
     _settings = @event.Settings;
   }

@@ -28,10 +28,17 @@ public class UpdateSenderValidator : AbstractValidator<UpdateSenderPayload>
     {
       case SenderProvider.SendGrid:
         When(x => x.SendGrid is not null, () => RuleFor(x => x.SendGrid!).SetValidator(new SendGridSettingsValidator()));
+        RuleFor(x => x.SmtpProvider).Null();
+        RuleFor(x => x.Twilio).Null();
+        break;
+      case SenderProvider.SmtpProvider:
+        RuleFor(x => x.SendGrid).Null();
+        When(x => x.SmtpProvider is not null, () => RuleFor(x => x.SmtpProvider!).SetValidator(new SmtpProviderSettingsValidator()));
         RuleFor(x => x.Twilio).Null();
         break;
       case SenderProvider.Twilio:
         RuleFor(x => x.SendGrid).Null();
+        RuleFor(x => x.SmtpProvider).Null();
         When(x => x.Twilio is not null, () => RuleFor(x => x.Twilio!).SetValidator(new TwilioSettingsValidator()));
         break;
       default:
