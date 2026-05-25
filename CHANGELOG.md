@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Nothing yet.
 
+## [2.1.0] - 2026-05-25
+
+### Added
+
+- SMTP Provider Senders.
+
 ## [2.0.4] - 2026-05-25
 
 ### Fixed
@@ -73,7 +79,8 @@ This release replaces several internal infrastructure components with dedicated 
 
 Initial release. 🚀
 
-[unreleased]: https://github.com/Krakenar/Krakenar/compare/v2.0.4...HEAD
+[unreleased]: https://github.com/Krakenar/Krakenar/compare/v2.1.0...HEAD
+[2.0.4]: https://github.com/Krakenar/Krakenar/compare/v2.0.4...v2.1.0
 [2.0.4]: https://github.com/Krakenar/Krakenar/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/Krakenar/Krakenar/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/Krakenar/Krakenar/compare/v2.0.1...v2.0.2
