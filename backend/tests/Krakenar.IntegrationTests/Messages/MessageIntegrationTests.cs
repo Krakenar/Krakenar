@@ -41,6 +41,7 @@ public class MessageIntegrationTests : IntegrationTests
   private readonly ITemplateRepository _templateRepository;
 
   private Sender _sendGrid = null!;
+  private Sender _smtpProvider = null!;
   private Sender _twilio = null!;
 
   private Template _multiFactorAuthentication = null!;
@@ -64,23 +65,36 @@ public class MessageIntegrationTests : IntegrationTests
     await base.InitializeAsync();
 
     SenderConfiguration senderConfiguration = _configuration.GetSection(SenderConfiguration.SectionKey).Get<SenderConfiguration>() ?? new();
+    Phone phone = new(senderConfiguration.Twilio.PhoneNumber?.CleanTrim() ?? "+15148454636", countryCode: "CA");
 
-    Email email = new(senderConfiguration.SendGrid.EmailAddress?.CleanTrim() ?? Faker.Internet.Email());
+    Email sendGridEmail = new(senderConfiguration.SendGrid.EmailAddress?.CleanTrim() ?? Faker.Internet.Email());
     SendGridSettings sendGridSettings = new(
       _encryptionManager.Encrypt(senderConfiguration.SendGrid.ApiKey?.CleanTrim() ?? SenderHelper.GenerateSendGridApiKey(), Realm.Id).Value);
-    _sendGrid = new(email, sendGridSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id))
+    _sendGrid = new(sendGridEmail, sendGridSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id))
     {
       DisplayName = new DisplayName(senderConfiguration.SendGrid.DisplayName?.CleanTrim() ?? Faker.Company.CompanyName())
     };
     _sendGrid.Update(ActorId);
 
-    Phone phone = new(senderConfiguration.Twilio.PhoneNumber?.CleanTrim() ?? "+15148454636", countryCode: "CA");
+    Email smtpProviderEmail = new(senderConfiguration.SmtpProvider.EmailAddress?.CleanTrim() ?? Faker.Internet.Email());
+    SmtpProviderSettings smtpProviderSettings = new(
+      senderConfiguration.SmtpProvider.Host,
+      senderConfiguration.SmtpProvider.Port,
+      senderConfiguration.SmtpProvider.Security,
+      _encryptionManager.Encrypt(senderConfiguration.SmtpProvider.Username, Realm.Id).Value,
+      _encryptionManager.Encrypt(senderConfiguration.SmtpProvider.Password, Realm.Id).Value);
+    _smtpProvider = new(smtpProviderEmail, smtpProviderSettings, isDefault: false, ActorId, SenderId.NewId(Realm.Id))
+    {
+      DisplayName = new DisplayName(senderConfiguration.SmtpProvider.DisplayName?.CleanTrim() ?? Faker.Company.CompanyName())
+    };
+    _smtpProvider.Update(ActorId);
+
     TwilioSettings twilioSettings = new(
       _encryptionManager.Encrypt(senderConfiguration.Twilio.AccountSid?.CleanTrim() ?? SenderHelper.GenerateTwilioAccountSid(), Realm.Id).Value,
       _encryptionManager.Encrypt(senderConfiguration.Twilio.AuthenticationToken?.CleanTrim() ?? SenderHelper.GenerateTwilioAuthenticationToken(), Realm.Id).Value);
     _twilio = new(phone, twilioSettings, isDefault: true, ActorId, SenderId.NewId(Realm.Id));
 
-    await _senderRepository.SaveAsync([_sendGrid, _twilio]);
+    await _senderRepository.SaveAsync([_sendGrid, _smtpProvider, _twilio]);
 
     Content multiFactorAuthenticationContent = Content.PlainText(@"@(Model.Resource(""MultiFactorAuthentication_Body"")) @(Model.Variable(""Code""))");
     _multiFactorAuthentication = new Template(
@@ -337,6 +351,88 @@ public class MessageIntegrationTests : IntegrationTests
     Assert.Contains(message.Results, r => r.Key == "Headers");
     Assert.Contains(message.Results, r => r.Key == "Status");
     Assert.Contains(message.Results, r => r.Key == "TrailingHeaders");
+  }
+
+  [Fact(DisplayName = "It should send an email message from SmtpProvider.")]
+  public async Task Given_SmtpProvider_When_Send_Then_MessageSent()
+  {
+    SendMessagePayload payload = new()
+    {
+      Sender = $"  {_smtpProvider.EntityId.ToString().ToUpperInvariant()}  ",
+      Template = $"  {_passwordRecovery.UniqueName.Value}  ",
+      IgnoreUserLocale = true,
+      Locale = _canadianFrench.Code,
+      IsDemo = true
+    };
+
+    RecipientsConfiguration recipients = _configuration.GetSection(RecipientsConfiguration.SectionKey).Get<RecipientsConfiguration>() ?? new();
+    foreach (EmailRecipient recipient in recipients.Email)
+    {
+      payload.Recipients.Add(new RecipientPayload(new EmailPayload(recipient.Address), recipient.DisplayName, recipient.Type));
+    }
+
+    string token = Guid.NewGuid().ToString();
+    payload.Variables.Add(new Variable("Token", token));
+
+    SentMessages sentMessages = await _messageService.SendAsync(payload);
+    Guid entityId = Assert.Single(sentMessages.Ids);
+
+    MessageId messageId = new(entityId, Realm.Id);
+    Message? message = await _messageRepository.LoadAsync(messageId);
+    Assert.NotNull(message);
+
+    Assert.Equal(messageId, message.Id);
+    Assert.Equal(2, message.Version);
+    Assert.Equal(ActorId, message.CreatedBy);
+    Assert.Equal(DateTime.UtcNow, message.CreatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+    Assert.Equal(ActorId, message.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, message.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+
+    Assert.Equal("Réinitialiser votre mot de passe", message.Subject.Value);
+    Content body = _encryptionManager.DecryptBody(message);
+    Assert.Equal(_passwordRecovery.Content.Type, body.Type);
+    Assert.Contains($@"lang=""{_canadianFrench.Code}""", body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Bonjour !"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Il semblerait que vous avez perdu votre mot de passe."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cliquez sur le lien ci-dessous afin de le réinitialiser."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode($"https://www.francispion.ca/password/reset?token={token}"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("S’il s’agit d’une erreur de notre part, veuillez supprimer ce message."), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("Cordialement,"), body.Text);
+    Assert.Contains(HttpUtility.HtmlEncode("The Logitar Team"), body.Text);
+
+    Assert.Equal(payload.Recipients.Count, message.Recipients.Count);
+    foreach (RecipientPayload recipient in payload.Recipients)
+    {
+      Assert.Contains(message.Recipients, r => r.Type == recipient.Type
+        && r.Email?.Address == recipient.Email?.Address
+        && r.Phone?.Number == recipient.Phone?.Number
+        && r.DisplayName?.Value == recipient.DisplayName
+        && r.UserId?.EntityId == recipient.UserId);
+    }
+
+    Assert.Equal(_smtpProvider.Id, message.Sender.Id);
+    Assert.Equal(_smtpProvider.IsDefault, message.Sender.IsDefault);
+    Assert.Equal(_smtpProvider.Email, message.Sender.Email);
+    Assert.Equal(_smtpProvider.Phone, message.Sender.Phone);
+    Assert.Equal(_smtpProvider.DisplayName, message.Sender.DisplayName);
+    Assert.Equal(_smtpProvider.Provider, message.Sender.Provider);
+
+    Assert.Equal(_passwordRecovery.Id, message.Template.Id);
+    Assert.Equal(_passwordRecovery.UniqueName, message.Template.UniqueName);
+    Assert.Equal(_passwordRecovery.DisplayName, message.Template.DisplayName);
+
+    Assert.Equal(payload.IgnoreUserLocale, message.IgnoreUserLocale);
+    Assert.Equal(payload.Locale, message.Locale?.Code);
+
+    KeyValuePair<string, string> variable = message.Variables.Single();
+    Assert.Equal("Token", variable.Key);
+    Assert.Equal(token, _encryptionManager.Decrypt(new EncryptedString(variable.Value), Realm.Id));
+
+    Assert.Equal(payload.IsDemo, message.IsDemo);
+
+    Assert.Equal(MessageStatus.Succeeded, message.Status);
+    Assert.Single(message.Results);
+    Assert.Contains(message.Results, r => r.Key == "Response");
   }
 
   [Fact(DisplayName = "It should send a SMS message from Twilio.", Skip = "This test does not pass because it requires a funded Twilio account.")]

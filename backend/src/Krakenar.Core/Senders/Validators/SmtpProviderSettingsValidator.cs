@@ -8,6 +8,7 @@ public class SmtpProviderSettingsValidator : AbstractValidator<ISmtpProviderSett
   public SmtpProviderSettingsValidator()
   {
     RuleFor(x => x.Host).NotEmpty();
+    RuleFor(x => x.Security).IsInEnum();
     RuleFor(x => x.Username).NotEmpty();
     RuleFor(x => x.Password).NotEmpty();
   }

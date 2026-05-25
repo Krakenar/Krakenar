@@ -159,7 +159,7 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
     {
       EncryptedString username = EncryptionManager.Encrypt(payload.SmtpProvider.Username, realmId);
       EncryptedString password = EncryptionManager.Encrypt(payload.SmtpProvider.Password, realmId);
-      settings.Add(new SmtpProviderSettings(payload.SmtpProvider.Host, payload.SmtpProvider.Port, username.Value, password.Value));
+      settings.Add(new SmtpProviderSettings(payload.SmtpProvider.Host, payload.SmtpProvider.Port, payload.SmtpProvider.Security, username.Value, password.Value));
     }
     if (payload.Twilio is not null)
     {

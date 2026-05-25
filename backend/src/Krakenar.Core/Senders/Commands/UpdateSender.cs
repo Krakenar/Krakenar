@@ -90,7 +90,7 @@ public class UpdateSenderHandler : ICommandHandler<UpdateSender, SenderDto?>
     {
       EncryptedString username = EncryptionManager.Encrypt(payload.SmtpProvider.Username, realmId);
       EncryptedString password = EncryptionManager.Encrypt(payload.SmtpProvider.Password, realmId);
-      SmtpProviderSettings settings = new(payload.SmtpProvider.Host, payload.SmtpProvider.Port, username.Value, password.Value);
+      SmtpProviderSettings settings = new(payload.SmtpProvider.Host, payload.SmtpProvider.Port, payload.SmtpProvider.Security, username.Value, password.Value);
       sender.SetSettings(settings, actorId);
     }
     if (payload.Twilio is not null && !((TwilioSettings)sender.Settings).AreEqual(payload.Twilio, EncryptionManager, realmId))

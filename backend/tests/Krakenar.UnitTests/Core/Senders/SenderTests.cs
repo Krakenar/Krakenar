@@ -5,6 +5,7 @@ using Krakenar.Core.Senders.Events;
 using Krakenar.Core.Senders.Settings;
 using Krakenar.Core.Users;
 using Logitar.EventSourcing;
+using SmtpSecurityMode = Krakenar.Contracts.Senders.Settings.SmtpSecurityMode;
 
 namespace Krakenar.Core.Senders;
 
@@ -13,11 +14,13 @@ public class SenderTests
 {
   private readonly Faker _faker = new();
   private readonly Sender _sendGrid;
+  private readonly Sender _smtpProvider;
   private readonly Sender _twilio;
 
   public SenderTests()
   {
     _sendGrid = new(new Email(_faker.Person.Email), SenderHelper.GenerateSendGridSettings(), isDefault: true);
+    _smtpProvider = new(new Email(_faker.Person.Email), SenderHelper.GenerateSmtpProviderSettings(), isDefault: false);
     _twilio = new(new Phone("+15148454636", countryCode: "CA"), SenderHelper.GenerateTwilioSettings(), isDefault: true);
   }
 
@@ -205,6 +208,20 @@ public class SenderTests
     Assert.Contains(_sendGrid.Changes, change => change is SendGridSettingsChanged changed && changed.Settings.Equals(settings));
   }
 
+  [Fact(DisplayName = "SetSettings: it should handle changes correctly (SmtpProvider).")]
+  public void Given_Changes_When_SetSmtpProviderSettings_Then_Changed()
+  {
+    _smtpProvider.ClearChanges();
+    _smtpProvider.SetSettings((SmtpProviderSettings)_smtpProvider.Settings);
+    Assert.False(_smtpProvider.HasChanges);
+    Assert.Empty(_smtpProvider.Changes);
+
+    SmtpProviderSettings settings = new("smtp.example.com", 587, SmtpSecurityMode.Auto, "myuser2", "mypassword2");
+    _smtpProvider.SetSettings(settings);
+    Assert.True(_smtpProvider.HasChanges);
+    Assert.Contains(_smtpProvider.Changes, change => change is SmtpProviderSettingsChanged changed && changed.Settings.Equals(settings));
+  }
+
   [Fact(DisplayName = "SetSettings: it should handle changes correctly (Twilio).")]
   public void Given_Changes_When_SetTwilioSettings_Then_Changed()
   {
@@ -227,6 +244,17 @@ public class SenderTests
     Assert.Equal(_sendGrid.RealmId?.ToGuid(), exception.RealmId);
     Assert.Equal(_sendGrid.EntityId, exception.SenderId);
     Assert.Equal(SenderProvider.SendGrid, exception.ExpectedProvider);
+    Assert.Equal(settings.Provider, exception.ActualProvider);
+  }
+
+  [Fact(DisplayName = "SetSettings: it should throw SenderProviderMismatchException when the provider is not valid (SmtpProvider).")]
+  public void Given_ProviderMismatch_When_SetSSmtpProviderSettings_Then_SenderProviderMismatchException()
+  {
+    SendGridSettings settings = SenderHelper.GenerateSendGridSettings();
+    var exception = Assert.Throws<SenderProviderMismatchException>(() => _smtpProvider.SetSettings(settings));
+    Assert.Equal(_smtpProvider.RealmId?.ToGuid(), exception.RealmId);
+    Assert.Equal(_smtpProvider.EntityId, exception.SenderId);
+    Assert.Equal(SenderProvider.SmtpProvider, exception.ExpectedProvider);
     Assert.Equal(settings.Provider, exception.ActualProvider);
   }
 
