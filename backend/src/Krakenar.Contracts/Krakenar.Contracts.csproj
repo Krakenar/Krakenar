@@ -16,11 +16,11 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Krakenar/Krakenar</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>2.0.3.0</AssemblyVersion>
+    <AssemblyVersion>2.0.4.0</AssemblyVersion>
     <FileVersion>$(AssemblyVersion)</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <NeutralLanguage>en-CA</NeutralLanguage>
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <PackageReleaseNotes>NuGet package upgrades.</PackageReleaseNotes>
@@ -53,7 +53,7 @@
 
   <ItemGroup>
     <PackageReference Include="Logitar" Version="10.2.0" />
-    <PackageReference Include="System.Text.Json" Version="10.0.7" />
+    <PackageReference Include="System.Text.Json" Version="10.0.8" />
   </ItemGroup>
 
   <ItemGroup>
