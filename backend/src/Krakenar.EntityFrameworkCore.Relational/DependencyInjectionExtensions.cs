@@ -158,6 +158,7 @@ public static class DependencyInjectionExtensions
       .AddScoped<IEventHandler<SessionSignedOut>, SessionEvents>()
       .AddScoped<IEventHandler<SessionUpdated>, CustomAttributeEvents>()
       .AddScoped<IEventHandler<SessionUpdated>, SessionEvents>()
+      .AddScoped<IEventHandler<SmtpProviderSettingsChanged>, SenderEvents>()
       .AddScoped<IEventHandler<TemplateCreated>, TemplateEvents>()
       .AddScoped<IEventHandler<TemplateDeleted>, TemplateEvents>()
       .AddScoped<IEventHandler<TemplateUniqueNameChanged>, TemplateEvents>()

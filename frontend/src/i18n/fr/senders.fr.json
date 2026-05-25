@@ -28,6 +28,7 @@
     "label": "Service",
     "options": {
       "SendGrid": "SendGrid",
+      "SmtpProvider": "SMTP",
       "Twilio": "Twilio"
     },
     "placeholder": "Sélectionnez un service d’expédition"
@@ -40,6 +41,28 @@
     "apiKey": {
       "help": "Celle-ci ressemble à :",
       "label": "Clé d’API"
+    }
+  },
+  "smtpProvider": {
+    "host": {
+      "help": "Celui-ci ressemble à :",
+      "label": "Hôte"
+    },
+    "port": {
+      "help": "Généralement 465 ou 587, évitez 25.",
+      "label": "Port"
+    },
+    "security": {
+      "help": "Généralement Aucun pour le port 25, SSL On Connect pour le port 465 et Start TLS pour le port 587.",
+      "label": "Security",
+      "options": {
+        "Auto": "Auto",
+        "None": "Aucun",
+        "SslOnConnect": "SSL On Connect",
+        "StartTls": "Start TLS",
+        "StartTlsWhenAvailable": "Start TLS when available"
+      },
+      "placeholder": "Sélectionnez un mode de sécurité"
     }
   },
   "sort": {

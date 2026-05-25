@@ -54,6 +54,7 @@
     <PackageReference Include="Logitar.EventSourcing.Infrastructure" Version="10.1.2" />
     <PackageReference Include="Logitar.Net.Mail.SendGrid" Version="10.0.2" />
     <PackageReference Include="Logitar.Net.Sms.Twilio" Version="10.0.2" />
+    <PackageReference Include="MailKit" Version="4.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="10.0.8" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="10.0.8" />
     <PackageReference Include="RazorEngine.NetCore" Version="3.1.1" />

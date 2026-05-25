@@ -8,7 +8,7 @@ public static class SenderExtensions
   public static SenderKind GetSenderKind(this SenderSettings settings) => settings.Provider.GetSenderKind();
   public static SenderKind GetSenderKind(this SenderProvider provider) => provider switch
   {
-    SenderProvider.SendGrid => SenderKind.Email,
+    SenderProvider.SendGrid or SenderProvider.SmtpProvider => SenderKind.Email,
     SenderProvider.Twilio => SenderKind.Phone,
     _ => throw new SenderProviderNotSupportedException(provider),
   };

@@ -9,6 +9,7 @@ using Krakenar.Infrastructure.Encryption;
 using Krakenar.Infrastructure.Messages;
 using Krakenar.Infrastructure.Messages.Providers;
 using Krakenar.Infrastructure.Messages.Providers.SendGrid;
+using Krakenar.Infrastructure.Messages.Providers.SmtpProvider;
 using Krakenar.Infrastructure.Messages.Providers.Twilio;
 using Krakenar.Infrastructure.Passwords;
 using Krakenar.Infrastructure.Passwords.Pbkdf2;
@@ -51,6 +52,7 @@ public static class DependencyInjectionExtensions
   {
     return services
       .AddSingleton<IProviderStrategy, SendGridStrategy>()
+      .AddSingleton<IProviderStrategy, SmtpProviderStrategy>()
       .AddSingleton<IProviderStrategy, TwilioStrategy>();
   }
 }

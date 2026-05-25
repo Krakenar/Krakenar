@@ -573,6 +573,9 @@ public sealed class Mapper
         case SenderProvider.SendGrid:
           destination.SendGrid = JsonSerializer.Deserialize<SendGridSettings>(source.Settings);
           break;
+        case SenderProvider.SmtpProvider:
+          destination.SmtpProvider = JsonSerializer.Deserialize<SmtpProviderSettings>(source.Settings);
+          break;
         case SenderProvider.Twilio:
           destination.Twilio = JsonSerializer.Deserialize<TwilioSettings>(source.Settings);
           break;

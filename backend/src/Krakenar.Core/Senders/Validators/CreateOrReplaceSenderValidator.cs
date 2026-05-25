@@ -80,6 +80,7 @@ public class CreateOrReplaceSenderValidator : AbstractValidator<CreateOrReplaceS
     When(x => x.Phone is not null, () => RuleFor(x => x.Phone!).SetValidator(new PhoneValidator()));
 
     When(x => x.SendGrid is not null, () => RuleFor(x => x.SendGrid!).SetValidator(new SendGridSettingsValidator()));
+    When(x => x.SmtpProvider is not null, () => RuleFor(x => x.SmtpProvider!).SetValidator(new SmtpProviderSettingsValidator()));
     When(x => x.Twilio is not null, () => RuleFor(x => x.Twilio!).SetValidator(new TwilioSettingsValidator()));
   }
 
@@ -105,10 +106,18 @@ public class CreateOrReplaceSenderValidator : AbstractValidator<CreateOrReplaceS
       case SenderProvider.SendGrid:
         When(x => x.SendGrid is not null, () => RuleFor(x => x.SendGrid!).SetValidator(new SendGridSettingsValidator()))
           .Otherwise(() => RuleFor(x => x.SendGrid).NotNull());
+        RuleFor(x => x.SmtpProvider).Null();
+        RuleFor(x => x.Twilio).Null();
+        break;
+      case SenderProvider.SmtpProvider:
+        RuleFor(x => x.SendGrid).Null();
+        When(x => x.SmtpProvider is not null, () => RuleFor(x => x.SmtpProvider!).SetValidator(new SmtpProviderSettingsValidator()))
+          .Otherwise(() => RuleFor(x => x.SmtpProvider).NotNull());
         RuleFor(x => x.Twilio).Null();
         break;
       case SenderProvider.Twilio:
         RuleFor(x => x.SendGrid).Null();
+        RuleFor(x => x.SmtpProvider).Null();
         When(x => x.Twilio is not null, () => RuleFor(x => x.Twilio!).SetValidator(new TwilioSettingsValidator()))
           .Otherwise(() => RuleFor(x => x.Twilio).NotNull());
         break;
@@ -133,10 +142,14 @@ public class CreateOrReplaceSenderValidator : AbstractValidator<CreateOrReplaceS
 
   protected virtual SenderProvider? GetSenderProvider(CreateOrReplaceSenderPayload payload)
   {
-    List<SenderProvider> providers = new(capacity: 2);
+    List<SenderProvider> providers = new(capacity: 3);
     if (payload.SendGrid is not null)
     {
       providers.Add(SenderProvider.SendGrid);
+    }
+    if (payload.SmtpProvider is not null)
+    {
+      providers.Add(SenderProvider.SmtpProvider);
     }
     if (payload.Twilio is not null)
     {

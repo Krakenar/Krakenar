@@ -20,6 +20,11 @@ public record CreateOrReplaceSender(Guid? Id, CreateOrReplaceSenderPayload Paylo
   {
     CreateOrReplaceSender clone = this.DeepClone();
     clone.Payload.SendGrid?.ApiKey = clone.Payload.SendGrid.ApiKey.Mask();
+    if (clone.Payload.SmtpProvider is not null)
+    {
+      clone.Payload.SmtpProvider.Username = clone.Payload.SmtpProvider.Username.Mask();
+      clone.Payload.SmtpProvider.Password = clone.Payload.SmtpProvider.Password.Mask();
+    }
     if (clone.Payload.Twilio is not null)
     {
       clone.Payload.Twilio.AccountSid = clone.Payload.Twilio.AccountSid.Mask();
@@ -124,6 +129,10 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
     {
       sender.SetSettings((SendGridSettings)settings);
     }
+    if (payload.SmtpProvider is not null && !((SmtpProviderSettings)reference.Settings).AreEqual(payload.SmtpProvider, EncryptionManager, realmId))
+    {
+      sender.SetSettings((SmtpProviderSettings)settings);
+    }
     if (payload.Twilio is not null && !((TwilioSettings)reference.Settings).AreEqual(payload.Twilio, EncryptionManager, realmId))
     {
       sender.SetSettings((TwilioSettings)settings);
@@ -139,12 +148,18 @@ public class CreateOrReplaceSenderHandler : ICommandHandler<CreateOrReplaceSende
 
   protected virtual SenderSettings GetSettings(CreateOrReplaceSenderPayload payload, RealmId? realmId)
   {
-    List<SenderSettings> settings = new(capacity: 2);
+    List<SenderSettings> settings = new(capacity: 3);
 
     if (payload.SendGrid is not null)
     {
       EncryptedString apiKey = EncryptionManager.Encrypt(payload.SendGrid.ApiKey, realmId);
       settings.Add(new SendGridSettings(apiKey.Value));
+    }
+    if (payload.SmtpProvider is not null)
+    {
+      EncryptedString username = EncryptionManager.Encrypt(payload.SmtpProvider.Username, realmId);
+      EncryptedString password = EncryptionManager.Encrypt(payload.SmtpProvider.Password, realmId);
+      settings.Add(new SmtpProviderSettings(payload.SmtpProvider.Host, payload.SmtpProvider.Port, payload.SmtpProvider.Security, username.Value, password.Value));
     }
     if (payload.Twilio is not null)
     {

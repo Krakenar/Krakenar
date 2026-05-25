@@ -3,5 +3,6 @@
 public enum SenderProvider
 {
   SendGrid,
+  SmtpProvider,
   Twilio
 }

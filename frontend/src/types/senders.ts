@@ -10,6 +10,7 @@ export type CreateOrReplaceSenderPayload = {
   displayName?: string;
   description?: string;
   sendGrid?: SendGridSettings;
+  smtpProvider?: SmtpProviderSettings;
   twilio?: TwilioSettings;
 };
 
@@ -29,12 +30,13 @@ export type Sender = Aggregate & {
   description?: string | null;
   provider: SenderProvider;
   sendGrid?: SendGridSettings | null;
+  smtpProvider?: SmtpProviderSettings | null;
   twilio?: TwilioSettings | null;
 };
 
 export type SenderKind = "Email" | "Phone";
 
-export type SenderProvider = "SendGrid" | "Twilio";
+export type SenderProvider = "SendGrid" | "SmtpProvider" | "Twilio";
 
 export type SenderSort = "CreatedOn" | "DisplayName" | "EmailAddress" | "PhoneNumber" | "UpdatedOn";
 
@@ -45,6 +47,16 @@ export type SenderSortOption = SortOption & {
 export type SendGridSettings = {
   apiKey: string;
 };
+
+export type SmtpProviderSettings = {
+  host: string;
+  port: number;
+  security: SmtpSecurityMode;
+  username: string;
+  password: string;
+};
+
+export type SmtpSecurityMode = "None" | "Auto" | "SslOnConnect" | "StartTls" | "StartTlsWhenAvailable";
 
 export type TwilioSettings = {
   accountSid: string;
@@ -57,5 +69,6 @@ export type UpdateSenderPayload = {
   displayName?: Change<string>;
   description?: Change<string>;
   sendGrid?: SendGridSettings;
+  smtpProvider?: SmtpProviderSettings;
   twilio?: TwilioSettings;
 };

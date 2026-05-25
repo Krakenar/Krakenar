@@ -14,6 +14,8 @@ using Sender = Krakenar.Core.Senders.Sender;
 using SenderDto = Krakenar.Contracts.Senders.Sender;
 using SendGridSettings = Krakenar.Core.Senders.Settings.SendGridSettings;
 using SendGridSettingsDto = Krakenar.Contracts.Senders.Settings.SendGridSettings;
+using SmtpProviderSettingsDto = Krakenar.Contracts.Senders.Settings.SmtpProviderSettings;
+using SmtpSecurityMode = Krakenar.Contracts.Senders.Settings.SmtpSecurityMode;
 using TwilioSettingsDto = Krakenar.Contracts.Senders.Settings.TwilioSettings;
 
 namespace Krakenar.Senders;
@@ -26,6 +28,7 @@ public class SenderIntegrationTests : IntegrationTests
   private readonly ISenderService _senderService;
 
   private readonly Sender _sendGrid;
+  private readonly Sender _smtpProvider;
   private readonly Sender _twilio;
 
   public SenderIntegrationTests() : base()
@@ -37,6 +40,14 @@ public class SenderIntegrationTests : IntegrationTests
     SendGridSettings sendGridSettings = new(_encryptionManager.Encrypt(SenderHelper.GenerateSendGridApiKey(), Realm.Id).Value);
     _sendGrid = new(new Email(Faker.Person.Email), sendGridSettings, isDefault: true, actorId: null, SenderId.NewId(Realm.Id));
 
+    SmtpProviderSettings smtpProviderSettings = new(
+      "smtp.example.com",
+      587,
+      SmtpSecurityMode.Auto,
+      _encryptionManager.Encrypt("myuser", Realm.Id).Value,
+      _encryptionManager.Encrypt("mypassword", Realm.Id).Value);
+    _smtpProvider = new(new Email(Faker.Person.Email), smtpProviderSettings, isDefault: false, actorId: null, SenderId.NewId(Realm.Id));
+
     TwilioSettings twilioSettings = new(
       _encryptionManager.Encrypt(SenderHelper.GenerateTwilioAccountSid(), Realm.Id).Value,
       _encryptionManager.Encrypt(SenderHelper.GenerateTwilioAuthenticationToken(), Realm.Id).Value);
@@ -47,7 +58,7 @@ public class SenderIntegrationTests : IntegrationTests
   {
     await base.InitializeAsync();
 
-    await _senderRepository.SaveAsync([_sendGrid, _twilio]);
+    await _senderRepository.SaveAsync([_sendGrid, _smtpProvider, _twilio]);
   }
 
   [Fact(DisplayName = "It should create a new SendGrid sender.")]
@@ -87,6 +98,48 @@ public class SenderIntegrationTests : IntegrationTests
     Assert.Equal(payload.Description.Trim(), sender.Description);
     Assert.Equal(SenderProvider.SendGrid, sender.Provider);
     Assert.Equal(payload.SendGrid, sender.SendGrid);
+    Assert.Null(sender.SmtpProvider);
+    Assert.Null(sender.Twilio);
+  }
+
+  [Fact(DisplayName = "It should create a new SmtpProvider sender.")]
+  public async Task Given_SmtpProviderNotExist_When_CreateOrReplace_Then_Created()
+  {
+    _smtpProvider.SetDefault(isDefault: false, ActorId);
+    await _senderRepository.SaveAsync(_smtpProvider);
+
+    CreateOrReplaceSenderPayload payload = new()
+    {
+      Email = new EmailPayload($" {Faker.Internet.Email()} "),
+      DisplayName = $" {Faker.Company.CompanyName()} ",
+      Description = "  This is the default SmtpProvider sender.  ",
+      SmtpProvider = new SmtpProviderSettingsDto(SenderHelper.GenerateSmtpProviderSettings())
+    };
+
+    Guid id = Guid.NewGuid();
+    CreateOrReplaceSenderResult result = await _senderService.CreateOrReplaceAsync(payload, id);
+    Assert.True(result.Created);
+
+    SenderDto? sender = result.Sender;
+    Assert.NotNull(sender);
+    Assert.Equal(id, sender.Id);
+    Assert.Equal(3, sender.Version);
+    Assert.Equal(Actor, sender.CreatedBy);
+    Assert.Equal(DateTime.UtcNow, sender.CreatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+    Assert.Equal(Actor, sender.UpdatedBy);
+    Assert.Equal(DateTime.UtcNow, sender.UpdatedOn.AsUniversalTime(), TimeSpan.FromSeconds(10));
+
+    Assert.Equal(RealmDto, sender.Realm);
+    Assert.Equal(SenderKind.Email, sender.Kind);
+    Assert.False(sender.IsDefault);
+    Assert.NotNull(sender.Email);
+    Assert.Equal(payload.Email.Address.Trim(), sender.Email.Address);
+    Assert.Null(sender.Phone);
+    Assert.Equal(payload.DisplayName.Trim(), sender.DisplayName);
+    Assert.Equal(payload.Description.Trim(), sender.Description);
+    Assert.Null(sender.SendGrid);
+    Assert.Equal(SenderProvider.SmtpProvider, sender.Provider);
+    Assert.Equal(payload.SmtpProvider, sender.SmtpProvider);
     Assert.Null(sender.Twilio);
   }
 
@@ -123,17 +176,18 @@ public class SenderIntegrationTests : IntegrationTests
     Assert.Equal(payload.Description.Trim(), sender.Description);
     Assert.Equal(SenderProvider.Twilio, sender.Provider);
     Assert.Null(sender.SendGrid);
+    Assert.Null(sender.SmtpProvider);
     Assert.Equal(payload.Twilio, sender.Twilio);
   }
 
   [Fact(DisplayName = "It should delete the sender.")]
   public async Task Given_Sender_When_Delete_Then_Deleted()
   {
-    SenderDto? sender = await _senderService.DeleteAsync(_sendGrid.EntityId);
+    SenderDto? sender = await _senderService.DeleteAsync(_smtpProvider.EntityId);
     Assert.NotNull(sender);
-    Assert.Equal(_sendGrid.EntityId, sender.Id);
+    Assert.Equal(_smtpProvider.EntityId, sender.Id);
 
-    Assert.Empty(await KrakenarContext.Senders.AsNoTracking().Where(x => x.StreamId == _sendGrid.Id.Value).ToArrayAsync());
+    Assert.Empty(await KrakenarContext.Senders.AsNoTracking().Where(x => x.StreamId == _smtpProvider.Id.Value).ToArrayAsync());
   }
 
   [Fact(DisplayName = "It should read the sender by ID.")]
@@ -264,10 +318,9 @@ public class SenderIntegrationTests : IntegrationTests
       Kind = SenderKind.Email
     };
     SearchResults<SenderDto> results = await _senderService.SearchAsync(payload);
-    Assert.Equal(1, results.Total);
-
-    SenderDto sender = Assert.Single(results.Items);
-    Assert.Equal(_sendGrid.EntityId, sender.Id);
+    Assert.Equal(2, results.Total);
+    Assert.Contains(results.Items, i => i.Id == _sendGrid.EntityId);
+    Assert.Contains(results.Items, i => i.Id == _smtpProvider.EntityId);
   }
 
   [Fact(DisplayName = "It should return the correct search results (Provider).")]

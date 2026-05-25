@@ -11,5 +11,6 @@ public record CreateOrReplaceSenderPayload
   public string? Description { get; set; }
 
   public SendGridSettings? SendGrid { get; set; }
+  public SmtpProviderSettings? SmtpProvider { get; set; }
   public TwilioSettings? Twilio { get; set; }
 }

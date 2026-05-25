@@ -86,6 +86,13 @@ public sealed class Sender : Aggregate, ISegregatedEntity
     SendGridSettings settings = new(@event.Settings);
     Settings = JsonSerializer.Serialize(settings);
   }
+  public void SetSettings(SmtpProviderSettingsChanged @event)
+  {
+    Update(@event);
+
+    SmtpProviderSettings settings = new(@event.Settings);
+    Settings = JsonSerializer.Serialize(settings);
+  }
   public void SetSettings(TwilioSettingsChanged @event)
   {
     Update(@event);

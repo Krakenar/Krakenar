@@ -11,6 +11,7 @@ public class SenderExtensionsTests
     Dictionary<SenderProvider, SenderKind> kindByProviders = new()
     {
       [SenderProvider.SendGrid] = SenderKind.Email,
+      [SenderProvider.SmtpProvider] = SenderKind.Email,
       [SenderProvider.Twilio] = SenderKind.Phone
     };
 
@@ -22,9 +23,15 @@ public class SenderExtensionsTests
   }
 
   [Fact(DisplayName = "GetSenderKind: it should return the correct kind from SendGridSettings.")]
-  public void Given_SenderSettings_When_GetSenderKind_Then_CorrectKind()
+  public void Given_SendGridSettings_When_GetSenderKind_Then_CorrectKind()
   {
     Assert.Equal(SenderKind.Email, SenderHelper.GenerateSendGridSettings().GetSenderKind());
+  }
+
+  [Fact(DisplayName = "GetSenderKind: it should return the correct kind from SmtpProviderSettings.")]
+  public void Given_SmtpProviderSettings_When_GetSenderKind_Then_CorrectKind()
+  {
+    Assert.Equal(SenderKind.Email, SenderHelper.GenerateSmtpProviderSettings().GetSenderKind());
   }
 
   [Fact(DisplayName = "GetSenderKind: it should return the correct kind from TwilioSettings.")]

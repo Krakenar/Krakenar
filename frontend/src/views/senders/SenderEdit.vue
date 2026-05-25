@@ -10,6 +10,7 @@ import DeleteSender from "@/components/senders/DeleteSender.vue";
 import SendDemo from "@/components/messages/SendDemo.vue";
 import SendGridSettingsEdit from "@/components/senders/SendGridSettingsEdit.vue";
 import SenderGeneral from "@/components/senders/SenderGeneral.vue";
+import SmtpProviderSettingsEdit from "@/components/senders/SmtpProviderSettingsEdit.vue";
 import StatusDetail from "@/components/shared/StatusDetail.vue";
 import TwilioSettingsEdit from "@/components/senders/TwilioSettingsEdit.vue";
 import type { Breadcrumb } from "@/types/breadcrumb";
@@ -74,6 +75,15 @@ function onSendGridUpdated(updated: Sender): void {
   }
   toasts.success("senders.updated");
 }
+function onSmtpProviderUpdated(updated: Sender): void {
+  if (sender.value) {
+    setMetadata(updated);
+    if (updated.smtpProvider) {
+      sender.value.smtpProvider = { ...updated.smtpProvider };
+    }
+  }
+  toasts.success("senders.updated");
+}
 function onTwilioUpdated(updated: Sender): void {
   if (sender.value) {
     setMetadata(updated);
@@ -115,6 +125,7 @@ onMounted(async () => {
         </TarTab>
         <TarTab id="settings" :title="t('settings.title')">
           <SendGridSettingsEdit v-if="sender.provider === 'SendGrid'" :sender="sender" @error="handleError" @updated="onSendGridUpdated" />
+          <SmtpProviderSettingsEdit v-if="sender.provider === 'SmtpProvider'" :sender="sender" @error="handleError" @updated="onSmtpProviderUpdated" />
           <TwilioSettingsEdit v-if="sender.provider === 'Twilio'" :sender="sender" @error="handleError" @updated="onTwilioUpdated" />
         </TarTab>
         <TarTab id="demo" :title="t('messages.demo.label')">

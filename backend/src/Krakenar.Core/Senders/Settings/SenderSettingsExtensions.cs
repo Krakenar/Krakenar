@@ -12,6 +12,17 @@ public static class SenderSettingsExtensions
     return apiKey == decrypted.ApiKey;
   }
 
+  public static bool AreEqual(this ISmtpProviderSettings encrypted, ISmtpProviderSettings decrypted, IEncryptionManager encryptionManager, RealmId? realmId)
+  {
+    string username = encryptionManager.Decrypt(new EncryptedString(encrypted.Username), realmId);
+    string password = encryptionManager.Decrypt(new EncryptedString(encrypted.Password), realmId);
+    return encrypted.Host == decrypted.Host
+      && encrypted.Port == decrypted.Port
+      && encrypted.Security == decrypted.Security
+      && username == decrypted.Username
+      && password == decrypted.Password;
+  }
+
   public static bool AreEqual(this ITwilioSettings encrypted, ITwilioSettings decrypted, IEncryptionManager encryptionManager, RealmId? realmId)
   {
     string accountSid = encryptionManager.Decrypt(new EncryptedString(encrypted.AccountSid), realmId);

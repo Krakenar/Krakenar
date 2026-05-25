@@ -37,9 +37,11 @@ public static class EncryptionExtensions
   public static void DecryptSettings(this IEncryptionManager manager, SenderDto sender)
   {
     RealmId? realmId = sender.Realm is null ? null : new(sender.Realm.Id);
-    if (sender.SendGrid is not null)
+    sender.SendGrid?.ApiKey = manager.Decrypt(new EncryptedString(sender.SendGrid.ApiKey), realmId);
+    if (sender.SmtpProvider is not null)
     {
-      sender.SendGrid.ApiKey = manager.Decrypt(new EncryptedString(sender.SendGrid.ApiKey), realmId);
+      sender.SmtpProvider.Username = manager.Decrypt(new EncryptedString(sender.SmtpProvider.Username), realmId);
+      sender.SmtpProvider.Password = manager.Decrypt(new EncryptedString(sender.SmtpProvider.Password), realmId);
     }
     if (sender.Twilio is not null)
     {
@@ -54,6 +56,14 @@ public static class EncryptionExtensions
       case SenderProvider.SendGrid:
         SendGridSettings sendGrid = (SendGridSettings)sender.Settings;
         return new SendGridSettings(manager.Decrypt(new EncryptedString(sendGrid.ApiKey), sender.RealmId));
+      case SenderProvider.SmtpProvider:
+        SmtpProviderSettings smtpProvider = (SmtpProviderSettings)sender.Settings;
+        return new SmtpProviderSettings(
+          smtpProvider.Host,
+          smtpProvider.Port,
+          smtpProvider.Security,
+          manager.Decrypt(new EncryptedString(smtpProvider.Username), sender.RealmId),
+          manager.Decrypt(new EncryptedString(smtpProvider.Password), sender.RealmId));
       case SenderProvider.Twilio:
         TwilioSettings twilio = (TwilioSettings)sender.Settings;
         return new TwilioSettings(
