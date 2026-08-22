@@ -20,6 +20,8 @@ public sealed class LogException
 
   public Dictionary<string, string> Data { get; private set; } = [];
 
+  public LogException? InnerException { get; private set; }
+
   public LogException(Exception exception, JsonSerializerOptions? serializerOptions = null)
   {
     UniqueId = Guid.NewGuid();
@@ -48,6 +50,11 @@ public sealed class LogException
       catch (Exception)
       {
       }
+    }
+
+    if (exception.InnerException is not null)
+    {
+      InnerException = new LogException(exception.InnerException, serializerOptions);
     }
   }
 

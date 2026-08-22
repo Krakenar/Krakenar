@@ -128,7 +128,7 @@ public class Content : AggregateRoot
 
   public void SetInvariant(ContentLocale invariant, ActorId? actorId = null)
   {
-    if (_invariant != invariant)
+    if (!Equals(_invariant, invariant))
     {
       Raise(new ContentLocaleChanged(LanguageId: null, invariant), actorId);
     }
@@ -142,7 +142,7 @@ public class Content : AggregateRoot
     }
 
     ContentLocale? existingLocale = TryGetLocale(languageId);
-    if (existingLocale is null || existingLocale != locale)
+    if (!Equals(existingLocale, locale))
     {
       Raise(new ContentLocaleChanged(languageId, locale), actorId);
     }
