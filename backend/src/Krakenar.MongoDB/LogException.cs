@@ -20,6 +20,8 @@ public sealed class LogException
 
   public Dictionary<string, string> Data { get; private set; } = [];
 
+  // TODO(fpion): we are missing InnerException!
+
   public LogException(Exception exception, JsonSerializerOptions? serializerOptions = null)
   {
     UniqueId = Guid.NewGuid();
