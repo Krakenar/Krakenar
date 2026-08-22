@@ -193,7 +193,7 @@ public class FieldType : AggregateRoot
       throw new FieldDataTypeMismatchException(this, settings.DataType, nameof(settings));
     }
 
-    if (_settings is null || !_settings.Equals(settings))
+    if (!Equals(_settings, settings))
     {
       Raise(new FieldTypeSelectSettingsChanged(settings), actorId);
     }
