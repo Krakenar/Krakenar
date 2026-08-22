@@ -12,15 +12,17 @@ defaults:
 jobs:
   publish:
     name: Publish NuGet Packages
+    permissions:
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Setup Node 22
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
 
       - name: Build Krakenar Frontend
         run: |
@@ -29,10 +31,10 @@ jobs:
           npm run build
           cd ../backend
 
-      - name: Setup .NET9
-        uses: actions/setup-dotnet@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.x
+          dotnet-version: 10.x
 
       - name: Restore dependencies
         run: dotnet restore
@@ -43,5 +45,11 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal --filter Category=Unit
 
+      - name: Login to Nuget
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Push NuGet
-        run: dotnet nuget push "**/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "**/*.nupkg" --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate --source https://api.nuget.org/v3/index.json
