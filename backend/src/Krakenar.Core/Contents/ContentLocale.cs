@@ -2,7 +2,7 @@
 
 namespace Krakenar.Core.Contents;
 
-public class ContentLocale
+public record ContentLocale
 {
   public UniqueName UniqueName { get; }
   public DisplayName? DisplayName { get; }
@@ -17,7 +17,7 @@ public class ContentLocale
     FieldValues = fieldValues ?? new Dictionary<Guid, FieldValue>().AsReadOnly();
   }
 
-  public override bool Equals(object? obj) => obj is ContentLocale locale
+  public virtual bool Equals(ContentLocale? locale) => locale is not null
     && locale.UniqueName == UniqueName
     && locale.DisplayName == DisplayName
     && locale.Description == Description
